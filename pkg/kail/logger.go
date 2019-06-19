@@ -26,7 +26,7 @@ import (
 
 	"github.com/boz/go-logutil"
 	"github.com/boz/kail"
-	"github.com/projectriff/riff/pkg/k8s"
+	"github.com/projectriff/cli/pkg/k8s"
 	"github.com/projectriff/system/pkg/apis/build"
 	buildv1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
 	"github.com/projectriff/system/pkg/apis/request"

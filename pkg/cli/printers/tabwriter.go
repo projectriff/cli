@@ -22,7 +22,7 @@ package printers
 import (
 	"io"
 
-	"github.com/projectriff/riff/pkg/cli/printers/tabwriter"
+	"github.com/projectriff/cli/pkg/cli/printers/tabwriter"
 )
 
 const (

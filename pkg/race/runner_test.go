@@ -22,7 +22,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/projectriff/riff/pkg/race"
+	"github.com/projectriff/cli/pkg/race"
 )
 
 func TestRun(t *testing.T) {

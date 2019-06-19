@@ -21,7 +21,7 @@ import (
 	"testing"
 
 	"github.com/buildpack/pack"
-	riffpack "github.com/projectriff/riff/pkg/pack"
+	riffpack "github.com/projectriff/cli/pkg/pack"
 )
 
 func TestNewClient(t *testing.T) {

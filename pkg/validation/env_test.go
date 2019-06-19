@@ -19,9 +19,9 @@ package validation_test
 import (
 	"testing"
 
-	"github.com/projectriff/riff/pkg/cli"
-	rifftesting "github.com/projectriff/riff/pkg/testing"
-	"github.com/projectriff/riff/pkg/validation"
+	"github.com/projectriff/cli/pkg/cli"
+	rifftesting "github.com/projectriff/cli/pkg/testing"
+	"github.com/projectriff/cli/pkg/validation"
 )
 
 func TestEnvVar(t *testing.T) {

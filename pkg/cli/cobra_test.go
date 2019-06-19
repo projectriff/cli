@@ -24,7 +24,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/projectriff/riff/pkg/cli"
+	"github.com/projectriff/cli/pkg/cli"
 	"github.com/spf13/cobra"
 )
 

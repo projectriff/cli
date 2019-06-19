@@ -21,7 +21,7 @@ import (
 	"fmt"
 
 	"github.com/fatih/color"
-	"github.com/projectriff/riff/pkg/cli"
+	"github.com/projectriff/cli/pkg/cli"
 	"github.com/spf13/cobra"
 )
 

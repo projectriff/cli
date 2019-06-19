@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/projectriff/riff/pkg/cli"
+	"github.com/projectriff/cli/pkg/cli"
 	"github.com/spf13/cobra"
 )
 

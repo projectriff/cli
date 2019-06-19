@@ -21,8 +21,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/projectriff/riff/pkg/cli"
-	"github.com/projectriff/riff/pkg/validation"
+	"github.com/projectriff/cli/pkg/cli"
+	"github.com/projectriff/cli/pkg/validation"
 	streamv1alpha1 "github.com/projectriff/system/pkg/apis/stream/v1alpha1"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

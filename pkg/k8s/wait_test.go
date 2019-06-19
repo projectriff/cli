@@ -23,8 +23,8 @@ import (
 	"time"
 
 	duckv1alpha1 "github.com/knative/pkg/apis/duck/v1alpha1"
-	"github.com/projectriff/riff/pkg/k8s"
-	rifftesting "github.com/projectriff/riff/pkg/testing"
+	"github.com/projectriff/cli/pkg/k8s"
+	rifftesting "github.com/projectriff/cli/pkg/testing"
 	buildv1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

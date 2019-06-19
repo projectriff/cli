@@ -19,7 +19,7 @@ package k8s_test
 import (
 	"testing"
 
-	"github.com/projectriff/riff/pkg/k8s"
+	"github.com/projectriff/cli/pkg/k8s"
 )
 
 func TestNewClient(t *testing.T) {

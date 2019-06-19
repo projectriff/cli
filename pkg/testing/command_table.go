@@ -31,7 +31,7 @@ import (
 	"github.com/knative/pkg/apis"
 	"github.com/knative/pkg/kmeta"
 	kntesting "github.com/knative/pkg/reconciler/testing"
-	"github.com/projectriff/riff/pkg/cli"
+	"github.com/projectriff/cli/pkg/cli"
 	"github.com/spf13/cobra"
 	"k8s.io/apimachinery/pkg/api/resource"
 	"k8s.io/apimachinery/pkg/runtime"

@@ -20,7 +20,7 @@ import (
 	"context"
 
 	"github.com/knative/pkg/apis"
-	"github.com/projectriff/riff/pkg/validation"
+	"github.com/projectriff/cli/pkg/validation"
 	"github.com/spf13/cobra"
 )
 

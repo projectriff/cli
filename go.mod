@@ -1,4 +1,4 @@
-module github.com/projectriff/riff
+module github.com/projectriff/cli
 
 go 1.12
 

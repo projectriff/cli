@@ -3,7 +3,7 @@ package validation_test
 import (
 	"testing"
 
-	"github.com/projectriff/riff/pkg/validation"
+	"github.com/projectriff/cli/pkg/validation"
 )
 
 func TestValidMimeType(t *testing.T) {

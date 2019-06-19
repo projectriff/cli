@@ -22,8 +22,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/projectriff/riff/pkg/cli"
-	"github.com/projectriff/riff/pkg/cli/printers"
+	"github.com/projectriff/cli/pkg/cli"
+	"github.com/projectriff/cli/pkg/cli/printers"
 	"github.com/projectriff/system/pkg/apis/build"
 	"github.com/spf13/cobra"
 	corev1 "k8s.io/api/core/v1"

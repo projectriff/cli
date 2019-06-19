@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/projectriff/riff/pkg/cli"
+	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/system/pkg/apis/build"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

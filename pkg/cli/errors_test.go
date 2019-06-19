@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/projectriff/riff/pkg/cli"
+	"github.com/projectriff/cli/pkg/cli"
 )
 
 func TestSilenceError(t *testing.T) {

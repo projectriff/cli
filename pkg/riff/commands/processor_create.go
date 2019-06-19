@@ -22,9 +22,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/projectriff/riff/pkg/cli"
-	"github.com/projectriff/riff/pkg/k8s"
-	"github.com/projectriff/riff/pkg/race"
+	"github.com/projectriff/cli/pkg/cli"
+	"github.com/projectriff/cli/pkg/k8s"
+	"github.com/projectriff/cli/pkg/race"
 	streamv1alpha1 "github.com/projectriff/system/pkg/apis/stream/v1alpha1"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

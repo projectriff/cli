@@ -23,9 +23,9 @@ import (
 	"time"
 
 	"github.com/buildpack/pack"
-	"github.com/projectriff/riff/pkg/cli"
-	"github.com/projectriff/riff/pkg/k8s"
-	"github.com/projectriff/riff/pkg/race"
+	"github.com/projectriff/cli/pkg/cli"
+	"github.com/projectriff/cli/pkg/k8s"
+	"github.com/projectriff/cli/pkg/race"
 	buildv1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
 	"github.com/spf13/cobra"
 	"k8s.io/apimachinery/pkg/api/resource"

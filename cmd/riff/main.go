@@ -25,8 +25,8 @@ import (
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/oidc"
 
-	"github.com/projectriff/riff/pkg/cli"
-	"github.com/projectriff/riff/pkg/riff/commands"
+	"github.com/projectriff/cli/pkg/cli"
+	"github.com/projectriff/cli/pkg/riff/commands"
 )
 
 func main() {

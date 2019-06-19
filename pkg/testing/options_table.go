@@ -20,7 +20,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/projectriff/riff/pkg/cli"
+	"github.com/projectriff/cli/pkg/cli"
 )
 
 type OptionsTable []OptionsTableRecord
