@@ -1,5 +1,6 @@
 OUTPUT = ./riff
 GO_SOURCES = $(shell find . -type f -name '*.go')
+GOBIN ?= $(shell go env GOPATH)/bin
 VERSION ?= $(shell cat VERSION)
 GITSHA = $(shell git rev-parse HEAD)
 GITDIRTY = $(shell git diff --quiet HEAD || echo "dirty")
@@ -25,6 +26,10 @@ build: $(OUTPUT) ## Build riff
 test: ## Run the tests
 	go test -mod=vendor ./...
 
+.PHONY: install
+install: build ## Copy build to GOPATH/bin
+	cp $(OUTPUT) $(GOBIN)
+
 .PHONY: coverage
 coverage: ## Run the tests with coverage and race detection
 	go test -mod=vendor -v --race -coverprofile=coverage.txt -covermode=atomic ./...
@@ -45,14 +50,14 @@ docs: $(OUTPUT) clean-docs ## Generate documentation
 verify-docs: docs ## Verify the generated docs are up to date
 	git diff --exit-code docs
 
-.PHONY: clean-docs ## Delete the generated docs
-clean-docs:
+.PHONY: clean-docs
+clean-docs: ## Delete the generated docs
 	rm -fR docs
 
 .PHONY: check-mockery
-check-mockery: ## Check that mockery is available and print installation instructions if it isn't
+check-mockery: ## Check for mockery, show instructions if not found
     # Use go get in GOPATH mode to install/update mockery. This avoids polluting go.mod/go.sum.
-	@which mockery > /dev/null || (echo mockery not found: issue \"GO111MODULE=off go get -u  github.com/vektra/mockery/.../\" && false)
+	@which mockery || (echo mockery not found: issue \"GO111MODULE=off go get -u  github.com/vektra/mockery/.../\" && false)
 
 .PHONY: gen-mocks
 gen-mocks: check-mockery ## Generate mocks
@@ -61,4 +66,4 @@ gen-mocks: check-mockery ## Generate mocks
 
 # Absolutely awesome: http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 help: ## Print help for each make target
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
