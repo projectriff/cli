@@ -10,7 +10,7 @@ commit=$(git rev-parse HEAD)
 # fetch FATS scripts
 fats_dir=`dirname "${BASH_SOURCE[0]}"`/fats
 fats_repo="projectriff/fats"
-fats_refspec=5c1377d800a17bdd5ef11648ef3e9014997b85d3 # projectriff/fats master as of 2019-06-14
+fats_refspec=270f1ffeddb9901aa56535e92837e7130c6d2ca3 # projectriff/fats master as of 2019-06-21
 source `dirname "${BASH_SOURCE[0]}"`/fats-fetch.sh $fats_dir $fats_refspec $fats_repo
 source $fats_dir/.util.sh
 
@@ -33,9 +33,15 @@ source $fats_dir/start.sh
 # install riff system
 echo "Installing riff system"
 $fats_dir/install.sh duffle
-duffle credentials add `dirname "${BASH_SOURCE[0]}"`/duffle-creds/k8s.yaml
+
+duffle_k8s_service_account=${duffle_k8s_service_account:-duffle-runtime}
+duffle_k8s_namespace=${duffle_k8s_namespace:-kube-system}
+
+kubectl create serviceaccount "${duffle_k8s_service_account}" -n "${duffle_k8s_namespace}"
+kubectl create clusterrolebinding "${duffle_k8s_service_account}-cluster-admin" --clusterrole cluster-admin --serviceaccount "${duffle_k8s_namespace}:${duffle_k8s_service_account}"
+
 curl -O https://storage.googleapis.com/projectriff/riff-cnab/snapshots/riff-bundle-latest.json
-duffle install riff riff-bundle-latest.json --bundle-is-file --credentials k8s --insecure
+SERVICE_ACCOUNT=${duffle_k8s_service_account} KUBE_NAMESPACE=${duffle_k8s_namespace} duffle install riff riff-bundle-latest.json --bundle-is-file ${DUFFLE_RIFF_INSTALL_FLAGS} -d k8s
 
 # health checks
 echo "Checking for ready ingress"
