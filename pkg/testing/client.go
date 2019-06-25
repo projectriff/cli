@@ -22,18 +22,22 @@ import (
 	buildv1alpha1clientset "github.com/projectriff/system/pkg/client/clientset/versioned/typed/build/v1alpha1"
 	requestv1alpha1clientset "github.com/projectriff/system/pkg/client/clientset/versioned/typed/request/v1alpha1"
 	streamv1alpha1clientset "github.com/projectriff/system/pkg/client/clientset/versioned/typed/stream/v1alpha1"
+	apiextensionsv1beta1clientset "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/fake"
+	apiextensionsv1beta1 "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime"
 	kubernetes "k8s.io/client-go/kubernetes/fake"
+	authv1client "k8s.io/client-go/kubernetes/typed/authorization/v1"
 	corev1clientset "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/rest"
 )
 
 type FakeClient struct {
-	Namespace          string
-	FakeKubeRestConfig *rest.Config
-	FakeKubeClient     *kubernetes.Clientset
-	FakeRiffClient     *projectriffclientset.Clientset
-	ActionRecorderList kntesting.ActionRecorderList
+	Namespace                  string
+	FakeKubeRestConfig         *rest.Config
+	FakeKubeClientset          *kubernetes.Clientset
+	FakeRiffClientset          *projectriffclientset.Clientset
+	FakeAPIExtensionsClientset *apiextensionsv1beta1clientset.Clientset
+	ActionRecorderList         kntesting.ActionRecorderList
 }
 
 func (c *FakeClient) DefaultNamespace() string {
@@ -45,40 +49,51 @@ func (c *FakeClient) KubeRestConfig() *rest.Config {
 }
 
 func (c *FakeClient) Core() corev1clientset.CoreV1Interface {
-	return c.FakeKubeClient.CoreV1()
+	return c.FakeKubeClientset.CoreV1()
+}
+
+func (c *FakeClient) Auth() authv1client.AuthorizationV1Interface {
+	return c.FakeKubeClientset.AuthorizationV1()
+}
+
+func (c *FakeClient) APIExtension() apiextensionsv1beta1.ApiextensionsV1beta1Interface {
+	return c.FakeAPIExtensionsClientset.ApiextensionsV1beta1()
 }
 
 func (c *FakeClient) Build() buildv1alpha1clientset.BuildV1alpha1Interface {
-	return c.FakeRiffClient.BuildV1alpha1()
+	return c.FakeRiffClientset.BuildV1alpha1()
 }
 
 func (c *FakeClient) Request() requestv1alpha1clientset.RequestV1alpha1Interface {
-	return c.FakeRiffClient.RequestV1alpha1()
+	return c.FakeRiffClientset.RequestV1alpha1()
 }
 
 func (c *FakeClient) Stream() streamv1alpha1clientset.StreamV1alpha1Interface {
-	return c.FakeRiffClient.StreamV1alpha1()
+	return c.FakeRiffClientset.StreamV1alpha1()
 }
 
 func (c *FakeClient) PrependReactor(verb, resource string, reaction ReactionFunc) {
-	c.FakeKubeClient.PrependReactor(verb, resource, reaction)
-	c.FakeRiffClient.PrependReactor(verb, resource, reaction)
+	c.FakeKubeClientset.PrependReactor(verb, resource, reaction)
+	c.FakeAPIExtensionsClientset.PrependReactor(verb, resource, reaction)
+	c.FakeRiffClientset.PrependReactor(verb, resource, reaction)
 }
 
 func NewClient(objects ...runtime.Object) *FakeClient {
 	lister := NewListers(objects)
 
 	kubeRestConfig := &rest.Config{Host: "https://localhost:8443"}
-	kubeClient := kubernetes.NewSimpleClientset(lister.GetKubeObjects()...)
-	riffClient := projectriffclientset.NewSimpleClientset(lister.GetProjectriffObjects()...)
+	kubeClientset := kubernetes.NewSimpleClientset(lister.GetKubeObjects()...)
+	apiExtensionsClientset := apiextensionsv1beta1clientset.NewSimpleClientset(lister.GetAPIExtensionsObjects()...)
+	riffClientset := projectriffclientset.NewSimpleClientset(lister.GetProjectriffObjects()...)
 
-	actionRecorderList := kntesting.ActionRecorderList{kubeClient, riffClient}
+	actionRecorderList := kntesting.ActionRecorderList{kubeClientset, apiExtensionsClientset, riffClientset}
 
 	return &FakeClient{
-		Namespace:          "default",
-		FakeKubeRestConfig: kubeRestConfig,
-		FakeKubeClient:     kubeClient,
-		FakeRiffClient:     riffClient,
-		ActionRecorderList: actionRecorderList,
+		Namespace:                  "default",
+		FakeKubeRestConfig:         kubeRestConfig,
+		FakeKubeClientset:          kubeClientset,
+		FakeAPIExtensionsClientset: apiExtensionsClientset,
+		FakeRiffClientset:          riffClientset,
+		ActionRecorderList:         actionRecorderList,
 	}
 }

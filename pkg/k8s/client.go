@@ -21,7 +21,10 @@ import (
 	buildv1alpha1 "github.com/projectriff/system/pkg/client/clientset/versioned/typed/build/v1alpha1"
 	requestv1alpha1 "github.com/projectriff/system/pkg/client/clientset/versioned/typed/request/v1alpha1"
 	streamv1alpha1 "github.com/projectriff/system/pkg/client/clientset/versioned/typed/stream/v1alpha1"
+	apiextensionsclientset "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
+	apiextensionsv1beta1 "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1"
 	"k8s.io/client-go/kubernetes"
+	authv1client "k8s.io/client-go/kubernetes/typed/authorization/v1"
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
@@ -32,6 +35,8 @@ type Client interface {
 	DefaultNamespace() string
 	KubeRestConfig() *rest.Config
 	Core() corev1.CoreV1Interface
+	Auth() authv1client.AuthorizationV1Interface
+	APIExtension() apiextensionsv1beta1.ApiextensionsV1beta1Interface
 	Build() buildv1alpha1.BuildV1alpha1Interface
 	Request() requestv1alpha1.RequestV1alpha1Interface
 	Stream() streamv1alpha1.StreamV1alpha1Interface
@@ -46,19 +51,27 @@ func (c *client) KubeRestConfig() *rest.Config {
 }
 
 func (c *client) Core() corev1.CoreV1Interface {
-	return c.lazyLoadKubernetesClientOrDie().CoreV1()
+	return c.lazyLoadKubernetesClientsetOrDie().CoreV1()
+}
+
+func (c *client) Auth() authv1client.AuthorizationV1Interface {
+	return c.lazyLoadKubernetesClientsetOrDie().AuthorizationV1()
+}
+
+func (c *client) APIExtension() apiextensionsv1beta1.ApiextensionsV1beta1Interface {
+	return c.lazyLoadAPIExtensionsClientsetOrDie().ApiextensionsV1beta1()
 }
 
 func (c *client) Build() buildv1alpha1.BuildV1alpha1Interface {
-	return c.lazyLoadRiffClientOrDie().BuildV1alpha1()
+	return c.lazyLoadRiffClientsetOrDie().BuildV1alpha1()
 }
 
 func (c *client) Request() requestv1alpha1.RequestV1alpha1Interface {
-	return c.lazyLoadRiffClientOrDie().RequestV1alpha1()
+	return c.lazyLoadRiffClientsetOrDie().RequestV1alpha1()
 }
 
 func (c *client) Stream() streamv1alpha1.StreamV1alpha1Interface {
-	return c.lazyLoadRiffClientOrDie().StreamV1alpha1()
+	return c.lazyLoadRiffClientsetOrDie().StreamV1alpha1()
 }
 
 func NewClient(kubeConfigFile string) Client {
@@ -66,12 +79,13 @@ func NewClient(kubeConfigFile string) Client {
 }
 
 type client struct {
-	defaultNamespace string
-	kubeConfigFile   string
-	kubeConfig       clientcmd.ClientConfig
-	restConfig       *rest.Config
-	kubeClient       *kubernetes.Clientset
-	riffClient       *projectriffclientset.Clientset
+	defaultNamespace       string
+	kubeConfigFile         string
+	kubeConfig             clientcmd.ClientConfig
+	restConfig             *rest.Config
+	kubeClientset          *kubernetes.Clientset
+	apiExtensionsClientset *apiextensionsclientset.Clientset
+	riffClientset          *projectriffclientset.Clientset
 }
 
 func (c *client) lazyLoadKubeConfig() clientcmd.ClientConfig {
@@ -96,20 +110,29 @@ func (c *client) lazyLoadRestConfigOrDie() *rest.Config {
 	return c.restConfig
 }
 
-func (c *client) lazyLoadKubernetesClientOrDie() *kubernetes.Clientset {
-	if c.kubeClient == nil {
+func (c *client) lazyLoadKubernetesClientsetOrDie() *kubernetes.Clientset {
+	if c.kubeClientset == nil {
 		restConfig := c.lazyLoadRestConfigOrDie()
-		c.kubeClient = kubernetes.NewForConfigOrDie(restConfig)
+		c.kubeClientset = kubernetes.NewForConfigOrDie(restConfig)
 	}
-	return c.kubeClient
+	return c.kubeClientset
 }
 
-func (c *client) lazyLoadRiffClientOrDie() *projectriffclientset.Clientset {
-	if c.riffClient == nil {
+func (c *client) lazyLoadAPIExtensionsClientsetOrDie() *apiextensionsclientset.Clientset {
+	if c.apiExtensionsClientset == nil {
 		restConfig := c.lazyLoadRestConfigOrDie()
-		c.riffClient = projectriffclientset.NewForConfigOrDie(restConfig)
+		c.apiExtensionsClientset = apiextensionsclientset.NewForConfigOrDie(restConfig)
 	}
-	return c.riffClient
+	return c.apiExtensionsClientset
+
+}
+
+func (c *client) lazyLoadRiffClientsetOrDie() *projectriffclientset.Clientset {
+	if c.riffClientset == nil {
+		restConfig := c.lazyLoadRestConfigOrDie()
+		c.riffClientset = projectriffclientset.NewForConfigOrDie(restConfig)
+	}
+	return c.riffClientset
 }
 
 func (c *client) lazyLoadDefaultNamespaceOrDie() string {

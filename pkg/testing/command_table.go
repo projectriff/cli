@@ -352,14 +352,15 @@ func (ctr CommandTableRecord) Run(t *testing.T, cmdFactory func(context.Context,
 			}
 		}
 
+		outputString := output.String()
 		if ctr.ExpectOutput != "" {
-			if diff := cmp.Diff(strings.TrimPrefix(ctr.ExpectOutput, "\n"), output.String()); diff != "" {
+			if diff := cmp.Diff(strings.TrimPrefix(ctr.ExpectOutput, "\n"), outputString); diff != "" {
 				t.Errorf("Unexpected output (-expected, +actual): %s", diff)
 			}
 		}
 
 		if ctr.Verify != nil {
-			ctr.Verify(t, output.String(), cmdErr)
+			ctr.Verify(t, outputString, cmdErr)
 		}
 	})
 }
