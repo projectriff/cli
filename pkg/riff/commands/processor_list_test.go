@@ -34,14 +34,14 @@ func TestProcessorListOptions(t *testing.T) {
 		{
 			Name: "invalid list",
 			Options: &commands.ProcessorListOptions{
-				ListOptions: rifftesting.InvalidListOptions,
+				NamespaceOptions: rifftesting.InvalidListOptions,
 			},
 			ExpectFieldError: rifftesting.InvalidListOptionsFieldError,
 		},
 		{
 			Name: "valid list",
 			Options: &commands.ProcessorListOptions{
-				ListOptions: rifftesting.ValidListOptions,
+				NamespaceOptions: rifftesting.ValidNamespaceOptions,
 			},
 			ShouldValidate: true,
 		},

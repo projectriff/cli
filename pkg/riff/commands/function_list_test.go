@@ -34,14 +34,14 @@ func TestFunctionListOptions(t *testing.T) {
 		{
 			Name: "invalid list",
 			Options: &commands.FunctionListOptions{
-				ListOptions: rifftesting.InvalidListOptions,
+				NamespaceOptions: rifftesting.InvalidListOptions,
 			},
 			ExpectFieldError: rifftesting.InvalidListOptionsFieldError,
 		},
 		{
 			Name: "valid list",
 			Options: &commands.FunctionListOptions{
-				ListOptions: rifftesting.ValidListOptions,
+				NamespaceOptions: rifftesting.ValidNamespaceOptions,
 			},
 			ShouldValidate: true,
 		},

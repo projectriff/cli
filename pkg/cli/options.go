@@ -72,12 +72,12 @@ func ExecOptions(ctx context.Context, c *Config, opts Executable) func(cmd *cobr
 	}
 }
 
-type ListOptions struct {
+type NamespaceOptions struct {
 	Namespace     string
 	AllNamespaces bool
 }
 
-func (opts *ListOptions) Validate(ctx context.Context) *FieldError {
+func (opts *NamespaceOptions) Validate(ctx context.Context) *FieldError {
 	errs := &FieldError{}
 
 	if opts.Namespace == "" && !opts.AllNamespaces {

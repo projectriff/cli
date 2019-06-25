@@ -21,14 +21,20 @@ import (
 	"fmt"
 	"strings"
 
+	. "github.com/projectriff/cli/pkg/riff/resource"
+
+	"k8s.io/apimachinery/pkg/api/errors"
+
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/cli/printers"
 	"github.com/spf13/cobra"
+	authv1 "k8s.io/api/authorization/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/sets"
 )
 
 type DoctorOptions struct {
+	cli.NamespaceOptions
 }
 
 var (
@@ -36,54 +42,57 @@ var (
 	_ cli.Executable  = (*DoctorOptions)(nil)
 )
 
-func (opts *DoctorOptions) Validate(ctx context.Context) *cli.FieldError {
-	return cli.EmptyFieldError
-}
-
 func (opts *DoctorOptions) Exec(ctx context.Context, c *cli.Config) error {
-	ok, err := opts.checkNamespaces(c)
-	if err != nil {
-		return err
-	}
-	c.Printf("\n")
-	if ok {
-		c.Successf("Installation is OK\n")
-	} else {
-		c.Errorf("Installation is not healthy\n")
-	}
-	return nil
-}
-
-func (*DoctorOptions) checkNamespaces(c *cli.Config) (bool, error) {
-	namespaces, err := c.Core().Namespaces().List(metav1.ListOptions{})
-	if err != nil {
-		return false, err
-	}
-
-	foundNamespaces := sets.NewString()
-	for _, namespace := range namespaces.Items {
-		foundNamespaces.Insert(namespace.Name)
-	}
 	requiredNamespaces := []string{
 		"istio-system",
 		"knative-build",
 		"knative-serving",
 		"riff-system",
 	}
-	printer := printers.GetNewTabWriter(c.Stdout)
-	defer printer.Flush()
-	ok := true
-	for _, namespace := range requiredNamespaces {
-		var status string
-		if foundNamespaces.Has(namespace) {
-			status = cli.Ssuccessf("OK")
-		} else {
-			ok = false
-			status = cli.Serrorf("Missing")
-		}
-		fmt.Fprintf(printer, "Namespace %q\t%s\n", namespace, status)
+	installationOk, err := opts.checkNamespaces(c, requiredNamespaces)
+	if err != nil || !installationOk {
+		c.Errorf("\nInstallation is not healthy\n")
+		return err
 	}
-	return ok, nil
+
+	ns := opts.Namespace
+	verbs := []Verb{"get", "list", "create", "update", "delete", "patch", "watch"}
+	checks := []AccessChecks{
+		{Resource: NewStandardResource(ns, "v1", "core", "configmaps"), Verbs: verbs},
+		{Resource: NewStandardResource(ns, "v1", "core", "secrets"), Verbs: verbs},
+		{Resource: NewCustomResource(ns, "build.projectriff.io/v1alpha1", "build.projectriff.io", "applications"), Verbs: verbs},
+		{Resource: NewCustomResource(ns, "build.projectriff.io/v1alpha1", "build.projectriff.io", "functions"), Verbs: verbs},
+		{Resource: NewCustomResource(ns, "request.projectriff.io/v1alpha1", "request.projectriff.io", "handlers"), Verbs: verbs},
+		{Resource: NewCustomResource(ns, "stream.projectriff.io/v1alpha1", "stream.projectriff.io", "processors"), Verbs: verbs},
+		{Resource: NewCustomResource(ns, "stream.projectriff.io/v1alpha1", "stream.projectriff.io", "streams"), Verbs: verbs},
+	}
+
+	existenceSummary, err := checkCustomResourceExistence(c, checks)
+	if err != nil {
+		c.Errorf("\nAn error occurred while checking for CustomResourceDefinition existence\n")
+		c.Errorf("\nInstallation is not healthy\n")
+		return err
+	}
+	existenceSummary.Print(c)
+	if !existenceSummary.IsHealthy() {
+		c.Errorf("\nInstallation is not healthy\n")
+		return nil
+	}
+
+	accessSummary, err := checkResourceAccesses(c, checks)
+	if err != nil {
+		c.Errorf("\nAn error occurred while checking for resource access\n")
+		c.Errorf("\nInstallation is not healthy\n")
+		return err
+	}
+	accessSummary.Print(c)
+	if !accessSummary.IsHealthy() {
+		c.Errorf("\nInstallation is not healthy\n")
+	} else {
+		c.Successf("\nInstallation is OK\n")
+	}
+
+	return nil
 }
 
 func NewDoctorCommand(ctx context.Context, c *cli.Config) *cobra.Command {
@@ -102,5 +111,98 @@ func NewDoctorCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 		RunE:    cli.ExecOptions(ctx, c, opts),
 	}
 
+	cli.AllNamespacesFlag(cmd, c, &opts.Namespace, &opts.AllNamespaces)
+
 	return cmd
+}
+
+func (*DoctorOptions) checkNamespaces(c *cli.Config, requiredNamespaces []string) (bool, error) {
+	namespaces, err := c.Core().Namespaces().List(metav1.ListOptions{})
+	if err != nil {
+		return false, err
+	}
+
+	foundNamespaces := sets.NewString()
+	for _, namespace := range namespaces.Items {
+		foundNamespaces.Insert(namespace.Name)
+	}
+	printer := printers.GetNewTabWriter(c.Stdout)
+	defer printer.Flush()
+	ok := true
+	for _, namespace := range requiredNamespaces {
+		var status string
+		if foundNamespaces.Has(namespace) {
+			status = cli.Ssuccessf("OK")
+		} else {
+			ok = false
+			status = cli.Serrorf("Missing")
+		}
+		fmt.Fprintf(printer, "Namespace %q\t%s\n", namespace, status)
+	}
+	return ok, nil
+}
+
+func checkCustomResourceExistence(c *cli.Config, checks []AccessChecks) (*CrdSummary, error) {
+	var aggregatedStatuses []CrdStatus
+	crds := c.ApiExtensions().CustomResourceDefinitions()
+	for _, check := range checks {
+		serverResource := check.Resource
+		if !serverResource.Custom {
+			continue
+		}
+		crdName := serverResource.CrdName()
+		_, err := crds.Get(crdName, metav1.GetOptions{})
+		if err == nil {
+			aggregatedStatuses = append(aggregatedStatuses, CrdStatus{Resource: serverResource, ExistenceStatus: Exists})
+			continue
+		}
+		if !errors.IsNotFound(err) {
+			return nil, err
+		}
+		aggregatedStatuses = append(aggregatedStatuses, CrdStatus{Resource: serverResource, ExistenceStatus: NotFound})
+	}
+	return &CrdSummary{Statuses: aggregatedStatuses}, nil
+}
+
+func checkResourceAccesses(c *cli.Config, checks []AccessChecks) (*AccessSummary, error) {
+	aggregatedStatuses := make([]Status, len(checks))
+	for i, check := range checks {
+		serverResource := check.Resource
+		aggregatedStatus := Status{Resource: serverResource, ReadStatus: AccessUndefined, WriteStatus: AccessUndefined}
+		for _, verb := range check.Verbs {
+			reviewRequest := serverResource.AsReview(verb)
+			result, err := c.Auth().SelfSubjectAccessReviews().Create(reviewRequest)
+			if err != nil {
+				return nil, err
+			}
+			evaluationError := result.Status.EvaluationError
+			if evaluationError != "" {
+				return nil, fmt.Errorf(evaluationError)
+			}
+			status, err := determineAccessStatus(result)
+			if err != nil {
+				return nil, err
+			}
+			if verb.IsRead() {
+				aggregatedStatus.ReadStatus = aggregatedStatus.ReadStatus.Combine(status)
+			} else {
+				aggregatedStatus.WriteStatus = aggregatedStatus.WriteStatus.Combine(status)
+			}
+		}
+		aggregatedStatuses[i] = aggregatedStatus
+	}
+	return &AccessSummary{Statuses: aggregatedStatuses}, nil
+}
+
+func determineAccessStatus(review *authv1.SelfSubjectAccessReview) (*AccessStatus, error) {
+	status := review.Status
+	if status.Allowed {
+		result := Allowed
+		return &result, nil
+	}
+	if status.Denied {
+		result := Denied
+		return &result, nil
+	}
+	return nil, fmt.Errorf("unexpected state, review is neither allowed nor denied: %v", review)
 }

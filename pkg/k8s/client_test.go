@@ -43,4 +43,7 @@ func TestNewClient(t *testing.T) {
 	if client.Stream() == nil {
 		t.Errorf("Expected Stream client to not be nil")
 	}
+	if client.ApiExtensions() == nil {
+		t.Errorf("Expected ApiExtensions client to not be nil")
+	}
 }

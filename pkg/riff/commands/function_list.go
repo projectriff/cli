@@ -32,7 +32,7 @@ import (
 )
 
 type FunctionListOptions struct {
-	cli.ListOptions
+	cli.NamespaceOptions
 }
 
 var (
@@ -43,7 +43,7 @@ var (
 func (opts *FunctionListOptions) Validate(ctx context.Context) *cli.FieldError {
 	errs := cli.EmptyFieldError
 
-	errs = errs.Also(opts.ListOptions.Validate(ctx))
+	errs = errs.Also(opts.NamespaceOptions.Validate(ctx))
 
 	return errs
 }

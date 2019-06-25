@@ -25,6 +25,7 @@ import (
 	requestlisters "github.com/projectriff/system/pkg/client/listers/request/v1alpha1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	apiextensionsv1beta1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime"
 	fakekubeclientset "k8s.io/client-go/kubernetes/fake"
 	appsv1listers "k8s.io/client-go/listers/apps/v1"
@@ -35,6 +36,7 @@ import (
 var clientSetSchemes = []func(*runtime.Scheme) error{
 	fakekubeclientset.AddToScheme,
 	fakeprojectriffclientset.AddToScheme,
+	apiextensionsv1beta1.AddToScheme,
 }
 
 type Listers struct {
@@ -69,7 +71,11 @@ func (l *Listers) GetProjectriffObjects() []runtime.Object {
 	return l.sorter.ObjectsForSchemeFunc(fakeprojectriffclientset.AddToScheme)
 }
 
-func (l *Listers) GetAppllicationLister() buildlisters.ApplicationLister {
+func (l *Listers) GetApiExtensionsObjects() []runtime.Object {
+	return l.sorter.ObjectsForSchemeFunc(apiextensionsv1beta1.AddToScheme)
+}
+
+func (l *Listers) GetApplicationLister() buildlisters.ApplicationLister {
 	return buildlisters.NewApplicationLister(l.indexerFor(&buildv1alpha1.Application{}))
 }
 
