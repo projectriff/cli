@@ -39,9 +39,9 @@ $(OUTPUT): $(GO_SOURCES) VERSION
 
 .PHONY: release
 release: $(GO_SOURCES) VERSION ## Cross-compile riff for various operating systems
-	GOOS=darwin   GOARCH=amd64 go build -mod=vendor -ldflags "$(LDFLAGS_VERSION)" -o $(OUTPUT)     ./cmd/riff && tar -czf riff-darwin-amd64.tgz $(OUTPUT)     && rm -f $(OUTPUT)
-	GOOS=linux    GOARCH=amd64 go build -mod=vendor -ldflags "$(LDFLAGS_VERSION)" -o $(OUTPUT)     ./cmd/riff && tar -czf riff-linux-amd64.tgz  $(OUTPUT)     && rm -f $(OUTPUT)
-	GOOS=windows  GOARCH=amd64 go build -mod=vendor -ldflags "$(LDFLAGS_VERSION)" -o $(OUTPUT).exe ./cmd/riff && zip -mq riff-windows-amd64.zip $(OUTPUT).exe && rm -f $(OUTPUT).exe
+	GOOS=darwin   GOARCH=amd64 go build -mod=vendor -ldflags "$(LDFLAGS_VERSION)" -o $(OUTPUT)     ./cmd/riff && tar -czf riff-darwin-amd64.tgz  $(OUTPUT)     && rm -f $(OUTPUT)
+	GOOS=linux    GOARCH=amd64 go build -mod=vendor -ldflags "$(LDFLAGS_VERSION)" -o $(OUTPUT)     ./cmd/riff && tar -czf riff-linux-amd64.tgz   $(OUTPUT)     && rm -f $(OUTPUT)
+	GOOS=windows  GOARCH=amd64 go build -mod=vendor -ldflags "$(LDFLAGS_VERSION)" -o $(OUTPUT).exe ./cmd/riff && zip -mq  riff-windows-amd64.zip $(OUTPUT).exe && rm -f $(OUTPUT).exe
 
 docs: $(OUTPUT) clean-docs ## Generate documentation
 	$(OUTPUT) docs
@@ -55,14 +55,19 @@ clean-docs: ## Delete the generated docs
 	rm -fR docs
 
 .PHONY: check-mockery
-check-mockery: ## Check for mockery, show instructions if not found
+check-mockery:
     # Use go get in GOPATH mode to install/update mockery. This avoids polluting go.mod/go.sum.
 	@which mockery || (echo mockery not found: issue \"GO111MODULE=off go get -u  github.com/vektra/mockery/.../\" && false)
 
 .PHONY: gen-mocks
-gen-mocks: check-mockery ## Generate mocks
+gen-mocks: check-mockery clean-mocks ## Generate mocks
 	mockery -output ./pkg/testing/pack -outpkg pack -dir ./pkg/pack -name Client
 	mockery -output ./pkg/testing/kail -outpkg kail -dir ./pkg/kail -name Logger
+
+.PHONY: clean-mocks
+clean-mocks: ## Delete mocks
+	rm -fR pkg/testing/pack
+	rm -fR pkg/testing/kail
 
 # Absolutely awesome: http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 help: ## Print help for each make target
