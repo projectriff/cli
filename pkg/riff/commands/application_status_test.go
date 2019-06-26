@@ -19,6 +19,7 @@ package commands_test
 import (
 	"testing"
 
+	knapis "github.com/knative/pkg/apis"
 	duckv1alpha1 "github.com/knative/pkg/apis/duck/v1alpha1"
 	buildv1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
 	v1 "k8s.io/api/core/v1"
@@ -53,9 +54,6 @@ func TestApplicationStatusOptions(t *testing.T) {
 func TestApplicationStatusCommand(t *testing.T) {
 	defaultNamespace := "default"
 	appName := "test-app"
-	imageTag := "registry.example.com/repo:tag"
-	gitRepo := "https://example.com/repo.git"
-	gitMaster := "master"
 
 	table := rifftesting.CommandTable{
 		{
@@ -83,6 +81,21 @@ Application "default/test-app" not found
 			ShouldError: true,
 		},
 		{
+			Name: "no ready status",
+			Args: []string{appName},
+			GivenObjects: []runtime.Object{
+				&buildv1alpha1.Application{
+					ObjectMeta: metav1.ObjectMeta{
+						Namespace: defaultNamespace,
+						Name:      appName,
+					},
+				},
+			},
+			ExpectOutput: `
+# test-app: <unknown>
+`,
+		},
+		{
 			Name: "show status with ready status",
 			Args: []string{appName},
 			GivenObjects: []runtime.Object{
@@ -91,26 +104,15 @@ Application "default/test-app" not found
 						Namespace: defaultNamespace,
 						Name:      appName,
 					},
-					Spec: buildv1alpha1.ApplicationSpec{
-						Image: imageTag,
-						Source: &buildv1alpha1.Source{
-							Git: &buildv1alpha1.GitSource{
-								URL:      gitRepo,
-								Revision: gitMaster,
-							},
-						},
-					},
 					Status: buildv1alpha1.ApplicationStatus{
 						Status: duckv1alpha1.Status{
 							Conditions: []duckv1alpha1.Condition{
 								{
-									Type:     buildv1alpha1.ApplicationConditionReady,
-									Status:   v1.ConditionTrue,
+									Type:               buildv1alpha1.ApplicationConditionReady,
+									Status:             v1.ConditionTrue,
+									LastTransitionTime: knapis.VolatileTime{},
 								},
 							},
-						},
-						BuildStatus: buildv1alpha1.BuildStatus{
-							LatestImage: "projectriff/myapp@sah256:abcdef1234",
 						},
 					},
 				},
@@ -132,24 +134,16 @@ type: Ready
 						Namespace: defaultNamespace,
 						Name:      appName,
 					},
-					Spec: buildv1alpha1.ApplicationSpec{
-						Image: imageTag,
-						Source: &buildv1alpha1.Source{
-							Git: &buildv1alpha1.GitSource{
-								URL:      gitRepo,
-								Revision: gitMaster,
-							},
-						},
-					},
 					Status: buildv1alpha1.ApplicationStatus{
 						Status: duckv1alpha1.Status{
 							Conditions: []duckv1alpha1.Condition{
 								{
-									Type:     buildv1alpha1.ApplicationConditionReady,
-									Status:   v1.ConditionFalse,
-									Reason:   "Failure",
-									Severity: "Severe",
-									Message:  "build failed, check logs",
+									Type:               buildv1alpha1.ApplicationConditionReady,
+									Status:             v1.ConditionFalse,
+									LastTransitionTime: knapis.VolatileTime{},
+									Reason:             "Failure",
+									Severity:           "Severe",
+									Message:            "build failed, check logs",
 								},
 							},
 						},
@@ -177,22 +171,14 @@ type: Ready
 						Namespace: defaultNamespace,
 						Name:      appName,
 					},
-					Spec: buildv1alpha1.ApplicationSpec{
-						Image: imageTag,
-						Source: &buildv1alpha1.Source{
-							Git: &buildv1alpha1.GitSource{
-								URL:      gitRepo,
-								Revision: gitMaster,
-							},
-						},
-					},
 					Status: buildv1alpha1.ApplicationStatus{
 						Status: duckv1alpha1.Status{
 							Conditions: []duckv1alpha1.Condition{
 								{
-									Type:     buildv1alpha1.ApplicationConditionReady,
-									Status:   v1.ConditionFalse,
-									Message:  "build failed, check logs",
+									Type:               buildv1alpha1.ApplicationConditionReady,
+									Status:             v1.ConditionFalse,
+									LastTransitionTime: knapis.VolatileTime{},
+									Message:            "build failed, check logs",
 								},
 							},
 						},

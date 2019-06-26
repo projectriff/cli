@@ -19,6 +19,7 @@ package commands_test
 import (
 	"testing"
 
+	knapis "github.com/knative/pkg/apis"
 	duckv1alpha1 "github.com/knative/pkg/apis/duck/v1alpha1"
 	buildv1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
 	v1 "k8s.io/api/core/v1"
@@ -53,9 +54,6 @@ func TestFunctionStatusOptions(t *testing.T) {
 func TestFunctionStatusCommand(t *testing.T) {
 	defaultNamespace := "default"
 	functionName := "test-function"
-	imageTag := "registry.example.com/repo:tag"
-	gitRepo := "https://example.com/repo.git"
-	gitMaster := "master"
 
 	table := rifftesting.CommandTable{
 		{
@@ -83,6 +81,21 @@ Function "default/test-function" not found
 			ShouldError: true,
 		},
 		{
+			Name: "no ready status",
+			Args: []string{functionName},
+			GivenObjects: []runtime.Object{
+				&buildv1alpha1.Function{
+					ObjectMeta: metav1.ObjectMeta{
+						Namespace: defaultNamespace,
+						Name:      functionName,
+					},
+				},
+			},
+			ExpectOutput: `
+# test-function: <unknown>
+`,
+		},
+		{
 			Name: "show status with ready status",
 			Args: []string{functionName},
 			GivenObjects: []runtime.Object{
@@ -91,28 +104,15 @@ Function "default/test-function" not found
 						Namespace: defaultNamespace,
 						Name:      functionName,
 					},
-					Spec: buildv1alpha1.FunctionSpec{
-						Image: imageTag,
-						Source: &buildv1alpha1.Source{
-							Git: &buildv1alpha1.GitSource{
-								URL:      gitRepo,
-								Revision: gitMaster,
-							},
-						},
-						Artifact: "uppercase.js",
-						Handler:  "functions.Uppercase",
-					},
 					Status: buildv1alpha1.FunctionStatus{
 						Status: duckv1alpha1.Status{
 							Conditions: []duckv1alpha1.Condition{
 								{
-									Type:   buildv1alpha1.FunctionConditionReady,
-									Status: v1.ConditionTrue,
+									Type:               buildv1alpha1.FunctionConditionReady,
+									Status:             v1.ConditionTrue,
+									LastTransitionTime: knapis.VolatileTime{},
 								},
 							},
-						},
-						BuildStatus: buildv1alpha1.BuildStatus{
-							LatestImage: "projectriff/upper@sah256:abcdef1234",
 						},
 					},
 				},
@@ -134,26 +134,16 @@ type: Ready
 						Namespace: defaultNamespace,
 						Name:      functionName,
 					},
-					Spec: buildv1alpha1.FunctionSpec{
-						Image: imageTag,
-						Source: &buildv1alpha1.Source{
-							Git: &buildv1alpha1.GitSource{
-								URL:      gitRepo,
-								Revision: gitMaster,
-							},
-						},
-						Artifact: "uppercase.js",
-						Handler:  "functions.Uppercase",
-					},
 					Status: buildv1alpha1.FunctionStatus{
 						Status: duckv1alpha1.Status{
 							Conditions: []duckv1alpha1.Condition{
 								{
-									Type:     buildv1alpha1.FunctionConditionReady,
-									Status:   v1.ConditionFalse,
-									Reason:   "Failure",
-									Severity: "Severe",
-									Message:  "build failed, check logs",
+									Type:               buildv1alpha1.FunctionConditionReady,
+									Status:             v1.ConditionFalse,
+									LastTransitionTime: knapis.VolatileTime{},
+									Reason:             "Failure",
+									Severity:           "Severe",
+									Message:            "build failed, check logs",
 								},
 							},
 						},
@@ -181,24 +171,14 @@ type: Ready
 						Namespace: defaultNamespace,
 						Name:      functionName,
 					},
-					Spec: buildv1alpha1.FunctionSpec{
-						Image: imageTag,
-						Source: &buildv1alpha1.Source{
-							Git: &buildv1alpha1.GitSource{
-								URL:      gitRepo,
-								Revision: gitMaster,
-							},
-						},
-						Artifact: "uppercase.js",
-						Handler:  "functions.Uppercase",
-					},
 					Status: buildv1alpha1.FunctionStatus{
 						Status: duckv1alpha1.Status{
 							Conditions: []duckv1alpha1.Condition{
 								{
-									Type:    buildv1alpha1.FunctionConditionReady,
-									Status:  v1.ConditionFalse,
-									Message: "build failed, check logs",
+									Type:               buildv1alpha1.FunctionConditionReady,
+									LastTransitionTime: knapis.VolatileTime{},
+									Status:             v1.ConditionFalse,
+									Message:            "build failed, check logs",
 								},
 							},
 						},

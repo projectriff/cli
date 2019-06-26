@@ -23,7 +23,9 @@ import (
 
 func PrintResourceStatus(c *Config, name string, condition *duckv1alpha1.Condition) {
 	c.Printf("# %s: %s\n", name, FormatConditionStatus(condition))
-	c.Printf("---\n")
-	s, _ := yaml.Marshal(condition)
-	c.Printf("%s", string(s))
+	if condition != nil {
+		s, _ := yaml.Marshal(condition)
+		c.Printf("---\n")
+		c.Printf("%s", string(s))
+	}
 }

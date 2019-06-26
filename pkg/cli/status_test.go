@@ -25,8 +25,23 @@ import (
 	duckv1alpha1 "github.com/knative/pkg/apis/duck/v1alpha1"
 	"github.com/projectriff/cli/pkg/cli"
 	buildv1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
-	v1 "k8s.io/api/core/v1"
+	"k8s.io/api/core/v1"
 )
+
+func TestPrintResourceStatusNoReady(t *testing.T) {
+	stdout := &bytes.Buffer{}
+	config := &cli.Config{
+		Stdout: stdout,
+	}
+	expected := strings.TrimSpace(`
+# test: <unknown>
+`)
+	cli.PrintResourceStatus(config, "test", nil)
+	actual := strings.TrimSpace(stdout.String())
+	if diff := cmp.Diff(expected, actual); diff != "" {
+		t.Errorf("Unexpected stdout (-expected, +actual): %s", diff)
+	}
+}
 
 func TestPrintResourceStatusForReady(t *testing.T) {
 	stdout := &bytes.Buffer{}
@@ -42,7 +57,8 @@ func TestPrintResourceStatusForReady(t *testing.T) {
 ---
 lastTransitionTime: null
 status: "True"
-type: Ready`)
+type: Ready
+`)
 	cli.PrintResourceStatus(config, "test", &condition)
 	actual := strings.TrimSpace(stdout.String())
 	if diff := cmp.Diff(expected, actual); diff != "" {
@@ -70,7 +86,8 @@ message: message that things aren't working
 reason: Failure
 severity: Severe
 status: "False"
-type: Ready`)
+type: Ready
+`)
 	cli.PrintResourceStatus(config, "test", &condition)
 	actual := strings.TrimSpace(stdout.String())
 	if diff := cmp.Diff(expected, actual); diff != "" {
