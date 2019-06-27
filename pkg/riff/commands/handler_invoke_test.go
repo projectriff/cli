@@ -24,7 +24,7 @@ import (
 
 	"github.com/kballard/go-shellquote"
 	"github.com/knative/pkg/apis"
-	duckv1alpha1 "github.com/knative/pkg/apis/duck/v1alpha1"
+	duckv1beta1 "github.com/knative/pkg/apis/duck/v1beta1"
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/riff/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
@@ -92,8 +92,8 @@ func TestHandlerInvokeCommand(t *testing.T) {
 			Name:      handlerName,
 		},
 		Status: requestv1alpha1.HandlerStatus{
-			Status: duckv1alpha1.Status{
-				Conditions: []duckv1alpha1.Condition{
+			Status: duckv1beta1.Status{
+				Conditions: duckv1beta1.Conditions{
 					{Type: requestv1alpha1.HandlerConditionReady, Status: "True"},
 				},
 			},
@@ -336,8 +336,8 @@ Command executed: curl localhost -H 'Host: test-handler.example.com' -w '` + "\n
 						Name:      handlerName,
 					},
 					Status: requestv1alpha1.HandlerStatus{
-						Status: duckv1alpha1.Status{
-							Conditions: []duckv1alpha1.Condition{
+						Status: duckv1beta1.Status{
+							Conditions: duckv1beta1.Conditions{
 								{Type: requestv1alpha1.HandlerConditionReady, Status: "True"},
 							},
 						},

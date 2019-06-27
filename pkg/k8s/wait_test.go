@@ -22,7 +22,8 @@ import (
 	"testing"
 	"time"
 
-	duckv1alpha1 "github.com/knative/pkg/apis/duck/v1alpha1"
+	knapis "github.com/knative/pkg/apis"
+	duckv1beta1 "github.com/knative/pkg/apis/duck/v1beta1"
 	"github.com/projectriff/cli/pkg/k8s"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 	buildv1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
@@ -45,10 +46,10 @@ func TestWaitUntilReady(t *testing.T) {
 			UID:       "c6acbbab-87dd-11e9-807c-42010a80011d",
 		},
 		Status: buildv1alpha1.ApplicationStatus{
-			Status: duckv1alpha1.Status{
-				Conditions: []duckv1alpha1.Condition{
+			Status: duckv1beta1.Status{
+				Conditions: duckv1beta1.Conditions{
 					{
-						Type:   duckv1alpha1.ConditionReady,
+						Type:   knapis.ConditionReady,
 						Status: corev1.ConditionUnknown,
 					},
 				},

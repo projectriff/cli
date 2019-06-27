@@ -19,7 +19,7 @@ package cli
 import (
 	"time"
 
-	duckv1alpha1 "github.com/knative/pkg/apis/duck/v1alpha1"
+	knapis "github.com/knative/pkg/apis"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/duration"
 )
@@ -38,7 +38,7 @@ func FormatEmptyString(str string) string {
 	return str
 }
 
-func FormatConditionStatus(cond *duckv1alpha1.Condition) string {
+func FormatConditionStatus(cond *knapis.Condition) string {
 	if cond == nil || cond.Status == "" {
 		return Swarnf("<unknown>")
 	}
