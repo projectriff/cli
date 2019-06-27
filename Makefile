@@ -10,7 +10,7 @@ LDFLAGS_VERSION = -X github.com/projectriff/cli/pkg/cli.cli_name=riff \
 				  -X github.com/projectriff/cli/pkg/cli.cli_gitdirty=$(GITDIRTY)
 
 .PHONY: all
-all: build test docs ## Build, test, and regenerate docs
+all: build test verify-goimports docs ## Build, test, verify source formatting and regenerate docs
 
 .PHONY: clean
 clean: ## Delete build output
@@ -33,6 +33,18 @@ install: build ## Copy build to GOPATH/bin
 .PHONY: coverage
 coverage: ## Run the tests with coverage and race detection
 	go test -mod=vendor -v --race -coverprofile=coverage.txt -covermode=atomic ./...
+
+.PHONY: check-goimports
+check-goimports: ## Checks if goimports is installed
+	@which goimports > /dev/null || (echo goimports not found: issue \"GO111MODULE=off go get golang.org/x/tools/cmd/goimports\" && false)
+
+.PHONY: goimports
+goimports: check-goimports ## Runs goimports on the project
+	@goimports -w pkg cmd
+
+.PHONY: verify-goimports
+verify-goimports: check-goimports ## Verifies if all source files are formatted correctly
+	@goimports -l pkg cmd | (! grep .) || (echo above files are not formatted correctly. please run \"make goimports\" && false)
 
 $(OUTPUT): $(GO_SOURCES) VERSION
 	go build -mod=vendor -o $(OUTPUT) -ldflags "$(LDFLAGS_VERSION)" ./cmd/riff
