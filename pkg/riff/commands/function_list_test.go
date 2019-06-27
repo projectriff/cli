@@ -20,7 +20,7 @@ import (
 	"context"
 	"testing"
 
-	duckv1alpha1 "github.com/knative/pkg/apis/duck/v1alpha1"
+	duckv1beta1 "github.com/knative/pkg/apis/duck/v1beta1"
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/riff/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
@@ -143,8 +143,8 @@ other-namespace   test-other-function   <empty>        <empty>    <empty>   <emp
 						Handler:  "functions.Uppercase",
 					},
 					Status: buildv1alpha1.FunctionStatus{
-						Status: duckv1alpha1.Status{
-							Conditions: []duckv1alpha1.Condition{
+						Status: duckv1beta1.Status{
+							Conditions: duckv1beta1.Conditions{
 								{Type: buildv1alpha1.FunctionConditionReady, Status: "True"},
 							},
 						},

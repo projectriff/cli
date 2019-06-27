@@ -21,7 +21,7 @@ import (
 	"time"
 
 	"github.com/fatih/color"
-	duckv1alpha1 "github.com/knative/pkg/apis/duck/v1alpha1"
+	knapis "github.com/knative/pkg/apis"
 	"github.com/projectriff/cli/pkg/cli"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -94,37 +94,37 @@ func TestFormatConditionStatus(t *testing.T) {
 
 	tests := []struct {
 		name   string
-		input  *duckv1alpha1.Condition
+		input  *knapis.Condition
 		output string
 	}{{
 		name:   "empty",
 		output: cli.Swarnf("<unknown>"),
 	}, {
 		name: "status true",
-		input: &duckv1alpha1.Condition{
-			Type:   duckv1alpha1.ConditionReady,
+		input: &knapis.Condition{
+			Type:   knapis.ConditionReady,
 			Status: corev1.ConditionTrue,
 		},
 		output: cli.Ssuccessf("Ready"),
 	}, {
 		name: "status false",
-		input: &duckv1alpha1.Condition{
-			Type:   duckv1alpha1.ConditionReady,
+		input: &knapis.Condition{
+			Type:   knapis.ConditionReady,
 			Status: corev1.ConditionFalse,
 			Reason: "uh-oh",
 		},
 		output: cli.Serrorf("uh-oh"),
 	}, {
 		name: "status false, no reason",
-		input: &duckv1alpha1.Condition{
-			Type:   duckv1alpha1.ConditionReady,
+		input: &knapis.Condition{
+			Type:   knapis.ConditionReady,
 			Status: corev1.ConditionFalse,
 		},
 		output: cli.Serrorf("not-Ready"),
 	}, {
 		name: "status unknown",
-		input: &duckv1alpha1.Condition{
-			Type:   duckv1alpha1.ConditionReady,
+		input: &knapis.Condition{
+			Type:   knapis.ConditionReady,
 			Status: corev1.ConditionUnknown,
 		},
 		output: cli.Sinfof("Unknown"),

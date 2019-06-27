@@ -11,9 +11,9 @@ require (
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/go-cmp v0.3.0
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51
-	github.com/knative/pkg v0.0.0-20190510233738-9e0db8f0a7f4
+	github.com/knative/pkg v0.0.0-20190624141606-d82505e6c5b4
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/projectriff/system v0.0.0-20190607152657-25641145b192
+	github.com/projectriff/system v0.0.0-20190627032734-afb8a6d9901d
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/viper v1.3.2
 	github.com/stretchr/testify v1.3.0
@@ -30,6 +30,7 @@ require (
 	github.com/golang/groupcache v0.0.0-20190129154638-5b532d6fd5ef // indirect
 	github.com/google/btree v1.0.0 // indirect
 	github.com/google/gofuzz v1.0.0 // indirect
+	github.com/google/uuid v1.1.1 // indirect
 	github.com/googleapis/gnostic v0.2.0 // indirect
 	github.com/gregjones/httpcache v0.0.0-20190212212710-3befbb6ad0cc // indirect
 	github.com/imdario/mergo v0.3.7 // indirect
