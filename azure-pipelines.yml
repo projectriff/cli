@@ -18,9 +18,13 @@ jobs:
     modulePath: '$(build.repository.name)' # Path to the module's code
   steps:
     - template: ci/install-go-steps.yml
-    - bash: go get golang.org/x/tools/cmd/goimports
-      displayName: 'get goimports'
-    - bash: make
+    - bash: |
+        GO111MODULE=off go get golang.org/x/tools/cmd/goimports
+        make verify-goimports
+      workingDirectory: '$(modulePath)'
+      displayName: 'check formatting'
+      condition: ne( variables['Agent.OS'], 'Windows_NT' )
+    - bash: make build coverage verify-docs
       workingDirectory: '$(modulePath)'
       displayName: 'Run unit test'
     - bash: bash <(curl -s https://codecov.io/bash)
