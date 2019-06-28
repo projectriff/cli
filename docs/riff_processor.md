@@ -26,5 +26,6 @@ processors apply functions to messages on streams
 * [riff processor create](riff_processor_create.md)	 - create a processor to apply a function to messages on streams
 * [riff processor delete](riff_processor_delete.md)	 - delete processor(s)
 * [riff processor list](riff_processor_list.md)	 - table listing of processors
+* [riff processor status](riff_processor_status.md)	 - show processor status
 * [riff processor tail](riff_processor_tail.md)	 - watch processor logs
 

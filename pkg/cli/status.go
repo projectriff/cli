@@ -14,31 +14,18 @@
  * limitations under the License.
  */
 
-package commands
+package cli
 
 import (
-	"context"
-	"strings"
-
-	"github.com/projectriff/cli/pkg/cli"
-	"github.com/spf13/cobra"
+	"github.com/ghodss/yaml"
+	knapis "github.com/knative/pkg/apis"
 )
 
-func NewStreamCommand(ctx context.Context, c *cli.Config) *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "stream",
-		Short: "streams of messages",
-		Long: strings.TrimSpace(`
-<todo>
-`),
-		Args:    cli.Args(),
-		Aliases: []string{"streams"},
+func PrintResourceStatus(c *Config, name string, condition *knapis.Condition) {
+	c.Printf("# %s: %s\n", name, FormatConditionStatus(condition))
+	if condition != nil {
+		s, _ := yaml.Marshal(condition)
+		c.Printf("---\n")
+		c.Printf("%s", string(s))
 	}
-
-	cmd.AddCommand(NewStreamListCommand(ctx, c))
-	cmd.AddCommand(NewStreamCreateCommand(ctx, c))
-	cmd.AddCommand(NewStreamDeleteCommand(ctx, c))
-	cmd.AddCommand(NewStreamStatusCommand(ctx, c))
-
-	return cmd
 }
