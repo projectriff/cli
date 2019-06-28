@@ -19,11 +19,11 @@ jobs:
   steps:
     - template: ci/install-go-steps.yml
     - bash: |
-        GO111MODULE=off go get golang.org/x/tools/cmd/goimports
+        go get golang.org/x/tools/cmd/goimports
         make verify-goimports
       workingDirectory: '$(modulePath)'
       displayName: 'check formatting'
-      condition: ne( variables['Agent.OS'], 'Windows_NT' )
+      condition: and(succeeded(), ne(variables['Agent.OS'], 'Windows_NT'))
     - bash: make build coverage verify-docs
       workingDirectory: '$(modulePath)'
       displayName: 'Run unit test'
