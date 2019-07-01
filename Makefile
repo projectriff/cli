@@ -19,7 +19,7 @@ clean: ## Delete build output
 	rm -f riff-linux-amd64.tgz
 	rm -f riff-windows-amd64.zip
 
-vendor: go.mod go.sum ## Vendor go dependencies
+vendor: go.mod go.sum $(GO_SOURCES) ## Vendor go dependencies
 	go mod tidy
 	go mod vendor
 

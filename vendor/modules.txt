@@ -12,6 +12,12 @@ contrib.go.opencensus.io/resource/resourcekeys
 # github.com/Azure/go-ansiterm v0.0.0-20170929234023-d6e3b3328b78
 github.com/Azure/go-ansiterm/winterm
 github.com/Azure/go-ansiterm
+# github.com/Azure/go-autorest v0.0.0-20190226174127-bca49d5b51a5
+github.com/Azure/go-autorest/autorest
+github.com/Azure/go-autorest/autorest/adal
+github.com/Azure/go-autorest/autorest/azure
+github.com/Azure/go-autorest/version
+github.com/Azure/go-autorest/autorest/date
 # github.com/BurntSushi/toml v0.3.1
 github.com/BurntSushi/toml
 # github.com/Masterminds/semver v1.4.2
@@ -101,6 +107,8 @@ github.com/census-instrumentation/opencensus-proto/gen-go/resource/v1
 github.com/cpuguy83/go-md2man/md2man
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
+# github.com/dgrijalva/jwt-go v0.0.0-20170608005149-a539ee1a749a
+github.com/dgrijalva/jwt-go
 # github.com/docker/distribution v2.7.1+incompatible
 github.com/docker/distribution/reference
 github.com/docker/distribution/digestset
@@ -191,6 +199,14 @@ github.com/googleapis/gax-go/v2
 github.com/googleapis/gnostic/OpenAPIv2
 github.com/googleapis/gnostic/compiler
 github.com/googleapis/gnostic/extensions
+# github.com/gophercloud/gophercloud v0.2.0
+github.com/gophercloud/gophercloud
+github.com/gophercloud/gophercloud/openstack
+github.com/gophercloud/gophercloud/openstack/identity/v2/tokens
+github.com/gophercloud/gophercloud/openstack/identity/v3/tokens
+github.com/gophercloud/gophercloud/openstack/utils
+github.com/gophercloud/gophercloud/openstack/identity/v2/tenants
+github.com/gophercloud/gophercloud/pagination
 # github.com/gregjones/httpcache v0.0.0-20190212212710-3befbb6ad0cc
 github.com/gregjones/httpcache
 github.com/gregjones/httpcache/diskcache
@@ -382,9 +398,9 @@ golang.org/x/net/http2
 golang.org/x/net/http/httpguts
 golang.org/x/net/http2/hpack
 golang.org/x/net/idna
+golang.org/x/net/proxy
 golang.org/x/net/context/ctxhttp
 golang.org/x/net/context
-golang.org/x/net/proxy
 golang.org/x/net/internal/socks
 golang.org/x/net/trace
 golang.org/x/net/internal/timeseries
@@ -528,8 +544,6 @@ k8s.io/apimachinery/pkg/api/errors
 k8s.io/apimachinery/pkg/api/resource
 k8s.io/apimachinery/pkg/util/sets
 k8s.io/apimachinery/pkg/api/validation
-k8s.io/apimachinery/pkg/util/net
-k8s.io/apimachinery/pkg/util/yaml
 k8s.io/apimachinery/pkg/api/equality
 k8s.io/apimachinery/pkg/conversion
 k8s.io/apimachinery/pkg/selection
@@ -541,6 +555,7 @@ k8s.io/apimachinery/pkg/util/json
 k8s.io/apimachinery/pkg/util/naming
 k8s.io/apimachinery/pkg/util/validation
 k8s.io/apimachinery/pkg/runtime/serializer
+k8s.io/apimachinery/pkg/util/net
 k8s.io/apimachinery/pkg/runtime/serializer/streaming
 k8s.io/apimachinery/pkg/util/cache
 k8s.io/apimachinery/pkg/util/clock
@@ -548,6 +563,7 @@ k8s.io/apimachinery/pkg/util/diff
 k8s.io/apimachinery/pkg/util/validation/field
 k8s.io/apimachinery/pkg/util/strategicpatch
 k8s.io/apimachinery/pkg/apis/meta/v1/validation
+k8s.io/apimachinery/pkg/util/yaml
 k8s.io/apimachinery/third_party/forked/golang/reflect
 k8s.io/apimachinery/pkg/version
 k8s.io/apimachinery/pkg/runtime/serializer/json
@@ -560,8 +576,7 @@ k8s.io/apimachinery/pkg/util/mergepatch
 k8s.io/apimachinery/third_party/forked/golang/json
 k8s.io/apimachinery/pkg/util/framer
 # k8s.io/client-go v0.0.0-20190514184034-dd7f3ad83f18 => k8s.io/client-go v0.0.0-20190226174127-78295b709ec6
-k8s.io/client-go/plugin/pkg/client/auth/gcp
-k8s.io/client-go/plugin/pkg/client/auth/oidc
+k8s.io/client-go/plugin/pkg/client/auth
 k8s.io/client-go/kubernetes
 k8s.io/client-go/kubernetes/typed/core/v1
 k8s.io/client-go/rest
@@ -573,7 +588,10 @@ k8s.io/client-go/kubernetes/fake
 k8s.io/client-go/listers/apps/v1
 k8s.io/client-go/listers/core/v1
 k8s.io/client-go/testing
-k8s.io/client-go/util/jsonpath
+k8s.io/client-go/plugin/pkg/client/auth/azure
+k8s.io/client-go/plugin/pkg/client/auth/gcp
+k8s.io/client-go/plugin/pkg/client/auth/oidc
+k8s.io/client-go/plugin/pkg/client/auth/openstack
 k8s.io/client-go/discovery
 k8s.io/client-go/util/flowcontrol
 k8s.io/client-go/kubernetes/typed/admissionregistration/v1alpha1
@@ -654,7 +672,7 @@ k8s.io/client-go/kubernetes/typed/settings/v1alpha1/fake
 k8s.io/client-go/kubernetes/typed/storage/v1/fake
 k8s.io/client-go/kubernetes/typed/storage/v1alpha1/fake
 k8s.io/client-go/kubernetes/typed/storage/v1beta1/fake
-k8s.io/client-go/third_party/forked/golang/template
+k8s.io/client-go/util/jsonpath
 k8s.io/client-go/util/integer
 k8s.io/client-go/pkg/apis/clientauthentication
 k8s.io/client-go/pkg/apis/clientauthentication/v1alpha1
@@ -662,6 +680,7 @@ k8s.io/client-go/pkg/apis/clientauthentication/v1beta1
 k8s.io/client-go/util/connrotation
 k8s.io/client-go/tools/clientcmd/api/v1
 k8s.io/client-go/util/workqueue
+k8s.io/client-go/third_party/forked/golang/template
 k8s.io/client-go/dynamic
 k8s.io/client-go/informers
 k8s.io/client-go/informers/core/v1

@@ -25,6 +25,7 @@ require (
 
 require (
 	contrib.go.opencensus.io/exporter/stackdriver v0.10.2 // indirect
+	github.com/Azure/go-autorest v0.0.0-20190226174127-bca49d5b51a5 // indirect
 	github.com/cpuguy83/go-md2man v1.0.10 // indirect
 	github.com/evanphx/json-patch v4.2.0+incompatible // indirect
 	github.com/golang/groupcache v0.0.0-20190129154638-5b532d6fd5ef // indirect
@@ -32,6 +33,7 @@ require (
 	github.com/google/gofuzz v1.0.0 // indirect
 	github.com/google/uuid v1.1.1 // indirect
 	github.com/googleapis/gnostic v0.2.0 // indirect
+	github.com/gophercloud/gophercloud v0.2.0 // indirect
 	github.com/gregjones/httpcache v0.0.0-20190212212710-3befbb6ad0cc // indirect
 	github.com/imdario/mergo v0.3.7 // indirect
 	github.com/json-iterator/go v1.1.6 // indirect
