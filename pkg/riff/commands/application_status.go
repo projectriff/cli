@@ -68,7 +68,12 @@ func NewApplicationStatusCommand(ctx context.Context, c *cli.Config) *cobra.Comm
 		Use:   "status",
 		Short: "show application status",
 		Long: strings.TrimSpace(`
-<todo>
+Display status details for an application.
+
+The Ready condition is shown which should include a reason code and a
+descriptive message when the status is not "True". The status for the condition
+may be: "True", "False" or Unknown. An Unknown status is common while the
+application is processed or a build is in progress.
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s application status my-application", c.Name),

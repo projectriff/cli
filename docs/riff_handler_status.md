@@ -4,7 +4,12 @@ show handler status
 
 ### Synopsis
 
-<todo>
+Display status details for a handler.
+
+The Ready condition is shown which should include a reason code and a
+descriptive message when the status is not "True". The status for the condition
+may be: "True", "False" or Unknown. An Unknown status is common while the
+handler is processed.
 
 ```
 riff handler status [flags]

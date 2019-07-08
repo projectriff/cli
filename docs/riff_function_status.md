@@ -4,7 +4,12 @@ show function status
 
 ### Synopsis
 
-<todo>
+Display status details for a function.
+
+The Ready condition is shown which should include a reason code and a
+descriptive message when the status is not "True". The status for the condition
+may be: "True", "False" or Unknown. An Unknown status is common while the
+function is processed or a build is in progress.
 
 ```
 riff function status [flags]
