@@ -4,7 +4,11 @@ watch processor logs
 
 ### Synopsis
 
-<todo>
+Stream runtime logs for a processor until canceled. To cancel, press ctl-c in
+the shell or kill the process.
+
+As new processor instances are started, the logs are displayed. To show historical logs use
+--since.
 
 ```
 riff processor tail [flags]

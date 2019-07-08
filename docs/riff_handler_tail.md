@@ -4,7 +4,11 @@ watch handler logs
 
 ### Synopsis
 
-<todo>
+Stream runtime logs for a handler until canceled. To cancel, press ctl-c in the
+shell or kill the process.
+
+As new handler instances are started, the logs are displayed. To show historical logs use
+--since.
 
 ```
 riff handler tail [flags]
