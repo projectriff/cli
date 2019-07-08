@@ -208,7 +208,14 @@ func NewApplicationCreateCommand(ctx context.Context, c *cli.Config) *cobra.Comm
 		Use:   "create",
 		Short: "create an application from source",
 		Long: strings.TrimSpace(`
-<todo>
+Create an application from source using the application Cloud Native Buildpack
+builder.
+
+Application source can be specified either as a Git repository or as a local
+directory. Builds from Git are preformed in the cluster while builds from a
+local directory are run inside a local Docker daemon orchestrated by this
+command (in the future, builds from local source may also be run in the
+cluster).
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s application create my-app %s registry.example.com/image %s https://example.com/my-app.git", c.Name, cli.ImageFlagName, cli.GitRepoFlagName),

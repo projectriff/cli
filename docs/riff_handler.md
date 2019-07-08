@@ -10,6 +10,10 @@ image and will deploy new images. If the underlying application or function is
 deleted, the handler will continue to run, but will no longer self update. Image
 based handlers must be manually updated to trigger rollout of an updated image.
 
+Applications, functions and images are logically identical at runtime. Functions
+are more focused and opinionated applications, and images are compiled
+application.
+
 Users wishing to perform QA checks on built images before deploying them can
 provide their own external process to watch the application/function for new
 images and only update the handler image once those checks pass.

@@ -4,7 +4,31 @@ create a function from source
 
 ### Synopsis
 
-<todo>
+Create a function from source using the function Cloud Native Buildpack builder.
+
+Function source can be specified either as a Git repository or as a local
+directory. Builds from Git are preformed in the cluster while builds from a
+local directory are run inside a local Docker daemon orchestrated by this
+command (in the future, builds from local source may also be run in the
+cluster).
+
+In addition to the source code, functions are defined by these properties:
+
+- invoker - language runtime that should host the function, the invoker is often
+    auto-detected, but may need to be specified in cases of ambiguity.
+- artifact - file in the source that contains the function.
+- handler - invoker specific, typically the method or class within the artifact.
+
+These values can be versioned with the source code in a riff.toml file, or
+specified here to override the source. Versioning with the source is preferred
+as changed can be deployed as a unit. Overriding is necessary when deploying
+multiple functions from a single code base.
+
+The riff.toml file takes the form:
+
+    override = "java"
+	artifact = "uppercase.jar"
+	handler = "functions.Uppercase"
 
 ```
 riff function create [flags]

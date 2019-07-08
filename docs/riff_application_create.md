@@ -4,7 +4,14 @@ create an application from source
 
 ### Synopsis
 
-<todo>
+Create an application from source using the application Cloud Native Buildpack
+builder.
+
+Application source can be specified either as a Git repository or as a local
+directory. Builds from Git are preformed in the cluster while builds from a
+local directory are run inside a local Docker daemon orchestrated by this
+command (in the future, builds from local source may also be run in the
+cluster).
 
 ```
 riff application create [flags]
