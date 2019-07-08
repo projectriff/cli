@@ -4,7 +4,11 @@ table listing of processors
 
 ### Synopsis
 
-<todo>
+List processors in a namespace or across all namespaces.
+
+For detail regarding the status of a single processor, run:
+
+	riff processor status <processor-name>
 
 ```
 riff processor list [flags]

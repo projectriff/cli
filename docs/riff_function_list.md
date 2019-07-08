@@ -4,7 +4,11 @@ table listing of functions
 
 ### Synopsis
 
-<todo>
+List functions in a namespace or across all namespaces.
+
+For detail regarding the status of a single function, run:
+
+	riff function status <function-name>
 
 ```
 riff function list [flags]

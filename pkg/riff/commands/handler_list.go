@@ -80,7 +80,11 @@ func NewHandlerListCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 		Use:   "list",
 		Short: "table listing of handlers",
 		Long: strings.TrimSpace(`
-<todo>
+List handlers in a namespace or across all namespaces.
+
+For detail regarding the status of a single handler, run:
+
+	` + c.Name + ` handler status <handler-name>
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s handler list", c.Name),

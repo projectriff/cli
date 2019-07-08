@@ -80,7 +80,11 @@ func NewProcessorListCommand(ctx context.Context, c *cli.Config) *cobra.Command 
 		Use:   "list",
 		Short: "table listing of processors",
 		Long: strings.TrimSpace(`
-<todo>
+List processors in a namespace or across all namespaces.
+
+For detail regarding the status of a single processor, run:
+
+	` + c.Name + ` processor status <processor-name>
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s processor list", c.Name),
