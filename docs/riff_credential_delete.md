@@ -4,7 +4,11 @@ delete credential(s)
 
 ### Synopsis
 
-<todo>
+Delete one or more credentials by name or all credentials within a namespace.
+
+Deleting a credential will cause application and function builds that depend on
+the credential to fail unless another credential for the same registry is
+available.
 
 ```
 riff credential delete [flags]

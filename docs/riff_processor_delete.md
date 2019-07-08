@@ -4,7 +4,10 @@ delete processor(s)
 
 ### Synopsis
 
-<todo>
+Delete one or more processors by name or all processors within a namespace.
+
+The processor will stop processing messages from the input streams and writing
+to the output streams. The streams and messages in each stream are preserved.
 
 ```
 riff processor delete [flags]

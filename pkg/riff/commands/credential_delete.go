@@ -76,7 +76,11 @@ func NewCredentialDeleteCommand(ctx context.Context, c *cli.Config) *cobra.Comma
 		Use:   "delete",
 		Short: "delete credential(s)",
 		Long: strings.TrimSpace(`
-<todo>
+Delete one or more credentials by name or all credentials within a namespace.
+
+Deleting a credential will cause application and function builds that depend on
+the credential to fail unless another credential for the same registry is
+available.
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s credential delete my-creds", c.Name),
