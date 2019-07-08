@@ -145,7 +145,24 @@ func NewCredentialApplyCommand(ctx context.Context, c *cli.Config) *cobra.Comman
 		Use:   "apply",
 		Short: "create or update credentials for a container registry",
 		Long: strings.TrimSpace(`
-<todo>
+Create or update credentials for a container registry.
+
+In addition to creating a credential, the default image prefix can be set by
+specifying ` + cli.SetDefaultImagePrefixFlagName + `. The prefix is applied to
+application and function builds in order to skip needing to specify a fully
+qualified image repository.
+
+The default image prefix depends on the repository and take the form:
+- Docker Hub: docker.io/<docker-user-name>
+- GCR: gcr.io/<google-cloud-project-id>
+
+Other image prefix values may be defined by specifying
+` + cli.DefaultImagePrefixFlagName + `. Manually specifying the default image
+prefix is required to set the prefix when also manually specifying the registry
+hostname.
+
+While multiple credentials can be created in a single namespace, only a single
+default image prefix can be set.
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s credential apply my-docker-hub-creds %s my-docker-id", c.Name, cli.DockerHubFlagName),

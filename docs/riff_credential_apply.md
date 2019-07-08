@@ -4,7 +4,24 @@ create or update credentials for a container registry
 
 ### Synopsis
 
-<todo>
+Create or update credentials for a container registry.
+
+In addition to creating a credential, the default image prefix can be set by
+specifying --set-default-image-prefix. The prefix is applied to
+application and function builds in order to skip needing to specify a fully
+qualified image repository.
+
+The default image prefix depends on the repository and take the form:
+- Docker Hub: docker.io/<docker-user-name>
+- GCR: gcr.io/<google-cloud-project-id>
+
+Other image prefix values may be defined by specifying
+--default-image-prefix. Manually specifying the default image
+prefix is required to set the prefix when also manually specifying the registry
+hostname.
+
+While multiple credentials can be created in a single namespace, only a single
+default image prefix can be set.
 
 ```
 riff credential apply [flags]

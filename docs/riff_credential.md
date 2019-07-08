@@ -4,7 +4,21 @@ credentials for container registries
 
 ### Synopsis
 
-<todo>
+Credentials allow application and function builds to push images to
+authenticated registries. If the registry allows unauthenticated images pushes,
+credentials are not required (while useful for local development environments,
+this is not recommend).
+
+Credentials are defined by a hostname, username and password. These values are
+specified explicitly or via shortcuts for Docker Hub and Google Container
+Registry (GCR).
+
+The credentials are saved as Kubernetes secrets and exposed to application and
+function builds in order to push the built image to the specified registry.
+
+In order to manage credentials, read and write access to Secrets is required for
+the namespace. To manage the default image prefix, read and write access to the
+'riff-build' ConfigMap is required for the namespace.
 
 ### Options
 
