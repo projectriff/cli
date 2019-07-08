@@ -4,7 +4,12 @@ generate shell completion script
 
 ### Synopsis
 
-<todo>
+Generate the completion script for your shell. The script is emitted on stdout
+and needs to be placed in the appropriate directory on your system.
+
+For bash users on a Mac with Homebrew:
+
+    riff completion > $(brew --prefix)/etc/bash_completion.d/riff
 
 ```
 riff completion [flags]
