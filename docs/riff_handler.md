@@ -4,7 +4,17 @@ handlers map HTTP requests to applications, functions or images
 
 ### Synopsis
 
-<todo>
+Handlers can be created for one of an application, function or image.
+Application and function based handlers continuously watch for the latest built
+image and will deploy new images. If the underlying application or function is
+deleted, the handler will continue to run, but will no longer self update. Image
+based handlers must be manually updated to trigger rollout of an updated image.
+
+Users wishing to perform QA checks on built images before deploying them can
+provide their own external process to watch the application/function for new
+images and only update the handler image once those checks pass.
+
+The hostname to access the handler is available in the handler listing.
 
 ### Options
 

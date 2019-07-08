@@ -191,7 +191,21 @@ func NewHandlerCreateCommand(ctx context.Context, c *cli.Config) *cobra.Command 
 		Use:   "create",
 		Short: "create a handler to map HTTP requests to an application, function or image",
 		Long: strings.TrimSpace(`
-<todo>
+Create an HTTP request handler.
+
+There are three way to create a handler:
+- from an application reference
+- from a function reference
+- from an image
+
+Application and function references are resolved within the same namespace as
+the handler. As the build produces new images, the image will rolled out
+automatically.
+
+Image based handlers must be updated manually to rollout new images.
+
+The runtime environment can be configured by ` + cli.EnvFlagName + ` for static key-value pairs
+and ` + cli.EnvFromFlagName + ` to map values from a configmap or secret.
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s handler create my-app-handler %s my-app", c.Name, cli.ApplicationRefFlagName),

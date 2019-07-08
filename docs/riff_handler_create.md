@@ -4,7 +4,21 @@ create a handler to map HTTP requests to an application, function or image
 
 ### Synopsis
 
-<todo>
+Create an HTTP request handler.
+
+There are three way to create a handler:
+- from an application reference
+- from a function reference
+- from an image
+
+Application and function references are resolved within the same namespace as
+the handler. As the build produces new images, the image will rolled out
+automatically.
+
+Image based handlers must be updated manually to rollout new images.
+
+The runtime environment can be configured by --env for static key-value pairs
+and --env-from to map values from a configmap or secret.
 
 ```
 riff handler create [flags]
