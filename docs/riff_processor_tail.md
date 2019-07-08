@@ -1,3 +1,7 @@
+---
+id: riff-processor-tail
+title: "riff processor tail"
+---
 ## riff processor tail
 
 watch processor logs

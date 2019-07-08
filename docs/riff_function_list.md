@@ -1,3 +1,7 @@
+---
+id: riff-function-list
+title: "riff function list"
+---
 ## riff function list
 
 table listing of functions

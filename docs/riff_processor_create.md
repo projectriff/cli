@@ -1,3 +1,7 @@
+---
+id: riff-processor-create
+title: "riff processor create"
+---
 ## riff processor create
 
 create a processor to apply a function to messages on streams

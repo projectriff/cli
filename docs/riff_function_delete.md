@@ -1,3 +1,7 @@
+---
+id: riff-function-delete
+title: "riff function delete"
+---
 ## riff function delete
 
 delete function(s)
