@@ -1,3 +1,7 @@
+---
+id: riff-handler-tail
+title: "riff handler tail"
+---
 ## riff handler tail
 
 watch handler logs

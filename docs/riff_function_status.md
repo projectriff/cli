@@ -1,3 +1,7 @@
+---
+id: riff-function-status
+title: "riff function status"
+---
 ## riff function status
 
 show function status

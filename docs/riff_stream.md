@@ -1,3 +1,7 @@
+---
+id: riff-stream
+title: "riff stream"
+---
 ## riff stream
 
 streams of messages

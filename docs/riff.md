@@ -1,3 +1,7 @@
+---
+id: riff
+title: "riff"
+---
 ## riff
 
 riff is for functions
