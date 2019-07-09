@@ -40,7 +40,7 @@ coverage: ## Run the tests with coverage and race detection
 
 .PHONY: check-goimports
 check-goimports: ## Checks if goimports is installed
-	@which goimports > /dev/null || (echo goimports not found: issue \"go get golang.org/x/tools/cmd/goimports\" && false)
+	@which goimports > /dev/null || (echo goimports not found: issue \"GO111MODULE=off go get golang.org/x/tools/cmd/goimports\" && false)
 
 .PHONY: goimports
 goimports: check-goimports ## Runs goimports on the project
