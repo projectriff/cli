@@ -9,13 +9,14 @@ applications built from source using application buildpacks
 ### Synopsis
 
 Applications are a mechanism to convert web application source code into
-container images that can be HTTP invoked. Cloud Native Buildpacks are provided
-to detect the language, provide a language runtime, install build and runtime
-dependencies, compile the application, and package it into a container.
+container images that can be invoked over HTTP. Cloud Native Buildpacks are
+provided to detect the language, provide a language runtime, install build and
+runtime dependencies, compile the application, and packaging everything as a
+container.
 
 The application resource is only responsible for converting source code into a
 container. The application container image may then be deployed as a request
-handler.
+handler. See `riff handler --help` for detail.
 
 ### Options
 

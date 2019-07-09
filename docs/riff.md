@@ -9,30 +9,22 @@ riff is for functions
 ### Synopsis
 
 The riff CLI combines with the projectriff system CRDs to build, run and wire
-workloads (applications and functions). This CLI is one interface to the riff
-API.
+workloads (applications and functions). The CRDs provide the riff API of which
+this CLI is a client.
 
 Before running riff, please install the projectriff system and its dependencies.
 See https://projectriff.io/docs/getting-started/
 
-This CLI contains commands that fit into four themes:
-- builds
-- requests
-- streams
-- misc
+This CLI contains commands that fit into three themes:
 
-Build commands include the application and function command to define build
-plans and the credential commands to authenticate builds to container
-registries.
+Builds - the application and function commands to define build plans and the
+credential commands to authenticate builds to container registries.
 
-Requests commands include the handler command to map HTTP requests to a built
-application, function or container image.
+Requests - the handler command to map HTTP requests to a built application,
+function or container image.
 
-Streams commands include the stream and processor commands to define streams of
-messages and map those streams to function inputs and outputs with processors.
-
-Miscellaneous commands include shell completion and the doctor to diagnose
-common issues.
+Streams - the stream and processor commands to define streams of messages and
+map those streams to function inputs and outputs with processors.
 
 ### Options
 

@@ -12,8 +12,8 @@ Create an application from source using the application Cloud Native Buildpack
 builder.
 
 Application source can be specified either as a Git repository or as a local
-directory. Builds from Git are preformed in the cluster while builds from a
-local directory are run inside a local Docker daemon orchestrated by this
+directory. Builds from Git are run in the cluster while builds from a local
+directory are run inside a local Docker daemon and are orchestrated by this
 command (in the future, builds from local source may also be run in the
 cluster).
 

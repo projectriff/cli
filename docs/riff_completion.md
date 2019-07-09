@@ -8,7 +8,7 @@ generate shell completion script
 
 ### Synopsis
 
-Generate the completion script for your shell. The script is emitted on stdout
+Generate the completion script for your shell. The script is printed to stdout
 and needs to be placed in the appropriate directory on your system.
 
 For bash users on a Mac with Homebrew:

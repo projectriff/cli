@@ -157,8 +157,6 @@ The default image prefix depends on the repository and take the form:
 - GCR: gcr.io/<google-cloud-project-id>
 
 Other image prefix values may be defined by specifying ` + cli.DefaultImagePrefixFlagName + `.
-Manually specifying the default image prefix is required to set the prefix when
-also manually specifying the registry hostname.
 
 While multiple credentials can be created in a single namespace, only a single
 default image prefix can be set.

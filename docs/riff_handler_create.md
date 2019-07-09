@@ -16,13 +16,13 @@ There are three way to create a handler:
 - from an image
 
 Application and function references are resolved within the same namespace as
-the handler. As the build produces new images, the image will rolled out
+the handler. As the build produces new images, the image will roll out
 automatically.
 
-Image based handlers must be updated manually to rollout new images.
+Image based handlers must be updated manually to roll out new images.
 
 The runtime environment can be configured by --env for static key-value pairs
-and --env-from to map values from a configmap or secret.
+and --env-from to map values from a ConfigMap or Secret.
 
 ```
 riff handler create [flags]

@@ -65,7 +65,7 @@ func NewCompletionCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 		Use:   "completion",
 		Short: "generate shell completion script",
 		Long: strings.TrimSpace(`
-Generate the completion script for your shell. The script is emitted on stdout
+Generate the completion script for your shell. The script is printed to stdout
 and needs to be placed in the appropriate directory on your system.
 
 For bash users on a Mac with Homebrew:

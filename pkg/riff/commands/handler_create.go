@@ -199,13 +199,13 @@ There are three way to create a handler:
 - from an image
 
 Application and function references are resolved within the same namespace as
-the handler. As the build produces new images, the image will rolled out
+the handler. As the build produces new images, the image will roll out
 automatically.
 
-Image based handlers must be updated manually to rollout new images.
+Image based handlers must be updated manually to roll out new images.
 
 The runtime environment can be configured by ` + cli.EnvFlagName + ` for static key-value pairs
-and ` + cli.EnvFromFlagName + ` to map values from a configmap or secret.
+and ` + cli.EnvFromFlagName + ` to map values from a ConfigMap or Secret.
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s handler create my-app-handler %s my-app", c.Name, cli.ApplicationRefFlagName),

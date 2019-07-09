@@ -11,8 +11,8 @@ create a function from source
 Create a function from source using the function Cloud Native Buildpack builder.
 
 Function source can be specified either as a Git repository or as a local
-directory. Builds from Git are preformed in the cluster while builds from a
-local directory are run inside a local Docker daemon orchestrated by this
+directory. Builds from Git are run in the cluster while builds from a local
+directory are run inside a local Docker daemon and are orchestrated by this
 command (in the future, builds from local source may also be run in the
 cluster).
 
@@ -30,9 +30,9 @@ multiple functions from a single code base.
 
 The riff.toml file takes the form:
 
-    override = "java"
-	artifact = "uppercase.jar"
-	handler = "functions.Uppercase"
+    override = "<invoker name>"
+	artifact = "<path to artifact>"
+	handler = "<function handler>"
 
 ```
 riff function create [flags]

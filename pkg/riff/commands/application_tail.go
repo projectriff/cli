@@ -71,7 +71,7 @@ func NewApplicationTailCommand(ctx context.Context, c *cli.Config) *cobra.Comman
 		Use:   "tail",
 		Short: "watch build logs",
 		Long: strings.TrimSpace(`
-Stream build logs for an application until canceled. To cancel, press ctl-c in
+Stream build logs for an application until canceled. To cancel, press Ctl-c in
 the shell or kill the process.
 
 As new builds are started, the logs are displayed. To show historical logs use

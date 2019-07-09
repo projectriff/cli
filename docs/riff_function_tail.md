@@ -8,7 +8,7 @@ watch build logs
 
 ### Synopsis
 
-Stream build logs for a function until canceled. To cancel, press ctl-c in the
+Stream build logs for a function until canceled. To cancel, press Ctl-c in the
 shell or kill the process.
 
 As new builds are started, the logs are displayed. To show historical logs use

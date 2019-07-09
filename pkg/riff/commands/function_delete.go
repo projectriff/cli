@@ -75,7 +75,7 @@ Delete one or more functions by name or all functions within a namespace.
 
 Deleting a function prevents new builds while preserving built images in the
 registry. Handlers and processors that reference this function will continue to
-use the last built image. Creating a new function with the same name will
+use the last built image. A new function created with the same name will
 automatically be discovered by the handler or processor.
 `),
 		Example: strings.Join([]string{

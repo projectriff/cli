@@ -30,18 +30,20 @@ func NewFunctionCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 		Short: "functions built from source using function buildpacks",
 		Long: strings.TrimSpace(`
 Functions are a mechanism for converting language idiomatic units of logic into
-container images that can be HTTP invoked or process streams of messages. Cloud
-Native Buildpacks are provided to detect the language, provide a language
-runtime, install build and runtime dependencies, compile the function, and
-package it into a container.
+container images that can be invoked over HTTP or used to process streams of
+messages. Cloud Native Buildpacks are provided to detect the language, provide a
+language runtime, install build and runtime dependencies, compile the function,
+and packaging everything as a container.
 
 The function resource is only responsible for converting source code into a
 container. The function container image may then be deployed as a request
-handler, or as a stream processor.
+handler, or as a stream processor. See ` + "`" + c.Name + " handler --help" + "`" + ` and
+` + "`" + c.Name + " processor --help" + "`" + ` for detail.
 
-Functions are distinct from applications in the scope of the source code. Unlike
-applications, functions:
+Functions are distinct from applications in the scope and responsibilities of
+the source code. Unlike applications, functions:
 
+- no main method
 - practice Inversion of Control (we'll call you)
 - are decoupled from networking protocols, no HTTP specifics
 - limited to a single responsibility

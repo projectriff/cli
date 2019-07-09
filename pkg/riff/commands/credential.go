@@ -30,19 +30,19 @@ func NewCredentialCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 		Short: "credentials for container registries",
 		Long: strings.TrimSpace(`
 Credentials allow application and function builds to push images to
-authenticated registries. If the registry allows unauthenticated images pushes,
+authenticated registries. If the registry allows unauthenticated image pushes,
 credentials are not required (while useful for local development environments,
-this is not recommend).
+this is not recommended).
 
 Credentials are defined by a hostname, username and password. These values are
 specified explicitly or via shortcuts for Docker Hub and Google Container
 Registry (GCR).
 
 The credentials are saved as Kubernetes secrets and exposed to application and
-function builds in order to push the built image to the specified registry.
+function builds.
 
-In order to manage credentials, read and write access to Secrets is required for
-the namespace. To manage the default image prefix, read and write access to the
+To manage credentials, read and write access to Secrets is required for the
+namespace. To manage the default image prefix, read and write access to the
 'riff-build' ConfigMap is required for the namespace.
 `),
 		Args:    cli.Args(),
