@@ -1,3 +1,7 @@
+---
+id: riff-stream-list
+title: "riff stream list"
+---
 ## riff stream list
 
 table listing of streams

@@ -1,3 +1,7 @@
+---
+id: riff-handler
+title: "riff handler"
+---
 ## riff handler
 
 handlers map HTTP requests to applications, functions or images

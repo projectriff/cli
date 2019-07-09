@@ -1,3 +1,7 @@
+---
+id: riff-stream-delete
+title: "riff stream delete"
+---
 ## riff stream delete
 
 delete stream(s)

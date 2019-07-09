@@ -1,3 +1,7 @@
+---
+id: riff-processor-status
+title: "riff processor status"
+---
 ## riff processor status
 
 show processor status

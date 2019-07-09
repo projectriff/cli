@@ -1,3 +1,7 @@
+---
+id: riff-handler-list
+title: "riff handler list"
+---
 ## riff handler list
 
 table listing of handlers

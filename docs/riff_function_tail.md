@@ -1,3 +1,7 @@
+---
+id: riff-function-tail
+title: "riff function tail"
+---
 ## riff function tail
 
 watch build logs

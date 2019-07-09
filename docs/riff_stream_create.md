@@ -1,3 +1,7 @@
+---
+id: riff-stream-create
+title: "riff stream create"
+---
 ## riff stream create
 
 create a stream of messages

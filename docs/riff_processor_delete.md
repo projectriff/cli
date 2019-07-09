@@ -1,3 +1,7 @@
+---
+id: riff-processor-delete
+title: "riff processor delete"
+---
 ## riff processor delete
 
 delete processor(s)

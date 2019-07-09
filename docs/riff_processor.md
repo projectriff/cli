@@ -1,3 +1,7 @@
+---
+id: riff-processor
+title: "riff processor"
+---
 ## riff processor
 
 processors apply functions to messages on streams

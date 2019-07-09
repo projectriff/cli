@@ -1,3 +1,7 @@
+---
+id: riff-doctor
+title: "riff doctor"
+---
 ## riff doctor
 
 check riff's requirements are installed

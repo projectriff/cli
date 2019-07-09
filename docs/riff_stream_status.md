@@ -1,3 +1,7 @@
+---
+id: riff-stream-status
+title: "riff stream status"
+---
 ## riff stream status
 
 show stream status

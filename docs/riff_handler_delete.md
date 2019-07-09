@@ -1,3 +1,7 @@
+---
+id: riff-handler-delete
+title: "riff handler delete"
+---
 ## riff handler delete
 
 delete handler(s)

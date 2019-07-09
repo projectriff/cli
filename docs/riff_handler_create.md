@@ -1,3 +1,7 @@
+---
+id: riff-handler-create
+title: "riff handler create"
+---
 ## riff handler create
 
 create a handler to map HTTP requests to an application, function or image
