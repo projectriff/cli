@@ -36,7 +36,7 @@ $fats_dir/install.sh helm
 
 kubectl create serviceaccount tiller -n kube-system
 kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount kube-system:tiller
-helm init --service-account tiller
+helm init --wait --service-account tiller
 
 helm repo add projectriff https://projectriff.storage.googleapis.com/charts/releases
 helm repo update
