@@ -71,7 +71,11 @@ func NewHandlerDeleteCommand(ctx context.Context, c *cli.Config) *cobra.Command 
 		Use:   "delete",
 		Short: "delete handler(s)",
 		Long: strings.TrimSpace(`
-<todo>
+Delete one or more handlers by name or all handlers within a namespace.
+
+New HTTP requests addressed to the handler will fail. A new handler created with
+the same name will start to receive new HTTP requests addressed to the same
+handler.
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s handler delete my-handler", c.Name),

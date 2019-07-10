@@ -8,7 +8,7 @@ table listing of credentials
 
 ### Synopsis
 
-<todo>
+List credentials in a namespace or across all namespaces.
 
 ```
 riff credential list [flags]

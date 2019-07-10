@@ -83,7 +83,7 @@ func NewCredentialListCommand(ctx context.Context, c *cli.Config) *cobra.Command
 		Use:   "list",
 		Short: "table listing of credentials",
 		Long: strings.TrimSpace(`
-<todo>
+List credentials in a namespace or across all namespaces.
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s credential list", c.Name),

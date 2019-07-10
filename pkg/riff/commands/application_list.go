@@ -80,7 +80,11 @@ func NewApplicationListCommand(ctx context.Context, c *cli.Config) *cobra.Comman
 		Use:   "list",
 		Short: "table listing of applications",
 		Long: strings.TrimSpace(`
-<todo>
+List applications in a namespace or across all namespaces.
+
+For detail regarding the status of a single application, run:
+
+    ` + c.Name + ` application status <application-name>
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s application list", c.Name),

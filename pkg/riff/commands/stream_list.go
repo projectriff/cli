@@ -80,7 +80,11 @@ func NewStreamListCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 		Use:   "list",
 		Short: "table listing of streams",
 		Long: strings.TrimSpace(`
-<todo>
+List streams in a namespace or across all namespaces.
+
+For detail regarding the status of a single stream, run:
+
+	` + c.Name + ` stream status <stream-name>
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s stream list", c.Name),

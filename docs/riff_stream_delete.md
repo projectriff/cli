@@ -8,7 +8,11 @@ delete stream(s)
 
 ### Synopsis
 
-<todo>
+Delete one or more streams by name or all streams within a namespace.
+
+Deleting a stream will prevent processors from reading and writing messages on
+the stream. Existing messages in the stream may be preserved by the underlying
+messaging middleware, depending on the implementation.
 
 ```
 riff stream delete [flags]

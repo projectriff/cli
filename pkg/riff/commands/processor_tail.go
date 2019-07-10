@@ -72,7 +72,11 @@ func NewProcessorTailCommand(ctx context.Context, c *cli.Config) *cobra.Command 
 		Use:   "tail",
 		Short: "watch processor logs",
 		Long: strings.TrimSpace(`
-<todo>
+Stream runtime logs for a processor until canceled. To cancel, press Ctl-c in
+the shell or kill the process.
+
+As new processor instances are started, the logs are displayed. To show historical logs use
+` + cli.SinceFlagName + `.
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s processor tail my-processor", c.Name),

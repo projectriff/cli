@@ -71,7 +71,11 @@ func NewStreamDeleteCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 		Use:   "delete",
 		Short: "delete stream(s)",
 		Long: strings.TrimSpace(`
-<todo>
+Delete one or more streams by name or all streams within a namespace.
+
+Deleting a stream will prevent processors from reading and writing messages on
+the stream. Existing messages in the stream may be preserved by the underlying
+messaging middleware, depending on the implementation.
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s stream delete my-stream", c.Name),

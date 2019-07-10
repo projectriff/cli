@@ -8,7 +8,11 @@ check riff's requirements are installed
 
 ### Synopsis
 
-<todo>
+Check that riff is installed.
+
+The doctor checks that necessary system components are installed.
+
+The doctor is not a tool for monitoring the health of the cluster.
 
 ```
 riff doctor [flags]

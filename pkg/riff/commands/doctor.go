@@ -92,10 +92,14 @@ func NewDoctorCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "doctor",
 		Aliases: []string{"doc"},
-		Short:   "check riff's requirements are installed",
+		Short:   "check " + c.Name + "'s requirements are installed",
 		Long: strings.TrimSpace(`
-    <todo>
-    `),
+Check that ` + c.Name + ` is installed.
+
+The doctor checks that necessary system components are installed.
+
+The doctor is not a tool for monitoring the health of the cluster.
+`),
 		Example: "riff doctor",
 		Args:    cli.Args(),
 		PreRunE: cli.ValidateOptions(ctx, opts),

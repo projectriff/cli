@@ -8,7 +8,11 @@ table listing of handlers
 
 ### Synopsis
 
-<todo>
+List handlers in a namespace or across all namespaces.
+
+For detail regarding the status of a single handler, run:
+
+	riff handler status <handler-name>
 
 ```
 riff handler list [flags]

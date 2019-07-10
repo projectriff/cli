@@ -71,7 +71,11 @@ func NewFunctionTailCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 		Use:   "tail",
 		Short: "watch build logs",
 		Long: strings.TrimSpace(`
-<todo>
+Stream build logs for a function until canceled. To cancel, press Ctl-c in the
+shell or kill the process.
+
+As new builds are started, the logs are displayed. To show historical logs use
+` + cli.SinceFlagName + `.
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s function tail my-function", c.Name),

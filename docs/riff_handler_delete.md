@@ -8,7 +8,11 @@ delete handler(s)
 
 ### Synopsis
 
-<todo>
+Delete one or more handlers by name or all handlers within a namespace.
+
+New HTTP requests addressed to the handler will fail. A new handler created with
+the same name will start to receive new HTTP requests addressed to the same
+handler.
 
 ```
 riff handler delete [flags]

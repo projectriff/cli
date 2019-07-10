@@ -8,7 +8,11 @@ table listing of streams
 
 ### Synopsis
 
-<todo>
+List streams in a namespace or across all namespaces.
+
+For detail regarding the status of a single stream, run:
+
+	riff stream status <stream-name>
 
 ```
 riff stream list [flags]
