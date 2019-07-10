@@ -47,27 +47,6 @@ func (opts *DocsOptions) Validate(ctx context.Context) *cli.FieldError {
 	return errs
 }
 
-// frontmatter for docusaurus markdown
-// per https://docusaurus.io/docs/en/doc-markdown#documents
-const fmTemplate = `---
-id: %s
-title: "%s"
----
-`
-
-func filePrepender(filename string) string {
-	name := filepath.Base(filename)
-	base := strings.TrimSuffix(name, path.Ext(name))
-	id := strings.Replace(base, "_", "-", -1)
-	title := strings.Replace(base, "_", " ", -1)
-
-	return fmt.Sprintf(fmTemplate, id, title)
-}
-
-func linkHandler(name string) string {
-	return name
-}
-
 func NewDocsCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 	opts := &DocsOptions{}
 
@@ -88,7 +67,27 @@ func NewDocsCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 				noColorFlag.DefValue = "false"
 			}
 
-			return doc.GenMarkdownTreeCustom(root, opts.Directory, filePrepender, linkHandler)
+			return doc.GenMarkdownTreeCustom(root, opts.Directory,
+				func(filename string) string {
+					name := filepath.Base(filename)
+					base := strings.TrimSuffix(name, path.Ext(name))
+					id := strings.Replace(base, "_", "-", -1)
+					title := strings.Replace(base, "_", " ", -1)
+
+					// frontmatter for docusaurus markdown
+					// per https://docusaurus.io/docs/en/doc-markdown#documents
+					fmTemplate := `---
+id: %s
+title: "%s"
+---
+`
+
+					return fmt.Sprintf(fmTemplate, id, title)
+				},
+				func(name string) string {
+					return name
+				},
+			)
 		},
 	}
 

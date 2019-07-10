@@ -62,9 +62,9 @@ func (opts *ProcessorListOptions) Exec(ctx context.Context, c *cli.Config) error
 	tablePrinter := printers.NewTablePrinter(printers.PrintOptions{
 		WithNamespace: opts.AllNamespaces,
 	}).With(func(h printers.PrintHandler) {
-		columns := printProcessorColumns()
-		h.TableHandler(columns, printProcessorList)
-		h.TableHandler(columns, printProcessor)
+		columns := opts.printColumns()
+		h.TableHandler(columns, opts.printList)
+		h.TableHandler(columns, opts.print)
 	})
 
 	processors = processors.DeepCopy()
@@ -100,10 +100,10 @@ For detail regarding the status of a single processor, run:
 	return cmd
 }
 
-func printProcessorList(processors *streamv1alpha1.ProcessorList, opts printers.PrintOptions) ([]metav1beta1.TableRow, error) {
+func (opts *ProcessorListOptions) printList(processors *streamv1alpha1.ProcessorList, printOpts printers.PrintOptions) ([]metav1beta1.TableRow, error) {
 	rows := make([]metav1beta1.TableRow, 0, len(processors.Items))
 	for i := range processors.Items {
-		r, err := printProcessor(&processors.Items[i], opts)
+		r, err := opts.print(&processors.Items[i], printOpts)
 		if err != nil {
 			return nil, err
 		}
@@ -112,7 +112,7 @@ func printProcessorList(processors *streamv1alpha1.ProcessorList, opts printers.
 	return rows, nil
 }
 
-func printProcessor(processor *streamv1alpha1.Processor, opts printers.PrintOptions) ([]metav1beta1.TableRow, error) {
+func (opts *ProcessorListOptions) print(processor *streamv1alpha1.Processor, _ printers.PrintOptions) ([]metav1beta1.TableRow, error) {
 	now := time.Now()
 	row := metav1beta1.TableRow{
 		Object: runtime.RawExtension{Object: processor},
@@ -128,7 +128,7 @@ func printProcessor(processor *streamv1alpha1.Processor, opts printers.PrintOpti
 	return []metav1beta1.TableRow{row}, nil
 }
 
-func printProcessorColumns() []metav1beta1.TableColumnDefinition {
+func (opts *ProcessorListOptions) printColumns() []metav1beta1.TableColumnDefinition {
 	return []metav1beta1.TableColumnDefinition{
 		{Name: "Name", Type: "string"},
 		{Name: "Function", Type: "string"},

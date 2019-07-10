@@ -65,9 +65,9 @@ func (opts *CredentialListOptions) Exec(ctx context.Context, c *cli.Config) erro
 	tablePrinter := printers.NewTablePrinter(printers.PrintOptions{
 		WithNamespace: opts.AllNamespaces,
 	}).With(func(h printers.PrintHandler) {
-		columns := printCredentialColumns()
-		h.TableHandler(columns, printCredentialList)
-		h.TableHandler(columns, printCredential)
+		columns := opts.printColumns()
+		h.TableHandler(columns, opts.printList)
+		h.TableHandler(columns, opts.print)
 	})
 
 	secrets = secrets.DeepCopy()
@@ -99,10 +99,10 @@ List credentials in a namespace or across all namespaces.
 	return cmd
 }
 
-func printCredentialList(credentials *corev1.SecretList, opts printers.PrintOptions) ([]metav1beta1.TableRow, error) {
+func (opts *CredentialListOptions) printList(credentials *corev1.SecretList, printOpts printers.PrintOptions) ([]metav1beta1.TableRow, error) {
 	rows := make([]metav1beta1.TableRow, 0, len(credentials.Items))
 	for i := range credentials.Items {
-		r, err := printCredential(&credentials.Items[i], opts)
+		r, err := opts.print(&credentials.Items[i], printOpts)
 		if err != nil {
 			return nil, err
 		}
@@ -111,7 +111,7 @@ func printCredentialList(credentials *corev1.SecretList, opts printers.PrintOpti
 	return rows, nil
 }
 
-func printCredential(credential *corev1.Secret, opts printers.PrintOptions) ([]metav1beta1.TableRow, error) {
+func (opts *CredentialListOptions) print(credential *corev1.Secret, _ printers.PrintOptions) ([]metav1beta1.TableRow, error) {
 	now := time.Now()
 	row := metav1beta1.TableRow{
 		Object: runtime.RawExtension{Object: credential.DeepCopy()},
@@ -125,7 +125,7 @@ func printCredential(credential *corev1.Secret, opts printers.PrintOptions) ([]m
 	return []metav1beta1.TableRow{row}, nil
 }
 
-func printCredentialColumns() []metav1beta1.TableColumnDefinition {
+func (opts *CredentialListOptions) printColumns() []metav1beta1.TableColumnDefinition {
 	return []metav1beta1.TableColumnDefinition{
 		{Name: "Name", Type: "string"},
 		{Name: "Type", Type: "string"},
