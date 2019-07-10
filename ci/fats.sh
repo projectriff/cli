@@ -10,7 +10,7 @@ commit=$(git rev-parse HEAD)
 # fetch FATS scripts
 fats_dir=`dirname "${BASH_SOURCE[0]}"`/fats
 fats_repo="projectriff/fats"
-fats_refspec=270f1ffeddb9901aa56535e92837e7130c6d2ca3 # projectriff/fats master as of 2019-06-21
+fats_refspec=1a462b4a35ebdb66d678d648b5803fa498871ec6 # projectriff/fats master as of 2019-07-09
 source `dirname "${BASH_SOURCE[0]}"`/fats-fetch.sh $fats_dir $fats_refspec $fats_repo
 source $fats_dir/.util.sh
 
@@ -32,16 +32,16 @@ source $fats_dir/start.sh
 
 # install riff system
 echo "Installing riff system"
-$fats_dir/install.sh duffle
+$fats_dir/install.sh helm
 
-duffle_k8s_service_account=${duffle_k8s_service_account:-duffle-runtime}
-duffle_k8s_namespace=${duffle_k8s_namespace:-kube-system}
+kubectl create serviceaccount tiller -n kube-system
+kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount kube-system:tiller
+helm init --service-account tiller
 
-kubectl create serviceaccount "${duffle_k8s_service_account}" -n "${duffle_k8s_namespace}"
-kubectl create clusterrolebinding "${duffle_k8s_service_account}-cluster-admin" --clusterrole cluster-admin --serviceaccount "${duffle_k8s_namespace}:${duffle_k8s_service_account}"
+helm repo add projectriff https://projectriff.storage.googleapis.com/charts/releases
+helm repo update
 
-curl -O https://storage.googleapis.com/projectriff/riff-cnab/snapshots/riff-bundle-latest.json
-SERVICE_ACCOUNT=${duffle_k8s_service_account} KUBE_NAMESPACE=${duffle_k8s_namespace} duffle install riff riff-bundle-latest.json --bundle-is-file ${DUFFLE_RIFF_INSTALL_FLAGS} -d k8s
+helm install projectriff/projectriff-riff --name riff --set istio.enabled=true --set global.k8s.service.type=${K8S_SERVICE_TYPE} --devel
 
 # health checks
 echo "Checking for ready ingress"
