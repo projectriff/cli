@@ -30,8 +30,8 @@ var (
 	ValidNamespaceOptions = cli.NamespaceOptions{
 		Namespace: "default",
 	}
-	InvalidListOptions           = cli.NamespaceOptions{}
-	InvalidListOptionsFieldError = cli.ErrMissingOneOf(cli.NamespaceFlagName, cli.AllNamespacesFlagName)
+	InvalidNamespaceOptions           = cli.NamespaceOptions{}
+	InvalidNamespaceOptionsFieldError = cli.ErrMissingOneOf(cli.NamespaceFlagName, cli.AllNamespacesFlagName)
 )
 
 var (

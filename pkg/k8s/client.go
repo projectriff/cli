@@ -23,7 +23,6 @@ import (
 	streamv1alpha1 "github.com/projectriff/system/pkg/client/clientset/versioned/typed/stream/v1alpha1"
 	apiextensionsclientset "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	apiextensionsv1beta1 "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1"
-	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/kubernetes"
 	authv1client "k8s.io/client-go/kubernetes/typed/authorization/v1"
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
@@ -37,11 +36,10 @@ type Client interface {
 	KubeRestConfig() *rest.Config
 	Core() corev1.CoreV1Interface
 	Auth() authv1client.AuthorizationV1Interface
+	ApiExtensions() apiextensionsv1beta1.ApiextensionsV1beta1Interface
 	Build() buildv1alpha1.BuildV1alpha1Interface
 	Request() requestv1alpha1.RequestV1alpha1Interface
 	Stream() streamv1alpha1.StreamV1alpha1Interface
-	Discovery() discovery.DiscoveryInterface
-	ApiExtensions() apiextensionsv1beta1.ApiextensionsV1beta1Interface
 }
 
 func (c *client) DefaultNamespace() string {
@@ -60,6 +58,10 @@ func (c *client) Auth() authv1client.AuthorizationV1Interface {
 	return c.lazyLoadKubernetesClientOrDie().AuthorizationV1()
 }
 
+func (c *client) ApiExtensions() apiextensionsv1beta1.ApiextensionsV1beta1Interface {
+	return c.lazyLoadApiExtensionsClientOrDie().ApiextensionsV1beta1()
+}
+
 func (c *client) Build() buildv1alpha1.BuildV1alpha1Interface {
 	return c.lazyLoadRiffClientOrDie().BuildV1alpha1()
 }
@@ -70,14 +72,6 @@ func (c *client) Request() requestv1alpha1.RequestV1alpha1Interface {
 
 func (c *client) Stream() streamv1alpha1.StreamV1alpha1Interface {
 	return c.lazyLoadRiffClientOrDie().StreamV1alpha1()
-}
-
-func (c *client) Discovery() discovery.DiscoveryInterface {
-	return c.lazyLoadKubernetesClientOrDie().Discovery()
-}
-
-func (c *client) ApiExtensions() apiextensionsv1beta1.ApiextensionsV1beta1Interface {
-	return c.lazyLoadApiExtensionsClientOrDie().ApiextensionsV1beta1()
 }
 
 func NewClient(kubeConfigFile string) Client {

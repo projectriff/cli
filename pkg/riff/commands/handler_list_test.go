@@ -36,9 +36,9 @@ func TestHandlerListOptions(t *testing.T) {
 		{
 			Name: "invalid list",
 			Options: &commands.HandlerListOptions{
-				NamespaceOptions: rifftesting.InvalidListOptions,
+				NamespaceOptions: rifftesting.InvalidNamespaceOptions,
 			},
-			ExpectFieldError: rifftesting.InvalidListOptionsFieldError,
+			ExpectFieldError: rifftesting.InvalidNamespaceOptionsFieldError,
 		},
 		{
 			Name: "valid list",

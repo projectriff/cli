@@ -41,9 +41,9 @@ func TestCredentialListOptions(t *testing.T) {
 		{
 			Name: "invalid list",
 			Options: &commands.CredentialListOptions{
-				NamespaceOptions: rifftesting.InvalidListOptions,
+				NamespaceOptions: rifftesting.InvalidNamespaceOptions,
 			},
-			ExpectFieldError: rifftesting.InvalidListOptionsFieldError,
+			ExpectFieldError: rifftesting.InvalidNamespaceOptionsFieldError,
 		},
 	}
 

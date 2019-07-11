@@ -25,7 +25,6 @@ import (
 	apiextensionsv1beta1clientset "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/fake"
 	apiextensionsv1beta1 "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/client-go/discovery"
 	kubernetes "k8s.io/client-go/kubernetes/fake"
 	authv1client "k8s.io/client-go/kubernetes/typed/authorization/v1"
 	corev1clientset "k8s.io/client-go/kubernetes/typed/core/v1"
@@ -57,6 +56,10 @@ func (c *FakeClient) Auth() authv1client.AuthorizationV1Interface {
 	return c.FakeKubeClient.AuthorizationV1()
 }
 
+func (c *FakeClient) ApiExtensions() apiextensionsv1beta1.ApiextensionsV1beta1Interface {
+	return c.FakeApiExtensionsClient.ApiextensionsV1beta1()
+}
+
 func (c *FakeClient) Build() buildv1alpha1clientset.BuildV1alpha1Interface {
 	return c.FakeRiffClient.BuildV1alpha1()
 }
@@ -67,13 +70,6 @@ func (c *FakeClient) Request() requestv1alpha1clientset.RequestV1alpha1Interface
 
 func (c *FakeClient) Stream() streamv1alpha1clientset.StreamV1alpha1Interface {
 	return c.FakeRiffClient.StreamV1alpha1()
-}
-func (c *FakeClient) Discovery() discovery.DiscoveryInterface {
-	return c.FakeKubeClient.Discovery()
-}
-
-func (c *FakeClient) ApiExtensions() apiextensionsv1beta1.ApiextensionsV1beta1Interface {
-	return c.FakeApiExtensionsClient.ApiextensionsV1beta1()
 }
 
 func (c *FakeClient) PrependReactor(verb, resource string, reaction ReactionFunc) {

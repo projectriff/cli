@@ -39,19 +39,9 @@ func TestDoctorOptions(t *testing.T) {
 			ShouldValidate: true,
 		},
 		{
-			Name:           "all namespaces",
-			Options:        allNamespaceOptions(),
-			ShouldValidate: true,
-		},
-		{
-			Name:             "ko if missing specific namespace",
-			Options:          &commands.DoctorOptions{},
-			ExpectFieldError: cli.ErrMissingOneOf(cli.NamespaceFlagName, cli.AllNamespacesFlagName),
-		},
-		{
-			Name:             "ko if all and specific namespace",
-			Options:          options(true, "foo"),
-			ExpectFieldError: cli.ErrMultipleOneOf(cli.NamespaceFlagName, cli.AllNamespacesFlagName),
+			Name:             "invalid",
+			Options:          &rifftesting.InvalidNamespaceOptions,
+			ExpectFieldError: rifftesting.InvalidNamespaceOptionsFieldError,
 		},
 	}
 
@@ -59,26 +49,22 @@ func TestDoctorOptions(t *testing.T) {
 }
 
 func TestDoctorCommand(t *testing.T) {
-	requiredNamespaces := []runtime.Object{
-		&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "istio-system"}},
-		&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-build"}},
-		&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
-		&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
-	}
-	requiredObjects := merge(requiredNamespaces, []runtime.Object{
-		&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
-		&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
-		&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "handlers.request.projectriff.io"}},
-		&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.stream.projectriff.io"}},
-		&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.stream.projectriff.io"}},
-	})
-
 	verbs := []string{"get", "list", "create", "update", "delete", "patch", "watch"}
 	table := rifftesting.CommandTable{
 		{
-			Name:         "installation is ok in all namespaces",
-			Args:         []string{"--all-namespaces"},
-			GivenObjects: requiredObjects,
+			Name: "installation is ok in all namespaces",
+			Args: []string{"--all-namespaces"},
+			GivenObjects: []runtime.Object{
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "istio-system"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-build"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "handlers.request.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.stream.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.stream.projectriff.io"}},
+			},
 			ExpectCreates: merge(
 				selfSubjectAccessReviewRequests("", "core", "configmaps", verbs...),
 				selfSubjectAccessReviewRequests("", "core", "secrets", verbs...),
@@ -166,9 +152,14 @@ Installation is not healthy
 `,
 		},
 		{
-			Name:         "some custom resource definitions are missing",
-			Args:         []string{},
-			GivenObjects: requiredNamespaces,
+			Name: "some custom resource definitions are missing",
+			Args: []string{},
+			GivenObjects: []runtime.Object{
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "istio-system"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-build"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
+			},
 
 			ExpectOutput: `
 Namespace "istio-system"      OK
@@ -187,9 +178,19 @@ Installation is not healthy
 `,
 		},
 		{
-			Name:         "read and write KO for functions in specified namespace",
-			Args:         []string{cli.NamespaceFlagName, "foo"},
-			GivenObjects: requiredObjects,
+			Name: "read and write KO for functions in specified namespace",
+			Args: []string{cli.NamespaceFlagName, "foo"},
+			GivenObjects: []runtime.Object{
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "istio-system"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-build"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "handlers.request.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.stream.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.stream.projectriff.io"}},
+			},
 			ExpectCreates: merge(
 				selfSubjectAccessReviewRequests("foo", "core", "configmaps", verbs...),
 				selfSubjectAccessReviewRequests("foo", "core", "secrets", verbs...),
@@ -229,9 +230,19 @@ Installation is not healthy
 `,
 		},
 		{
-			Name:         "read status mixed for handlers, write status mixed for streams in specified namespace",
-			Args:         []string{cli.NamespaceFlagName, "foo"},
-			GivenObjects: requiredObjects,
+			Name: "read status mixed for handlers, write status mixed for streams in specified namespace",
+			Args: []string{cli.NamespaceFlagName, "foo"},
+			GivenObjects: []runtime.Object{
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "istio-system"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-build"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "handlers.request.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.stream.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.stream.projectriff.io"}},
+			},
 			ExpectCreates: merge(
 				selfSubjectAccessReviewRequests("foo", "core", "configmaps", verbs...),
 				selfSubjectAccessReviewRequests("foo", "core", "secrets", verbs...),
@@ -328,15 +339,4 @@ func passAccessReview() func(action clientgotesting.Action) (handled bool, ret r
 		review.Status.Allowed = true
 		return true, review, nil
 	}
-}
-
-func allNamespaceOptions() *commands.DoctorOptions {
-	return options(true, "")
-}
-
-func options(allNamespaces bool, namespace string) *commands.DoctorOptions {
-	options := commands.DoctorOptions{}
-	options.AllNamespaces = allNamespaces
-	options.Namespace = namespace
-	return &options
 }
