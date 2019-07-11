@@ -21,6 +21,8 @@ import (
 	"fmt"
 	"strings"
 
+	"k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1"
+
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/cli/printers"
 	"github.com/projectriff/cli/pkg/riff/resource"
@@ -63,18 +65,6 @@ func (opts *DoctorOptions) Exec(ctx context.Context, c *cli.Config) error {
 		{Resource: resource.NewCustomResource(ns, "request.projectriff.io/v1alpha1", "request.projectriff.io", "handlers"), Verbs: verbs},
 		{Resource: resource.NewCustomResource(ns, "stream.projectriff.io/v1alpha1", "stream.projectriff.io", "processors"), Verbs: verbs},
 		{Resource: resource.NewCustomResource(ns, "stream.projectriff.io/v1alpha1", "stream.projectriff.io", "streams"), Verbs: verbs},
-	}
-
-	existenceSummary, err := checkCustomResourceExistence(c, checks)
-	if err != nil {
-		c.Errorf("\nAn error occurred while checking for CustomResourceDefinition existence\n")
-		c.Errorf("\nInstallation is not healthy\n")
-		return err
-	}
-	existenceSummary.Print(c)
-	if !existenceSummary.IsHealthy() {
-		c.Errorf("\nInstallation is not healthy\n")
-		return nil
 	}
 
 	accessSummary, err := checkResourceAccesses(c, checks)
@@ -140,33 +130,24 @@ func (*DoctorOptions) checkNamespaces(c *cli.Config, requiredNamespaces []string
 	return ok, nil
 }
 
-func checkCustomResourceExistence(c *cli.Config, checks []resource.AccessChecks) (*resource.CrdSummary, error) {
-	var aggregatedStatuses []resource.CrdStatus
-	crds := c.ApiExtensions().CustomResourceDefinitions()
-	for _, check := range checks {
-		serverResource := check.Resource
-		if !serverResource.Custom {
-			continue
-		}
-		crdName := serverResource.CrdName()
-		_, err := crds.Get(crdName, metav1.GetOptions{})
-		if err == nil {
-			aggregatedStatuses = append(aggregatedStatuses, resource.CrdStatus{Resource: serverResource, ExistenceStatus: resource.Exists})
-			continue
-		}
-		if !errors.IsNotFound(err) {
-			return nil, err
-		}
-		aggregatedStatuses = append(aggregatedStatuses, resource.CrdStatus{Resource: serverResource, ExistenceStatus: resource.NotFound})
-	}
-	return &resource.CrdSummary{Statuses: aggregatedStatuses}, nil
-}
-
 func checkResourceAccesses(c *cli.Config, checks []resource.AccessChecks) (*resource.AccessSummary, error) {
+	crds := c.ApiExtensions().CustomResourceDefinitions()
 	aggregatedStatuses := make([]resource.Status, len(checks))
 	for i, check := range checks {
 		serverResource := check.Resource
 		aggregatedStatus := resource.Status{Resource: serverResource, ReadStatus: resource.AccessUndefined, WriteStatus: resource.AccessUndefined}
+		if serverResource.Custom {
+			missing, err := isCustomResourceMissing(crds, serverResource.CrdName())
+			if err != nil {
+				return nil, err
+			}
+			if missing {
+				aggregatedStatus.ReadStatus = resource.Missing
+				aggregatedStatus.WriteStatus = resource.Missing
+				aggregatedStatuses[i] = aggregatedStatus
+				continue
+			}
+		}
 		for _, verb := range check.Verbs {
 			reviewRequest := serverResource.AsReview(verb)
 			result, err := c.Auth().SelfSubjectAccessReviews().Create(reviewRequest)
@@ -203,4 +184,15 @@ func determineAccessStatus(review *authv1.SelfSubjectAccessReview) (*resource.Ac
 		return &result, nil
 	}
 	return nil, fmt.Errorf("unexpected state, review is neither allowed nor denied: %v", review)
+}
+
+func isCustomResourceMissing(crds v1beta1.CustomResourceDefinitionInterface, crdName string) (bool, error) {
+	_, err := crds.Get(crdName, metav1.GetOptions{})
+	if err == nil {
+		return false, nil
+	}
+	if errors.IsNotFound(err) {
+		return true, nil
+	}
+	return false, err
 }

@@ -19,13 +19,12 @@ package commands_test
 import (
 	"testing"
 
-	apiextensionsv1beta1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
-
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/riff/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 	authorizationv1 "k8s.io/api/authorization/v1"
 	corev1 "k8s.io/api/core/v1"
+	apiextensionsv1beta1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	clientgotesting "k8s.io/client-go/testing"
@@ -82,13 +81,6 @@ Namespace "istio-system"      OK
 Namespace "knative-build"     OK
 Namespace "knative-serving"   OK
 Namespace "riff-system"       OK
-
-CUSTOM RESOURCE                     DEPLOYMENT
-applications.build.projectriff.io   OK
-functions.build.projectriff.io      OK
-handlers.request.projectriff.io     OK
-processors.stream.projectriff.io    OK
-streams.stream.projectriff.io       OK
 
 NAMESPACE   GROUP                    RESOURCE       READ STATUS   WRITE STATUS
 *           core                     configmaps     OK            OK    
@@ -152,7 +144,7 @@ Installation is not healthy
 `,
 		},
 		{
-			Name: "some custom resource definitions are missing",
+			Name: "custom resource definitions are missing",
 			Args: []string{},
 			GivenObjects: []runtime.Object{
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "istio-system"}},
@@ -160,19 +152,27 @@ Installation is not healthy
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
 			},
-
+			ExpectCreates: merge(
+				selfSubjectAccessReviewRequests("default", "core", "configmaps", verbs...),
+				selfSubjectAccessReviewRequests("default", "core", "secrets", verbs...),
+			),
+			WithReactors: []rifftesting.ReactionFunc{
+				passAccessReview(),
+			},
 			ExpectOutput: `
 Namespace "istio-system"      OK
 Namespace "knative-build"     OK
 Namespace "knative-serving"   OK
 Namespace "riff-system"       OK
 
-CUSTOM RESOURCE                     DEPLOYMENT
-applications.build.projectriff.io   KO
-functions.build.projectriff.io      KO
-handlers.request.projectriff.io     KO
-processors.stream.projectriff.io    KO
-streams.stream.projectriff.io       KO
+NAMESPACE   GROUP                    RESOURCE       READ STATUS        WRITE STATUS
+default     core                     configmaps     OK                 OK                 
+default     core                     secrets        OK                 OK                 
+default     build.projectriff.io     applications   MISSING RESOURCE   MISSING RESOURCE   
+default     build.projectriff.io     functions      MISSING RESOURCE   MISSING RESOURCE   
+default     request.projectriff.io   handlers       MISSING RESOURCE   MISSING RESOURCE   
+default     stream.projectriff.io    processors     MISSING RESOURCE   MISSING RESOURCE   
+default     stream.projectriff.io    streams        MISSING RESOURCE   MISSING RESOURCE   
 
 Installation is not healthy
 `,
@@ -209,13 +209,6 @@ Namespace "istio-system"      OK
 Namespace "knative-build"     OK
 Namespace "knative-serving"   OK
 Namespace "riff-system"       OK
-
-CUSTOM RESOURCE                     DEPLOYMENT
-applications.build.projectriff.io   OK
-functions.build.projectriff.io      OK
-handlers.request.projectriff.io     OK
-processors.stream.projectriff.io    OK
-streams.stream.projectriff.io       OK
 
 NAMESPACE   GROUP                    RESOURCE       READ STATUS   WRITE STATUS
 foo         core                     configmaps     OK            OK    
@@ -262,13 +255,6 @@ Namespace "istio-system"      OK
 Namespace "knative-build"     OK
 Namespace "knative-serving"   OK
 Namespace "riff-system"       OK
-
-CUSTOM RESOURCE                     DEPLOYMENT
-applications.build.projectriff.io   OK
-functions.build.projectriff.io      OK
-handlers.request.projectriff.io     OK
-processors.stream.projectriff.io    OK
-streams.stream.projectriff.io       OK
 
 NAMESPACE   GROUP                    RESOURCE       READ STATUS   WRITE STATUS
 foo         core                     configmaps     OK            OK      

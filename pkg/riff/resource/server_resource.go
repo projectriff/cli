@@ -89,58 +89,6 @@ func (v *Verb) IsWrite() bool {
 	return verb == "create" || verb == "update" || verb == "delete" || verb == "patch"
 }
 
-type CrdSummary struct {
-	Statuses []CrdStatus
-}
-
-type CrdStatus struct {
-	Resource        ServerResource
-	ExistenceStatus ExistenceStatus
-}
-
-type ExistenceStatus int
-
-const (
-	Exists ExistenceStatus = iota
-	NotFound
-	Errored
-)
-
-func (es *ExistenceStatus) String() string {
-	status := *es
-	switch status {
-	case Exists:
-		return cli.Ssuccessf("OK")
-	case NotFound:
-		return cli.Serrorf("KO")
-	case Errored:
-		return cli.Swarnf("Error")
-	}
-	panic(fmt.Sprintf("Unsupported value %v", status))
-}
-
-func (cs *CrdSummary) IsHealthy() bool {
-	for _, status := range cs.Statuses {
-		if status.ExistenceStatus != Exists {
-			return false
-		}
-	}
-	return true
-}
-
-func (cs *CrdSummary) Print(c *cli.Config) {
-	printer := printers.GetNewTabWriter(c.Stdout)
-	defer printer.Flush()
-	fmt.Fprintf(printer, "\nCUSTOM RESOURCE\tDEPLOYMENT\n")
-	for _, status := range cs.Statuses {
-		resource := status.Resource
-		fmt.Fprintf(printer, "%s\t%s\n",
-			resource.CrdName(),
-			status.ExistenceStatus.String(),
-		)
-	}
-}
-
 type AccessSummary struct {
 	Statuses []Status
 }
@@ -179,9 +127,10 @@ type AccessStatus int
 
 const (
 	AccessUndefined AccessStatus = iota
-	Allowed
-	Denied
-	Mixed
+	Allowed                      /* right is granted */
+	Denied                       /* right is denied */
+	Mixed                        /* for the same resource, some rights are granted, some are denied */
+	Missing                      /* resource not deployed */
 )
 
 func (as *AccessStatus) Combine(new *AccessStatus) AccessStatus {
@@ -202,10 +151,12 @@ func (as *AccessStatus) String() string {
 	switch status {
 	case Allowed:
 		return cli.Ssuccessf("OK")
-	case Denied:
-		return cli.Serrorf("KO")
 	case Mixed:
 		return cli.Swarnf("MIXED")
+	case Denied:
+		return cli.Serrorf("KO")
+	case Missing:
+		return cli.Serrorf("MISSING RESOURCE")
 	}
 	panic(fmt.Sprintf("Unsupported value %v", status))
 }
