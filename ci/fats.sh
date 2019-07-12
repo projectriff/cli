@@ -41,7 +41,8 @@ helm init --wait --service-account tiller
 helm repo add projectriff https://projectriff.storage.googleapis.com/charts/releases
 helm repo update
 
-helm install projectriff/riff --name riff --set istio.enabled=true --set global.k8s.service.type=${K8S_SERVICE_TYPE} --devel
+helm install projectriff/istio --name istio --namespace istio-system --devel --wait --set istio.enabled=true --set gateways.istio-ingressgateway.type=${K8S_SERVICE_TYPE}
+helm install projectriff/riff --name riff --devel
 
 # health checks
 echo "Checking for ready ingress"
