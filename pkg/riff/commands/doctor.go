@@ -21,8 +21,6 @@ import (
 	"fmt"
 	"strings"
 
-	"k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1"
-
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/cli/printers"
 	"github.com/projectriff/cli/pkg/doctor"
@@ -66,19 +64,18 @@ func (opts *DoctorOptions) Exec(ctx context.Context, c *cli.Config) error {
 		return err
 	}
 
-	ns := opts.Namespace
 	verbs := []doctor.Verb{"get", "list", "create", "update", "delete", "patch", "watch"}
 	checks := []doctor.AccessChecks{
-		{Resource: doctor.NewStandardResource(ns, "v1", "core", "configmaps"), Verbs: verbs},
-		{Resource: doctor.NewStandardResource(ns, "v1", "core", "secrets"), Verbs: verbs},
-		{Resource: doctor.NewCustomResource(ns, "build.projectriff.io/v1alpha1", "build.projectriff.io", "applications"), Verbs: verbs},
-		{Resource: doctor.NewCustomResource(ns, "build.projectriff.io/v1alpha1", "build.projectriff.io", "functions"), Verbs: verbs},
-		{Resource: doctor.NewCustomResource(ns, "request.projectriff.io/v1alpha1", "request.projectriff.io", "handlers"), Verbs: verbs},
-		{Resource: doctor.NewCustomResource(ns, "stream.projectriff.io/v1alpha1", "stream.projectriff.io", "processors"), Verbs: verbs},
-		{Resource: doctor.NewCustomResource(ns, "stream.projectriff.io/v1alpha1", "stream.projectriff.io", "streams"), Verbs: verbs},
+		{Resource: doctor.ServerResource{Group: "core", Resource: "configmaps"}, Verbs: verbs},
+		{Resource: doctor.ServerResource{Group: "core", Resource: "secrets"}, Verbs: verbs},
+		{Resource: doctor.ServerResource{Group: "build.projectriff.io", Resource: "applications"}, Verbs: verbs},
+		{Resource: doctor.ServerResource{Group: "build.projectriff.io", Resource: "functions"}, Verbs: verbs},
+		{Resource: doctor.ServerResource{Group: "request.projectriff.io", Resource: "handlers"}, Verbs: verbs},
+		{Resource: doctor.ServerResource{Group: "stream.projectriff.io", Resource: "processors"}, Verbs: verbs},
+		{Resource: doctor.ServerResource{Group: "stream.projectriff.io", Resource: "streams"}, Verbs: verbs},
 	}
 
-	accessSummary, err := opts.checkResourceAccesses(c, checks)
+	accessSummary, err := opts.checkResourceAccesses(c, opts.Namespace, checks)
 	if err != nil {
 		c.Printf("\n")
 		c.Errorf("An error occurred while checking for resource access\n")
@@ -87,7 +84,7 @@ func (opts *DoctorOptions) Exec(ctx context.Context, c *cli.Config) error {
 		return err
 	}
 	c.Printf("\n")
-	accessSummary.Print(c)
+	accessSummary.Fprint(c.Stdout)
 	c.Printf("\n")
 	if !accessSummary.IsHealthy() {
 		c.Errorf("Installation is not healthy\n")
@@ -151,26 +148,26 @@ func (*DoctorOptions) checkNamespaces(c *cli.Config, requiredNamespaces []string
 	return ok, nil
 }
 
-func (opts *DoctorOptions) checkResourceAccesses(c *cli.Config, checks []doctor.AccessChecks) (*doctor.AccessSummary, error) {
-	crds := c.APIExtension().CustomResourceDefinitions()
+func (opts *DoctorOptions) checkResourceAccesses(c *cli.Config, ns string, checks []doctor.AccessChecks) (*doctor.AccessSummary, error) {
 	aggregatedStatuses := make([]doctor.Status, len(checks))
 	for i, check := range checks {
 		serverResource := check.Resource
-		aggregatedStatus := doctor.Status{Resource: serverResource, ReadStatus: doctor.AccessUndefined, WriteStatus: doctor.AccessUndefined}
-		if serverResource.Custom {
-			missing, err := opts.isCustomResourceMissing(crds, serverResource.CrdName())
+		aggregatedStatus := doctor.Status{Resource: serverResource}
+		// this is a crude test for a CRD, it may not work for all future resources that need to be tested
+		if strings.Contains(serverResource.Group, ".") {
+			missing, err := opts.isCustomResourceMissing(c, serverResource.CrdName())
 			if err != nil {
 				return nil, err
 			}
 			if missing {
-				aggregatedStatus.ReadStatus = doctor.Missing
-				aggregatedStatus.WriteStatus = doctor.Missing
+				aggregatedStatus.ReadStatus = doctor.AccessMissing
+				aggregatedStatus.WriteStatus = doctor.AccessMissing
 				aggregatedStatuses[i] = aggregatedStatus
 				continue
 			}
 		}
 		for _, verb := range check.Verbs {
-			reviewRequest := serverResource.AsReview(verb)
+			reviewRequest := serverResource.AsReview(ns, verb)
 			result, err := c.Auth().SelfSubjectAccessReviews().Create(reviewRequest)
 			if err != nil {
 				return nil, err
@@ -194,24 +191,18 @@ func (opts *DoctorOptions) checkResourceAccesses(c *cli.Config, checks []doctor.
 	return &doctor.AccessSummary{Statuses: aggregatedStatuses}, nil
 }
 
-func (*DoctorOptions) determineAccessStatus(review *authv1.SelfSubjectAccessReview) (*doctor.AccessStatus, error) {
-	status := review.Status
-	if status.Allowed {
-		result := doctor.Allowed
-		return &result, nil
+func (*DoctorOptions) determineAccessStatus(review *authv1.SelfSubjectAccessReview) (doctor.AccessStatus, error) {
+	if review.Status.Allowed {
+		return doctor.AccessAllowed, nil
 	}
-	if status.Denied {
-		result := doctor.Denied
-		return &result, nil
+	if review.Status.Denied {
+		return doctor.AccessDenied, nil
 	}
-	return nil, fmt.Errorf("unexpected state, review is neither allowed nor denied: %v", review)
+	return doctor.AccessUndefined, fmt.Errorf("unexpected state, review is neither allowed nor denied: %v", review)
 }
 
-func (*DoctorOptions) isCustomResourceMissing(crds v1beta1.CustomResourceDefinitionInterface, crdName string) (bool, error) {
-	_, err := crds.Get(crdName, metav1.GetOptions{})
-	if err == nil {
-		return false, nil
-	}
+func (*DoctorOptions) isCustomResourceMissing(c *cli.Config, name string) (bool, error) {
+	_, err := c.APIExtension().CustomResourceDefinitions().Get(name, metav1.GetOptions{})
 	if errors.IsNotFound(err) {
 		return true, nil
 	}

@@ -1,7 +1,24 @@
+/*
+ * Copyright 2019 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package doctor
 
 import (
 	"fmt"
+	"io"
 
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/cli/printers"
@@ -9,63 +26,25 @@ import (
 )
 
 type ServerResource struct {
-	namespace string
-	apiGroup  string
-	group     string
-	kind      string
-	Custom    bool
+	Group    string
+	Resource string
 }
 
-func NewStandardResource(namespace string, apiGroup string, group string, kind string) ServerResource {
-	return ServerResource{
-		namespace: namespace,
-		apiGroup:  apiGroup,
-		group:     group,
-		kind:      kind,
-		Custom:    false,
-	}
-}
-
-func NewCustomResource(namespace string, apiGroup string, group string, kind string) ServerResource {
-	return ServerResource{
-		namespace: namespace,
-		apiGroup:  apiGroup,
-		group:     group,
-		kind:      kind,
-		Custom:    true,
-	}
-}
-
-type StringSet map[string]struct{}
-
-func (ss StringSet) Contains(value string) bool {
-	_, ok := ss[value]
-	return ok
-}
-
-func (resource *ServerResource) AsReview(verb Verb) *authv1.SelfSubjectAccessReview {
+func (resource *ServerResource) AsReview(ns string, verb Verb) *authv1.SelfSubjectAccessReview {
 	return &authv1.SelfSubjectAccessReview{
 		Spec: authv1.SelfSubjectAccessReviewSpec{
 			ResourceAttributes: &authv1.ResourceAttributes{
-				Namespace: resource.namespace,
-				Group:     resource.group,
+				Namespace: ns,
+				Group:     resource.Group,
 				Verb:      verb.String(),
-				Resource:  resource.kind,
+				Resource:  resource.Resource,
 			},
 		},
 	}
 }
 
-func (resource *ServerResource) NamespaceString() string {
-	ns := resource.namespace
-	if ns != "" {
-		return ns
-	}
-	return "*"
-}
-
 func (resource *ServerResource) CrdName() string {
-	return fmt.Sprintf("%s.%s", resource.kind, resource.group)
+	return fmt.Sprintf("%s.%s", resource.Resource, resource.Group)
 }
 
 type AccessChecks struct {
@@ -95,21 +74,21 @@ type AccessSummary struct {
 
 func (as *AccessSummary) IsHealthy() bool {
 	for _, status := range as.Statuses {
-		if status.ReadStatus != Allowed || status.WriteStatus != Allowed {
+		if status.ReadStatus != AccessAllowed || status.WriteStatus != AccessAllowed {
 			return false
 		}
 	}
 	return true
 }
 
-func (as *AccessSummary) Print(c *cli.Config) {
-	printer := printers.GetNewTabWriter(c.Stdout)
+func (as *AccessSummary) Fprint(out io.Writer) {
+	printer := printers.GetNewTabWriter(out)
 	defer printer.Flush()
 	fmt.Fprintf(printer, "RESOURCE\tREAD\tWRITE\n")
 	for _, status := range as.Statuses {
-		resource := status.Resource.kind
-		if status.Resource.group != "core" {
-			resource = fmt.Sprintf("%s.%s", resource, status.Resource.group)
+		resource := status.Resource.Resource
+		if status.Resource.Group != "core" {
+			resource = fmt.Sprintf("%s.%s", resource, status.Resource.Group)
 		}
 		fmt.Fprintf(printer, "%s\t%s\t%s\n", resource, status.ReadStatus.String(), status.WriteStatus.String())
 	}
@@ -125,35 +104,35 @@ type AccessStatus int
 
 const (
 	AccessUndefined AccessStatus = iota
-	Allowed                      /* right is granted */
-	Denied                       /* right is denied */
-	Mixed                        /* for the same resource, some rights are granted, some are denied */
-	Missing                      /* resource not deployed */
+	AccessAllowed                /* right is granted */
+	AccessDenied                 /* right is denied */
+	AccessMixed                  /* for the same resource, some rights are granted, some are denied */
+	AccessMissing                /* resource not deployed */
 )
 
-func (as *AccessStatus) Combine(new *AccessStatus) AccessStatus {
-	if *as == AccessUndefined {
-		return *new
+func (as AccessStatus) Combine(new AccessStatus) AccessStatus {
+	if as == AccessUndefined {
+		return new
 	}
-	if *as != *new {
-		return Mixed
+	if as != new {
+		return AccessMixed
 	}
-	if *as == Allowed {
-		return Allowed
+	if as == AccessAllowed {
+		return AccessAllowed
 	}
-	return Denied
+	return AccessDenied
 }
 
 func (as *AccessStatus) String() string {
 	status := *as
 	switch status {
-	case Allowed:
+	case AccessAllowed:
 		return cli.Ssuccessf("allowed")
-	case Mixed:
+	case AccessMixed:
 		return cli.Swarnf("mixed")
-	case Denied:
+	case AccessDenied:
 		return cli.Swarnf("denied")
-	case Missing:
+	case AccessMissing:
 		return cli.Serrorf("missing")
 	}
 	panic(fmt.Sprintf("Unsupported value %v", status))
