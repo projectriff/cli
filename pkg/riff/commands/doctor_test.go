@@ -123,14 +123,14 @@ Namespace "knative-build"     OK
 Namespace "knative-serving"   OK
 Namespace "riff-system"       OK
 
-NAMESPACE   GROUP                    RESOURCE       READ STATUS        WRITE STATUS
-default     core                     configmaps     OK                 OK                 
-default     core                     secrets        OK                 OK                 
-default     build.projectriff.io     applications   MISSING RESOURCE   MISSING RESOURCE   
-default     build.projectriff.io     functions      MISSING RESOURCE   MISSING RESOURCE   
-default     request.projectriff.io   handlers       MISSING RESOURCE   MISSING RESOURCE   
-default     stream.projectriff.io    processors     MISSING RESOURCE   MISSING RESOURCE   
-default     stream.projectriff.io    streams        MISSING RESOURCE   MISSING RESOURCE   
+RESOURCE                            READ      WRITE
+configmaps                          allowed   allowed   
+secrets                             allowed   allowed   
+applications.build.projectriff.io   missing   missing   
+functions.build.projectriff.io      missing   missing   
+handlers.request.projectriff.io     missing   missing   
+processors.stream.projectriff.io    missing   missing   
+streams.stream.projectriff.io       missing   missing   
 
 Installation is not healthy
 `,
@@ -168,14 +168,14 @@ Namespace "knative-build"     OK
 Namespace "knative-serving"   OK
 Namespace "riff-system"       OK
 
-NAMESPACE   GROUP                    RESOURCE       READ STATUS   WRITE STATUS
-foo         core                     configmaps     OK            OK    
-foo         core                     secrets        OK            OK    
-foo         build.projectriff.io     applications   OK            OK    
-foo         build.projectriff.io     functions      KO            KO    
-foo         request.projectriff.io   handlers       OK            OK    
-foo         stream.projectriff.io    processors     OK            OK    
-foo         stream.projectriff.io    streams        OK            OK    
+RESOURCE                            READ      WRITE
+configmaps                          allowed   allowed   
+secrets                             allowed   allowed   
+applications.build.projectriff.io   allowed   allowed   
+functions.build.projectriff.io      denied    denied    
+handlers.request.projectriff.io     allowed   allowed   
+processors.stream.projectriff.io    allowed   allowed   
+streams.stream.projectriff.io       allowed   allowed   
 
 Installation is not healthy
 `,
@@ -214,14 +214,14 @@ Namespace "knative-build"     OK
 Namespace "knative-serving"   OK
 Namespace "riff-system"       OK
 
-NAMESPACE   GROUP                    RESOURCE       READ STATUS   WRITE STATUS
-foo         core                     configmaps     OK            OK      
-foo         core                     secrets        OK            OK      
-foo         build.projectriff.io     applications   OK            OK      
-foo         build.projectriff.io     functions      OK            OK      
-foo         request.projectriff.io   handlers       MIXED         OK      
-foo         stream.projectriff.io    processors     OK            OK      
-foo         stream.projectriff.io    streams        OK            MIXED   
+RESOURCE                            READ      WRITE
+configmaps                          allowed   allowed   
+secrets                             allowed   allowed   
+applications.build.projectriff.io   allowed   allowed   
+functions.build.projectriff.io      allowed   allowed   
+handlers.request.projectriff.io     mixed     allowed   
+processors.stream.projectriff.io    allowed   allowed   
+streams.stream.projectriff.io       allowed   mixed     
 
 Installation is not healthy
 `,

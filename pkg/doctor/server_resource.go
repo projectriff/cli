@@ -105,15 +105,13 @@ func (as *AccessSummary) IsHealthy() bool {
 func (as *AccessSummary) Print(c *cli.Config) {
 	printer := printers.GetNewTabWriter(c.Stdout)
 	defer printer.Flush()
-	fmt.Fprintf(printer, "NAMESPACE\tGROUP\tRESOURCE\tREAD STATUS\tWRITE STATUS\n")
+	fmt.Fprintf(printer, "RESOURCE\tREAD\tWRITE\n")
 	for _, status := range as.Statuses {
-		resource := status.Resource
-		fmt.Fprintf(printer, "%s\t%s\t%s\t%s\t%s\t\n",
-			resource.NamespaceString(),
-			resource.group,
-			resource.kind,
-			status.ReadStatus.String(),
-			status.WriteStatus.String())
+		resource := status.Resource.kind
+		if status.Resource.group != "core" {
+			resource = fmt.Sprintf("%s.%s", resource, status.Resource.group)
+		}
+		fmt.Fprintf(printer, "%s\t%s\t%s\t\n", resource, status.ReadStatus.String(), status.WriteStatus.String())
 	}
 }
 
@@ -150,13 +148,13 @@ func (as *AccessStatus) String() string {
 	status := *as
 	switch status {
 	case Allowed:
-		return cli.Ssuccessf("OK")
+		return cli.Ssuccessf("allowed")
 	case Mixed:
-		return cli.Swarnf("MIXED")
+		return cli.Swarnf("mixed")
 	case Denied:
-		return cli.Serrorf("KO")
+		return cli.Swarnf("denied")
 	case Missing:
-		return cli.Serrorf("MISSING RESOURCE")
+		return cli.Serrorf("missing")
 	}
 	panic(fmt.Sprintf("Unsupported value %v", status))
 }
