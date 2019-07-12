@@ -77,7 +77,7 @@ func (opts *DoctorOptions) Exec(ctx context.Context, c *cli.Config) error {
 		{Resource: resource.NewCustomResource(ns, "stream.projectriff.io/v1alpha1", "stream.projectriff.io", "streams"), Verbs: verbs},
 	}
 
-	accessSummary, err := checkResourceAccesses(c, checks)
+	accessSummary, err := opts.checkResourceAccesses(c, checks)
 	if err != nil {
 		c.Errorf("\nAn error occurred while checking for resource access\n")
 		c.Errorf("\nInstallation is not healthy\n")
@@ -145,14 +145,14 @@ func (*DoctorOptions) checkNamespaces(c *cli.Config, requiredNamespaces []string
 	return ok, nil
 }
 
-func checkResourceAccesses(c *cli.Config, checks []resource.AccessChecks) (*resource.AccessSummary, error) {
+func (opts *DoctorOptions) checkResourceAccesses(c *cli.Config, checks []resource.AccessChecks) (*resource.AccessSummary, error) {
 	crds := c.ApiExtensions().CustomResourceDefinitions()
 	aggregatedStatuses := make([]resource.Status, len(checks))
 	for i, check := range checks {
 		serverResource := check.Resource
 		aggregatedStatus := resource.Status{Resource: serverResource, ReadStatus: resource.AccessUndefined, WriteStatus: resource.AccessUndefined}
 		if serverResource.Custom {
-			missing, err := isCustomResourceMissing(crds, serverResource.CrdName())
+			missing, err := opts.isCustomResourceMissing(crds, serverResource.CrdName())
 			if err != nil {
 				return nil, err
 			}
@@ -173,7 +173,7 @@ func checkResourceAccesses(c *cli.Config, checks []resource.AccessChecks) (*reso
 			if evaluationError != "" {
 				return nil, fmt.Errorf(evaluationError)
 			}
-			status, err := determineAccessStatus(result)
+			status, err := opts.determineAccessStatus(result)
 			if err != nil {
 				return nil, err
 			}
@@ -188,7 +188,7 @@ func checkResourceAccesses(c *cli.Config, checks []resource.AccessChecks) (*reso
 	return &resource.AccessSummary{Statuses: aggregatedStatuses}, nil
 }
 
-func determineAccessStatus(review *authv1.SelfSubjectAccessReview) (*resource.AccessStatus, error) {
+func (*DoctorOptions) determineAccessStatus(review *authv1.SelfSubjectAccessReview) (*resource.AccessStatus, error) {
 	status := review.Status
 	if status.Allowed {
 		result := resource.Allowed
@@ -201,7 +201,7 @@ func determineAccessStatus(review *authv1.SelfSubjectAccessReview) (*resource.Ac
 	return nil, fmt.Errorf("unexpected state, review is neither allowed nor denied: %v", review)
 }
 
-func isCustomResourceMissing(crds v1beta1.CustomResourceDefinitionInterface, crdName string) (bool, error) {
+func (*DoctorOptions) isCustomResourceMissing(crds v1beta1.CustomResourceDefinitionInterface, crdName string) (bool, error) {
 	_, err := crds.Get(crdName, metav1.GetOptions{})
 	if err == nil {
 		return false, nil
