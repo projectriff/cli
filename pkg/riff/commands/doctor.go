@@ -25,7 +25,7 @@ import (
 
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/cli/printers"
-	"github.com/projectriff/cli/pkg/riff/resource"
+	"github.com/projectriff/cli/pkg/doctor"
 	"github.com/spf13/cobra"
 	authv1 "k8s.io/api/authorization/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -66,15 +66,15 @@ func (opts *DoctorOptions) Exec(ctx context.Context, c *cli.Config) error {
 	}
 
 	ns := opts.Namespace
-	verbs := []resource.Verb{"get", "list", "create", "update", "delete", "patch", "watch"}
-	checks := []resource.AccessChecks{
-		{Resource: resource.NewStandardResource(ns, "v1", "core", "configmaps"), Verbs: verbs},
-		{Resource: resource.NewStandardResource(ns, "v1", "core", "secrets"), Verbs: verbs},
-		{Resource: resource.NewCustomResource(ns, "build.projectriff.io/v1alpha1", "build.projectriff.io", "applications"), Verbs: verbs},
-		{Resource: resource.NewCustomResource(ns, "build.projectriff.io/v1alpha1", "build.projectriff.io", "functions"), Verbs: verbs},
-		{Resource: resource.NewCustomResource(ns, "request.projectriff.io/v1alpha1", "request.projectriff.io", "handlers"), Verbs: verbs},
-		{Resource: resource.NewCustomResource(ns, "stream.projectriff.io/v1alpha1", "stream.projectriff.io", "processors"), Verbs: verbs},
-		{Resource: resource.NewCustomResource(ns, "stream.projectriff.io/v1alpha1", "stream.projectriff.io", "streams"), Verbs: verbs},
+	verbs := []doctor.Verb{"get", "list", "create", "update", "delete", "patch", "watch"}
+	checks := []doctor.AccessChecks{
+		{Resource: doctor.NewStandardResource(ns, "v1", "core", "configmaps"), Verbs: verbs},
+		{Resource: doctor.NewStandardResource(ns, "v1", "core", "secrets"), Verbs: verbs},
+		{Resource: doctor.NewCustomResource(ns, "build.projectriff.io/v1alpha1", "build.projectriff.io", "applications"), Verbs: verbs},
+		{Resource: doctor.NewCustomResource(ns, "build.projectriff.io/v1alpha1", "build.projectriff.io", "functions"), Verbs: verbs},
+		{Resource: doctor.NewCustomResource(ns, "request.projectriff.io/v1alpha1", "request.projectriff.io", "handlers"), Verbs: verbs},
+		{Resource: doctor.NewCustomResource(ns, "stream.projectriff.io/v1alpha1", "stream.projectriff.io", "processors"), Verbs: verbs},
+		{Resource: doctor.NewCustomResource(ns, "stream.projectriff.io/v1alpha1", "stream.projectriff.io", "streams"), Verbs: verbs},
 	}
 
 	accessSummary, err := opts.checkResourceAccesses(c, checks)
@@ -145,20 +145,20 @@ func (*DoctorOptions) checkNamespaces(c *cli.Config, requiredNamespaces []string
 	return ok, nil
 }
 
-func (opts *DoctorOptions) checkResourceAccesses(c *cli.Config, checks []resource.AccessChecks) (*resource.AccessSummary, error) {
+func (opts *DoctorOptions) checkResourceAccesses(c *cli.Config, checks []doctor.AccessChecks) (*doctor.AccessSummary, error) {
 	crds := c.ApiExtensions().CustomResourceDefinitions()
-	aggregatedStatuses := make([]resource.Status, len(checks))
+	aggregatedStatuses := make([]doctor.Status, len(checks))
 	for i, check := range checks {
 		serverResource := check.Resource
-		aggregatedStatus := resource.Status{Resource: serverResource, ReadStatus: resource.AccessUndefined, WriteStatus: resource.AccessUndefined}
+		aggregatedStatus := doctor.Status{Resource: serverResource, ReadStatus: doctor.AccessUndefined, WriteStatus: doctor.AccessUndefined}
 		if serverResource.Custom {
 			missing, err := opts.isCustomResourceMissing(crds, serverResource.CrdName())
 			if err != nil {
 				return nil, err
 			}
 			if missing {
-				aggregatedStatus.ReadStatus = resource.Missing
-				aggregatedStatus.WriteStatus = resource.Missing
+				aggregatedStatus.ReadStatus = doctor.Missing
+				aggregatedStatus.WriteStatus = doctor.Missing
 				aggregatedStatuses[i] = aggregatedStatus
 				continue
 			}
@@ -185,17 +185,17 @@ func (opts *DoctorOptions) checkResourceAccesses(c *cli.Config, checks []resourc
 		}
 		aggregatedStatuses[i] = aggregatedStatus
 	}
-	return &resource.AccessSummary{Statuses: aggregatedStatuses}, nil
+	return &doctor.AccessSummary{Statuses: aggregatedStatuses}, nil
 }
 
-func (*DoctorOptions) determineAccessStatus(review *authv1.SelfSubjectAccessReview) (*resource.AccessStatus, error) {
+func (*DoctorOptions) determineAccessStatus(review *authv1.SelfSubjectAccessReview) (*doctor.AccessStatus, error) {
 	status := review.Status
 	if status.Allowed {
-		result := resource.Allowed
+		result := doctor.Allowed
 		return &result, nil
 	}
 	if status.Denied {
-		result := resource.Denied
+		result := doctor.Denied
 		return &result, nil
 	}
 	return nil, fmt.Errorf("unexpected state, review is neither allowed nor denied: %v", review)

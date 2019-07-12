@@ -1,4 +1,4 @@
-package resource
+package doctor
 
 import (
 	"fmt"
