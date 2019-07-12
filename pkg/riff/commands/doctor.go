@@ -34,13 +34,23 @@ import (
 )
 
 type DoctorOptions struct {
-	cli.ListOptions
+	Namespace string
 }
 
 var (
 	_ cli.Validatable = (*DoctorOptions)(nil)
 	_ cli.Executable  = (*DoctorOptions)(nil)
 )
+
+func (opts *DoctorOptions) Validate(ctx context.Context) *cli.FieldError {
+	errs := cli.EmptyFieldError
+
+	if opts.Namespace == "" {
+		errs = errs.Also(cli.ErrMissingField(cli.NamespaceFlagName))
+	}
+
+	return errs
+}
 
 func (opts *DoctorOptions) Exec(ctx context.Context, c *cli.Config) error {
 	requiredNamespaces := []string{
@@ -104,7 +114,7 @@ The doctor is not a tool for monitoring the health of the cluster.
 		RunE:    cli.ExecOptions(ctx, c, opts),
 	}
 
-	cli.AllNamespacesFlag(cmd, c, &opts.Namespace, &opts.AllNamespaces)
+	cli.NamespaceFlag(cmd, c, &opts.Namespace)
 
 	return cmd
 }

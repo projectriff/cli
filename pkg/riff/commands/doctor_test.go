@@ -35,16 +35,14 @@ func TestDoctorOptions(t *testing.T) {
 		{
 			Name: "valid",
 			Options: &commands.DoctorOptions{
-				ListOptions: rifftesting.ValidListOptions,
+				Namespace: "default",
 			},
 			ShouldValidate: true,
 		},
 		{
-			Name: "invalid",
-			Options: &commands.DoctorOptions{
-				ListOptions: rifftesting.InvalidListOptions,
-			},
-			ExpectFieldError: rifftesting.InvalidListOptionsFieldError,
+			Name:             "invalid",
+			Options:          &commands.DoctorOptions{},
+			ExpectFieldError: cli.ErrMissingField(cli.NamespaceFlagName),
 		},
 	}
 
@@ -54,50 +52,6 @@ func TestDoctorOptions(t *testing.T) {
 func TestDoctorCommand(t *testing.T) {
 	verbs := []string{"get", "list", "create", "update", "delete", "patch", "watch"}
 	table := rifftesting.CommandTable{
-		{
-			Name: "installation is ok in all namespaces",
-			Args: []string{"--all-namespaces"},
-			GivenObjects: []runtime.Object{
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "istio-system"}},
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-build"}},
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "handlers.request.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.stream.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.stream.projectriff.io"}},
-			},
-			ExpectCreates: merge(
-				selfSubjectAccessReviewRequests("", "core", "configmaps", verbs...),
-				selfSubjectAccessReviewRequests("", "core", "secrets", verbs...),
-				selfSubjectAccessReviewRequests("", "build.projectriff.io", "applications", verbs...),
-				selfSubjectAccessReviewRequests("", "build.projectriff.io", "functions", verbs...),
-				selfSubjectAccessReviewRequests("", "request.projectriff.io", "handlers", verbs...),
-				selfSubjectAccessReviewRequests("", "stream.projectriff.io", "processors", verbs...),
-				selfSubjectAccessReviewRequests("", "stream.projectriff.io", "streams", verbs...),
-			),
-			WithReactors: []rifftesting.ReactionFunc{
-				passAccessReview(),
-			},
-			ExpectOutput: `
-Namespace "istio-system"      OK
-Namespace "knative-build"     OK
-Namespace "knative-serving"   OK
-Namespace "riff-system"       OK
-
-NAMESPACE   GROUP                    RESOURCE       READ STATUS   WRITE STATUS
-*           core                     configmaps     OK            OK    
-*           core                     secrets        OK            OK    
-*           build.projectriff.io     applications   OK            OK    
-*           build.projectriff.io     functions      OK            OK    
-*           request.projectriff.io   handlers       OK            OK    
-*           stream.projectriff.io    processors     OK            OK    
-*           stream.projectriff.io    streams        OK            OK    
-
-Installation is OK
-`,
-		},
 		{
 			Name: "istio-system is missing",
 			Args: []string{},

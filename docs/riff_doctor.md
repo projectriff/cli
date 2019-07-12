@@ -28,7 +28,6 @@ riff doctor
 ### Options
 
 ```
-      --all-namespaces   use all kubernetes namespaces
   -h, --help             help for doctor
   -n, --namespace name   kubernetes namespace (defaulted from kube config)
 ```
