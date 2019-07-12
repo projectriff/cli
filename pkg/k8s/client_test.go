@@ -34,6 +34,12 @@ func TestNewClient(t *testing.T) {
 	if client.Core() == nil {
 		t.Errorf("Expected Core client to not be nil")
 	}
+	if client.Auth() == nil {
+		t.Errorf("Expected Auth client to not be nil")
+	}
+	if client.APIExtension() == nil {
+		t.Errorf("Expected APIExtension client to not be nil")
+	}
 	if client.Build() == nil {
 		t.Errorf("Expected Build client to not be nil")
 	}
@@ -42,8 +48,5 @@ func TestNewClient(t *testing.T) {
 	}
 	if client.Stream() == nil {
 		t.Errorf("Expected Stream client to not be nil")
-	}
-	if client.ApiExtensions() == nil {
-		t.Errorf("Expected ApiExtensions client to not be nil")
 	}
 }

@@ -18,25 +18,17 @@ package testing
 
 import (
 	kntesting "github.com/knative/pkg/reconciler/testing"
-	buildv1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
-	requestv1alpha1 "github.com/projectriff/system/pkg/apis/request/v1alpha1"
 	fakeprojectriffclientset "github.com/projectriff/system/pkg/client/clientset/versioned/fake"
-	buildlisters "github.com/projectriff/system/pkg/client/listers/build/v1alpha1"
-	requestlisters "github.com/projectriff/system/pkg/client/listers/request/v1alpha1"
-	appsv1 "k8s.io/api/apps/v1"
-	corev1 "k8s.io/api/core/v1"
-	apiextensionsv1beta1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
+	fakeapiextensionsclientset "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/fake"
 	"k8s.io/apimachinery/pkg/runtime"
 	fakekubeclientset "k8s.io/client-go/kubernetes/fake"
-	appsv1listers "k8s.io/client-go/listers/apps/v1"
-	corev1listers "k8s.io/client-go/listers/core/v1"
 	"k8s.io/client-go/tools/cache"
 )
 
 var clientSetSchemes = []func(*runtime.Scheme) error{
 	fakekubeclientset.AddToScheme,
+	fakeapiextensionsclientset.AddToScheme,
 	fakeprojectriffclientset.AddToScheme,
-	apiextensionsv1beta1.AddToScheme,
 }
 
 type Listers struct {
@@ -67,38 +59,10 @@ func (l *Listers) GetKubeObjects() []runtime.Object {
 	return l.sorter.ObjectsForSchemeFunc(fakekubeclientset.AddToScheme)
 }
 
+func (l *Listers) GetAPIExtensionsObjects() []runtime.Object {
+	return l.sorter.ObjectsForSchemeFunc(fakeapiextensionsclientset.AddToScheme)
+}
+
 func (l *Listers) GetProjectriffObjects() []runtime.Object {
 	return l.sorter.ObjectsForSchemeFunc(fakeprojectriffclientset.AddToScheme)
-}
-
-func (l *Listers) GetApiExtensionsObjects() []runtime.Object {
-	return l.sorter.ObjectsForSchemeFunc(apiextensionsv1beta1.AddToScheme)
-}
-
-func (l *Listers) GetApplicationLister() buildlisters.ApplicationLister {
-	return buildlisters.NewApplicationLister(l.indexerFor(&buildv1alpha1.Application{}))
-}
-
-func (l *Listers) GetFunctionLister() buildlisters.FunctionLister {
-	return buildlisters.NewFunctionLister(l.indexerFor(&buildv1alpha1.Function{}))
-}
-
-func (l *Listers) GetHandlerLister() requestlisters.HandlerLister {
-	return requestlisters.NewHandlerLister(l.indexerFor(&requestv1alpha1.Handler{}))
-}
-
-func (l *Listers) GetDeploymentLister() appsv1listers.DeploymentLister {
-	return appsv1listers.NewDeploymentLister(l.indexerFor(&appsv1.Deployment{}))
-}
-
-func (l *Listers) GetConfigMapLister() corev1listers.ConfigMapLister {
-	return corev1listers.NewConfigMapLister(l.indexerFor(&corev1.ConfigMap{}))
-}
-
-func (l *Listers) GetSecretLister() corev1listers.SecretLister {
-	return corev1listers.NewSecretLister(l.indexerFor(&corev1.Secret{}))
-}
-
-func (l *Listers) GetServiceAccountLister() corev1listers.ServiceAccountLister {
-	return corev1listers.NewServiceAccountLister(l.indexerFor(&corev1.ServiceAccount{}))
 }

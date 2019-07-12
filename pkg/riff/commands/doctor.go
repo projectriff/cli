@@ -152,7 +152,7 @@ func (*DoctorOptions) checkNamespaces(c *cli.Config, requiredNamespaces []string
 }
 
 func (opts *DoctorOptions) checkResourceAccesses(c *cli.Config, checks []doctor.AccessChecks) (*doctor.AccessSummary, error) {
-	crds := c.ApiExtensions().CustomResourceDefinitions()
+	crds := c.APIExtension().CustomResourceDefinitions()
 	aggregatedStatuses := make([]doctor.Status, len(checks))
 	for i, check := range checks {
 		serverResource := check.Resource

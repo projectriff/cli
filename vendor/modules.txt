@@ -314,8 +314,6 @@ github.com/projectriff/system/pkg/apis/request/v1alpha1
 github.com/projectriff/system/pkg/apis/stream
 github.com/projectriff/system/pkg/apis/stream/v1alpha1
 github.com/projectriff/system/pkg/client/clientset/versioned/fake
-github.com/projectriff/system/pkg/client/listers/build/v1alpha1
-github.com/projectriff/system/pkg/client/listers/request/v1alpha1
 github.com/projectriff/system/pkg/client/clientset/versioned/scheme
 github.com/projectriff/system/pkg/client/clientset/versioned/typed/build/v1alpha1/fake
 github.com/projectriff/system/pkg/client/clientset/versioned/typed/request/v1alpha1/fake
@@ -499,10 +497,10 @@ gopkg.in/yaml.v2
 # k8s.io/api v0.0.0-20190515023547-db5a9d1c40eb => k8s.io/api v0.0.0-20190226173710-145d52631d00
 k8s.io/api/authorization/v1
 k8s.io/api/core/v1
-k8s.io/api/apps/v1
 k8s.io/api/authentication/v1
 k8s.io/api/extensions/v1beta1
 k8s.io/api/policy/v1beta1
+k8s.io/api/apps/v1
 k8s.io/api/admissionregistration/v1alpha1
 k8s.io/api/admissionregistration/v1beta1
 k8s.io/api/apps/v1beta1
@@ -531,11 +529,11 @@ k8s.io/api/storage/v1beta1
 # k8s.io/apiextensions-apiserver v0.0.0-20190226180157-bd0469a053ff
 k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset
 k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1
-k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1
 k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/fake
+k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1
 k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/scheme
-k8s.io/apiextensions-apiserver/pkg/apis/apiextensions
 k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1/fake
+k8s.io/apiextensions-apiserver/pkg/apis/apiextensions
 # k8s.io/apimachinery v0.0.0-20190515023456-b74e4c97951f => k8s.io/apimachinery v0.0.0-20190221084156-01f179d85dbc
 k8s.io/apimachinery/pkg/apis/meta/v1
 k8s.io/apimachinery/pkg/runtime
@@ -594,8 +592,6 @@ k8s.io/client-go/tools/clientcmd
 k8s.io/client-go/tools/clientcmd/api
 k8s.io/client-go/tools/watch
 k8s.io/client-go/kubernetes/fake
-k8s.io/client-go/listers/apps/v1
-k8s.io/client-go/listers/core/v1
 k8s.io/client-go/testing
 k8s.io/client-go/plugin/pkg/client/auth/azure
 k8s.io/client-go/plugin/pkg/client/auth/gcp
@@ -708,6 +704,7 @@ k8s.io/client-go/informers/rbac
 k8s.io/client-go/informers/scheduling
 k8s.io/client-go/informers/settings
 k8s.io/client-go/informers/storage
+k8s.io/client-go/listers/core/v1
 k8s.io/client-go/informers/admissionregistration/v1alpha1
 k8s.io/client-go/informers/admissionregistration/v1beta1
 k8s.io/client-go/informers/apps/v1
@@ -736,6 +733,7 @@ k8s.io/client-go/informers/storage/v1alpha1
 k8s.io/client-go/informers/storage/v1beta1
 k8s.io/client-go/listers/admissionregistration/v1alpha1
 k8s.io/client-go/listers/admissionregistration/v1beta1
+k8s.io/client-go/listers/apps/v1
 k8s.io/client-go/listers/apps/v1beta1
 k8s.io/client-go/listers/apps/v1beta2
 k8s.io/client-go/listers/autoscaling/v1
