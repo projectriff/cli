@@ -34,7 +34,7 @@ import (
 )
 
 type DoctorOptions struct {
-	cli.NamespaceOptions
+	cli.ListOptions
 }
 
 var (

@@ -165,26 +165,26 @@ func TestListOptions(t *testing.T) {
 	table := rifftesting.OptionsTable{
 		{
 			Name: "default",
-			Options: &cli.NamespaceOptions{
+			Options: &cli.ListOptions{
 				Namespace: "default",
 			},
 			ShouldValidate: true,
 		},
 		{
 			Name: "all namespaces",
-			Options: &cli.NamespaceOptions{
+			Options: &cli.ListOptions{
 				AllNamespaces: true,
 			},
 			ShouldValidate: true,
 		},
 		{
 			Name:             "neither",
-			Options:          &cli.NamespaceOptions{},
+			Options:          &cli.ListOptions{},
 			ExpectFieldError: cli.ErrMissingOneOf(cli.NamespaceFlagName, cli.AllNamespacesFlagName),
 		},
 		{
 			Name: "both",
-			Options: &cli.NamespaceOptions{
+			Options: &cli.ListOptions{
 				Namespace:     "default",
 				AllNamespaces: true,
 			},

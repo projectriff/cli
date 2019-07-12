@@ -33,14 +33,18 @@ import (
 func TestDoctorOptions(t *testing.T) {
 	table := rifftesting.OptionsTable{
 		{
-			Name:           "valid",
-			Options:        &rifftesting.ValidNamespaceOptions,
+			Name: "valid",
+			Options: &commands.DoctorOptions{
+				ListOptions: rifftesting.ValidListOptions,
+			},
 			ShouldValidate: true,
 		},
 		{
-			Name:             "invalid",
-			Options:          &rifftesting.InvalidNamespaceOptions,
-			ExpectFieldError: rifftesting.InvalidNamespaceOptionsFieldError,
+			Name: "invalid",
+			Options: &commands.DoctorOptions{
+				ListOptions: rifftesting.InvalidListOptions,
+			},
+			ExpectFieldError: rifftesting.InvalidListOptionsFieldError,
 		},
 	}
 

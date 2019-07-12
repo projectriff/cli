@@ -27,11 +27,11 @@ import (
 const TestField = "test-field"
 
 var (
-	ValidNamespaceOptions = cli.NamespaceOptions{
+	ValidListOptions = cli.ListOptions{
 		Namespace: "default",
 	}
-	InvalidNamespaceOptions           = cli.NamespaceOptions{}
-	InvalidNamespaceOptionsFieldError = cli.ErrMissingOneOf(cli.NamespaceFlagName, cli.AllNamespacesFlagName)
+	InvalidListOptions           = cli.ListOptions{}
+	InvalidListOptionsFieldError = cli.ErrMissingOneOf(cli.NamespaceFlagName, cli.AllNamespacesFlagName)
 )
 
 var (

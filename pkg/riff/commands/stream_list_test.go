@@ -34,14 +34,14 @@ func TestStreamListOptions(t *testing.T) {
 		{
 			Name: "invalid list",
 			Options: &commands.StreamListOptions{
-				NamespaceOptions: rifftesting.InvalidNamespaceOptions,
+				ListOptions: rifftesting.InvalidListOptions,
 			},
-			ExpectFieldError: rifftesting.InvalidNamespaceOptionsFieldError,
+			ExpectFieldError: rifftesting.InvalidListOptionsFieldError,
 		},
 		{
 			Name: "valid list",
 			Options: &commands.StreamListOptions{
-				NamespaceOptions: rifftesting.ValidNamespaceOptions,
+				ListOptions: rifftesting.ValidListOptions,
 			},
 			ShouldValidate: true,
 		},
