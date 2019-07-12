@@ -105,7 +105,7 @@ func (as *AccessSummary) IsHealthy() bool {
 func (as *AccessSummary) Print(c *cli.Config) {
 	printer := printers.GetNewTabWriter(c.Stdout)
 	defer printer.Flush()
-	fmt.Fprintf(printer, "\nNAMESPACE\tGROUP\tRESOURCE\tREAD STATUS\tWRITE STATUS\n")
+	fmt.Fprintf(printer, "NAMESPACE\tGROUP\tRESOURCE\tREAD STATUS\tWRITE STATUS\n")
 	for _, status := range as.Statuses {
 		resource := status.Resource
 		fmt.Fprintf(printer, "%s\t%s\t%s\t%s\t%s\t\n",

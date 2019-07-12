@@ -61,7 +61,8 @@ func (opts *DoctorOptions) Exec(ctx context.Context, c *cli.Config) error {
 	}
 	installationOk, err := opts.checkNamespaces(c, requiredNamespaces)
 	if err != nil || !installationOk {
-		c.Errorf("\nInstallation is not healthy\n")
+		c.Printf("\n")
+		c.Errorf("Installation is not healthy\n")
 		return err
 	}
 
@@ -79,15 +80,19 @@ func (opts *DoctorOptions) Exec(ctx context.Context, c *cli.Config) error {
 
 	accessSummary, err := opts.checkResourceAccesses(c, checks)
 	if err != nil {
-		c.Errorf("\nAn error occurred while checking for resource access\n")
-		c.Errorf("\nInstallation is not healthy\n")
+		c.Printf("\n")
+		c.Errorf("An error occurred while checking for resource access\n")
+		c.Printf("\n")
+		c.Errorf("Installation is not healthy\n")
 		return err
 	}
+	c.Printf("\n")
 	accessSummary.Print(c)
+	c.Printf("\n")
 	if !accessSummary.IsHealthy() {
-		c.Errorf("\nInstallation is not healthy\n")
+		c.Errorf("Installation is not healthy\n")
 	} else {
-		c.Successf("\nInstallation is OK\n")
+		c.Successf("Installation is OK\n")
 	}
 
 	return nil
