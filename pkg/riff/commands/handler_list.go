@@ -62,9 +62,9 @@ func (opts *HandlerListOptions) Exec(ctx context.Context, c *cli.Config) error {
 	tablePrinter := printers.NewTablePrinter(printers.PrintOptions{
 		WithNamespace: opts.AllNamespaces,
 	}).With(func(h printers.PrintHandler) {
-		columns := printHandlerColumns()
-		h.TableHandler(columns, printHandlerList)
-		h.TableHandler(columns, printHandler)
+		columns := opts.printColumns()
+		h.TableHandler(columns, opts.printList)
+		h.TableHandler(columns, opts.print)
 	})
 
 	handlers = handlers.DeepCopy()
@@ -100,10 +100,10 @@ For detail regarding the status of a single handler, run:
 	return cmd
 }
 
-func printHandlerList(handlers *requestv1alpha1.HandlerList, opts printers.PrintOptions) ([]metav1beta1.TableRow, error) {
+func (opts *HandlerListOptions) printList(handlers *requestv1alpha1.HandlerList, printOpts printers.PrintOptions) ([]metav1beta1.TableRow, error) {
 	rows := make([]metav1beta1.TableRow, 0, len(handlers.Items))
 	for i := range handlers.Items {
-		r, err := printHandler(&handlers.Items[i], opts)
+		r, err := opts.print(&handlers.Items[i], printOpts)
 		if err != nil {
 			return nil, err
 		}
@@ -112,12 +112,12 @@ func printHandlerList(handlers *requestv1alpha1.HandlerList, opts printers.Print
 	return rows, nil
 }
 
-func printHandler(handler *requestv1alpha1.Handler, opts printers.PrintOptions) ([]metav1beta1.TableRow, error) {
+func (opts *HandlerListOptions) print(handler *requestv1alpha1.Handler, _ printers.PrintOptions) ([]metav1beta1.TableRow, error) {
 	now := time.Now()
 	row := metav1beta1.TableRow{
 		Object: runtime.RawExtension{Object: handler},
 	}
-	refType, refValue := handlerRef(handler)
+	refType, refValue := opts.formatRef(handler)
 	host := ""
 	if handler.Status.URL != nil {
 		host = handler.Status.URL.Host
@@ -133,7 +133,7 @@ func printHandler(handler *requestv1alpha1.Handler, opts printers.PrintOptions) 
 	return []metav1beta1.TableRow{row}, nil
 }
 
-func printHandlerColumns() []metav1beta1.TableColumnDefinition {
+func (opts *HandlerListOptions) printColumns() []metav1beta1.TableColumnDefinition {
 	return []metav1beta1.TableColumnDefinition{
 		{Name: "Name", Type: "string"},
 		{Name: "Type", Type: "string"},
@@ -144,7 +144,7 @@ func printHandlerColumns() []metav1beta1.TableColumnDefinition {
 	}
 }
 
-func handlerRef(handler *requestv1alpha1.Handler) (string, string) {
+func (opts *HandlerListOptions) formatRef(handler *requestv1alpha1.Handler) (string, string) {
 	if handler.Spec.Build != nil {
 		if handler.Spec.Build.ApplicationRef != "" {
 			return "application", handler.Spec.Build.ApplicationRef
