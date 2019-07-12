@@ -70,10 +70,11 @@ func TestDoctorCommand(t *testing.T) {
 				passAccessReview(),
 			},
 			ExpectOutput: `
-Namespace "istio-system"      Missing
-Namespace "knative-build"     OK
-Namespace "knative-serving"   OK
-Namespace "riff-system"       OK
+NAMESPACE         STATUS
+istio-system      missing
+knative-build     ok
+knative-serving   ok
+riff-system       ok
 
 Installation is not healthy
 `,
@@ -93,10 +94,11 @@ Installation is not healthy
 				passAccessReview(),
 			},
 			ExpectOutput: `
-Namespace "istio-system"      Missing
-Namespace "knative-build"     OK
-Namespace "knative-serving"   OK
-Namespace "riff-system"       Missing
+NAMESPACE         STATUS
+istio-system      missing
+knative-build     ok
+knative-serving   ok
+riff-system       missing
 
 Installation is not healthy
 `,
@@ -118,19 +120,20 @@ Installation is not healthy
 				passAccessReview(),
 			},
 			ExpectOutput: `
-Namespace "istio-system"      OK
-Namespace "knative-build"     OK
-Namespace "knative-serving"   OK
-Namespace "riff-system"       OK
+NAMESPACE         STATUS
+istio-system      ok
+knative-build     ok
+knative-serving   ok
+riff-system       ok
 
 RESOURCE                            READ      WRITE
-configmaps                          allowed   allowed   
-secrets                             allowed   allowed   
-applications.build.projectriff.io   missing   missing   
-functions.build.projectriff.io      missing   missing   
-handlers.request.projectriff.io     missing   missing   
-processors.stream.projectriff.io    missing   missing   
-streams.stream.projectriff.io       missing   missing   
+configmaps                          allowed   allowed
+secrets                             allowed   allowed
+applications.build.projectriff.io   missing   missing
+functions.build.projectriff.io      missing   missing
+handlers.request.projectriff.io     missing   missing
+processors.stream.projectriff.io    missing   missing
+streams.stream.projectriff.io       missing   missing
 
 Installation is not healthy
 `,
@@ -163,19 +166,20 @@ Installation is not healthy
 				passAccessReview(),
 			},
 			ExpectOutput: `
-Namespace "istio-system"      OK
-Namespace "knative-build"     OK
-Namespace "knative-serving"   OK
-Namespace "riff-system"       OK
+NAMESPACE         STATUS
+istio-system      ok
+knative-build     ok
+knative-serving   ok
+riff-system       ok
 
 RESOURCE                            READ      WRITE
-configmaps                          allowed   allowed   
-secrets                             allowed   allowed   
-applications.build.projectriff.io   allowed   allowed   
-functions.build.projectriff.io      denied    denied    
-handlers.request.projectriff.io     allowed   allowed   
-processors.stream.projectriff.io    allowed   allowed   
-streams.stream.projectriff.io       allowed   allowed   
+configmaps                          allowed   allowed
+secrets                             allowed   allowed
+applications.build.projectriff.io   allowed   allowed
+functions.build.projectriff.io      denied    denied
+handlers.request.projectriff.io     allowed   allowed
+processors.stream.projectriff.io    allowed   allowed
+streams.stream.projectriff.io       allowed   allowed
 
 Installation is not healthy
 `,
@@ -209,19 +213,20 @@ Installation is not healthy
 				passAccessReview(),
 			},
 			ExpectOutput: `
-Namespace "istio-system"      OK
-Namespace "knative-build"     OK
-Namespace "knative-serving"   OK
-Namespace "riff-system"       OK
+NAMESPACE         STATUS
+istio-system      ok
+knative-build     ok
+knative-serving   ok
+riff-system       ok
 
 RESOURCE                            READ      WRITE
-configmaps                          allowed   allowed   
-secrets                             allowed   allowed   
-applications.build.projectriff.io   allowed   allowed   
-functions.build.projectriff.io      allowed   allowed   
-handlers.request.projectriff.io     mixed     allowed   
-processors.stream.projectriff.io    allowed   allowed   
-streams.stream.projectriff.io       allowed   mixed     
+configmaps                          allowed   allowed
+secrets                             allowed   allowed
+applications.build.projectriff.io   allowed   allowed
+functions.build.projectriff.io      allowed   allowed
+handlers.request.projectriff.io     mixed     allowed
+processors.stream.projectriff.io    allowed   allowed
+streams.stream.projectriff.io       allowed   mixed
 
 Installation is not healthy
 `,

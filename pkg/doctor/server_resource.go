@@ -111,7 +111,7 @@ func (as *AccessSummary) Print(c *cli.Config) {
 		if status.Resource.group != "core" {
 			resource = fmt.Sprintf("%s.%s", resource, status.Resource.group)
 		}
-		fmt.Fprintf(printer, "%s\t%s\t%s\t\n", resource, status.ReadStatus.String(), status.WriteStatus.String())
+		fmt.Fprintf(printer, "%s\t%s\t%s\n", resource, status.ReadStatus.String(), status.WriteStatus.String())
 	}
 }
 

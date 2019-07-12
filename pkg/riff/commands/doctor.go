@@ -137,15 +137,16 @@ func (*DoctorOptions) checkNamespaces(c *cli.Config, requiredNamespaces []string
 	printer := printers.GetNewTabWriter(c.Stdout)
 	defer printer.Flush()
 	ok := true
+	fmt.Fprintf(printer, "NAMESPACE\tSTATUS\n")
 	for _, namespace := range requiredNamespaces {
 		var status string
 		if foundNamespaces.Has(namespace) {
-			status = cli.Ssuccessf("OK")
+			status = cli.Ssuccessf("ok")
 		} else {
 			ok = false
-			status = cli.Serrorf("Missing")
+			status = cli.Serrorf("missing")
 		}
-		fmt.Fprintf(printer, "Namespace %q\t%s\n", namespace, status)
+		fmt.Fprintf(printer, "%s\t%s\n", namespace, status)
 	}
 	return ok, nil
 }
