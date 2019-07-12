@@ -62,9 +62,9 @@ func (opts *FunctionListOptions) Exec(ctx context.Context, c *cli.Config) error 
 	tablePrinter := printers.NewTablePrinter(printers.PrintOptions{
 		WithNamespace: opts.AllNamespaces,
 	}).With(func(h printers.PrintHandler) {
-		columns := printFunctionColumns()
-		h.TableHandler(columns, printFunctionList)
-		h.TableHandler(columns, printFunction)
+		columns := opts.printColumns()
+		h.TableHandler(columns, opts.printList)
+		h.TableHandler(columns, opts.print)
 	})
 
 	functions = functions.DeepCopy()
@@ -80,7 +80,11 @@ func NewFunctionListCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 		Use:   "list",
 		Short: "table listing of functions",
 		Long: strings.TrimSpace(`
-<todo>
+List functions in a namespace or across all namespaces.
+
+For detail regarding the status of a single function, run:
+
+	` + c.Name + ` function status <function-name>
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s function list", c.Name),
@@ -96,10 +100,10 @@ func NewFunctionListCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 	return cmd
 }
 
-func printFunctionList(functions *buildv1alpha1.FunctionList, opts printers.PrintOptions) ([]metav1beta1.TableRow, error) {
+func (opts *FunctionListOptions) printList(functions *buildv1alpha1.FunctionList, printOpts printers.PrintOptions) ([]metav1beta1.TableRow, error) {
 	rows := make([]metav1beta1.TableRow, 0, len(functions.Items))
 	for i := range functions.Items {
-		r, err := printFunction(&functions.Items[i], opts)
+		r, err := opts.print(&functions.Items[i], printOpts)
 		if err != nil {
 			return nil, err
 		}
@@ -108,7 +112,7 @@ func printFunctionList(functions *buildv1alpha1.FunctionList, opts printers.Prin
 	return rows, nil
 }
 
-func printFunction(function *buildv1alpha1.Function, opts printers.PrintOptions) ([]metav1beta1.TableRow, error) {
+func (opts *FunctionListOptions) print(function *buildv1alpha1.Function, _ printers.PrintOptions) ([]metav1beta1.TableRow, error) {
 	now := time.Now()
 	row := metav1beta1.TableRow{
 		Object: runtime.RawExtension{Object: function},
@@ -125,7 +129,7 @@ func printFunction(function *buildv1alpha1.Function, opts printers.PrintOptions)
 	return []metav1beta1.TableRow{row}, nil
 }
 
-func printFunctionColumns() []metav1beta1.TableColumnDefinition {
+func (opts *FunctionListOptions) printColumns() []metav1beta1.TableColumnDefinition {
 	return []metav1beta1.TableColumnDefinition{
 		{Name: "Name", Type: "string"},
 		{Name: "Latest Image", Type: "string"},

@@ -71,7 +71,10 @@ func NewProcessorDeleteCommand(ctx context.Context, c *cli.Config) *cobra.Comman
 		Use:   "delete",
 		Short: "delete processor(s)",
 		Long: strings.TrimSpace(`
-<todo>
+Delete one or more processors by name or all processors within a namespace.
+
+The processor will stop processing messages from the input streams and writing
+to the output streams. The streams and messages in each stream are preserved.
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s processor delete my-processor", c.Name),

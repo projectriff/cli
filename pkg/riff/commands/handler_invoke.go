@@ -61,7 +61,7 @@ func (opts *HandlerInvokeOptions) Exec(ctx context.Context, c *cli.Config) error
 		return fmt.Errorf("handler %q is not ready", opts.Name)
 	}
 
-	ingress, err := ingressServiceHost(c)
+	ingress, err := opts.ingressServiceHost(c)
 	if err != nil {
 		return err
 	}
@@ -92,7 +92,7 @@ func NewHandlerInvokeCommand(ctx context.Context, c *cli.Config) *cobra.Command 
 		Hidden: true,
 		Short:  "invoke an http request handler using curl",
 		Long: strings.TrimSpace(`
-<todo>
+This command is not supported and may be removed in the future.
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s handler invoke my-handler", c.Name),
@@ -126,7 +126,7 @@ func NewHandlerInvokeCommand(ctx context.Context, c *cli.Config) *cobra.Command 
 	return cmd
 }
 
-func ingressServiceHost(c *cli.Config) (string, error) {
+func (opts *HandlerInvokeOptions) ingressServiceHost(c *cli.Config) (string, error) {
 	// TODO allow setting ingress manually
 	svc, err := c.Core().Services("istio-system").Get("istio-ingressgateway", metav1.GetOptions{})
 	if err != nil {

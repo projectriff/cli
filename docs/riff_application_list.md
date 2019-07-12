@@ -8,7 +8,11 @@ table listing of applications
 
 ### Synopsis
 
-<todo>
+List applications in a namespace or across all namespaces.
+
+For detail regarding the status of a single application, run:
+
+    riff application status <application-name>
 
 ```
 riff application list [flags]

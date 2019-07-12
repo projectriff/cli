@@ -65,7 +65,8 @@ func NewCompletionCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 		Use:   "completion",
 		Short: "generate shell completion script",
 		Long: strings.TrimSpace(`
-<todo>
+Generate the completion script for your shell. The script is printed to stdout
+and needs to be placed in the appropriate directory on your system.
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s completion", c.Name),

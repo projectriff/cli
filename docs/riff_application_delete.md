@@ -8,7 +8,12 @@ delete application(s)
 
 ### Synopsis
 
-<todo>
+Delete one or more applications by name or all applications within a namespace.
+
+Deleting an application prevents new builds while preserving built images in the
+registry. Handlers that reference this application will continue to use the last
+built image. A new application created with the same name will automatically be
+discovered by the handler.
 
 ```
 riff application delete [flags]

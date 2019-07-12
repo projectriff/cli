@@ -224,7 +224,32 @@ func NewFunctionCreateCommand(ctx context.Context, c *cli.Config) *cobra.Command
 		Use:   "create",
 		Short: "create a function from source",
 		Long: strings.TrimSpace(`
-<todo>
+Create a function from source using the function Cloud Native Buildpack builder.
+
+Function source can be specified either as a Git repository or as a local
+directory. Builds from Git are run in the cluster while builds from a local
+directory are run inside a local Docker daemon and are orchestrated by this
+command (in the future, builds from local source may also be run in the
+cluster).
+
+In addition to the source code, functions are defined by these properties:
+
+- invoker - language runtime that should host the function, the invoker is often
+    auto-detected, but may need to be specified in cases of ambiguity.
+- artifact - file in the source that contains the function.
+- handler - invoker specific, typically the method or class within the artifact.
+
+These values can be versioned with the source code in a riff.toml file, or
+specified here to override the source. Versioning with the source is preferred
+as changed can be deployed as a unit. Overriding is necessary when deploying
+multiple functions from a single code base.
+
+The riff.toml file takes the form:
+
+    override = "<invoker name>"
+	artifact = "<path to artifact>"
+	handler = "<function handler>"
+
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s function create my-func %s registry.example.com/image %s https://example.com/my-func.git", c.Name, cli.ImageFlagName, cli.GitRepoFlagName),

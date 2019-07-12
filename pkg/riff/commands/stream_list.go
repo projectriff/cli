@@ -62,9 +62,9 @@ func (opts *StreamListOptions) Exec(ctx context.Context, c *cli.Config) error {
 	tablePrinter := printers.NewTablePrinter(printers.PrintOptions{
 		WithNamespace: opts.AllNamespaces,
 	}).With(func(h printers.PrintHandler) {
-		columns := printStreamColumns()
-		h.TableHandler(columns, printStreamList)
-		h.TableHandler(columns, printStream)
+		columns := opts.printColumns()
+		h.TableHandler(columns, opts.printList)
+		h.TableHandler(columns, opts.print)
 	})
 
 	streams = streams.DeepCopy()
@@ -80,7 +80,11 @@ func NewStreamListCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 		Use:   "list",
 		Short: "table listing of streams",
 		Long: strings.TrimSpace(`
-<todo>
+List streams in a namespace or across all namespaces.
+
+For detail regarding the status of a single stream, run:
+
+	` + c.Name + ` stream status <stream-name>
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s stream list", c.Name),
@@ -96,10 +100,10 @@ func NewStreamListCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 	return cmd
 }
 
-func printStreamList(streams *streamv1alpha1.StreamList, opts printers.PrintOptions) ([]metav1beta1.TableRow, error) {
+func (opts *StreamListOptions) printList(streams *streamv1alpha1.StreamList, printOpts printers.PrintOptions) ([]metav1beta1.TableRow, error) {
 	rows := make([]metav1beta1.TableRow, 0, len(streams.Items))
 	for i := range streams.Items {
-		r, err := printStream(&streams.Items[i], opts)
+		r, err := opts.print(&streams.Items[i], printOpts)
 		if err != nil {
 			return nil, err
 		}
@@ -108,7 +112,7 @@ func printStreamList(streams *streamv1alpha1.StreamList, opts printers.PrintOpti
 	return rows, nil
 }
 
-func printStream(stream *streamv1alpha1.Stream, opts printers.PrintOptions) ([]metav1beta1.TableRow, error) {
+func (opts *StreamListOptions) print(stream *streamv1alpha1.Stream, _ printers.PrintOptions) ([]metav1beta1.TableRow, error) {
 	now := time.Now()
 	row := metav1beta1.TableRow{
 		Object: runtime.RawExtension{Object: stream},
@@ -125,7 +129,7 @@ func printStream(stream *streamv1alpha1.Stream, opts printers.PrintOptions) ([]m
 	return []metav1beta1.TableRow{row}, nil
 }
 
-func printStreamColumns() []metav1beta1.TableColumnDefinition {
+func (opts *StreamListOptions) printColumns() []metav1beta1.TableColumnDefinition {
 	return []metav1beta1.TableColumnDefinition{
 		{Name: "Name", Type: "string"},
 		{Name: "Topic", Type: "string"},

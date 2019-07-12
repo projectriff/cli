@@ -62,9 +62,9 @@ func (opts *ApplicationListOptions) Exec(ctx context.Context, c *cli.Config) err
 	tablePrinter := printers.NewTablePrinter(printers.PrintOptions{
 		WithNamespace: opts.AllNamespaces,
 	}).With(func(h printers.PrintHandler) {
-		columns := printApplicationColumns()
-		h.TableHandler(columns, printApplicationList)
-		h.TableHandler(columns, printApplication)
+		columns := opts.printColumns()
+		h.TableHandler(columns, opts.printList)
+		h.TableHandler(columns, opts.print)
 	})
 
 	applications = applications.DeepCopy()
@@ -80,7 +80,11 @@ func NewApplicationListCommand(ctx context.Context, c *cli.Config) *cobra.Comman
 		Use:   "list",
 		Short: "table listing of applications",
 		Long: strings.TrimSpace(`
-<todo>
+List applications in a namespace or across all namespaces.
+
+For detail regarding the status of a single application, run:
+
+    ` + c.Name + ` application status <application-name>
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s application list", c.Name),
@@ -96,10 +100,10 @@ func NewApplicationListCommand(ctx context.Context, c *cli.Config) *cobra.Comman
 	return cmd
 }
 
-func printApplicationList(applications *buildv1alpha1.ApplicationList, opts printers.PrintOptions) ([]metav1beta1.TableRow, error) {
+func (opts *ApplicationListOptions) printList(applications *buildv1alpha1.ApplicationList, printOpts printers.PrintOptions) ([]metav1beta1.TableRow, error) {
 	rows := make([]metav1beta1.TableRow, 0, len(applications.Items))
 	for i := range applications.Items {
-		r, err := printApplication(&applications.Items[i], opts)
+		r, err := opts.print(&applications.Items[i], printOpts)
 		if err != nil {
 			return nil, err
 		}
@@ -108,7 +112,7 @@ func printApplicationList(applications *buildv1alpha1.ApplicationList, opts prin
 	return rows, nil
 }
 
-func printApplication(application *buildv1alpha1.Application, opts printers.PrintOptions) ([]metav1beta1.TableRow, error) {
+func (opts *ApplicationListOptions) print(application *buildv1alpha1.Application, _ printers.PrintOptions) ([]metav1beta1.TableRow, error) {
 	now := time.Now()
 	row := metav1beta1.TableRow{
 		Object: runtime.RawExtension{Object: application},
@@ -122,7 +126,7 @@ func printApplication(application *buildv1alpha1.Application, opts printers.Prin
 	return []metav1beta1.TableRow{row}, nil
 }
 
-func printApplicationColumns() []metav1beta1.TableColumnDefinition {
+func (opts *ApplicationListOptions) printColumns() []metav1beta1.TableColumnDefinition {
 	return []metav1beta1.TableColumnDefinition{
 		{Name: "Name", Type: "string"},
 		{Name: "Latest Image", Type: "string"},
