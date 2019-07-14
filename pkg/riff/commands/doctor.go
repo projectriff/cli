@@ -23,12 +23,10 @@ import (
 
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/cli/printers"
-	"github.com/projectriff/cli/pkg/doctor"
 	"github.com/spf13/cobra"
 	authv1 "k8s.io/api/authorization/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/util/sets"
 )
 
@@ -59,39 +57,37 @@ func (opts *DoctorOptions) Exec(ctx context.Context, c *cli.Config) error {
 		"riff-system",
 	}
 	installationOk, err := opts.checkNamespaces(c, requiredNamespaces)
-	if err != nil || !installationOk {
+	if err != nil {
+		return err
+	}
+	if !installationOk {
 		c.Printf("\n")
 		c.Errorf("Installation is not healthy\n")
-		return err
+		return nil
 	}
 
 	verbs := []string{"get", "list", "create", "update", "delete", "patch", "watch"}
-	checks := []doctor.AccessChecks{
-		{Resource: schema.GroupResource{Group: "core", Resource: "configmaps"}, Verbs: verbs},
-		{Resource: schema.GroupResource{Group: "core", Resource: "secrets"}, Verbs: verbs},
-		{Resource: schema.GroupResource{Group: "build.projectriff.io", Resource: "applications"}, Verbs: verbs},
-		{Resource: schema.GroupResource{Group: "build.projectriff.io", Resource: "functions"}, Verbs: verbs},
-		{Resource: schema.GroupResource{Group: "request.projectriff.io", Resource: "handlers"}, Verbs: verbs},
-		{Resource: schema.GroupResource{Group: "stream.projectriff.io", Resource: "processors"}, Verbs: verbs},
-		{Resource: schema.GroupResource{Group: "stream.projectriff.io", Resource: "streams"}, Verbs: verbs},
+	accessChecks := doctorAccessChecks{
+		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "core", Resource: "configmaps"}, Verbs: verbs},
+		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "core", Resource: "secrets"}, Verbs: verbs},
+		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "build.projectriff.io", Resource: "applications"}, Verbs: verbs},
+		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "build.projectriff.io", Resource: "functions"}, Verbs: verbs},
+		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "request.projectriff.io", Resource: "handlers"}, Verbs: verbs},
+		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "stream.projectriff.io", Resource: "processors"}, Verbs: verbs},
+		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "stream.projectriff.io", Resource: "streams"}, Verbs: verbs},
 	}
-
-	accessSummary, err := opts.checkResourceAccesses(c, opts.Namespace, checks)
+	installationOk, err = opts.checkAccess(c, accessChecks)
 	if err != nil {
-		c.Printf("\n")
-		c.Errorf("An error occurred while checking for resource access\n")
-		c.Printf("\n")
-		c.Errorf("Installation is not healthy\n")
 		return err
 	}
-	c.Printf("\n")
-	accessSummary.Fprint(c.Stdout)
-	c.Printf("\n")
-	if !accessSummary.IsHealthy() {
+	if !installationOk {
+		c.Printf("\n")
 		c.Errorf("Installation is not healthy\n")
-	} else {
-		c.Successf("Installation is OK\n")
+		return nil
 	}
+
+	c.Printf("\n")
+	c.Successf("Installation is OK\n")
 
 	return nil
 }
@@ -149,63 +145,135 @@ func (*DoctorOptions) checkNamespaces(c *cli.Config, requiredNamespaces []string
 	return ok, nil
 }
 
-func (opts *DoctorOptions) checkResourceAccesses(c *cli.Config, ns string, checks []doctor.AccessChecks) (*doctor.AccessSummary, error) {
-	aggregatedStatuses := make([]doctor.Status, len(checks))
-	for i, check := range checks {
-		serverResource := check.Resource
-		aggregatedStatus := doctor.Status{Resource: serverResource}
-		// this is a crude test for a CRD, it may not work for all future resources that need to be tested
-		if strings.Contains(serverResource.Group, ".") {
-			missing, err := opts.isCustomResourceMissing(c, serverResource.String())
-			if err != nil {
-				return nil, err
-			}
-			if missing {
-				aggregatedStatus.ReadStatus = doctor.AccessMissing
-				aggregatedStatus.WriteStatus = doctor.AccessMissing
-				aggregatedStatuses[i] = aggregatedStatus
-				continue
-			}
-		}
-		for _, verb := range check.Verbs {
-			reviewRequest := doctor.NewReview(ns, serverResource, verb)
-			result, err := c.Auth().SelfSubjectAccessReviews().Create(reviewRequest)
-			if err != nil {
-				return nil, err
-			}
-			evaluationError := result.Status.EvaluationError
-			if evaluationError != "" {
-				return nil, fmt.Errorf(evaluationError)
-			}
-			status, err := opts.determineAccessStatus(result)
-			if err != nil {
-				return nil, err
-			}
-			if doctor.IsRead(verb) {
-				aggregatedStatus.ReadStatus = aggregatedStatus.ReadStatus.Combine(status)
-			} else {
-				aggregatedStatus.WriteStatus = aggregatedStatus.WriteStatus.Combine(status)
-			}
-		}
-		aggregatedStatuses[i] = aggregatedStatus
+func (*DoctorOptions) checkAccess(c *cli.Config, accessChecks doctorAccessChecks) (bool, error) {
+	err := accessChecks.ResolveStatus(c)
+	if err != nil {
+		return false, err
 	}
-	return &doctor.AccessSummary{Statuses: aggregatedStatuses}, nil
+	c.Printf("\n")
+	printer := printers.GetNewTabWriter(c.Stdout)
+	defer printer.Flush()
+	fmt.Fprintf(printer, "RESOURCE\tREAD\tWRITE\n")
+	for _, check := range accessChecks {
+		resource := check.Attributes.Resource
+		if check.Attributes.Group != "core" {
+			resource = fmt.Sprintf("%s.%s", resource, check.Attributes.Group)
+		}
+		fmt.Fprintf(printer, "%s\t%s\t%s\n", resource, check.ReadStatus.String(), check.WriteStatus.String())
+	}
+	return accessChecks.IsHealthy(), nil
 }
 
-func (*DoctorOptions) determineAccessStatus(review *authv1.SelfSubjectAccessReview) (doctor.AccessStatus, error) {
-	if review.Status.Allowed {
-		return doctor.AccessAllowed, nil
-	}
-	if review.Status.Denied {
-		return doctor.AccessDenied, nil
-	}
-	return doctor.AccessUndefined, fmt.Errorf("unexpected state, review is neither allowed nor denied: %v", review)
+type doctorAccessCheck struct {
+	Attributes  *authv1.ResourceAttributes
+	Verbs       []string
+	ReadStatus  doctorAccessStatus
+	WriteStatus doctorAccessStatus
 }
 
-func (*DoctorOptions) isCustomResourceMissing(c *cli.Config, name string) (bool, error) {
+func (check *doctorAccessCheck) ResolveStatus(c *cli.Config) error {
+	if strings.Contains(check.Attributes.Group, ".") {
+		missing, err := check.isCustomResourceMissing(c, fmt.Sprintf("%s.%s", check.Attributes.Resource, check.Attributes.Group))
+		if err != nil {
+			return err
+		}
+		if missing {
+			check.ReadStatus = doctorAccessMissing
+			check.WriteStatus = doctorAccessMissing
+			return nil
+		}
+	}
+	for _, verb := range check.Verbs {
+		attributes := check.Attributes.DeepCopy()
+		attributes.Verb = verb
+		review, err := c.Auth().SelfSubjectAccessReviews().Create(&authv1.SelfSubjectAccessReview{
+			Spec: authv1.SelfSubjectAccessReviewSpec{
+				ResourceAttributes: attributes,
+			},
+		})
+		if err != nil {
+			return err
+		}
+		if review.Status.EvaluationError != "" {
+			return fmt.Errorf(review.Status.EvaluationError)
+		}
+		status := doctorAccessUndefined
+		if review.Status.Allowed {
+			status = doctorAccessAllowed
+		} else if review.Status.Denied {
+			status = doctorAccessDenied
+		}
+		if verb == "get" || verb == "list" || verb == "watch" {
+			check.ReadStatus = check.ReadStatus.Combine(status)
+		} else {
+			check.WriteStatus = check.WriteStatus.Combine(status)
+		}
+	}
+	return nil
+}
+
+func (check *doctorAccessCheck) isCustomResourceMissing(c *cli.Config, name string) (bool, error) {
 	_, err := c.APIExtension().CustomResourceDefinitions().Get(name, metav1.GetOptions{})
 	if errors.IsNotFound(err) {
 		return true, nil
 	}
 	return false, err
+}
+
+type doctorAccessChecks []*doctorAccessCheck
+
+func (checks doctorAccessChecks) ResolveStatus(c *cli.Config) error {
+	for _, check := range checks {
+		if err := check.ResolveStatus(c); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (checks doctorAccessChecks) IsHealthy() bool {
+	for _, check := range checks {
+		if check.ReadStatus != doctorAccessAllowed || check.WriteStatus != doctorAccessAllowed {
+			return false
+		}
+	}
+	return true
+}
+
+type doctorAccessStatus int
+
+const (
+	doctorAccessUndefined doctorAccessStatus = iota
+	doctorAccessAllowed                      /* right is granted */
+	doctorAccessDenied                       /* right is denied */
+	doctorAccessMixed                        /* for the same resource, some rights are granted, some are denied */
+	doctorAccessMissing                      /* resource not deployed */
+)
+
+func (das doctorAccessStatus) Combine(new doctorAccessStatus) doctorAccessStatus {
+	if das == doctorAccessUndefined {
+		return new
+	}
+	if das != new {
+		return doctorAccessMixed
+	}
+	if das == doctorAccessAllowed {
+		return doctorAccessAllowed
+	}
+	return doctorAccessDenied
+}
+
+func (das doctorAccessStatus) String() string {
+	switch das {
+	case doctorAccessAllowed:
+		return cli.Ssuccessf("allowed")
+	case doctorAccessMixed:
+		return cli.Swarnf("mixed")
+	case doctorAccessDenied:
+		return cli.Swarnf("denied")
+	case doctorAccessMissing:
+		return cli.Serrorf("missing")
+	default:
+		return cli.Serrorf("unknown")
+	}
 }
