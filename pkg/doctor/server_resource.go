@@ -26,14 +26,14 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-func NewReview(ns string, gr schema.GroupResource, verb Verb) *authv1.SelfSubjectAccessReview {
+func NewReview(ns string, gr schema.GroupResource, verb string) *authv1.SelfSubjectAccessReview {
 	return &authv1.SelfSubjectAccessReview{
 		Spec: authv1.SelfSubjectAccessReviewSpec{
 			ResourceAttributes: &authv1.ResourceAttributes{
 				Namespace: ns,
 				Group:     gr.Group,
-				Verb:      verb.String(),
 				Resource:  gr.Resource,
+				Verb:      verb,
 			},
 		},
 	}
@@ -41,23 +41,11 @@ func NewReview(ns string, gr schema.GroupResource, verb Verb) *authv1.SelfSubjec
 
 type AccessChecks struct {
 	Resource schema.GroupResource
-	Verbs    []Verb
+	Verbs    []string
 }
 
-type Verb string
-
-func (v *Verb) String() string {
-	return string(*v)
-}
-
-func (v *Verb) IsRead() bool {
-	verb := *v
+func IsRead(verb string) bool {
 	return verb == "get" || verb == "list" || verb == "watch"
-}
-
-func (v *Verb) IsWrite() bool {
-	verb := *v
-	return verb == "create" || verb == "update" || verb == "delete" || verb == "patch"
 }
 
 type AccessSummary struct {

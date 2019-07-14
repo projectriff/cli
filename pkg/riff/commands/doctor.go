@@ -65,7 +65,7 @@ func (opts *DoctorOptions) Exec(ctx context.Context, c *cli.Config) error {
 		return err
 	}
 
-	verbs := []doctor.Verb{"get", "list", "create", "update", "delete", "patch", "watch"}
+	verbs := []string{"get", "list", "create", "update", "delete", "patch", "watch"}
 	checks := []doctor.AccessChecks{
 		{Resource: schema.GroupResource{Group: "core", Resource: "configmaps"}, Verbs: verbs},
 		{Resource: schema.GroupResource{Group: "core", Resource: "secrets"}, Verbs: verbs},
@@ -181,7 +181,7 @@ func (opts *DoctorOptions) checkResourceAccesses(c *cli.Config, ns string, check
 			if err != nil {
 				return nil, err
 			}
-			if verb.IsRead() {
+			if doctor.IsRead(verb) {
 				aggregatedStatus.ReadStatus = aggregatedStatus.ReadStatus.Combine(status)
 			} else {
 				aggregatedStatus.WriteStatus = aggregatedStatus.WriteStatus.Combine(status)
