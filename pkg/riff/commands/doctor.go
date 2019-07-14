@@ -28,6 +28,7 @@ import (
 	authv1 "k8s.io/api/authorization/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/util/sets"
 )
 
@@ -66,13 +67,13 @@ func (opts *DoctorOptions) Exec(ctx context.Context, c *cli.Config) error {
 
 	verbs := []doctor.Verb{"get", "list", "create", "update", "delete", "patch", "watch"}
 	checks := []doctor.AccessChecks{
-		{Resource: doctor.ServerResource{Group: "core", Resource: "configmaps"}, Verbs: verbs},
-		{Resource: doctor.ServerResource{Group: "core", Resource: "secrets"}, Verbs: verbs},
-		{Resource: doctor.ServerResource{Group: "build.projectriff.io", Resource: "applications"}, Verbs: verbs},
-		{Resource: doctor.ServerResource{Group: "build.projectriff.io", Resource: "functions"}, Verbs: verbs},
-		{Resource: doctor.ServerResource{Group: "request.projectriff.io", Resource: "handlers"}, Verbs: verbs},
-		{Resource: doctor.ServerResource{Group: "stream.projectriff.io", Resource: "processors"}, Verbs: verbs},
-		{Resource: doctor.ServerResource{Group: "stream.projectriff.io", Resource: "streams"}, Verbs: verbs},
+		{Resource: schema.GroupResource{Group: "core", Resource: "configmaps"}, Verbs: verbs},
+		{Resource: schema.GroupResource{Group: "core", Resource: "secrets"}, Verbs: verbs},
+		{Resource: schema.GroupResource{Group: "build.projectriff.io", Resource: "applications"}, Verbs: verbs},
+		{Resource: schema.GroupResource{Group: "build.projectriff.io", Resource: "functions"}, Verbs: verbs},
+		{Resource: schema.GroupResource{Group: "request.projectriff.io", Resource: "handlers"}, Verbs: verbs},
+		{Resource: schema.GroupResource{Group: "stream.projectriff.io", Resource: "processors"}, Verbs: verbs},
+		{Resource: schema.GroupResource{Group: "stream.projectriff.io", Resource: "streams"}, Verbs: verbs},
 	}
 
 	accessSummary, err := opts.checkResourceAccesses(c, opts.Namespace, checks)
@@ -155,7 +156,7 @@ func (opts *DoctorOptions) checkResourceAccesses(c *cli.Config, ns string, check
 		aggregatedStatus := doctor.Status{Resource: serverResource}
 		// this is a crude test for a CRD, it may not work for all future resources that need to be tested
 		if strings.Contains(serverResource.Group, ".") {
-			missing, err := opts.isCustomResourceMissing(c, serverResource.CrdName())
+			missing, err := opts.isCustomResourceMissing(c, serverResource.String())
 			if err != nil {
 				return nil, err
 			}
@@ -167,7 +168,7 @@ func (opts *DoctorOptions) checkResourceAccesses(c *cli.Config, ns string, check
 			}
 		}
 		for _, verb := range check.Verbs {
-			reviewRequest := serverResource.AsReview(ns, verb)
+			reviewRequest := doctor.NewReview(ns, serverResource, verb)
 			result, err := c.Auth().SelfSubjectAccessReviews().Create(reviewRequest)
 			if err != nil {
 				return nil, err

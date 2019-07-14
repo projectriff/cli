@@ -23,32 +23,24 @@ import (
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/cli/printers"
 	authv1 "k8s.io/api/authorization/v1"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-type ServerResource struct {
-	Group    string
-	Resource string
-}
-
-func (resource *ServerResource) AsReview(ns string, verb Verb) *authv1.SelfSubjectAccessReview {
+func NewReview(ns string, gr schema.GroupResource, verb Verb) *authv1.SelfSubjectAccessReview {
 	return &authv1.SelfSubjectAccessReview{
 		Spec: authv1.SelfSubjectAccessReviewSpec{
 			ResourceAttributes: &authv1.ResourceAttributes{
 				Namespace: ns,
-				Group:     resource.Group,
+				Group:     gr.Group,
 				Verb:      verb.String(),
-				Resource:  resource.Resource,
+				Resource:  gr.Resource,
 			},
 		},
 	}
 }
 
-func (resource *ServerResource) CrdName() string {
-	return fmt.Sprintf("%s.%s", resource.Resource, resource.Group)
-}
-
 type AccessChecks struct {
-	Resource ServerResource
+	Resource schema.GroupResource
 	Verbs    []Verb
 }
 
@@ -95,7 +87,7 @@ func (as *AccessSummary) Fprint(out io.Writer) {
 }
 
 type Status struct {
-	Resource    ServerResource
+	Resource    schema.GroupResource
 	ReadStatus  AccessStatus
 	WriteStatus AccessStatus
 }
