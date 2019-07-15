@@ -56,14 +56,9 @@ func (opts *DoctorOptions) Exec(ctx context.Context, c *cli.Config) error {
 		"knative-serving",
 		"riff-system",
 	}
-	installationOk, err := opts.checkNamespaces(c, requiredNamespaces)
+	namespacesOk, err := opts.checkNamespaces(c, requiredNamespaces)
 	if err != nil {
 		return err
-	}
-	if !installationOk {
-		c.Printf("\n")
-		c.Errorf("Installation is not healthy\n")
-		return nil
 	}
 
 	verbs := []string{"get", "list", "create", "update", "delete", "patch", "watch"}
@@ -76,19 +71,19 @@ func (opts *DoctorOptions) Exec(ctx context.Context, c *cli.Config) error {
 		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "stream.projectriff.io", Resource: "processors"}, Verbs: verbs},
 		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "stream.projectriff.io", Resource: "streams"}, Verbs: verbs},
 	}
-	installationOk, err = opts.checkAccess(c, accessChecks)
+	accessOk, err := opts.checkAccess(c, accessChecks)
 	if err != nil {
 		return err
 	}
-	if !installationOk {
+
+	if !namespacesOk || !accessOk {
 		c.Printf("\n")
-		c.Errorf("Installation is not healthy\n")
-		return nil
+		c.Errorf("Installation is not OK\n")
+		return cli.SilenceError(fmt.Errorf("installation is not OK"))
 	}
 
 	c.Printf("\n")
 	c.Successf("Installation is OK\n")
-
 	return nil
 }
 
@@ -273,7 +268,6 @@ func (das doctorAccessStatus) String() string {
 		return cli.Swarnf("denied")
 	case doctorAccessMissing:
 		return cli.Serrorf("missing")
-	default:
-		return cli.Serrorf("unknown")
 	}
+	return cli.Serrorf("unknown")
 }

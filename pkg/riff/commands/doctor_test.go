@@ -17,6 +17,7 @@
 package commands_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/projectriff/cli/pkg/cli"
@@ -53,65 +54,8 @@ func TestDoctorCommand(t *testing.T) {
 	verbs := []string{"get", "list", "create", "update", "delete", "patch", "watch"}
 	table := rifftesting.CommandTable{
 		{
-			Name: "istio-system is missing",
+			Name: "not installed",
 			Args: []string{},
-			GivenObjects: []runtime.Object{
-				&corev1.Namespace{
-					ObjectMeta: metav1.ObjectMeta{Name: "knative-build"},
-				},
-				&corev1.Namespace{
-					ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"},
-				},
-				&corev1.Namespace{
-					ObjectMeta: metav1.ObjectMeta{Name: "riff-system"},
-				},
-			},
-			WithReactors: []rifftesting.ReactionFunc{
-				passAccessReview(),
-			},
-			ExpectOutput: `
-NAMESPACE         STATUS
-istio-system      missing
-knative-build     ok
-knative-serving   ok
-riff-system       ok
-
-Installation is not healthy
-`,
-		},
-		{
-			Name: "multiple namespaces are missing",
-			Args: []string{},
-			GivenObjects: []runtime.Object{
-				&corev1.Namespace{
-					ObjectMeta: metav1.ObjectMeta{Name: "knative-build"},
-				},
-				&corev1.Namespace{
-					ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"},
-				},
-			},
-			WithReactors: []rifftesting.ReactionFunc{
-				passAccessReview(),
-			},
-			ExpectOutput: `
-NAMESPACE         STATUS
-istio-system      missing
-knative-build     ok
-knative-serving   ok
-riff-system       missing
-
-Installation is not healthy
-`,
-		},
-		{
-			Name: "custom resource definitions are missing",
-			Args: []string{},
-			GivenObjects: []runtime.Object{
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "istio-system"}},
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-build"}},
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
-			},
 			ExpectCreates: merge(
 				selfSubjectAccessReviewRequests("default", "core", "configmaps", verbs...),
 				selfSubjectAccessReviewRequests("default", "core", "secrets", verbs...),
@@ -119,12 +63,13 @@ Installation is not healthy
 			WithReactors: []rifftesting.ReactionFunc{
 				passAccessReview(),
 			},
+			ShouldError: true,
 			ExpectOutput: `
 NAMESPACE         STATUS
-istio-system      ok
-knative-build     ok
-knative-serving   ok
-riff-system       ok
+istio-system      missing
+knative-build     missing
+knative-serving   missing
+riff-system       missing
 
 RESOURCE                            READ      WRITE
 configmaps                          allowed   allowed
@@ -135,12 +80,12 @@ handlers.request.projectriff.io     missing   missing
 processors.stream.projectriff.io    missing   missing
 streams.stream.projectriff.io       missing   missing
 
-Installation is not healthy
+Installation is not OK
 `,
 		},
 		{
-			Name: "read and write KO for functions in specified namespace",
-			Args: []string{cli.NamespaceFlagName, "foo"},
+			Name: "installed",
+			Args: []string{},
 			GivenObjects: []runtime.Object{
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "istio-system"}},
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-build"}},
@@ -153,63 +98,15 @@ Installation is not healthy
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.stream.projectriff.io"}},
 			},
 			ExpectCreates: merge(
-				selfSubjectAccessReviewRequests("foo", "core", "configmaps", verbs...),
-				selfSubjectAccessReviewRequests("foo", "core", "secrets", verbs...),
-				selfSubjectAccessReviewRequests("foo", "build.projectriff.io", "applications", verbs...),
-				selfSubjectAccessReviewRequests("foo", "build.projectriff.io", "functions", verbs...),
-				selfSubjectAccessReviewRequests("foo", "request.projectriff.io", "handlers", verbs...),
-				selfSubjectAccessReviewRequests("foo", "stream.projectriff.io", "processors", verbs...),
-				selfSubjectAccessReviewRequests("foo", "stream.projectriff.io", "streams", verbs...),
+				selfSubjectAccessReviewRequests("default", "core", "configmaps", verbs...),
+				selfSubjectAccessReviewRequests("default", "core", "secrets", verbs...),
+				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "applications", verbs...),
+				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "functions", verbs...),
+				selfSubjectAccessReviewRequests("default", "request.projectriff.io", "handlers", verbs...),
+				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "processors", verbs...),
+				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "streams", verbs...),
 			),
 			WithReactors: []rifftesting.ReactionFunc{
-				failAccessReviewOn("functions", "*"),
-				passAccessReview(),
-			},
-			ExpectOutput: `
-NAMESPACE         STATUS
-istio-system      ok
-knative-build     ok
-knative-serving   ok
-riff-system       ok
-
-RESOURCE                            READ      WRITE
-configmaps                          allowed   allowed
-secrets                             allowed   allowed
-applications.build.projectriff.io   allowed   allowed
-functions.build.projectriff.io      denied    denied
-handlers.request.projectriff.io     allowed   allowed
-processors.stream.projectriff.io    allowed   allowed
-streams.stream.projectriff.io       allowed   allowed
-
-Installation is not healthy
-`,
-		},
-		{
-			Name: "read status mixed for handlers, write status mixed for streams in specified namespace",
-			Args: []string{cli.NamespaceFlagName, "foo"},
-			GivenObjects: []runtime.Object{
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "istio-system"}},
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-build"}},
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "handlers.request.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.stream.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.stream.projectriff.io"}},
-			},
-			ExpectCreates: merge(
-				selfSubjectAccessReviewRequests("foo", "core", "configmaps", verbs...),
-				selfSubjectAccessReviewRequests("foo", "core", "secrets", verbs...),
-				selfSubjectAccessReviewRequests("foo", "build.projectriff.io", "applications", verbs...),
-				selfSubjectAccessReviewRequests("foo", "build.projectriff.io", "functions", verbs...),
-				selfSubjectAccessReviewRequests("foo", "request.projectriff.io", "handlers", verbs...),
-				selfSubjectAccessReviewRequests("foo", "stream.projectriff.io", "processors", verbs...),
-				selfSubjectAccessReviewRequests("foo", "stream.projectriff.io", "streams", verbs...),
-			),
-			WithReactors: []rifftesting.ReactionFunc{
-				failAccessReviewOn("handlers", "get"),
-				failAccessReviewOn("streams", "update"),
 				passAccessReview(),
 			},
 			ExpectOutput: `
@@ -224,11 +121,237 @@ configmaps                          allowed   allowed
 secrets                             allowed   allowed
 applications.build.projectriff.io   allowed   allowed
 functions.build.projectriff.io      allowed   allowed
-handlers.request.projectriff.io     mixed     allowed
+handlers.request.projectriff.io     allowed   allowed
 processors.stream.projectriff.io    allowed   allowed
-streams.stream.projectriff.io       allowed   mixed
+streams.stream.projectriff.io       allowed   allowed
 
-Installation is not healthy
+Installation is OK
+`,
+		},
+		{
+			Name: "read-only access",
+			Args: []string{},
+			GivenObjects: []runtime.Object{
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "istio-system"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-build"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "handlers.request.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.stream.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.stream.projectriff.io"}},
+			},
+			ExpectCreates: merge(
+				selfSubjectAccessReviewRequests("default", "core", "configmaps", verbs...),
+				selfSubjectAccessReviewRequests("default", "core", "secrets", verbs...),
+				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "applications", verbs...),
+				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "functions", verbs...),
+				selfSubjectAccessReviewRequests("default", "request.projectriff.io", "handlers", verbs...),
+				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "processors", verbs...),
+				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "streams", verbs...),
+			),
+			WithReactors: []rifftesting.ReactionFunc{
+				denyAccessReviewOn("*", "create"),
+				denyAccessReviewOn("*", "update"),
+				denyAccessReviewOn("*", "delete"),
+				denyAccessReviewOn("*", "patch"),
+				passAccessReview(),
+			},
+			ShouldError: true,
+			ExpectOutput: `
+NAMESPACE         STATUS
+istio-system      ok
+knative-build     ok
+knative-serving   ok
+riff-system       ok
+
+RESOURCE                            READ      WRITE
+configmaps                          allowed   denied
+secrets                             allowed   denied
+applications.build.projectriff.io   allowed   denied
+functions.build.projectriff.io      allowed   denied
+handlers.request.projectriff.io     allowed   denied
+processors.stream.projectriff.io    allowed   denied
+streams.stream.projectriff.io       allowed   denied
+
+Installation is not OK
+`,
+		},
+		{
+			Name: "no-watch access",
+			Args: []string{},
+			GivenObjects: []runtime.Object{
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "istio-system"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-build"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "handlers.request.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.stream.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.stream.projectriff.io"}},
+			},
+			ExpectCreates: merge(
+				selfSubjectAccessReviewRequests("default", "core", "configmaps", verbs...),
+				selfSubjectAccessReviewRequests("default", "core", "secrets", verbs...),
+				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "applications", verbs...),
+				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "functions", verbs...),
+				selfSubjectAccessReviewRequests("default", "request.projectriff.io", "handlers", verbs...),
+				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "processors", verbs...),
+				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "streams", verbs...),
+			),
+			WithReactors: []rifftesting.ReactionFunc{
+				denyAccessReviewOn("*", "watch"),
+				passAccessReview(),
+			},
+			ShouldError: true,
+			ExpectOutput: `
+NAMESPACE         STATUS
+istio-system      ok
+knative-build     ok
+knative-serving   ok
+riff-system       ok
+
+RESOURCE                            READ    WRITE
+configmaps                          mixed   allowed
+secrets                             mixed   allowed
+applications.build.projectriff.io   mixed   allowed
+functions.build.projectriff.io      mixed   allowed
+handlers.request.projectriff.io     mixed   allowed
+processors.stream.projectriff.io    mixed   allowed
+streams.stream.projectriff.io       mixed   allowed
+
+Installation is not OK
+`,
+		},
+		{
+			Name: "error listing namespaces",
+			Args: []string{},
+			GivenObjects: []runtime.Object{
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "istio-system"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-build"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "handlers.request.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.stream.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.stream.projectriff.io"}},
+			},
+			WithReactors: []rifftesting.ReactionFunc{
+				rifftesting.InduceFailure("list", "namespaces"),
+			},
+			ShouldError: true,
+		},
+		{
+			Name: "error getting crd",
+			Args: []string{},
+			GivenObjects: []runtime.Object{
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "istio-system"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-build"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "handlers.request.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.stream.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.stream.projectriff.io"}},
+			},
+			ExpectCreates: merge(
+				selfSubjectAccessReviewRequests("default", "core", "configmaps", verbs...),
+				selfSubjectAccessReviewRequests("default", "core", "secrets", verbs...),
+			),
+			WithReactors: []rifftesting.ReactionFunc{
+				rifftesting.InduceFailure("get", "customresourcedefinitions"),
+				passAccessReview(),
+			},
+			ShouldError: true,
+		},
+		{
+			Name: "error creating selfsubjectaccessreview",
+			Args: []string{},
+			GivenObjects: []runtime.Object{
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "istio-system"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-build"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "handlers.request.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.stream.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.stream.projectriff.io"}},
+			},
+			ExpectCreates: selfSubjectAccessReviewRequests("default", "core", "configmaps", "get"),
+			WithReactors: []rifftesting.ReactionFunc{
+				failAccessReview(),
+			},
+			ShouldError: true,
+		},
+		{
+			Name: "error evaluating selfsubjectaccessreview",
+			Args: []string{},
+			GivenObjects: []runtime.Object{
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "istio-system"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-build"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "handlers.request.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.stream.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.stream.projectriff.io"}},
+			},
+			ExpectCreates: selfSubjectAccessReviewRequests("default", "core", "configmaps", "get"),
+			WithReactors: []rifftesting.ReactionFunc{
+				failAccessReviewEvaluationOn("*", "*"),
+			},
+			ShouldError: true,
+		},
+		{
+			Name: "error evaluating selfsubjectaccessreview",
+			Args: []string{},
+			GivenObjects: []runtime.Object{
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "istio-system"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-build"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "handlers.request.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.stream.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.stream.projectriff.io"}},
+			},
+			ExpectCreates: merge(
+				selfSubjectAccessReviewRequests("default", "core", "configmaps", verbs...),
+				selfSubjectAccessReviewRequests("default", "core", "secrets", verbs...),
+				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "applications", verbs...),
+				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "functions", verbs...),
+				selfSubjectAccessReviewRequests("default", "request.projectriff.io", "handlers", verbs...),
+				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "processors", verbs...),
+				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "streams", verbs...),
+			),
+			WithReactors: []rifftesting.ReactionFunc{
+				unknownAccessReviewOn("*", "*"),
+			},
+			ShouldError: true,
+			ExpectOutput: `
+NAMESPACE         STATUS
+istio-system      ok
+knative-build     ok
+knative-serving   ok
+riff-system       ok
+
+RESOURCE                            READ      WRITE
+configmaps                          unknown   unknown
+secrets                             unknown   unknown
+applications.build.projectriff.io   unknown   unknown
+functions.build.projectriff.io      unknown   unknown
+handlers.request.projectriff.io     unknown   unknown
+processors.stream.projectriff.io    unknown   unknown
+streams.stream.projectriff.io       unknown   unknown
+
+Installation is not OK
 `,
 		},
 	}
@@ -261,14 +384,56 @@ func selfSubjectAccessReviewRequests(namespace, group, resource string, verbs ..
 	return result
 }
 
-func failAccessReviewOn(resource string, verb string) func(action clientgotesting.Action) (handled bool, ret runtime.Object, err error) {
+func failAccessReview() func(action clientgotesting.Action) (handled bool, ret runtime.Object, err error) {
+	// fork of riffesting.InduceFailure that returns the review to avoid a panic in the fake client
 	return func(action clientgotesting.Action) (handled bool, ret runtime.Object, err error) {
 		if !action.Matches("create", "selfsubjectaccessreviews") {
 			return false, nil, nil
 		}
 		creationAction, _ := action.(clientgotesting.CreateAction)
 		review, _ := creationAction.GetObject().(*authorizationv1.SelfSubjectAccessReview)
-		if review.Spec.ResourceAttributes.Resource != resource || (verb != "*" && review.Spec.ResourceAttributes.Verb != verb) {
+		return true, review, fmt.Errorf("inducing failure for %s %s", action.GetVerb(), action.GetResource().Resource)
+	}
+}
+
+func failAccessReviewEvaluationOn(resource string, verb string) func(action clientgotesting.Action) (handled bool, ret runtime.Object, err error) {
+	return func(action clientgotesting.Action) (handled bool, ret runtime.Object, err error) {
+		if !action.Matches("create", "selfsubjectaccessreviews") {
+			return false, nil, nil
+		}
+		creationAction, _ := action.(clientgotesting.CreateAction)
+		review, _ := creationAction.GetObject().(*authorizationv1.SelfSubjectAccessReview)
+		if (resource != "*" && review.Spec.ResourceAttributes.Resource != resource) || (verb != "*" && review.Spec.ResourceAttributes.Verb != verb) {
+			return false, nil, nil
+		}
+		review = review.DeepCopy()
+		review.Status.EvaluationError = "induced failure"
+		return true, review, nil
+	}
+}
+func unknownAccessReviewOn(resource string, verb string) func(action clientgotesting.Action) (handled bool, ret runtime.Object, err error) {
+	return func(action clientgotesting.Action) (handled bool, ret runtime.Object, err error) {
+		if !action.Matches("create", "selfsubjectaccessreviews") {
+			return false, nil, nil
+		}
+		creationAction, _ := action.(clientgotesting.CreateAction)
+		review, _ := creationAction.GetObject().(*authorizationv1.SelfSubjectAccessReview)
+		if (resource != "*" && review.Spec.ResourceAttributes.Resource != resource) || (verb != "*" && review.Spec.ResourceAttributes.Verb != verb) {
+			return false, nil, nil
+		}
+		review = review.DeepCopy()
+		return true, review, nil
+	}
+}
+
+func denyAccessReviewOn(resource string, verb string) func(action clientgotesting.Action) (handled bool, ret runtime.Object, err error) {
+	return func(action clientgotesting.Action) (handled bool, ret runtime.Object, err error) {
+		if !action.Matches("create", "selfsubjectaccessreviews") {
+			return false, nil, nil
+		}
+		creationAction, _ := action.(clientgotesting.CreateAction)
+		review, _ := creationAction.GetObject().(*authorizationv1.SelfSubjectAccessReview)
+		if (resource != "*" && review.Spec.ResourceAttributes.Resource != resource) || (verb != "*" && review.Spec.ResourceAttributes.Verb != verb) {
 			return false, nil, nil
 		}
 		review = review.DeepCopy()
