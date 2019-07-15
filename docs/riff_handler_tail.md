@@ -15,7 +15,7 @@ As new handler instances are started, the logs are displayed. To show historical
 --since.
 
 ```
-riff handler tail [flags]
+riff handler tail <name> [flags]
 ```
 
 ### Examples

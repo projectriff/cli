@@ -47,7 +47,6 @@ function or container image.
 Streams - the stream and processor commands to define streams of messages and
 map those streams to function inputs and outputs with processors.
 `),
-		Args: cli.Args(),
 	}
 
 	cmd.AddCommand(NewCredentialCommand(ctx, c))

@@ -169,9 +169,6 @@ default image prefix can be set.
 			fmt.Sprintf("%s credential apply my-registry-creds %s http://registry.example.com %s my-username", c.Name, cli.RegistryFlagName, cli.RegistryUserFlagName),
 			fmt.Sprintf("%s credential apply my-registry-creds %s http://registry.example.com %s my-username %s registry.example.com/my-username", c.Name, cli.RegistryFlagName, cli.RegistryUserFlagName, cli.DefaultImagePrefixFlagName),
 		}, "\n"),
-		Args: cli.Args(
-			cli.NameArg(&opts.Name),
-		),
 		PreRunE: cli.Sequence(
 			func(cmd *cobra.Command, args []string) error {
 				if opts.DockerHubId != "" {
@@ -186,6 +183,10 @@ default image prefix can be set.
 		),
 		RunE: cli.ExecOptions(ctx, c, opts),
 	}
+
+	cli.Args(cmd,
+		cli.NameArg(&opts.Name),
+	)
 
 	cli.NamespaceFlag(cmd, c, &opts.Namespace)
 	cmd.Flags().StringVar(&opts.DockerHubId, cli.StripDash(cli.DockerHubFlagName), "", "Docker Hub `username`, the password must be provided via stdin")

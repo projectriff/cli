@@ -15,7 +15,7 @@ As new processor instances are started, the logs are displayed. To show historic
 --since.
 
 ```
-riff processor tail [flags]
+riff processor tail <name> [flags]
 ```
 
 ### Examples

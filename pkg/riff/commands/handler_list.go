@@ -90,7 +90,6 @@ For detail regarding the status of a single handler, run:
 			fmt.Sprintf("%s handler list", c.Name),
 			fmt.Sprintf("%s handler list %s", c.Name, cli.AllNamespacesFlagName),
 		}, "\n"),
-		Args:    cli.Args(),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),
 	}

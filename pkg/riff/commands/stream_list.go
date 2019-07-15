@@ -90,7 +90,6 @@ For detail regarding the status of a single stream, run:
 			fmt.Sprintf("%s stream list", c.Name),
 			fmt.Sprintf("%s stream list %s", c.Name, cli.AllNamespacesFlagName),
 		}, "\n"),
-		Args:    cli.Args(),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),
 	}

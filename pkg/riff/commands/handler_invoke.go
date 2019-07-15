@@ -96,28 +96,29 @@ This command is not supported and may be removed in the future.
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s handler invoke my-handler", c.Name),
-			fmt.Sprintf("%s handler invoke my-handler --text -- -d 'hello' -w '\n'", c.Name),
+			fmt.Sprintf("%s handler invoke my-handler --text -- -d 'hello' -w '\\n'", c.Name),
 			fmt.Sprintf("%s handler invoke my-handler /request/path", c.Name),
 		}, "\n"),
-		Args: cli.Args(
-			cli.NameArg(&opts.Name),
-			cli.Arg{
-				Name:     "path",
-				Arity:    1,
-				Optional: true,
-				Set: func(cmd *cobra.Command, args []string, offset int) error {
-					if offset >= cmd.ArgsLenAtDash() && cmd.ArgsLenAtDash() != -1 {
-						return cli.ErrIgnoreArg
-					}
-					opts.Path = args[offset]
-					return nil
-				},
-			},
-			cli.BareDoubleDashArgs(&opts.BareArgs),
-		),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),
 	}
+
+	cli.Args(cmd,
+		cli.NameArg(&opts.Name),
+		cli.Arg{
+			Name:     "path",
+			Arity:    1,
+			Optional: true,
+			Set: func(cmd *cobra.Command, args []string, offset int) error {
+				if offset >= cmd.ArgsLenAtDash() && cmd.ArgsLenAtDash() != -1 {
+					return cli.ErrIgnoreArg
+				}
+				opts.Path = args[offset]
+				return nil
+			},
+		},
+		cli.BareDoubleDashArgs(&opts.BareArgs),
+	)
 
 	cli.NamespaceFlag(cmd, c, &opts.Namespace)
 	cmd.Flags().BoolVar(&opts.ContentTypeJSON, cli.StripDash(cli.JSONFlagName), false, "set the content type to application/json")

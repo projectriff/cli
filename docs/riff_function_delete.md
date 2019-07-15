@@ -16,7 +16,7 @@ use the last built image. A new function created with the same name will
 automatically be discovered by the handler or processor.
 
 ```
-riff function delete [flags]
+riff function delete <name(s)> [flags]
 ```
 
 ### Examples

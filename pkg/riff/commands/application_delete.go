@@ -82,12 +82,13 @@ discovered by the handler.
 			fmt.Sprintf("%s application delete my-application", c.Name),
 			fmt.Sprintf("%s application delete %s", c.Name, cli.AllFlagName),
 		}, "\n"),
-		Args: cli.Args(
-			cli.NamesArg(&opts.Names),
-		),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),
 	}
+
+	cli.Args(cmd,
+		cli.NamesArg(&opts.Names),
+	)
 
 	cli.NamespaceFlag(cmd, c, &opts.Namespace)
 	cmd.Flags().BoolVar(&opts.All, cli.StripDash(cli.AllFlagName), false, "delete all applications within the namespace")

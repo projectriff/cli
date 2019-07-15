@@ -16,7 +16,7 @@ may be: "True", "False" or "Unknown". An "Unknown" status is common while the
 stream is being processed.
 
 ```
-riff stream status [flags]
+riff stream status <name> [flags]
 ```
 
 ### Examples

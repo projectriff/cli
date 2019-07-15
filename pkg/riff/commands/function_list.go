@@ -90,7 +90,6 @@ For detail regarding the status of a single function, run:
 			fmt.Sprintf("%s function list", c.Name),
 			fmt.Sprintf("%s function list %s", c.Name, cli.AllNamespacesFlagName),
 		}, "\n"),
-		Args:    cli.Args(),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),
 	}

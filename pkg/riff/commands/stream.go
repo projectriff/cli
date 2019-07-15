@@ -31,7 +31,6 @@ func NewStreamCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 		Long: strings.TrimSpace(`
 <todo>
 `),
-		Args:    cli.Args(),
 		Aliases: []string{"streams"},
 	}
 

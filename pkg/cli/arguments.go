@@ -18,6 +18,7 @@ package cli
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/spf13/cobra"
 )
@@ -36,8 +37,11 @@ type Arg struct {
 	Set      func(cmd *cobra.Command, args []string, offset int) error
 }
 
-func Args(argDefs ...Arg) cobra.PositionalArgs {
-	return func(cmd *cobra.Command, args []string) error {
+func Args(cmd *cobra.Command, argDefs ...Arg) {
+	if cmd.Args != nil {
+		panic(fmt.Errorf("args redeclared for command %q", cmd.CommandPath()))
+	}
+	cmd.Args = func(cmd *cobra.Command, args []string) error {
 		offset := 0
 
 		for _, argDef := range argDefs {
@@ -67,6 +71,43 @@ func Args(argDefs ...Arg) cobra.PositionalArgs {
 		// no additional args
 		return cobra.NoArgs(cmd, args[offset:])
 	}
+
+	if cmd.Annotations == nil {
+		cmd.Annotations = map[string]string{}
+	}
+
+	// add docs annoations
+	cmd.Annotations["args.length"] = fmt.Sprintf("%d", len(argDefs))
+	for i, argDef := range argDefs {
+		cmd.Annotations[fmt.Sprintf("args[%d].name", i)] = argDef.Name
+		cmd.Annotations[fmt.Sprintf("args[%d].arity", i)] = fmt.Sprintf("%d", argDef.Arity)
+		cmd.Annotations[fmt.Sprintf("args[%d].optional", i)] = fmt.Sprintf("%v", argDef.Optional)
+	}
+}
+
+func FormatArgs(cmd *cobra.Command) string {
+	if _, ok := cmd.Annotations["args.length"]; !ok {
+		return ""
+	}
+
+	str := ""
+	length, _ := strconv.Atoi(cmd.Annotations["args.length"])
+	for i := 0; i < length; i++ {
+		name := cmd.Annotations[fmt.Sprintf("args[%d].name", i)]
+		if name == "" {
+			continue
+		}
+
+		if cmd.Annotations[fmt.Sprintf("args[%d].optional", i)] == "true" {
+			name = fmt.Sprintf("[%s]", name)
+		} else {
+			name = fmt.Sprintf("<%s>", name)
+		}
+
+		str += " " + name
+	}
+
+	return str
 }
 
 func NameArg(name *string) Arg {
@@ -93,7 +134,6 @@ func NamesArg(names *[]string) Arg {
 
 func BareDoubleDashArgs(values *[]string) Arg {
 	return Arg{
-		Name:  "dashdash",
 		Arity: -1,
 		Set: func(cmd *cobra.Command, args []string, offset int) error {
 			if cmd.ArgsLenAtDash() == -1 {

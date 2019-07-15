@@ -16,7 +16,7 @@ may be: "True", "False" or "Unknown". An "Unknown" status is common while the
 processor is processed.
 
 ```
-riff processor status [flags]
+riff processor status <name> [flags]
 ```
 
 ### Examples

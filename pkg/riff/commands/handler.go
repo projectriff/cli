@@ -45,7 +45,6 @@ images and only update the handler image once those checks pass.
 
 The hostname to access the handler is available in the handler listing.
 `),
-		Args:    cli.Args(),
 		Aliases: []string{"handlers"},
 	}
 

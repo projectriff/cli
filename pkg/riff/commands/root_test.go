@@ -17,6 +17,7 @@
 package commands_test
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/projectriff/cli/pkg/riff/commands"
@@ -28,6 +29,24 @@ func TestRootCommand(t *testing.T) {
 		{
 			Name: "empty",
 			Args: []string{},
+		},
+		{
+			Name: "help",
+			Args: []string{"--help"},
+			Verify: func(t *testing.T, output string, err error) {
+				if !strings.Contains(output, "riff [command]") {
+					t.Errorf("expected help to contain command without args")
+				}
+			},
+		},
+		{
+			Name: "help subcommand with args",
+			Args: []string{"function", "create", "--help"},
+			Verify: func(t *testing.T, output string, err error) {
+				if !strings.Contains(output, "riff function create <name> [flags]") {
+					t.Errorf("expected help to contain command with args")
+				}
+			},
 		},
 	}
 
