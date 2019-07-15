@@ -62,9 +62,12 @@ func (opts *DoctorOptions) Exec(ctx context.Context, c *cli.Config) error {
 	}
 
 	verbs := []string{"get", "list", "create", "update", "delete", "patch", "watch"}
+	readVerbs := []string{"get", "list", "watch"}
 	accessChecks := doctorAccessChecks{
 		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "core", Resource: "configmaps"}, Verbs: verbs},
 		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "core", Resource: "secrets"}, Verbs: verbs},
+		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "core", Resource: "pods"}, Verbs: readVerbs},
+		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "core", Resource: "pods", Subresource: "log"}, Verbs: readVerbs},
 		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "build.projectriff.io", Resource: "applications"}, Verbs: verbs},
 		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "build.projectriff.io", Resource: "functions"}, Verbs: verbs},
 		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "request.projectriff.io", Resource: "handlers"}, Verbs: verbs},
@@ -154,6 +157,9 @@ func (*DoctorOptions) checkAccess(c *cli.Config, accessChecks doctorAccessChecks
 		if check.Attributes.Group != "core" {
 			resource = fmt.Sprintf("%s.%s", resource, check.Attributes.Group)
 		}
+		if check.Attributes.Subresource != "" {
+			resource = fmt.Sprintf("%s/%s", resource, check.Attributes.Subresource)
+		}
 		fmt.Fprintf(printer, "%s\t%s\t%s\n", resource, check.ReadStatus.String(), check.WriteStatus.String())
 	}
 	return accessChecks.IsHealthy(), nil
@@ -197,6 +203,8 @@ func (check *doctorAccessCheck) ResolveStatus(c *cli.Config) error {
 			status = doctorAccessAllowed
 		} else if review.Status.Denied {
 			status = doctorAccessDenied
+		} else {
+			status = doctorAccessUnknown
 		}
 		if verb == "get" || verb == "list" || verb == "watch" {
 			check.ReadStatus = check.ReadStatus.Combine(status)
@@ -228,7 +236,10 @@ func (checks doctorAccessChecks) ResolveStatus(c *cli.Config) error {
 
 func (checks doctorAccessChecks) IsHealthy() bool {
 	for _, check := range checks {
-		if check.ReadStatus != doctorAccessAllowed || check.WriteStatus != doctorAccessAllowed {
+		if check.ReadStatus != doctorAccessAllowed && check.ReadStatus != doctorAccessUndefined {
+			return false
+		}
+		if check.WriteStatus != doctorAccessAllowed && check.WriteStatus != doctorAccessUndefined {
 			return false
 		}
 	}
@@ -243,11 +254,15 @@ const (
 	doctorAccessDenied                       /* right is denied */
 	doctorAccessMixed                        /* for the same resource, some rights are granted, some are denied */
 	doctorAccessMissing                      /* resource not deployed */
+	doctorAccessUnknown                      /* ambiguous review */
 )
 
 func (das doctorAccessStatus) Combine(new doctorAccessStatus) doctorAccessStatus {
 	if das == doctorAccessUndefined {
 		return new
+	}
+	if das == doctorAccessUnknown || new == doctorAccessUnknown {
+		return doctorAccessUnknown
 	}
 	if das != new {
 		return doctorAccessMixed
@@ -268,6 +283,8 @@ func (das doctorAccessStatus) String() string {
 		return cli.Swarnf("denied")
 	case doctorAccessMissing:
 		return cli.Serrorf("missing")
+	case doctorAccessUnknown:
+		return cli.Serrorf("unknown")
 	}
-	return cli.Serrorf("unknown")
+	return "n/a"
 }

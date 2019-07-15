@@ -52,13 +52,16 @@ func TestDoctorOptions(t *testing.T) {
 
 func TestDoctorCommand(t *testing.T) {
 	verbs := []string{"get", "list", "create", "update", "delete", "patch", "watch"}
+	readVerbs := []string{"get", "list", "watch"}
 	table := rifftesting.CommandTable{
 		{
 			Name: "not installed",
 			Args: []string{},
 			ExpectCreates: merge(
-				selfSubjectAccessReviewRequests("default", "core", "configmaps", verbs...),
-				selfSubjectAccessReviewRequests("default", "core", "secrets", verbs...),
+				selfSubjectAccessReviewRequests("default", "core", "configmaps", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "core", "secrets", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "core", "pods", "", readVerbs...),
+				selfSubjectAccessReviewRequests("default", "core", "pods", "log", readVerbs...),
 			),
 			WithReactors: []rifftesting.ReactionFunc{
 				passAccessReview(),
@@ -74,6 +77,8 @@ riff-system       missing
 RESOURCE                            READ      WRITE
 configmaps                          allowed   allowed
 secrets                             allowed   allowed
+pods                                allowed   n/a
+pods/log                            allowed   n/a
 applications.build.projectriff.io   missing   missing
 functions.build.projectriff.io      missing   missing
 handlers.request.projectriff.io     missing   missing
@@ -98,13 +103,15 @@ Installation is not OK
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.stream.projectriff.io"}},
 			},
 			ExpectCreates: merge(
-				selfSubjectAccessReviewRequests("default", "core", "configmaps", verbs...),
-				selfSubjectAccessReviewRequests("default", "core", "secrets", verbs...),
-				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "applications", verbs...),
-				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "functions", verbs...),
-				selfSubjectAccessReviewRequests("default", "request.projectriff.io", "handlers", verbs...),
-				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "processors", verbs...),
-				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "streams", verbs...),
+				selfSubjectAccessReviewRequests("default", "core", "configmaps", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "core", "secrets", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "core", "pods", "", readVerbs...),
+				selfSubjectAccessReviewRequests("default", "core", "pods", "log", readVerbs...),
+				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "applications", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "functions", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "request.projectriff.io", "handlers", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "processors", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "streams", "", verbs...),
 			),
 			WithReactors: []rifftesting.ReactionFunc{
 				passAccessReview(),
@@ -119,6 +126,8 @@ riff-system       ok
 RESOURCE                            READ      WRITE
 configmaps                          allowed   allowed
 secrets                             allowed   allowed
+pods                                allowed   n/a
+pods/log                            allowed   n/a
 applications.build.projectriff.io   allowed   allowed
 functions.build.projectriff.io      allowed   allowed
 handlers.request.projectriff.io     allowed   allowed
@@ -143,13 +152,15 @@ Installation is OK
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.stream.projectriff.io"}},
 			},
 			ExpectCreates: merge(
-				selfSubjectAccessReviewRequests("default", "core", "configmaps", verbs...),
-				selfSubjectAccessReviewRequests("default", "core", "secrets", verbs...),
-				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "applications", verbs...),
-				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "functions", verbs...),
-				selfSubjectAccessReviewRequests("default", "request.projectriff.io", "handlers", verbs...),
-				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "processors", verbs...),
-				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "streams", verbs...),
+				selfSubjectAccessReviewRequests("default", "core", "configmaps", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "core", "secrets", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "core", "pods", "", readVerbs...),
+				selfSubjectAccessReviewRequests("default", "core", "pods", "log", readVerbs...),
+				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "applications", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "functions", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "request.projectriff.io", "handlers", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "processors", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "streams", "", verbs...),
 			),
 			WithReactors: []rifftesting.ReactionFunc{
 				denyAccessReviewOn("*", "create"),
@@ -169,6 +180,8 @@ riff-system       ok
 RESOURCE                            READ      WRITE
 configmaps                          allowed   denied
 secrets                             allowed   denied
+pods                                allowed   n/a
+pods/log                            allowed   n/a
 applications.build.projectriff.io   allowed   denied
 functions.build.projectriff.io      allowed   denied
 handlers.request.projectriff.io     allowed   denied
@@ -193,13 +206,15 @@ Installation is not OK
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.stream.projectriff.io"}},
 			},
 			ExpectCreates: merge(
-				selfSubjectAccessReviewRequests("default", "core", "configmaps", verbs...),
-				selfSubjectAccessReviewRequests("default", "core", "secrets", verbs...),
-				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "applications", verbs...),
-				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "functions", verbs...),
-				selfSubjectAccessReviewRequests("default", "request.projectriff.io", "handlers", verbs...),
-				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "processors", verbs...),
-				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "streams", verbs...),
+				selfSubjectAccessReviewRequests("default", "core", "configmaps", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "core", "secrets", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "core", "pods", "", readVerbs...),
+				selfSubjectAccessReviewRequests("default", "core", "pods", "log", readVerbs...),
+				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "applications", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "functions", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "request.projectriff.io", "handlers", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "processors", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "streams", "", verbs...),
 			),
 			WithReactors: []rifftesting.ReactionFunc{
 				denyAccessReviewOn("*", "watch"),
@@ -216,6 +231,8 @@ riff-system       ok
 RESOURCE                            READ    WRITE
 configmaps                          mixed   allowed
 secrets                             mixed   allowed
+pods                                mixed   n/a
+pods/log                            mixed   n/a
 applications.build.projectriff.io   mixed   allowed
 functions.build.projectriff.io      mixed   allowed
 handlers.request.projectriff.io     mixed   allowed
@@ -259,8 +276,10 @@ Installation is not OK
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.stream.projectriff.io"}},
 			},
 			ExpectCreates: merge(
-				selfSubjectAccessReviewRequests("default", "core", "configmaps", verbs...),
-				selfSubjectAccessReviewRequests("default", "core", "secrets", verbs...),
+				selfSubjectAccessReviewRequests("default", "core", "configmaps", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "core", "secrets", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "core", "pods", "", readVerbs...),
+				selfSubjectAccessReviewRequests("default", "core", "pods", "log", readVerbs...),
 			),
 			WithReactors: []rifftesting.ReactionFunc{
 				rifftesting.InduceFailure("get", "customresourcedefinitions"),
@@ -282,7 +301,7 @@ Installation is not OK
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.stream.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.stream.projectriff.io"}},
 			},
-			ExpectCreates: selfSubjectAccessReviewRequests("default", "core", "configmaps", "get"),
+			ExpectCreates: selfSubjectAccessReviewRequests("default", "core", "configmaps", "", "get"),
 			WithReactors: []rifftesting.ReactionFunc{
 				failAccessReview(),
 			},
@@ -302,7 +321,7 @@ Installation is not OK
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.stream.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.stream.projectriff.io"}},
 			},
-			ExpectCreates: selfSubjectAccessReviewRequests("default", "core", "configmaps", "get"),
+			ExpectCreates: selfSubjectAccessReviewRequests("default", "core", "configmaps", "", "get"),
 			WithReactors: []rifftesting.ReactionFunc{
 				failAccessReviewEvaluationOn("*", "*"),
 			},
@@ -323,13 +342,15 @@ Installation is not OK
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.stream.projectriff.io"}},
 			},
 			ExpectCreates: merge(
-				selfSubjectAccessReviewRequests("default", "core", "configmaps", verbs...),
-				selfSubjectAccessReviewRequests("default", "core", "secrets", verbs...),
-				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "applications", verbs...),
-				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "functions", verbs...),
-				selfSubjectAccessReviewRequests("default", "request.projectriff.io", "handlers", verbs...),
-				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "processors", verbs...),
-				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "streams", verbs...),
+				selfSubjectAccessReviewRequests("default", "core", "configmaps", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "core", "secrets", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "core", "pods", "", readVerbs...),
+				selfSubjectAccessReviewRequests("default", "core", "pods", "log", readVerbs...),
+				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "applications", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "functions", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "request.projectriff.io", "handlers", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "processors", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "streams", "", verbs...),
 			),
 			WithReactors: []rifftesting.ReactionFunc{
 				unknownAccessReviewOn("*", "*"),
@@ -345,6 +366,8 @@ riff-system       ok
 RESOURCE                            READ      WRITE
 configmaps                          unknown   unknown
 secrets                             unknown   unknown
+pods                                unknown   n/a
+pods/log                            unknown   n/a
 applications.build.projectriff.io   unknown   unknown
 functions.build.projectriff.io      unknown   unknown
 handlers.request.projectriff.io     unknown   unknown
@@ -367,16 +390,17 @@ func merge(objectSets ...[]runtime.Object) []runtime.Object {
 	return result
 }
 
-func selfSubjectAccessReviewRequests(namespace, group, resource string, verbs ...string) []runtime.Object {
+func selfSubjectAccessReviewRequests(namespace, group, resource string, subresource string, verbs ...string) []runtime.Object {
 	result := make([]runtime.Object, len(verbs))
 	for i, verb := range verbs {
 		result[i] = &authorizationv1.SelfSubjectAccessReview{
 			Spec: authorizationv1.SelfSubjectAccessReviewSpec{
 				ResourceAttributes: &authorizationv1.ResourceAttributes{
-					Namespace: namespace,
-					Group:     group,
-					Verb:      verb,
-					Resource:  resource,
+					Namespace:   namespace,
+					Group:       group,
+					Verb:        verb,
+					Resource:    resource,
+					Subresource: subresource,
 				},
 			},
 		}
