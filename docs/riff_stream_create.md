@@ -40,5 +40,5 @@ riff stream create --provider my-provider
 
 ### SEE ALSO
 
-* [riff stream](riff_stream.md)	 - streams of messages
+* [riff stream](riff_stream.md)	 - (experimental) streams of messages
 

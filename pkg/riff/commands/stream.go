@@ -27,7 +27,7 @@ import (
 func NewStreamCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "stream",
-		Short: "streams of messages",
+		Short: "(experimental) streams of messages",
 		Long: strings.TrimSpace(`
 <todo>
 `),

@@ -4,7 +4,7 @@ title: "riff stream"
 ---
 ## riff stream
 
-streams of messages
+(experimental) streams of messages
 
 ### Synopsis
 

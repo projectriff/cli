@@ -42,5 +42,5 @@ riff processor status my-processor
 
 ### SEE ALSO
 
-* [riff processor](riff_processor.md)	 - processors apply functions to messages on streams
+* [riff processor](riff_processor.md)	 - (experimental) processors apply functions to messages on streams
 

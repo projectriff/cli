@@ -4,7 +4,7 @@ title: "riff processor"
 ---
 ## riff processor
 
-processors apply functions to messages on streams
+(experimental) processors apply functions to messages on streams
 
 ### Synopsis
 
