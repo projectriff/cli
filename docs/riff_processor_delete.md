@@ -14,7 +14,7 @@ The processor will stop processing messages from the input streams and writing
 to the output streams. The streams and messages in each stream are preserved.
 
 ```
-riff processor delete [flags]
+riff processor delete <name(s)> [flags]
 ```
 
 ### Examples

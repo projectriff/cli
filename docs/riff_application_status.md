@@ -16,7 +16,7 @@ may be: "True", "False" or "Unknown". An "Unknown" status is common while the
 application is processed or a build is in progress.
 
 ```
-riff application status [flags]
+riff application status <name> [flags]
 ```
 
 ### Examples

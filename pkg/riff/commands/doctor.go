@@ -101,7 +101,6 @@ The doctor checks that necessary system components are installed.
 The doctor is not a tool for monitoring the health of the cluster.
 `),
 		Example: "riff doctor",
-		Args:    cli.Args(),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),
 	}

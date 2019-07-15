@@ -78,12 +78,13 @@ stream is being processed.
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s stream status my-stream", c.Name),
 		}, "\n"),
-		Args: cli.Args(
-			cli.NameArg(&opts.Name),
-		),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),
 	}
+
+	cli.Args(cmd,
+		cli.NameArg(&opts.Name),
+	)
 
 	cli.NamespaceFlag(cmd, c, &opts.Namespace)
 

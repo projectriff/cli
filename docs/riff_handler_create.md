@@ -25,7 +25,7 @@ The runtime environment can be configured by --env for static key-value pairs
 and --env-from to map values from a ConfigMap or Secret.
 
 ```
-riff handler create [flags]
+riff handler create <name> [flags]
 ```
 
 ### Examples

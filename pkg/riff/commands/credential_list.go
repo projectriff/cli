@@ -89,7 +89,6 @@ List credentials in a namespace or across all namespaces.
 			fmt.Sprintf("%s credential list", c.Name),
 			fmt.Sprintf("%s credential list %s", c.Name, cli.AllNamespacesFlagName),
 		}, "\n"),
-		Args:    cli.Args(),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),
 	}

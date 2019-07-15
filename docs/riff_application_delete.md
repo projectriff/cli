@@ -16,7 +16,7 @@ built image. A new application created with the same name will automatically be
 discovered by the handler.
 
 ```
-riff application delete [flags]
+riff application delete <name(s)> [flags]
 ```
 
 ### Examples

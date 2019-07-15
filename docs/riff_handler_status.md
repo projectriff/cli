@@ -16,7 +16,7 @@ may be: "True", "False" or "Unknown". An "Unknown" status is common while the
 handler is processed.
 
 ```
-riff handler status [flags]
+riff handler status <name> [flags]
 ```
 
 ### Examples

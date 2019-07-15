@@ -11,7 +11,7 @@ create a processor to apply a function to messages on streams
 <todo>
 
 ```
-riff processor create [flags]
+riff processor create <name> [flags]
 ```
 
 ### Examples

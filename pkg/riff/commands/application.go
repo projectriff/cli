@@ -39,7 +39,6 @@ The application resource is only responsible for converting source code into a
 container. The application container image may then be deployed as a request
 handler. See ` + "`" + c.Name + " handler --help" + "`" + ` for detail.
 `),
-		Args:    cli.Args(),
 		Aliases: []string{"applications", "app", "apps"},
 	}
 

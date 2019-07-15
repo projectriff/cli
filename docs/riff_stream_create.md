@@ -11,7 +11,7 @@ create a stream of messages
 <todo>
 
 ```
-riff stream create [flags]
+riff stream create <name> [flags]
 ```
 
 ### Examples
