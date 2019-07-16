@@ -19,6 +19,7 @@ package commands
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/fatih/color"
 	"github.com/projectriff/cli/pkg/cli"
@@ -47,6 +48,18 @@ func NewRootCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 	cmd.AddCommand(NewCompletionCommand(ctx, c))
 	cmd.AddCommand(NewDocsCommand(ctx, c))
 	cmd.AddCommand(NewDoctorCommand(ctx, c))
+
+	// override usage template to add arguments
+	cmd.SetUsageTemplate(strings.ReplaceAll(cmd.UsageTemplate(), "{{.UseLine}}", "{{useLine .}}"))
+	cobra.AddTemplateFunc("useLine", func(cmd *cobra.Command) string {
+		result := cmd.UseLine()
+		flags := ""
+		if strings.HasSuffix(result, " [flags]") {
+			flags = " [flags]"
+			result = result[0 : len(result)-len(flags)]
+		}
+		return result + cli.FormatArgs(cmd) + flags
+	})
 
 	return cmd
 }

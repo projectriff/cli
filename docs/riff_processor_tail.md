@@ -15,7 +15,7 @@ As new processor instances are started, the logs are displayed. To show historic
 --since.
 
 ```
-riff processor tail [flags]
+riff processor tail <name> [flags]
 ```
 
 ### Examples
@@ -42,5 +42,5 @@ riff processor tail my-processor --since 1h
 
 ### SEE ALSO
 
-* [riff processor](riff_processor.md)	 - processors apply functions to messages on streams
+* [riff processor](riff_processor.md)	 - (experimental) processors apply functions to messages on streams
 

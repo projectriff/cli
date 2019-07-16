@@ -25,7 +25,7 @@ While multiple credentials can be created in a single namespace, only a single
 default image prefix can be set.
 
 ```
-riff credential apply [flags]
+riff credential apply <name> [flags]
 ```
 
 ### Examples

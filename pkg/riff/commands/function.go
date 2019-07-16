@@ -49,7 +49,6 @@ the source code. Unlike applications, functions:
 - limited to a single responsibility
 
 `),
-		Args:    cli.Args(),
 		Aliases: []string{"functions", "func", "fn"},
 	}
 

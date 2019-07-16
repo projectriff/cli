@@ -16,7 +16,7 @@ may be: "True", "False" or "Unknown". An "Unknown" status is common while the
 processor is processed.
 
 ```
-riff processor status [flags]
+riff processor status <name> [flags]
 ```
 
 ### Examples
@@ -42,5 +42,5 @@ riff processor status my-processor
 
 ### SEE ALSO
 
-* [riff processor](riff_processor.md)	 - processors apply functions to messages on streams
+* [riff processor](riff_processor.md)	 - (experimental) processors apply functions to messages on streams
 

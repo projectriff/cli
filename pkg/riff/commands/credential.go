@@ -45,7 +45,6 @@ To manage credentials, read and write access to Secrets is required for the
 namespace. To manage the default image prefix, read and write access to the
 'riff-build' ConfigMap is required for the namespace.
 `),
-		Args:    cli.Args(),
 		Aliases: []string{"credentials", "cred", "creds"},
 	}
 

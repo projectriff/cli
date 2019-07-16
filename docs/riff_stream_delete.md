@@ -15,7 +15,7 @@ the stream. Existing messages in the stream may be preserved by the underlying
 messaging middleware, depending on the implementation.
 
 ```
-riff stream delete [flags]
+riff stream delete <name(s)> [flags]
 ```
 
 ### Examples
@@ -43,5 +43,5 @@ riff stream delete --all
 
 ### SEE ALSO
 
-* [riff stream](riff_stream.md)	 - streams of messages
+* [riff stream](riff_stream.md)	 - (experimental) streams of messages
 

@@ -31,13 +31,16 @@ func TestArgs(t *testing.T) {
 		items []cli.Arg
 		args  []string
 		err   error
+		fmt   string
 	}{{
 		name: "no args",
+		fmt:  "",
 	}, {
 		name: "single arity",
 		args: []string{"my-arg"},
 		items: []cli.Arg{
 			{
+				Name:  "arg1",
 				Arity: 1,
 				Set: func(cmd *cobra.Command, args []string, offset int) error {
 					if diff := cmp.Diff("my-arg", args[offset]); diff != "" {
@@ -47,6 +50,7 @@ func TestArgs(t *testing.T) {
 				},
 			},
 		},
+		fmt: " <arg1>",
 	}, {
 		name: "missing args",
 		args: []string{},
@@ -59,11 +63,13 @@ func TestArgs(t *testing.T) {
 			},
 		},
 		err: fmt.Errorf("missing required argument(s)"),
+		fmt: "",
 	}, {
 		name: "extra args",
 		args: []string{"my-arg-1", "my-arg-2"},
 		items: []cli.Arg{
 			{
+				Name:  "arg1",
 				Arity: 1,
 				Set: func(cmd *cobra.Command, args []string, offset int) error {
 					if diff := cmp.Diff("my-arg-1", args[offset]); diff != "" {
@@ -74,11 +80,13 @@ func TestArgs(t *testing.T) {
 			},
 		},
 		err: fmt.Errorf("unknown command %q for %q", "my-arg-2", "args-test"),
+		fmt: " <arg1>",
 	}, {
 		name: "multiple single arity",
 		args: []string{"my-arg", "other-arg"},
 		items: []cli.Arg{
 			{
+				Name:  "arg1",
 				Arity: 1,
 				Set: func(cmd *cobra.Command, args []string, offset int) error {
 					if diff := cmp.Diff("my-arg", args[offset]); diff != "" {
@@ -88,6 +96,7 @@ func TestArgs(t *testing.T) {
 				},
 			},
 			{
+				Name:  "arg2",
 				Arity: 1,
 				Set: func(cmd *cobra.Command, args []string, offset int) error {
 					if diff := cmp.Diff("other-arg", args[offset]); diff != "" {
@@ -97,11 +106,13 @@ func TestArgs(t *testing.T) {
 				},
 			},
 		},
+		fmt: " <arg1> <arg2>",
 	}, {
 		name: "capture arity",
 		args: []string{"my-arg-1", "my-arg-2"},
 		items: []cli.Arg{
 			{
+				Name:  "arg1",
 				Arity: -1,
 				Set: func(cmd *cobra.Command, args []string, offset int) error {
 					if diff := cmp.Diff([]string{"my-arg-1", "my-arg-2"}, args[offset:]); diff != "" {
@@ -111,11 +122,13 @@ func TestArgs(t *testing.T) {
 				},
 			},
 		},
+		fmt: " <arg1>",
 	}, {
 		name: "capture arity, no args",
 		args: []string{},
 		items: []cli.Arg{
 			{
+				Name:  "arg1",
 				Arity: -1,
 				Set: func(cmd *cobra.Command, args []string, offset int) error {
 					if diff := cmp.Diff([]string{}, args[offset:]); diff != "" {
@@ -125,11 +138,13 @@ func TestArgs(t *testing.T) {
 				},
 			},
 		},
+		fmt: " <arg1>",
 	}, {
 		name: "capture arity, after single arity",
 		args: []string{"my-arg-1", "my-arg-2"},
 		items: []cli.Arg{
 			{
+				Name:  "arg1",
 				Arity: 1,
 				Set: func(cmd *cobra.Command, args []string, offset int) error {
 					if diff := cmp.Diff("my-arg-1", args[offset]); diff != "" {
@@ -139,6 +154,7 @@ func TestArgs(t *testing.T) {
 				},
 			},
 			{
+				Name:  "arg2",
 				Arity: -1,
 				Set: func(cmd *cobra.Command, args []string, offset int) error {
 					if diff := cmp.Diff([]string{"my-arg-2"}, args[offset:]); diff != "" {
@@ -148,11 +164,13 @@ func TestArgs(t *testing.T) {
 				},
 			},
 		},
+		fmt: " <arg1> <arg2>",
 	}, {
 		name: "optional args",
 		args: []string{},
 		items: []cli.Arg{
 			{
+				Name:     "arg1",
 				Arity:    1,
 				Optional: true,
 				Set: func(cmd *cobra.Command, args []string, offset int) error {
@@ -160,17 +178,20 @@ func TestArgs(t *testing.T) {
 				},
 			},
 		},
+		fmt: " [arg1]",
 	}, {
 		name: "ignored args",
 		args: []string{"my-arg"},
 		items: []cli.Arg{
 			{
+				Name:  "arg1",
 				Arity: 1,
 				Set: func(cmd *cobra.Command, args []string, offset int) error {
 					return cli.ErrIgnoreArg
 				},
 			},
 			{
+				Name:  "arg2",
 				Arity: 1,
 				Set: func(cmd *cobra.Command, args []string, offset int) error {
 					if diff := cmp.Diff("my-arg", args[offset]); diff != "" {
@@ -180,19 +201,20 @@ func TestArgs(t *testing.T) {
 				},
 			},
 		},
+		fmt: " <arg1> <arg2>",
 	}}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			cmd := &cobra.Command{
 				Use: "args-test",
-				Args: cli.Args(
-					test.items...,
-				),
 				RunE: func(cmd *cobra.Command, args []string) error {
 					return nil
 				},
 			}
+			cli.Args(cmd,
+				test.items...,
+			)
 			cmd.SetArgs(test.args)
 			cmd.SilenceErrors = true
 			cmd.SilenceUsage = true
@@ -201,6 +223,9 @@ func TestArgs(t *testing.T) {
 
 			if expected, actual := fmt.Sprintf("%s", test.err), fmt.Sprintf("%s", err); expected != actual {
 				t.Errorf("Expected error %q, actually %q", expected, actual)
+			}
+			if expected, actual := test.fmt, cli.FormatArgs(cmd); expected != actual {
+				t.Errorf("Expected format %q, actually %q", expected, actual)
 			}
 		})
 	}
@@ -231,13 +256,13 @@ func TestNameArg(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			cmd := &cobra.Command{
 				Use: "args-test",
-				Args: cli.Args(
-					cli.NameArg(&test.actual),
-				),
 				RunE: func(cmd *cobra.Command, args []string) error {
 					return nil
 				},
 			}
+			cli.Args(cmd,
+				cli.NameArg(&test.actual),
+			)
 			cmd.SetArgs(test.args)
 			cmd.SilenceErrors = true
 			cmd.SilenceUsage = true
@@ -279,13 +304,13 @@ func TestNamesArg(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			cmd := &cobra.Command{
 				Use: "args-test",
-				Args: cli.Args(
-					cli.NamesArg(&test.actual),
-				),
 				RunE: func(cmd *cobra.Command, args []string) error {
 					return nil
 				},
 			}
+			cli.Args(cmd,
+				cli.NamesArg(&test.actual),
+			)
 			cmd.SetArgs(test.args)
 			cmd.SilenceErrors = true
 			cmd.SilenceUsage = true
@@ -329,13 +354,13 @@ func TestBareDoubleDashArgs(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			cmd := &cobra.Command{
 				Use: "args-test",
-				Args: cli.Args(
-					cli.BareDoubleDashArgs(&test.actual),
-				),
 				RunE: func(cmd *cobra.Command, args []string) error {
 					return nil
 				},
 			}
+			cli.Args(cmd,
+				cli.BareDoubleDashArgs(&test.actual),
+			)
 			cmd.SetArgs(test.args)
 			cmd.SilenceErrors = true
 			cmd.SilenceUsage = true

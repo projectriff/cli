@@ -111,6 +111,65 @@ step 2
 	}
 }
 
+func TestVisit(t *testing.T) {
+	tests := []struct {
+		name    string
+		cmd     func() *cobra.Command
+		visitor func(*cobra.Command) error
+		err     error
+	}{{
+		name: "single command",
+		cmd: func() *cobra.Command {
+			return &cobra.Command{Use: "root"}
+		},
+		visitor: func(cmd *cobra.Command) error {
+			return nil
+		},
+	}, {
+		name: "parent-child",
+		cmd: func() *cobra.Command {
+			root := &cobra.Command{Use: "root"}
+			root.AddCommand(&cobra.Command{Use: "child"})
+			return root
+		},
+		visitor: func(cmd *cobra.Command) error {
+			return nil
+		},
+	}, {
+		name: "error",
+		cmd: func() *cobra.Command {
+			return &cobra.Command{Use: "root"}
+		},
+		visitor: func(cmd *cobra.Command) error {
+			return fmt.Errorf(cmd.Name())
+		},
+		err: fmt.Errorf("root"),
+	}, {
+		name: "child error",
+		cmd: func() *cobra.Command {
+			root := &cobra.Command{Use: "root"}
+			root.AddCommand(&cobra.Command{Use: "child"})
+			return root
+		},
+		visitor: func(cmd *cobra.Command) error {
+			if cmd.Name() == "child" {
+				return fmt.Errorf(cmd.Name())
+			}
+			return nil
+		},
+		err: fmt.Errorf("child"),
+	}}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			err := cli.Visit(test.cmd(), test.visitor)
+			if expected, actual := fmt.Sprintf("%s", test.err), fmt.Sprintf("%s", err); expected != actual {
+				t.Errorf("Expected error %q, actually %q", expected, actual)
+			}
+		})
+	}
+}
+
 func TestReadStdin(t *testing.T) {
 	// TODO is it possible to test the IsTerminal branch?
 	expected := []byte("hello")

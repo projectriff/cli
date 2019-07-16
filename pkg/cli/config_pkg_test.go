@@ -25,7 +25,7 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/google/go-cmp/cmp"
-	"github.com/mitchellh/go-homedir"
+	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
 )
 

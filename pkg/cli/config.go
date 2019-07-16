@@ -26,7 +26,7 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
-	"github.com/mitchellh/go-homedir"
+	homedir "github.com/mitchellh/go-homedir"
 	"github.com/projectriff/cli/pkg/k8s"
 	"github.com/projectriff/cli/pkg/kail"
 	"github.com/projectriff/cli/pkg/pack"

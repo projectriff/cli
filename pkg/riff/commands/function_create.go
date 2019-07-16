@@ -255,12 +255,13 @@ The riff.toml file takes the form:
 			fmt.Sprintf("%s function create my-func %s registry.example.com/image %s https://example.com/my-func.git", c.Name, cli.ImageFlagName, cli.GitRepoFlagName),
 			fmt.Sprintf("%s function create my-func %s registry.example.com/image %s ./my-func", c.Name, cli.ImageFlagName, cli.LocalPathFlagName),
 		}, "\n"),
-		Args: cli.Args(
-			cli.NameArg(&opts.Name),
-		),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),
 	}
+
+	cli.Args(cmd,
+		cli.NameArg(&opts.Name),
+	)
 
 	cli.NamespaceFlag(cmd, c, &opts.Namespace)
 	cmd.Flags().StringVar(&opts.Image, cli.StripDash(cli.ImageFlagName), "_", "`repository` where the built images are pushed")

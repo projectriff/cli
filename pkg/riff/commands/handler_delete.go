@@ -81,12 +81,13 @@ handler.
 			fmt.Sprintf("%s handler delete my-handler", c.Name),
 			fmt.Sprintf("%s handler delete %s ", c.Name, cli.AllFlagName),
 		}, "\n"),
-		Args: cli.Args(
-			cli.NamesArg(&opts.Names),
-		),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),
 	}
+
+	cli.Args(cmd,
+		cli.NamesArg(&opts.Names),
+	)
 
 	cli.NamespaceFlag(cmd, c, &opts.Namespace)
 	cmd.Flags().BoolVar(&opts.All, cli.StripDash(cli.AllFlagName), false, "delete all handlers within the namespace")

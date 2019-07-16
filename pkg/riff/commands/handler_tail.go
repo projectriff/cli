@@ -82,12 +82,13 @@ As new handler instances are started, the logs are displayed. To show historical
 			fmt.Sprintf("%s handler tail my-handler", c.Name),
 			fmt.Sprintf("%s handler tail my-handler %s 1h", c.Name, cli.SinceFlagName),
 		}, "\n"),
-		Args: cli.Args(
-			cli.NameArg(&opts.Name),
-		),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),
 	}
+
+	cli.Args(cmd,
+		cli.NameArg(&opts.Name),
+	)
 
 	cli.NamespaceFlag(cmd, c, &opts.Namespace)
 	cmd.Flags().StringVar(&opts.Since, cli.StripDash(cli.SinceFlagName), "", "time `duration` to start reading logs from")

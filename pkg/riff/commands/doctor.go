@@ -106,7 +106,6 @@ has access to resources in the namespace.
 The doctor is not a tool for monitoring the health of the cluster.
 `),
 		Example: "riff doctor",
-		Args:    cli.Args(),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),
 	}

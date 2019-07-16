@@ -90,7 +90,6 @@ For detail regarding the status of a single processor, run:
 			fmt.Sprintf("%s processor list", c.Name),
 			fmt.Sprintf("%s processor list %s", c.Name, cli.AllNamespacesFlagName),
 		}, "\n"),
-		Args:    cli.Args(),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),
 	}

@@ -15,7 +15,7 @@ the credential to fail unless another credential for the same registry is
 available.
 
 ```
-riff credential delete [flags]
+riff credential delete <name(s)> [flags]
 ```
 
 ### Examples

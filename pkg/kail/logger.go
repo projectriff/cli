@@ -24,7 +24,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/boz/go-logutil"
+	logutil "github.com/boz/go-logutil"
 	"github.com/boz/kail"
 	"github.com/projectriff/cli/pkg/k8s"
 	"github.com/projectriff/system/pkg/apis/build"

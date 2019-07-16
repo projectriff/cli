@@ -72,7 +72,6 @@ and needs to be placed in the appropriate directory on your system.
 			fmt.Sprintf("%s completion", c.Name),
 			fmt.Sprintf("%s completion %s zsh", c.Name, cli.ShellFlagName),
 		}, "\n"),
-		Args:    cli.Args(),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),
 	}

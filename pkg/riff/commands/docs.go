@@ -55,7 +55,6 @@ func NewDocsCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 		Short:   "generate docs in Markdown for this CLI",
 		Example: fmt.Sprintf("%s docs", c.Name),
 		Hidden:  true,
-		Args:    cli.Args(),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if err := os.MkdirAll(opts.Directory, 0744); err != nil {
@@ -66,6 +65,14 @@ func NewDocsCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 				// force default to false for doc generation no matter the environment
 				noColorFlag.DefValue = "false"
 			}
+
+			// hack to rewrite the CommandPath content to add args
+			cli.Visit(root, func(cmd *cobra.Command) error {
+				if !cmd.HasSubCommands() {
+					cmd.Use = cmd.Use + cli.FormatArgs(cmd)
+				}
+				return nil
+			})
 
 			return doc.GenMarkdownTreeCustom(root, opts.Directory,
 				func(filename string) string {

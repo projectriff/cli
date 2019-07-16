@@ -15,7 +15,7 @@ the same name will start to receive new HTTP requests addressed to the same
 handler.
 
 ```
-riff handler delete [flags]
+riff handler delete <name(s)> [flags]
 ```
 
 ### Examples

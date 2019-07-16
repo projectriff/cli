@@ -11,7 +11,7 @@ create a stream of messages
 <todo>
 
 ```
-riff stream create [flags]
+riff stream create <name> [flags]
 ```
 
 ### Examples
@@ -40,5 +40,5 @@ riff stream create --provider my-provider
 
 ### SEE ALSO
 
-* [riff stream](riff_stream.md)	 - streams of messages
+* [riff stream](riff_stream.md)	 - (experimental) streams of messages
 

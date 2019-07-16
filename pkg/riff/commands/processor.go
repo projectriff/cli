@@ -27,11 +27,10 @@ import (
 func NewProcessorCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "processor",
-		Short: "processors apply functions to messages on streams",
+		Short: "(experimental) processors apply functions to messages on streams",
 		Long: strings.TrimSpace(`
 <todo>
 `),
-		Args:    cli.Args(),
 		Aliases: []string{"processors"},
 	}
 
