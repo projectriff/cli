@@ -38,9 +38,6 @@ type Arg struct {
 }
 
 func Args(cmd *cobra.Command, argDefs ...Arg) {
-	if cmd.Args != nil {
-		panic(fmt.Errorf("args redeclared for command %q", cmd.CommandPath()))
-	}
 	cmd.Args = func(cmd *cobra.Command, args []string) error {
 		offset := 0
 
@@ -86,10 +83,6 @@ func Args(cmd *cobra.Command, argDefs ...Arg) {
 }
 
 func FormatArgs(cmd *cobra.Command) string {
-	if _, ok := cmd.Annotations["args.length"]; !ok {
-		return ""
-	}
-
 	str := ""
 	length, _ := strconv.Atoi(cmd.Annotations["args.length"])
 	for i := 0; i < length; i++ {
