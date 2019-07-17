@@ -154,7 +154,7 @@ func (opts *ApplicationCreateOptions) Exec(ctx context.Context, c *cli.Config) e
 		}
 		err = c.Pack.Build(ctx, pack.BuildOptions{
 			Image:   targetImage,
-			AppDir:  opts.LocalPath,
+			AppPath: opts.LocalPath,
 			Builder: builder,
 			Publish: true,
 		})

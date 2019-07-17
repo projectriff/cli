@@ -164,7 +164,7 @@ func (opts *FunctionCreateOptions) Exec(ctx context.Context, c *cli.Config) erro
 		}
 		err = c.Pack.Build(ctx, pack.BuildOptions{
 			Image:   targetImage,
-			AppDir:  opts.LocalPath,
+			AppPath: opts.LocalPath,
 			Builder: builder,
 			Env: map[string]string{
 				"RIFF":          "true",

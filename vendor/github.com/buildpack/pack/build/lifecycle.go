@@ -13,15 +13,16 @@ import (
 
 	"github.com/buildpack/pack/builder"
 	"github.com/buildpack/pack/cache"
+	"github.com/buildpack/pack/lifecycle"
 	"github.com/buildpack/pack/logging"
 	"github.com/buildpack/pack/style"
 )
 
 type Lifecycle struct {
 	builder      *builder.Builder
-	logger       *logging.Logger
+	logger       logging.Logger
 	docker       *client.Client
-	appDir       string
+	appPath      string
 	appOnce      *sync.Once
 	httpProxy    string
 	httpsProxy   string
@@ -39,12 +40,12 @@ func init() {
 	rand.Seed(time.Now().UTC().UnixNano())
 }
 
-func NewLifecycle(docker *client.Client, logger *logging.Logger) *Lifecycle {
+func NewLifecycle(docker *client.Client, logger logging.Logger) *Lifecycle {
 	return &Lifecycle{logger: logger, docker: docker}
 }
 
 type LifecycleOptions struct {
-	AppDir     string
+	AppPath    string
 	Image      name.Reference
 	Builder    *builder.Builder
 	RunImage   string
@@ -63,52 +64,56 @@ func (l *Lifecycle) Execute(ctx context.Context, opts LifecycleOptions) error {
 	if l.supportsVolumeCache() {
 		buildCache = cache.NewVolumeCache(opts.Image, "build", l.docker)
 		launchCache = cache.NewVolumeCache(opts.Image, "launch", l.docker)
-		l.logger.Verbose("Using build cache volume %s", style.Symbol(buildCache.Name()))
+		l.logger.Debugf("Using build cache volume %s", style.Symbol(buildCache.Name()))
 	} else {
 		buildCache = cache.NewImageCache(opts.Image, l.docker)
-		l.logger.Verbose("Using build cache image %s", style.Symbol(buildCache.Name()))
+		l.logger.Debugf("Using build cache image %s", style.Symbol(buildCache.Name()))
 	}
 
 	if opts.ClearCache {
 		if err := buildCache.Clear(ctx); err != nil {
 			return errors.Wrap(err, "clearing build cache")
 		}
-		l.logger.Verbose("Build cache %s cleared", style.Symbol(buildCache.Name()))
+		l.logger.Debugf("Build cache %s cleared", style.Symbol(buildCache.Name()))
 	}
 
-	if lifecycleVersion := l.builder.GetLifecycleVersion(); lifecycleVersion == nil {
-		l.logger.Verbose("Warning: lifecycle version unknown")
+	lifecycleVersion := l.builder.GetLifecycleVersion()
+	if lifecycleVersion == nil {
+		l.logger.Debug("Warning: lifecycle version unknown")
+		lifecycleVersion = semver.MustParse(lifecycle.DefaultLifecycleVersion)
 	} else {
-		l.logger.Verbose("Executing lifecycle version %s", style.Symbol(lifecycleVersion.String()))
+		l.logger.Debugf("Executing lifecycle version %s", style.Symbol(lifecycleVersion.String()))
 	}
 
-	l.logger.Verbose(style.Step("DETECTING"))
+	l.logger.Debug(style.Step("DETECTING"))
 	if err := l.Detect(ctx); err != nil {
 		return err
 	}
 
-	l.logger.Verbose(style.Step("RESTORING"))
+	l.logger.Debug(style.Step("RESTORING"))
 	if opts.ClearCache {
-		l.logger.Verbose("Skipping 'restore' due to clearing cache")
-	} else if err := l.Restore(ctx, l.supportsVolumeCache(), buildCache.Name()); err != nil {
-		return err
-	}
-
-	l.logger.Verbose(style.Step("ANALYZING"))
-	if opts.ClearCache {
-		l.logger.Verbose("Skipping 'analyze' due to clearing cache")
+		l.logger.Debug("Skipping 'restore' due to clearing cache")
 	} else {
-		if err := l.Analyze(ctx, opts.Image.Name(), opts.Publish); err != nil {
+		if err := l.Restore(ctx, l.supportsVolumeCache(), buildCache.Name()); err != nil {
 			return err
 		}
 	}
 
-	l.logger.Verbose(style.Step("BUILDING"))
+	l.logger.Debug(style.Step("ANALYZING"))
+	if opts.ClearCache && lifecycleVersion.LessThan(semver.MustParse("0.3.0")) {
+		l.logger.Debug("Skipping 'analyze' due to clearing cache")
+	} else {
+		if err := l.Analyze(ctx, opts.Image.Name(), opts.Publish, opts.ClearCache); err != nil {
+			return err
+		}
+	}
+
+	l.logger.Debug(style.Step("BUILDING"))
 	if err := l.Build(ctx); err != nil {
 		return err
 	}
 
-	l.logger.Verbose(style.Step("EXPORTING"))
+	l.logger.Debug(style.Step("EXPORTING"))
 	launchCacheName := ""
 	if l.supportsVolumeCache() {
 		launchCacheName = launchCache.Name()
@@ -117,7 +122,7 @@ func (l *Lifecycle) Execute(ctx context.Context, opts LifecycleOptions) error {
 		return err
 	}
 
-	l.logger.Verbose(style.Step("CACHING"))
+	l.logger.Debug(style.Step("CACHING"))
 	if err := l.Cache(ctx, l.supportsVolumeCache(), buildCache.Name()); err != nil {
 		return err
 	}
@@ -127,7 +132,7 @@ func (l *Lifecycle) Execute(ctx context.Context, opts LifecycleOptions) error {
 func (l *Lifecycle) Setup(opts LifecycleOptions) {
 	l.LayersVolume = "pack-layers-" + randString(10)
 	l.AppVolume = "pack-app-" + randString(10)
-	l.appDir = opts.AppDir
+	l.appPath = opts.AppPath
 	l.appOnce = &sync.Once{}
 	l.builder = opts.Builder
 	l.httpProxy = opts.HTTPProxy

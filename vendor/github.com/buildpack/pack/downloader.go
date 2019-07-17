@@ -9,76 +9,77 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 
 	"github.com/pkg/errors"
 
-	"github.com/buildpack/pack/archive"
+	"github.com/buildpack/pack/internal/paths"
+	"github.com/buildpack/pack/logging"
 )
 
-type Logger interface {
-	Verbose(format string, a ...interface{})
-}
+const (
+	cacheDirPrefix = "c"
+	cacheVersion   = "1"
+)
 
 type Downloader struct {
-	logger   Logger
-	cacheDir string
+	logger       logging.Logger
+	baseCacheDir string
 }
 
-func NewDownloader(logger Logger, cacheDir string) *Downloader {
+var schemeRegexp = regexp.MustCompile(`^.+://.*`)
+
+func NewDownloader(logger logging.Logger, baseCacheDir string) *Downloader {
 	return &Downloader{
-		logger:   logger,
-		cacheDir: cacheDir,
+		logger:       logger,
+		baseCacheDir: baseCacheDir,
 	}
 }
 
-func (d *Downloader) Download(uri string) (string, error) {
-	url, err := url.Parse(uri)
-	if err != nil {
-		return "", err
-	}
+func (d *Downloader) Download(pathOrUri string) (string, error) {
+	hasScheme := schemeRegexp.MatchString(pathOrUri)
+	if hasScheme {
+		parsedUrl, err := url.Parse(pathOrUri)
+		if err != nil {
+			return "", err
+		}
 
-	switch url.Scheme {
-	case "", "file":
-		return d.handleFile(url)
-	case "http", "https":
-		return d.handleHTTP(uri)
-	default:
-		return "", fmt.Errorf("unsupported protocol in URI %q", uri)
+		switch parsedUrl.Scheme {
+		case "file":
+			return paths.UriToFilePath(pathOrUri)
+		case "http", "https":
+			return d.handleHTTP(pathOrUri)
+		default:
+			return "", fmt.Errorf("unsupported protocol '%s' in URI %q", parsedUrl.Scheme, pathOrUri)
+		}
+	} else {
+		return d.handleFile(pathOrUri)
 	}
 }
 
-func (d *Downloader) handleFile(bpURL *url.URL) (string, error) {
-	path := bpURL.Path
+func (d *Downloader) handleFile(path string) (string, error) {
+	var (
+		err error
+	)
 
-	if filepath.Ext(path) != ".tgz" {
-		return path, nil
+	if path, err = filepath.Abs(path); err != nil {
+		return "", nil
 	}
 
-	file, err := os.Open(path)
-	if err != nil {
-		return "", errors.Wrapf(err, "could not open file to untar: %q", path)
-	}
-	defer file.Close()
-
-	tmpDir, err := ioutil.TempDir("", "")
-	if err != nil {
-		return "", fmt.Errorf(`failed to create temporary directory: %s`, err)
-	}
-
-	if err = archive.ExtractTarGZ(file, tmpDir); err != nil {
-		return "", err
-	}
-
-	return tmpDir, nil
+	return path, nil
 }
 
 func (d *Downloader) handleHTTP(uri string) (string, error) {
-	bpCache := filepath.Join(d.cacheDir, fmt.Sprintf("%x", sha256.Sum256([]byte(uri))))
-	if err := os.MkdirAll(bpCache, 0744); err != nil {
+	cacheDir := d.versionedCacheDir()
+
+	if err := os.MkdirAll(cacheDir, 0744); err != nil {
 		return "", err
 	}
 
-	etagFile := bpCache + ".etag"
+	cachePath := filepath.Join(cacheDir, fmt.Sprintf("%x", sha256.Sum256([]byte(uri))))
+	tgzFile := cachePath + ".tgz"
+
+	etagFile := cachePath + ".etag"
 	etagExists, err := fileExists(etagFile)
 	if err != nil {
 		return "", err
@@ -97,11 +98,18 @@ func (d *Downloader) handleHTTP(uri string) (string, error) {
 	if err != nil {
 		return "", errors.Wrapf(err, "failed to download from %q", uri)
 	} else if reader == nil {
-		return bpCache, nil
+		return tgzFile, nil
 	}
 	defer reader.Close()
 
-	if err = archive.ExtractTarGZ(reader, bpCache); err != nil {
+	fh, err := os.Create(tgzFile)
+	if err != nil {
+		return "", err
+	}
+	defer fh.Close()
+
+	_, err = io.Copy(fh, reader)
+	if err != nil {
 		return "", err
 	}
 
@@ -109,7 +117,7 @@ func (d *Downloader) handleHTTP(uri string) (string, error) {
 		return "", err
 	}
 
-	return bpCache, nil
+	return tgzFile, nil
 }
 
 func (d *Downloader) downloadAsStream(uri string, etag string) (io.ReadCloser, string, error) {
@@ -128,16 +136,20 @@ func (d *Downloader) downloadAsStream(uri string, etag string) (io.ReadCloser, s
 	}
 
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
-		d.logger.Verbose("Downloading from %q\n", uri)
+		d.logger.Debugf("Downloading from %q", uri)
 		return resp.Body, resp.Header.Get("Etag"), nil
 	}
 
 	if resp.StatusCode == 304 {
-		d.logger.Verbose("Using cached version of %q\n", uri)
+		d.logger.Debugf("Using cached version of %q", uri)
 		return nil, etag, nil
 	}
 
 	return nil, "", fmt.Errorf("could not download from %q, code http status %d", uri, resp.StatusCode)
+}
+
+func (d *Downloader) versionedCacheDir() string {
+	return filepath.Join(d.baseCacheDir, cacheDirPrefix+cacheVersion)
 }
 
 func fileExists(file string) (bool, error) {

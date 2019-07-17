@@ -84,18 +84,18 @@ github.com/buildpack/imgutil
 github.com/buildpack/lifecycle/metadata
 github.com/buildpack/lifecycle/image/auth
 github.com/buildpack/lifecycle/cmd
-# github.com/buildpack/pack v0.2.0
+# github.com/buildpack/pack v0.3.0
 github.com/buildpack/pack
-github.com/buildpack/pack/config
 github.com/buildpack/pack/logging
 github.com/buildpack/pack/app
-github.com/buildpack/pack/archive
 github.com/buildpack/pack/build
 github.com/buildpack/pack/builder
 github.com/buildpack/pack/buildpack
+github.com/buildpack/pack/config
 github.com/buildpack/pack/image
+github.com/buildpack/pack/internal/archive
+github.com/buildpack/pack/internal/paths
 github.com/buildpack/pack/lifecycle
-github.com/buildpack/pack/stack
 github.com/buildpack/pack/style
 github.com/buildpack/pack/container
 github.com/buildpack/pack/cache
