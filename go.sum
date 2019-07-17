@@ -33,6 +33,8 @@ github.com/alecthomas/repr v0.0.0-20181024024818-d37bc2a10ba1/go.mod h1:xTS7Pm1p
 github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=
 github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf/go.mod h1:ybxpYRFXyAe+OPACYpWeL0wqObRcbAqCMya13uyzqw0=
 github.com/apache/thrift v0.12.0/go.mod h1:cp2SuWMxlEZw2r+iP2GNCdIi4C1qmUzdZFSVb+bacwQ=
+github.com/apex/log v1.1.0 h1:J5rld6WVFi6NxA6m8GJ1LJqu3+GiTFIt3mYv27gdQWI=
+github.com/apex/log v1.1.0/go.mod h1:yA770aXIDQrhVOIGurT/pVdfCpSq1GQV/auzMN5fzvY=
 github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6/go.mod h1:grANhF5doyWs3UAsr3K4I6qtAmlQcZDesFNEHPZAzj8=
 github.com/aws/aws-sdk-go v1.18.6 h1:NuUz/+bi6C5v3BpIXW/VfovfMpvlhl1WUnD0EiDkOwQ=
 github.com/aws/aws-sdk-go v1.18.6/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
@@ -50,8 +52,8 @@ github.com/buildpack/imgutil v0.0.0-20190509214933-76de939dfb34 h1:cCzM7734kk/1R
 github.com/buildpack/imgutil v0.0.0-20190509214933-76de939dfb34/go.mod h1:hucbKwghPRl30WTj6YxhsoOYTLzpLo3hDSSMPmCAYf4=
 github.com/buildpack/lifecycle v0.1.1-0.20190510142604-8612386b1cea h1:i6zTuXHb+rNwy1nKgyJq1hc+v0BOhusi3sMgXhtnAqI=
 github.com/buildpack/lifecycle v0.1.1-0.20190510142604-8612386b1cea/go.mod h1:y3A24c0w/CRkjJyVF6NX0cdugBCmBv7KZPGfV7y2O60=
-github.com/buildpack/pack v0.2.0 h1:XZt9ZDv1ryfSR7S+0uPDumtyrTj014TY1x0HMSdpME4=
-github.com/buildpack/pack v0.2.0/go.mod h1:v4cxqkr7tcN9B7bE19MvRZBNw3pJgdeg+StqDqO/elk=
+github.com/buildpack/pack v0.2.1-0.20190716195749-3123e32ea7c5 h1:fREnCe2hBbbV1VhegJ+G1egCMr+1ONeCLp50SCkd9oY=
+github.com/buildpack/pack v0.2.1-0.20190716195749-3123e32ea7c5/go.mod h1:1HrBd/hNAAuEX8LCdFo5oVj1SrlApH7+bC9ob3wOfSk=
 github.com/census-instrumentation/opencensus-proto v0.2.0 h1:LzQXZOgg4CQfE6bFvXGM30YZL1WW/M337pXml+GrcZ4=
 github.com/census-instrumentation/opencensus-proto v0.2.0/go.mod h1:f6KPmirojxKA12rnyqOA5BBL4O983OfeGPqjHWSTneU=
 github.com/cheekybits/genny v1.0.0/go.mod h1:+tQajlRqAUrPI7DOSpB0XAqZYtQakVtB7wXkRAgjxjQ=

@@ -3,6 +3,7 @@ module github.com/buildpack/pack
 require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/Masterminds/semver v1.4.2
+	github.com/apex/log v1.1.0
 	github.com/buildpack/imgutil v0.0.0-20190509214933-76de939dfb34
 	github.com/buildpack/lifecycle v0.1.1-0.20190510142604-8612386b1cea
 	github.com/dgodd/dockerdial v1.0.1
@@ -20,4 +21,5 @@ require (
 	github.com/sclevine/spec v1.2.0
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/pflag v1.0.3 // indirect
+	golang.org/x/tools v0.0.0-20190425150028-36563e24a262
 )

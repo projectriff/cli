@@ -3,12 +3,17 @@ package builder
 import (
 	"archive/tar"
 	"bytes"
+	"compress/gzip"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
+	"path"
 	"path/filepath"
+	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/BurntSushi/toml"
@@ -16,10 +21,9 @@ import (
 	"github.com/buildpack/imgutil"
 	"github.com/pkg/errors"
 
-	"github.com/buildpack/pack/archive"
 	"github.com/buildpack/pack/buildpack"
+	"github.com/buildpack/pack/internal/archive"
 	"github.com/buildpack/pack/lifecycle"
-	"github.com/buildpack/pack/stack"
 	"github.com/buildpack/pack/style"
 )
 
@@ -99,7 +103,7 @@ func (b *Builder) Name() string {
 	return b.image.Name()
 }
 
-func (b *Builder) GetStackInfo() stack.Metadata {
+func (b *Builder) GetStackInfo() StackMetadata {
 	return b.metadata.Stack
 }
 
@@ -151,7 +155,7 @@ func (b *Builder) AddBuildpack(bp buildpack.Buildpack) error {
 
 func (b *Builder) SetLifecycle(md lifecycle.Metadata) error {
 	b.metadata.Lifecycle.Version = md.Version
-	b.lifecyclePath = md.Dir
+	b.lifecyclePath = md.Path
 	return nil
 }
 
@@ -204,8 +208,8 @@ func (b *Builder) SetDescription(description string) {
 }
 
 func (b *Builder) SetStackInfo(stackConfig StackConfig) {
-	b.metadata.Stack = stack.Metadata{
-		RunImage: stack.RunImageMetadata{
+	b.metadata.Stack = StackMetadata{
+		RunImage: RunImageMetadata{
 			Image:   stackConfig.RunImage,
 			Mirrors: stackConfig.RunImageMirrors,
 		},
@@ -382,7 +386,7 @@ func (b *Builder) orderLayer(dest string) (string, error) {
 	}
 
 	layerTar := filepath.Join(dest, "order.tar")
-	err = archive.CreateSingleFileTar(layerTar, buildpacksDir+"/order.toml", orderTOML.String())
+	err = archive.CreateSingleFileTar(layerTar, unixJoin(buildpacksDir, "order.toml"), orderTOML.String())
 	if err != nil {
 		return "", errors.Wrapf(err, "failed to create order.toml layer tar")
 	}
@@ -398,7 +402,7 @@ func (b *Builder) stackLayer(dest string) (string, error) {
 	}
 
 	layerTar := filepath.Join(dest, "stack.tar")
-	err = archive.CreateSingleFileTar(layerTar, buildpacksDir+"/stack.toml", stackTOML.String())
+	err = archive.CreateSingleFileTar(layerTar, unixJoin(buildpacksDir, "stack.toml"), stackTOML.String())
 	if err != nil {
 		return "", errors.Wrapf(err, "failed to create stack.toml layer tar")
 	}
@@ -406,6 +410,11 @@ func (b *Builder) stackLayer(dest string) (string, error) {
 	return layerTar, nil
 }
 
+// Output:
+//
+// layer tar = {ID}.{V}.tar
+//
+// inside the layer = /buildpacks/{ID}/{V}/*
 func (b *Builder) buildpackLayer(dest string, bp buildpack.Buildpack) (string, error) {
 	layerTar := filepath.Join(dest, fmt.Sprintf("%s.%s.tar", bp.EscapedID(), bp.Version))
 
@@ -422,36 +431,44 @@ func (b *Builder) buildpackLayer(dest string, bp buildpack.Buildpack) (string, e
 
 	if err := tw.WriteHeader(&tar.Header{
 		Typeflag: tar.TypeDir,
-		Name:     buildpacksDir + "/" + bp.EscapedID(),
+		Name:     unixJoin(buildpacksDir, bp.EscapedID()),
 		Mode:     0755,
 		ModTime:  now,
 	}); err != nil {
 		return "", err
 	}
 
+	baseTarDir := unixJoin(buildpacksDir, bp.EscapedID(), bp.Version)
 	if err := tw.WriteHeader(&tar.Header{
 		Typeflag: tar.TypeDir,
-		Name:     buildpacksDir + "/" + bp.EscapedID() + "/" + bp.Version,
+		Name:     baseTarDir,
 		Mode:     0755,
 		ModTime:  now,
 	}); err != nil {
 		return "", err
 	}
 
-	if err := archive.WriteDirToTar(
-		tw,
-		bp.Dir,
-		fmt.Sprintf("%s/%s/%s", buildpacksDir, bp.EscapedID(), bp.Version),
-		b.UID,
-		b.GID,
-	); err != nil {
+	if filepath.Ext(bp.Path) == ".tgz" {
+		err = b.embedBuildpackTar(tw, bp.Path, baseTarDir)
+	} else {
+		err = archive.WriteDirToTar(
+			tw,
+			bp.Path,
+			baseTarDir,
+			b.UID,
+			b.GID,
+			-1,
+		)
+	}
+
+	if err != nil {
 		return "", errors.Wrapf(err, "creating layer tar for buildpack '%s:%s'", bp.ID, bp.Version)
 	}
 
 	if bp.Latest {
 		err := tw.WriteHeader(&tar.Header{
 			Name:     fmt.Sprintf("%s/%s/%s", buildpacksDir, bp.EscapedID(), "latest"),
-			Linkname: fmt.Sprintf("%s/%s/%s", buildpacksDir, bp.EscapedID(), bp.Version),
+			Linkname: baseTarDir,
 			Typeflag: tar.TypeSymlink,
 			Mode:     0644,
 		})
@@ -461,6 +478,125 @@ func (b *Builder) buildpackLayer(dest string, bp buildpack.Buildpack) (string, e
 	}
 
 	return layerTar, nil
+}
+
+func (b *Builder) embedBuildpackTar(tw *tar.Writer, srcTar, baseTarDir string) error {
+	var (
+		tarFile    *os.File
+		gzipReader *gzip.Reader
+		fhFinal    io.Reader
+		err        error
+	)
+
+	tarFile, err = os.Open(srcTar)
+	fhFinal = tarFile
+	if err != nil {
+		return errors.Wrapf(err, "failed to open buildpack tar '%s'", srcTar)
+	}
+	defer tarFile.Close()
+
+	gzipReader, err = gzip.NewReader(tarFile)
+	fhFinal = gzipReader
+	if err != nil {
+		return errors.Wrap(err, "failed to create gzip reader")
+	}
+
+	defer gzipReader.Close()
+
+	tr := tar.NewReader(fhFinal)
+	for {
+		header, err := tr.Next()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return errors.Wrap(err, "failed to get next tar entry")
+		}
+
+		header.Name = path.Clean(header.Name)
+		if header.Name == "." || header.Name == "/" {
+			continue
+		}
+
+		header.Name = path.Clean(unixJoin(baseTarDir, header.Name))
+		header.Uid = b.UID
+		header.Gid = b.GID
+		err = tw.WriteHeader(header)
+		if err != nil {
+			return errors.Wrapf(err, "failed to write header for '%s'", header.Name)
+		}
+
+		buf, err := ioutil.ReadAll(tr)
+		if err != nil {
+			return errors.Wrapf(err, "failed to read contents of '%s'", header.Name)
+		}
+
+		_, err = tw.Write(buf)
+		if err != nil {
+			return errors.Wrapf(err, "failed to write contents to '%s'", header.Name)
+		}
+	}
+
+	return nil
+}
+
+func (b *Builder) embedLifecycleTar(tw *tar.Writer, srcTar string) error {
+	var (
+		tarFile    *os.File
+		gzipReader *gzip.Reader
+		fhFinal    io.Reader
+		err        error
+		regex      = regexp.MustCompile(`^[^/]+/([^/]+)$`)
+	)
+
+	tarFile, err = os.Open(srcTar)
+	fhFinal = tarFile
+	if err != nil {
+		return errors.Wrapf(err, "failed to open lifecycle tar '%s'", srcTar)
+	}
+	defer tarFile.Close()
+
+	gzipReader, err = gzip.NewReader(tarFile)
+	fhFinal = gzipReader
+	if err != nil {
+		return errors.Wrap(err, "failed to create gzip reader")
+	}
+
+	defer gzipReader.Close()
+
+	tr := tar.NewReader(fhFinal)
+	for {
+		header, err := tr.Next()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return errors.Wrap(err, "failed to get next tar entry")
+		}
+
+		pathMatches := regex.FindStringSubmatch(path.Clean(header.Name))
+		if pathMatches != nil {
+			binaryName := pathMatches[1]
+
+			header.Name = lifecycleDir + "/" + binaryName
+			err = tw.WriteHeader(header)
+			if err != nil {
+				return errors.Wrapf(err, "failed to write header for '%s'", header.Name)
+			}
+
+			buf, err := ioutil.ReadAll(tr)
+			if err != nil {
+				return errors.Wrapf(err, "failed to read contents of '%s'", header.Name)
+			}
+
+			_, err = tw.Write(buf)
+			if err != nil {
+				return errors.Wrapf(err, "failed to write contents to '%s'", header.Name)
+			}
+		}
+	}
+
+	return nil
 }
 
 func (b *Builder) envLayer(dest string, env map[string]string) (string, error) {
@@ -477,7 +613,7 @@ func (b *Builder) envLayer(dest string, env map[string]string) (string, error) {
 
 	for k, v := range env {
 		if err := tw.WriteHeader(&tar.Header{
-			Name:    platformDir + "/env/" + k,
+			Name:    unixJoin(platformDir, "env", k),
 			Size:    int64(len(v)),
 			Mode:    0644,
 			ModTime: now,
@@ -513,33 +649,14 @@ func (b *Builder) lifecycleLayer(dest string) (string, error) {
 		return "", err
 	}
 
-	for _, binary := range []string{"detector", "restorer", "analyzer", "builder", "exporter", "cacher", "launcher"} {
-		if err := writeLifecycleBinary(b.lifecyclePath, binary, tw, now); err != nil {
-			return "", err
-		}
+	err = b.embedLifecycleTar(tw, b.lifecyclePath)
+	if err != nil {
+		return "", err
 	}
 
 	return fh.Name(), nil
 }
 
-func writeLifecycleBinary(lifecyclePath, binary string, tw *tar.Writer, now time.Time) error {
-	buf, err := ioutil.ReadFile(filepath.Join(lifecyclePath, binary))
-	if err != nil {
-		return errors.Wrap(err, "reading lifecycle binary")
-	}
-
-	if err := tw.WriteHeader(&tar.Header{
-		Name:    lifecycleDir + "/" + binary,
-		Size:    int64(len(buf)),
-		Mode:    0755,
-		ModTime: now,
-	}); err != nil {
-		return err
-	}
-
-	if _, err := tw.Write([]byte(buf)); err != nil {
-		return err
-	}
-
-	return nil
+func unixJoin(paths ...string) string {
+	return strings.Join(paths, "/")
 }

@@ -155,7 +155,7 @@ func (c *Config) init() {
 		c.Client = k8s.NewClient(c.KubeConfigFile)
 	}
 	if c.Pack == nil {
-		packClient, err := pack.NewClient(c.Stdout, c.Stderr)
+		packClient, err := pack.NewClient(c.Stdout)
 		if err != nil {
 			c.Eerrorf("%s\n", err)
 			os.Exit(1)

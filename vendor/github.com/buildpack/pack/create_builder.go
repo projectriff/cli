@@ -3,6 +3,8 @@ package pack
 import (
 	"context"
 	"fmt"
+	"path/filepath"
+	"runtime"
 
 	"github.com/Masterminds/semver"
 	"github.com/buildpack/imgutil"
@@ -39,7 +41,7 @@ func (c *Client) CreateBuilder(ctx context.Context, opts CreateBuilderOptions) e
 		return err
 	}
 
-	c.logger.Verbose("Creating builder %s from build-image %s", style.Symbol(opts.BuilderName), style.Symbol(baseImage.Name()))
+	c.logger.Debugf("Creating builder %s from build-image %s", style.Symbol(opts.BuilderName), style.Symbol(baseImage.Name()))
 	builderImage, err := builder.New(baseImage, opts.BuilderName)
 	if err != nil {
 		return errors.Wrap(err, "invalid build-image")
@@ -62,7 +64,11 @@ func (c *Client) CreateBuilder(ctx context.Context, opts CreateBuilderOptions) e
 		}
 		fetchedBuildpack.Latest = b.Latest
 		if b.ID != "" && fetchedBuildpack.ID != b.ID {
-			return fmt.Errorf("buildpack from uri '%s' has id '%s' which does not match id '%s' from builder config", b.URI, fetchedBuildpack.ID, b.ID)
+			return fmt.Errorf("buildpack from URI '%s' has ID '%s' which does not match ID '%s' from builder config", b.URI, fetchedBuildpack.ID, b.ID)
+		}
+
+		if b.Version != "" && fetchedBuildpack.Version != b.Version {
+			return fmt.Errorf("buildpack from URI '%s' has version '%s' which does not match version '%s' from builder config", b.URI, fetchedBuildpack.Version, b.Version)
 		}
 
 		if err := builderImage.AddBuildpack(fetchedBuildpack); err != nil {
@@ -111,28 +117,39 @@ func validateBuilderConfig(conf builder.Config) error {
 	if conf.Stack.RunImage == "" {
 		return errors.New("stack.run-image is required")
 	}
+
+	if runtime.GOOS == "windows" {
+		for _, bp := range conf.Buildpacks {
+			if filepath.Ext(bp.URI) != ".tgz" {
+				return fmt.Errorf("buildpack %s: Windows only supports .tgz-based buildpacks", style.Symbol(bp.ID))
+			}
+		}
+	}
+
 	return nil
 }
 
 func (c *Client) validateRunImageConfig(ctx context.Context, opts CreateBuilderOptions) error {
 	var runImages []imgutil.Image
 	for _, i := range append([]string{opts.BuilderConfig.Stack.RunImage}, opts.BuilderConfig.Stack.RunImageMirrors...) {
-		img, err := c.imageFetcher.Fetch(ctx, i, true, false)
-		if err != nil {
-			if errors.Cause(err) != image.ErrNotFound {
-				return err
+		if !opts.Publish {
+			img, err := c.imageFetcher.Fetch(ctx, i, true, false)
+			if err != nil {
+				if errors.Cause(err) != image.ErrNotFound {
+					return err
+				}
+			} else {
+				runImages = append(runImages, img)
+				continue
 			}
-		} else {
-			runImages = append(runImages, img)
-			continue
 		}
 
-		img, err = c.imageFetcher.Fetch(ctx, i, false, false)
+		img, err := c.imageFetcher.Fetch(ctx, i, false, false)
 		if err != nil {
 			if errors.Cause(err) != image.ErrNotFound {
 				return err
 			}
-			c.logger.Info("Warning: run image %s is not accessible", style.Symbol(i))
+			c.logger.Infof("Warning: run image %s is not accessible", style.Symbol(i))
 		} else {
 			runImages = append(runImages, img)
 		}

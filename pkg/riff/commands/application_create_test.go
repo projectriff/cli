@@ -362,7 +362,7 @@ Created application "my-application"
 				c.Pack = packClient
 				packClient.On("Build", mock.Anything, pack.BuildOptions{
 					Image:   imageTag,
-					AppDir:  localPath,
+					AppPath: localPath,
 					Builder: "cloudfoundry/cnb:bionic",
 					Publish: true,
 				}).Return(nil).Run(func(args mock.Arguments) {
@@ -410,7 +410,7 @@ Created application "my-application"
 				c.Pack = packClient
 				packClient.On("Build", mock.Anything, pack.BuildOptions{
 					Image:   imageTag,
-					AppDir:  localPath,
+					AppPath: localPath,
 					Builder: "cloudfoundry/cnb:bionic",
 					Publish: true,
 				}).Return(nil).Run(func(args mock.Arguments) {
@@ -491,7 +491,7 @@ Created application "my-application"
 				c.Pack = packClient
 				packClient.On("Build", mock.Anything, pack.BuildOptions{
 					Image:   imageTag,
-					AppDir:  localPath,
+					AppPath: localPath,
 					Builder: "cloudfoundry/cnb:bionic",
 					Publish: true,
 				}).Return(fmt.Errorf("pack error")).Run(func(args mock.Arguments) {
@@ -533,7 +533,7 @@ Created application "my-application"
 				c.Pack = packClient
 				packClient.On("Build", mock.Anything, pack.BuildOptions{
 					Image:   fmt.Sprintf("%s/%s", registryHost, applicationName),
-					AppDir:  localPath,
+					AppPath: localPath,
 					Builder: "cloudfoundry/cnb:bionic",
 					Publish: true,
 				}).Return(nil).Run(func(args mock.Arguments) {

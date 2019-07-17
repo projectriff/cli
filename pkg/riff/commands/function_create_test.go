@@ -365,7 +365,7 @@ Created function "my-function"
 				c.Pack = packClient
 				packClient.On("Build", mock.Anything, pack.BuildOptions{
 					Image:   imageTag,
-					AppDir:  localPath,
+					AppPath: localPath,
 					Builder: "projectriff/builder:0.2.0",
 					Env: map[string]string{
 						"RIFF":          "true",
@@ -422,7 +422,7 @@ Created function "my-function"
 				c.Pack = packClient
 				packClient.On("Build", mock.Anything, pack.BuildOptions{
 					Image:   imageTag,
-					AppDir:  localPath,
+					AppPath: localPath,
 					Builder: "projectriff/builder:0.2.0",
 					Env: map[string]string{
 						"RIFF":          "true",
@@ -512,7 +512,7 @@ Created function "my-function"
 				c.Pack = packClient
 				packClient.On("Build", mock.Anything, pack.BuildOptions{
 					Image:   imageTag,
-					AppDir:  localPath,
+					AppPath: localPath,
 					Builder: "projectriff/builder:0.2.0",
 					Env: map[string]string{
 						"RIFF":          "true",
@@ -560,7 +560,7 @@ Created function "my-function"
 				c.Pack = packClient
 				packClient.On("Build", mock.Anything, pack.BuildOptions{
 					Image:   fmt.Sprintf("%s/%s", registryHost, functionName),
-					AppDir:  localPath,
+					AppPath: localPath,
 					Builder: "projectriff/builder:0.2.0",
 					Env: map[string]string{
 						"RIFF":          "true",

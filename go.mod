@@ -6,7 +6,7 @@ require (
 	github.com/acarl005/stripansi v0.0.0-20180116102854-5a71ef0e047d
 	github.com/boz/go-logutil v0.1.0
 	github.com/boz/kail v0.10.1
-	github.com/buildpack/pack v0.2.0
+	github.com/buildpack/pack v0.2.1-0.20190716195749-3123e32ea7c5
 	github.com/fatih/color v1.7.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/go-cmp v0.3.0

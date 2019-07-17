@@ -21,7 +21,6 @@ import (
 	"io"
 
 	"github.com/buildpack/pack"
-	"github.com/buildpack/pack/config"
 	"github.com/buildpack/pack/logging"
 )
 
@@ -31,8 +30,7 @@ type Client interface {
 	Build(ctx context.Context, opts pack.BuildOptions) error
 }
 
-func NewClient(stdout, stderr io.Writer) (Client, error) {
-	config := &config.Config{}
-	logger := logging.NewLogger(stdout, stderr, true, false)
-	return pack.DefaultClient(config, logger)
+func NewClient(stdout io.Writer) (Client, error) {
+	logger := logging.New(stdout)
+	return pack.NewClient(pack.WithLogger(logger))
 }

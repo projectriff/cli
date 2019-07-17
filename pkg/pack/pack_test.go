@@ -26,7 +26,7 @@ import (
 
 func TestNewClient(t *testing.T) {
 	out := &bytes.Buffer{}
-	client, err := riffpack.NewClient(out, out)
+	client, err := riffpack.NewClient(out)
 
 	if err != nil {
 		t.Errorf("Unexpected error from pack.NewClient(): %s", err)
