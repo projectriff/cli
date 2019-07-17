@@ -84,7 +84,7 @@ github.com/buildpack/imgutil
 github.com/buildpack/lifecycle/metadata
 github.com/buildpack/lifecycle/image/auth
 github.com/buildpack/lifecycle/cmd
-# github.com/buildpack/pack v0.2.1-0.20190716195749-3123e32ea7c5
+# github.com/buildpack/pack v0.3.0
 github.com/buildpack/pack
 github.com/buildpack/pack/logging
 github.com/buildpack/pack/app
