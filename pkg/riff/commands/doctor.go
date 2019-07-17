@@ -100,7 +100,8 @@ func NewDoctorCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 		Long: strings.TrimSpace(`
 Check that ` + c.Name + ` is installed.
 
-The doctor checks that necessary system components are installed.
+The doctor checks that necessary system components are installed and the user
+has access to resources in the namespace.
 
 The doctor is not a tool for monitoring the health of the cluster.
 `),
