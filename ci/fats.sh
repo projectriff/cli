@@ -4,8 +4,10 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-version=`cat VERSION`
-commit=$(git rev-parse HEAD)
+readonly version=$(cat VERSION)
+readonly git_sha=$(git rev-parse HEAD)
+readonly git_timestamp=$(TZ=UTC git show --quiet --date='format-local:%Y%m%d%H%M%S' --format="%cd")
+readonly slug=${version}-${git_timestamp}-${git_sha:0:16}
 
 # fetch FATS scripts
 fats_dir=`dirname "${BASH_SOURCE[0]}"`/fats
@@ -14,15 +16,14 @@ fats_refspec=1a462b4a35ebdb66d678d648b5803fa498871ec6 # projectriff/fats master 
 source `dirname "${BASH_SOURCE[0]}"`/fats-fetch.sh $fats_dir $fats_refspec $fats_repo
 source $fats_dir/.util.sh
 
-
 # install riff-cli
 echo "Installing riff"
 if [ "$machine" == "MinGw" ]; then
-  curl https://storage.googleapis.com/projectriff/riff-cli/releases/builds/v${version}-${commit}/riff-windows-amd64.zip > riff.zip
+  curl https://storage.googleapis.com/projectriff/riff-cli/releases/builds/v${slug}/riff-windows-amd64.zip > riff.zip
   unzip riff.zip -d /usr/bin/
   rm riff.zip
 else
-  curl https://storage.googleapis.com/projectriff/riff-cli/releases/builds/v${version}-${commit}/riff-linux-amd64.tgz | tar xz
+  curl https://storage.googleapis.com/projectriff/riff-cli/releases/builds/v${slug}/riff-linux-amd64.tgz | tar xz
   chmod +x riff
   sudo cp riff /usr/bin/riff
 fi
