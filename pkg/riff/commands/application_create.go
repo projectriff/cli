@@ -19,6 +19,7 @@ package commands
 import (
 	"context"
 	"fmt"
+	"runtime"
 	"strings"
 	"time"
 
@@ -104,6 +105,10 @@ func (opts *ApplicationCreateOptions) Validate(ctx context.Context) *cli.FieldEr
 
 	if opts.DryRun && opts.Tail {
 		errs = errs.Also(cli.ErrMultipleOneOf(cli.DryRunFlagName, cli.TailFlagName))
+	}
+
+	if opts.LocalPath != "" && runtime.GOOS == "windows" {
+		errs = errs.Also(cli.ErrInvalidValue(fmt.Sprintf("%s is not available on Windows", cli.LocalPathFlagName), cli.LocalPathFlagName))
 	}
 
 	return errs
