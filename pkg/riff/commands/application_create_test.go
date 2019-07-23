@@ -19,6 +19,8 @@ package commands_test
 import (
 	"context"
 	"fmt"
+	goruntime "runtime"
+	"strings"
 	"testing"
 
 	"github.com/buildpack/pack"
@@ -209,6 +211,19 @@ func TestApplicationCreateOptions(t *testing.T) {
 			},
 			ExpectFieldError: cli.ErrMultipleOneOf(cli.DryRunFlagName, cli.TailFlagName),
 		},
+	}
+
+	if goruntime.GOOS == "windows" {
+		for i, tr := range table {
+			opts, _ := tr.Options.(*commands.ApplicationCreateOptions)
+			if opts.LocalPath != "" {
+				tr.ShouldValidate = false
+				tr.ExpectFieldError = tr.ExpectFieldError.Also(
+					cli.ErrInvalidValue(fmt.Sprintf("%s is not available on Windows", cli.LocalPathFlagName), cli.LocalPathFlagName),
+				)
+			}
+			table[i] = tr
+		}
 	}
 
 	table.Run(t)
@@ -842,6 +857,15 @@ To continue watching logs run: riff application tail my-application --namespace 
 			},
 			ShouldError: true,
 		},
+	}
+
+	if goruntime.GOOS == "windows" {
+		for i, tr := range table {
+			if strings.Contains(strings.Join(tr.Args, "|"), cli.LocalPathFlagName) {
+				tr.Skip = true
+				table[i] = tr
+			}
+		}
 	}
 
 	table.Run(t, commands.NewApplicationCreateCommand)
