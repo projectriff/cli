@@ -28,6 +28,9 @@ require (
 	contrib.go.opencensus.io/exporter/stackdriver v0.10.2 // indirect
 	github.com/Azure/go-autorest v0.0.0-20190226174127-bca49d5b51a5 // indirect
 	github.com/cpuguy83/go-md2man v1.0.10 // indirect
+	github.com/docker/spdystream v0.0.0-20181023171402-6480d4af844c // indirect
+	github.com/elazarl/goproxy v0.0.0-20190711103511-473e67f1d7d2 // indirect
+	github.com/elazarl/goproxy/ext v0.0.0-20190711103511-473e67f1d7d2 // indirect
 	github.com/evanphx/json-patch v4.2.0+incompatible // indirect
 	github.com/golang/groupcache v0.0.0-20190129154638-5b532d6fd5ef // indirect
 	github.com/google/btree v1.0.0 // indirect
@@ -39,7 +42,6 @@ require (
 	github.com/imdario/mergo v0.3.7 // indirect
 	github.com/json-iterator/go v1.1.6 // indirect
 	github.com/knative/build v0.6.0 // indirect
-	github.com/knative/serving v0.6.0 // indirect
 	github.com/mattbaird/jsonpatch v0.0.0-20171005235357-81af80346b1a // indirect
 	github.com/mattn/go-colorable v0.1.1 // indirect
 	github.com/mattn/go-isatty v0.0.7 // indirect
@@ -59,3 +61,5 @@ replace (
 	k8s.io/apimachinery => k8s.io/apimachinery v0.0.0-20190221084156-01f179d85dbc
 	k8s.io/client-go => k8s.io/client-go v0.0.0-20190226174127-78295b709ec6
 )
+
+replace github.com/projectriff/system => github.com/scothis/system v0.0.0-20190724020546-029037ad5aee

@@ -33,4 +33,7 @@ func (hs *HandlerSpec) SetDefaults(ctx context.Context) {
 	if len(hs.Template.Containers) == 0 {
 		hs.Template.Containers = append(hs.Template.Containers, corev1.Container{})
 	}
+	if hs.Template.Containers[0].Name == "" {
+		hs.Template.Containers[0].Name = "handler"
+	}
 }

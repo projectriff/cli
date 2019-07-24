@@ -18,19 +18,19 @@ package v1alpha1
 
 import (
 	knapis "github.com/knative/pkg/apis"
-	servingv1alpha1 "github.com/knative/serving/pkg/apis/serving/v1alpha1"
+	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 )
 
 const (
-	HandlerConditionReady                                   = knapis.ConditionReady
-	HandlerConditionConfigurationReady knapis.ConditionType = "ConfigurationReady"
-	HandlerConditionRouteReady         knapis.ConditionType = "RouteReady"
+	HandlerConditionReady                                = knapis.ConditionReady
+	HandlerConditionDeploymentReady knapis.ConditionType = "DeploymentReady"
+	HandlerConditionServiceReady    knapis.ConditionType = "ServiceReady"
 )
 
 var handlerCondSet = knapis.NewLivingConditionSet(
-	HandlerConditionConfigurationReady,
-	HandlerConditionRouteReady,
+	HandlerConditionDeploymentReady,
+	HandlerConditionServiceReady,
 )
 
 func (hs *HandlerStatus) GetObservedGeneration() int64 {
@@ -53,45 +53,38 @@ func (hs *HandlerStatus) InitializeConditions() {
 	handlerCondSet.Manage(hs).InitializeConditions()
 }
 
-func (hs *HandlerStatus) MarkConfigurationNotOwned(name string) {
-	handlerCondSet.Manage(hs).MarkFalse(HandlerConditionConfigurationReady, "NotOwned",
-		"There is an existing Configuration %q that we do not own.", name)
+func (hs *HandlerStatus) MarkDeploymentNotOwned(name string) {
+	handlerCondSet.Manage(hs).MarkFalse(HandlerConditionDeploymentReady, "NotOwned",
+		"There is an existing Deployment %q that we do not own.", name)
 }
 
-func (hs *HandlerStatus) PropagateConfigurationStatus(cs *servingv1alpha1.ConfigurationStatus) {
-	sc := cs.GetCondition(servingv1alpha1.ConfigurationConditionReady)
-	if sc == nil {
+func (hs *HandlerStatus) PropagateDeploymentStatus(ds *appsv1.DeploymentStatus) {
+	var ac *appsv1.DeploymentCondition
+	for _, c := range ds.Conditions {
+		if c.Type == appsv1.DeploymentAvailable {
+			ac = &c
+			break
+		}
+	}
+	if ac == nil {
 		return
 	}
 	switch {
-	case sc.Status == corev1.ConditionUnknown:
-		handlerCondSet.Manage(hs).MarkUnknown(HandlerConditionConfigurationReady, sc.Reason, sc.Message)
-	case sc.Status == corev1.ConditionTrue:
-		handlerCondSet.Manage(hs).MarkTrue(HandlerConditionConfigurationReady)
-	case sc.Status == corev1.ConditionFalse:
-		handlerCondSet.Manage(hs).MarkFalse(HandlerConditionConfigurationReady, sc.Reason, sc.Message)
+	case ac.Status == corev1.ConditionUnknown:
+		handlerCondSet.Manage(hs).MarkUnknown(HandlerConditionDeploymentReady, ac.Reason, ac.Message)
+	case ac.Status == corev1.ConditionTrue:
+		handlerCondSet.Manage(hs).MarkTrue(HandlerConditionDeploymentReady)
+	case ac.Status == corev1.ConditionFalse:
+		handlerCondSet.Manage(hs).MarkFalse(HandlerConditionDeploymentReady, ac.Reason, ac.Message)
 	}
 }
 
-func (hs *HandlerStatus) MarkRouteNotOwned(name string) {
-	handlerCondSet.Manage(hs).MarkFalse(HandlerConditionRouteReady, "NotOwned",
-		"There is an existing Route %q that we do not own.", name)
+func (hs *HandlerStatus) MarkServiceNotOwned(name string) {
+	handlerCondSet.Manage(hs).MarkFalse(HandlerConditionServiceReady, "NotOwned",
+		"There is an existing Service %q that we do not own.", name)
 }
 
-func (hs *HandlerStatus) PropagateRouteStatus(rs *servingv1alpha1.RouteStatus) {
-	hs.Address = rs.Address
-	hs.URL = rs.URL
-
-	sc := rs.GetCondition(servingv1alpha1.RouteConditionReady)
-	if sc == nil {
-		return
-	}
-	switch {
-	case sc.Status == corev1.ConditionUnknown:
-		handlerCondSet.Manage(hs).MarkUnknown(HandlerConditionRouteReady, sc.Reason, sc.Message)
-	case sc.Status == corev1.ConditionTrue:
-		handlerCondSet.Manage(hs).MarkTrue(HandlerConditionRouteReady)
-	case sc.Status == corev1.ConditionFalse:
-		handlerCondSet.Manage(hs).MarkFalse(HandlerConditionRouteReady, sc.Reason, sc.Message)
-	}
+func (hs *HandlerStatus) PropagateServiceStatus(ss *corev1.ServiceStatus) {
+	// TODO implement
+	handlerCondSet.Manage(hs).MarkTrue(HandlerConditionServiceReady)
 }

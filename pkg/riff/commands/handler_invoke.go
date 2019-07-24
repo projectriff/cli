@@ -17,13 +17,21 @@
 package commands
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"net"
+	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/projectriff/cli/pkg/cli"
+	"github.com/projectriff/system/pkg/apis/request"
 	"github.com/spf13/cobra"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/tools/portforward"
+	"k8s.io/client-go/transport/spdy"
 )
 
 type HandlerInvokeOptions struct {
@@ -57,31 +65,28 @@ func (opts *HandlerInvokeOptions) Exec(ctx context.Context, c *cli.Config) error
 	if err != nil {
 		return err
 	}
-	if !handler.Status.IsReady() || handler.Status.URL == nil || handler.Status.URL.Host == "" {
+	if !handler.Status.IsReady() || handler.Status.ServiceName == "" {
 		return fmt.Errorf("handler %q is not ready", opts.Name)
 	}
 
-	ingress, err := opts.ingressServiceHost(c)
+	port, err := opts.findAvailablePort()
 	if err != nil {
 		return err
 	}
 
-	curlArgs := []string{ingress + opts.Path, "-H", fmt.Sprintf("Host: %s", handler.Status.URL.Host)}
-	if opts.ContentTypeJSON {
-		curlArgs = append(curlArgs, "-H", "Content-Type: application/json")
+	pod, err := opts.findReadyPod(ctx, c)
+	if err != nil {
+		return err
 	}
-	if opts.ContentTypeText {
-		curlArgs = append(curlArgs, "-H", "Content-Type: text/plain")
+
+	stopChan := make(chan struct{}, 1)
+	defer close(stopChan)
+	err = opts.forwardPort(ctx, c, pod, port, stopChan)
+	if err != nil {
+		return err
 	}
-	curlArgs = append(curlArgs, opts.BareArgs...)
 
-	curl := c.Exec(context.Background(), "curl", curlArgs...)
-
-	curl.Stdin = c.Stdin
-	curl.Stdout = c.Stdout
-	curl.Stderr = c.Stderr
-
-	return curl.Run()
+	return opts.invoke(ctx, c, port)
 }
 
 func NewHandlerInvokeCommand(ctx context.Context, c *cli.Config) *cobra.Command {
@@ -127,37 +132,92 @@ This command is not supported and may be removed in the future.
 	return cmd
 }
 
-func (opts *HandlerInvokeOptions) ingressServiceHost(c *cli.Config) (string, error) {
-	// TODO allow setting ingress manually
-	svc, err := c.Core().Services("istio-system").Get("istio-ingressgateway", metav1.GetOptions{})
+func (opts *HandlerInvokeOptions) findAvailablePort() (int, error) {
+	l, err := net.Listen("tcp", ":0")
 	if err != nil {
-		return "", err
+		return 0, err
+	}
+	defer l.Close()
+
+	_, p, err := net.SplitHostPort(l.Addr().String())
+	if err != nil {
+		return 0, err
+	}
+	port, err := strconv.Atoi(p)
+	if err != nil {
+		return 0, err
+	}
+	return port, err
+}
+
+func (opts *HandlerInvokeOptions) findReadyPod(ctx context.Context, c *cli.Config) (*corev1.Pod, error) {
+	pods, err := c.Core().Pods(opts.Namespace).List(metav1.ListOptions{
+		FieldSelector: "status.phase=Running",
+		LabelSelector: fmt.Sprintf("%s=%s", request.HandlerLabelKey, opts.Name),
+	})
+	if err != nil {
+		return nil, err
+	}
+	if len(pods.Items) == 0 {
+		return nil, fmt.Errorf("no running pods found")
+	}
+	return &pods.Items[0], nil
+}
+
+func (opts *HandlerInvokeOptions) forwardPort(ctx context.Context, c *cli.Config, pod *corev1.Pod, port int, stopChan chan struct{}) error {
+	url := c.Core().RESTClient().
+		Post().
+		Resource("pods").
+		Namespace(pod.Namespace).
+		Name(pod.Name).
+		SubResource("portforward").
+		URL()
+
+	transport, upgrader, err := spdy.RoundTripperFor(c.KubeRestConfig())
+	if err != nil {
+		return err
+	}
+	dialer := spdy.NewDialer(upgrader, &http.Client{Transport: transport}, "POST", url)
+
+	ports := []string{
+		fmt.Sprintf("%d:%d", port, 8080),
+	}
+	readyChan := make(chan struct{}, 1)
+	out := &bytes.Buffer{}
+	fw, err := portforward.New(dialer, ports, stopChan, readyChan, out, out)
+	if err != nil {
+		return err
 	}
 
-	ingress := ""
-	if svc.Spec.Type == "LoadBalancer" {
-		ingresses := svc.Status.LoadBalancer.Ingress
-		if len(ingresses) > 0 {
-			ingress = ingresses[0].IP
-			if ingress == "" {
-				ingress = ingresses[0].Hostname
-			}
-		}
-	}
-	if ingress == "" {
-		for _, port := range svc.Spec.Ports {
-			if port.Name == "http" || port.Name == "http2" {
-				config := c.KubeRestConfig()
-				host := config.Host[0:strings.LastIndex(config.Host, ":")]
-				host = strings.Replace(host, "https", "http", 1)
-				ingress = fmt.Sprintf("%s:%d", host, port.NodePort)
-				break
-			}
-		}
-	}
-	if ingress == "" {
-		return "", fmt.Errorf("ingress not available")
-	}
+	errChan := make(chan error)
+	go func() {
+		errChan <- fw.ForwardPorts()
+	}()
 
-	return ingress, nil
+	select {
+	case err = <-errChan:
+		c.Stderr.Write(out.Bytes())
+		return fmt.Errorf("forwarding ports: %v", err)
+	case <-fw.Ready:
+		return nil
+	}
+}
+
+func (opts *HandlerInvokeOptions) invoke(ctx context.Context, c *cli.Config, port int) error {
+	curlArgs := []string{fmt.Sprintf("http://localhost:%d", port)}
+	if opts.ContentTypeJSON {
+		curlArgs = append(curlArgs, "-H", "Content-Type: application/json")
+	}
+	if opts.ContentTypeText {
+		curlArgs = append(curlArgs, "-H", "Content-Type: text/plain")
+	}
+	curlArgs = append(curlArgs, opts.BareArgs...)
+
+	curl := c.Exec(ctx, "curl", curlArgs...)
+
+	curl.Stdin = c.Stdin
+	curl.Stdout = c.Stdout
+	curl.Stderr = c.Stderr
+
+	return curl.Run()
 }

@@ -117,15 +117,10 @@ func (opts *HandlerListOptions) print(handler *requestv1alpha1.Handler, _ printe
 		Object: runtime.RawExtension{Object: handler},
 	}
 	refType, refValue := opts.formatRef(handler)
-	host := ""
-	if handler.Status.URL != nil {
-		host = handler.Status.URL.Host
-	}
 	row.Cells = append(row.Cells,
 		handler.Name,
 		refType,
 		refValue,
-		cli.FormatEmptyString(host),
 		cli.FormatConditionStatus(handler.Status.GetCondition(requestv1alpha1.HandlerConditionReady)),
 		cli.FormatTimestampSince(handler.CreationTimestamp, now),
 	)
@@ -137,7 +132,6 @@ func (opts *HandlerListOptions) printColumns() []metav1beta1.TableColumnDefiniti
 		{Name: "Name", Type: "string"},
 		{Name: "Type", Type: "string"},
 		{Name: "Ref", Type: "string"},
-		{Name: "Host", Type: "string"},
 		{Name: "Status", Type: "string"},
 		{Name: "Age", Type: "string"},
 	}

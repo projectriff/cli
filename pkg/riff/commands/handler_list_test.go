@@ -20,7 +20,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/knative/pkg/apis"
 	duckv1beta1 "github.com/knative/pkg/apis/duck/v1beta1"
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/riff/commands"
@@ -88,8 +87,8 @@ No handlers found.
 				},
 			},
 			ExpectOutput: `
-NAME           TYPE        REF         HOST      STATUS      AGE
-test-handler   <unknown>   <unknown>   <empty>   <unknown>   <unknown>
+NAME           TYPE        REF         STATUS      AGE
+test-handler   <unknown>   <unknown>   <unknown>   <unknown>
 `,
 		},
 		{
@@ -125,9 +124,9 @@ No handlers found.
 				},
 			},
 			ExpectOutput: `
-NAMESPACE         NAME                 TYPE        REF         HOST      STATUS      AGE
-default           test-handler         <unknown>   <unknown>   <empty>   <unknown>   <unknown>
-other-namespace   test-other-handler   <unknown>   <unknown>   <empty>   <unknown>   <unknown>
+NAMESPACE         NAME                 TYPE        REF         STATUS      AGE
+default           test-handler         <unknown>   <unknown>   <unknown>   <unknown>
+other-namespace   test-other-handler   <unknown>   <unknown>   <unknown>   <unknown>
 `,
 		},
 		{
@@ -152,9 +151,6 @@ other-namespace   test-other-handler   <unknown>   <unknown>   <empty>   <unknow
 								{Type: requestv1alpha1.HandlerConditionReady, Status: "True"},
 							},
 						},
-						URL: &apis.URL{
-							Host: "image.default.example.com",
-						},
 					},
 				},
 				&requestv1alpha1.Handler{
@@ -170,9 +166,6 @@ other-namespace   test-other-handler   <unknown>   <unknown>   <empty>   <unknow
 							Conditions: duckv1beta1.Conditions{
 								{Type: requestv1alpha1.HandlerConditionReady, Status: "True"},
 							},
-						},
-						URL: &apis.URL{
-							Host: "app.default.example.com",
 						},
 					},
 				},
@@ -190,17 +183,14 @@ other-namespace   test-other-handler   <unknown>   <unknown>   <empty>   <unknow
 								{Type: requestv1alpha1.HandlerConditionReady, Status: "True"},
 							},
 						},
-						URL: &apis.URL{
-							Host: "func.default.example.com",
-						},
 					},
 				},
 			},
 			ExpectOutput: `
-NAME   TYPE          REF                 HOST                        STATUS   AGE
-app    application   petclinic           app.default.example.com     Ready    <unknown>
-func   function      square              func.default.example.com    Ready    <unknown>
-img    image         projectriff/upper   image.default.example.com   Ready    <unknown>
+NAME   TYPE          REF                 STATUS   AGE
+app    application   petclinic           Ready    <unknown>
+func   function      square              Ready    <unknown>
+img    image         projectriff/upper   Ready    <unknown>
 `,
 		},
 		{

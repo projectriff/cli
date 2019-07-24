@@ -21,8 +21,6 @@
 package v1alpha1
 
 import (
-	apis "github.com/knative/pkg/apis"
-	duck_v1alpha1 "github.com/knative/pkg/apis/duck/v1alpha1"
 	v1 "k8s.io/api/core/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 )
@@ -144,24 +142,6 @@ func (in *HandlerSpec) DeepCopy() *HandlerSpec {
 func (in *HandlerStatus) DeepCopyInto(out *HandlerStatus) {
 	*out = *in
 	in.Status.DeepCopyInto(&out.Status)
-	if in.Address != nil {
-		in, out := &in.Address, &out.Address
-		if *in == nil {
-			*out = nil
-		} else {
-			*out = new(duck_v1alpha1.Addressable)
-			(*in).DeepCopyInto(*out)
-		}
-	}
-	if in.URL != nil {
-		in, out := &in.URL, &out.URL
-		if *in == nil {
-			*out = nil
-		} else {
-			*out = new(apis.URL)
-			(*in).DeepCopyInto(*out)
-		}
-	}
 	return
 }
 
