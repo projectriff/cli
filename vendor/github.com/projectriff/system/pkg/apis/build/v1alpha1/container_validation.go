@@ -20,47 +20,26 @@ import (
 	"context"
 
 	"github.com/knative/pkg/apis"
+	systemapis "github.com/projectriff/system/pkg/apis"
 	"k8s.io/apimachinery/pkg/api/equality"
 )
 
-func (s *Source) Validate(ctx context.Context) *apis.FieldError {
-	if equality.Semantic.DeepEqual(s, &Source{}) {
-		return apis.ErrMissingField(apis.CurrentField)
-	}
-
+func (a *Container) Validate(ctx context.Context) *apis.FieldError {
 	errs := &apis.FieldError{}
-	used := []string{}
-	unused := []string{}
-
-	if s.Git != nil {
-		used = append(used, "git")
-		errs = errs.Also(s.Git.Validate(ctx).ViaField("git"))
-	} else {
-		unused = append(unused, "git")
-	}
-
-	if len(used) == 0 {
-		errs = errs.Also(apis.ErrMissingOneOf(unused...))
-	} else if len(used) > 1 {
-		errs = errs.Also(apis.ErrMultipleOneOf(used...))
-	}
-
+	errs = errs.Also(systemapis.ValidateObjectMetadata(a.GetObjectMeta()).ViaField("metadata"))
+	errs = errs.Also(a.Spec.Validate(ctx).ViaField("spec"))
 	return errs
 }
 
-func (gs *GitSource) Validate(ctx context.Context) *apis.FieldError {
-	if equality.Semantic.DeepEqual(gs, &GitSource{}) {
+func (cs *ContainerSpec) Validate(ctx context.Context) *apis.FieldError {
+	if equality.Semantic.DeepEqual(cs, &ContainerSpec{}) {
 		return apis.ErrMissingField(apis.CurrentField)
 	}
 
 	errs := &apis.FieldError{}
 
-	if gs.URL == "" {
-		errs = errs.Also(apis.ErrMissingField("url"))
-	}
-
-	if gs.Revision == "" {
-		errs = errs.Also(apis.ErrMissingField("revision"))
+	if cs.Image == "" {
+		errs = errs.Also(apis.ErrMissingField("image"))
 	}
 
 	return errs

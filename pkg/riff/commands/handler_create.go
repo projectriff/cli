@@ -38,6 +38,7 @@ type HandlerCreateOptions struct {
 
 	Image          string
 	ApplicationRef string
+	ContainerRef   string
 	FunctionRef    string
 
 	Env     []string
@@ -68,6 +69,12 @@ func (opts *HandlerCreateOptions) Validate(ctx context.Context) *cli.FieldError 
 		used = append(used, cli.ApplicationRefFlagName)
 	} else {
 		unused = append(unused, cli.ApplicationRefFlagName)
+	}
+
+	if opts.ContainerRef != "" {
+		used = append(used, cli.ContainerRefFlagName)
+	} else {
+		unused = append(unused, cli.ContainerRefFlagName)
 	}
 
 	if opts.FunctionRef != "" {
@@ -122,6 +129,11 @@ func (opts *HandlerCreateOptions) Exec(ctx context.Context, c *cli.Config) error
 	if opts.ApplicationRef != "" {
 		handler.Spec.Build = &requestv1alpha1.Build{
 			ApplicationRef: opts.ApplicationRef,
+		}
+	}
+	if opts.ContainerRef != "" {
+		handler.Spec.Build = &requestv1alpha1.Build{
+			ContainerRef: opts.ContainerRef,
 		}
 	}
 	if opts.FunctionRef != "" {
@@ -189,13 +201,14 @@ func NewHandlerCreateCommand(ctx context.Context, c *cli.Config) *cobra.Command 
 
 	cmd := &cobra.Command{
 		Use:   "create",
-		Short: "create a handler to map HTTP requests to an application, function or image",
+		Short: "create a handler to map HTTP requests to an application, function, container or image",
 		Long: strings.TrimSpace(`
 Create an HTTP request handler.
 
-There are three way to create a handler:
+There are four way to create a handler:
 - from an application reference
 - from a function reference
+- from a container reference
 - from an image
 
 Application and function references are resolved within the same namespace as
@@ -210,6 +223,7 @@ and ` + cli.EnvFromFlagName + ` to map values from a ConfigMap or Secret.
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s handler create my-app-handler %s my-app", c.Name, cli.ApplicationRefFlagName),
 			fmt.Sprintf("%s handler create my-func-handler %s my-func", c.Name, cli.FunctionRefFlagName),
+			fmt.Sprintf("%s handler create my-func-handler %s my-container", c.Name, cli.ContainerRefFlagName),
 			fmt.Sprintf("%s handler create my-image-handler %s registry.example.com/my-image:latest", c.Name, cli.ImageFlagName),
 		}, "\n"),
 		PreRunE: cli.ValidateOptions(ctx, opts),
@@ -223,6 +237,7 @@ and ` + cli.EnvFromFlagName + ` to map values from a ConfigMap or Secret.
 	cli.NamespaceFlag(cmd, c, &opts.Namespace)
 	cmd.Flags().StringVar(&opts.Image, cli.StripDash(cli.ImageFlagName), "", "container `image` to deploy")
 	cmd.Flags().StringVar(&opts.ApplicationRef, cli.StripDash(cli.ApplicationRefFlagName), "", "`name` of application to deploy")
+	cmd.Flags().StringVar(&opts.ContainerRef, cli.StripDash(cli.ContainerRefFlagName), "", "`name` of container to deploy")
 	cmd.Flags().StringVar(&opts.FunctionRef, cli.StripDash(cli.FunctionRefFlagName), "", "`name` of function to deploy")
 	cmd.Flags().StringArrayVar(&opts.Env, cli.StripDash(cli.EnvFlagName), []string{}, fmt.Sprintf("environment `variable` defined as a key value pair separated by an equals sign, example %q (may be set multiple times)", fmt.Sprintf("%s MY_VAR=my-value", cli.EnvFlagName)))
 	cmd.Flags().StringArrayVar(&opts.EnvFrom, cli.StripDash(cli.EnvFromFlagName), []string{}, fmt.Sprintf("environment `variable` from a config map or secret, example %q, %q (may be set multiple times)", fmt.Sprintf("%s MY_SECRET_VALUE=secretKeyRef:my-secret-name:key-in-secret", cli.EnvFromFlagName), fmt.Sprintf("%s MY_CONFIG_MAP_VALUE=configMapKeyRef:my-config-map-name:key-in-config-map", cli.EnvFromFlagName)))

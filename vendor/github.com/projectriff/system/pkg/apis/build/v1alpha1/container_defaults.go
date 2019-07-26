@@ -13,10 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package v1alpha1
 
-type ApplicationExpansion interface{}
+import "context"
 
-type ContainerExpansion interface{}
+func (c *Container) SetDefaults(ctx context.Context) {
+	c.Spec.SetDefaults(ctx)
+}
 
-type FunctionExpansion interface{}
+func (cs *ContainerSpec) SetDefaults(ctx context.Context) {
+	// nothing to do
+}

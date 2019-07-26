@@ -21,7 +21,6 @@ import (
 	duckv1beta1 "github.com/knative/pkg/apis/duck/v1beta1"
 	"github.com/knative/pkg/kmeta"
 	"github.com/projectriff/system/pkg/apis"
-	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
@@ -29,66 +28,51 @@ import (
 // +genclient
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-type Function struct {
+// Container watches a repository for new images
+type Container struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   FunctionSpec   `json:"spec"`
-	Status FunctionStatus `json:"status"`
+	Spec   ContainerSpec   `json:"spec"`
+	Status ContainerStatus `json:"status"`
 }
 
 var (
-	_ knapis.Validatable = (*Function)(nil)
-	_ knapis.Defaultable = (*Function)(nil)
-	_ kmeta.OwnerRefable = (*Function)(nil)
-	_ apis.Object        = (*Function)(nil)
-	_ ImageResource      = (*Function)(nil)
+	_ knapis.Validatable = (*Container)(nil)
+	_ knapis.Defaultable = (*Container)(nil)
+	_ kmeta.OwnerRefable = (*Container)(nil)
+	_ apis.Object        = (*Container)(nil)
+	_ ImageResource      = (*Container)(nil)
 )
 
-type FunctionSpec struct {
-	// Image repository to push built images. May contain a leading underscore
+type ContainerSpec struct {
+	// Image repository to watch for built images. May contain a leading underscore
 	// to have the default image prefix applied.
 	Image string `json:"image"`
-
-	// CacheSize of persistent volume to store resources between builds
-	CacheSize *resource.Quantity `json:"cacheSize,omitempty"`
-
-	// Source location. Required for on cluster builds.
-	Source *Source `json:"source,omitempty"`
-
-	// Artifact file containing the function within the build workspace.
-	Artifact string `json:"artifact,omitempty"`
-
-	// Handler name of the method or class to invoke. The value depends on the
-	// invoker.
-	Handler string `json:"handler,omitempty"`
-
-	// Invoker language runtime name. Detected by default.
-	Invoker string `json:"invoker,omitempty"`
 }
 
-type FunctionStatus struct {
+type ContainerStatus struct {
 	duckv1beta1.Status `json:",inline"`
 	BuildStatus        `json:",inline"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 
-type FunctionList struct {
+type ContainerList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata"`
 
-	Items []Function `json:"items"`
+	Items []Container `json:"items"`
 }
 
-func (*Function) GetGroupVersionKind() schema.GroupVersionKind {
-	return SchemeGroupVersion.WithKind("Function")
+func (*Container) GetGroupVersionKind() schema.GroupVersionKind {
+	return SchemeGroupVersion.WithKind("Container")
 }
 
-func (f *Function) GetStatus() apis.Status {
-	return &f.Status
+func (a *Container) GetStatus() apis.Status {
+	return &a.Status
 }
 
-func (f *Function) GetImage() string {
-	return f.Spec.Image
+func (a *Container) GetImage() string {
+	return a.Spec.Image
 }

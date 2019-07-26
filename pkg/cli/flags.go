@@ -29,6 +29,7 @@ const (
 	ArtifactFlagName              = "--artifact"
 	CacheSizeFlagName             = "--cache-size"
 	ConfigFlagName                = "--config"
+	ContainerRefFlagName          = "--container-ref"
 	ContentTypeName               = "--content-type"
 	DefaultImagePrefixFlagName    = "--default-image-prefix"
 	DirectoryFlagName             = "--directory"
