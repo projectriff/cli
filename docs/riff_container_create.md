@@ -42,5 +42,5 @@ riff container create my-app --image registry.example.com/image
 
 ### SEE ALSO
 
-* [riff container](riff_container.md)	 - containers built from source using container buildpacks
+* [riff container](riff_container.md)	 - containers resolve the latest image
 

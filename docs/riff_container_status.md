@@ -42,5 +42,5 @@ riff container status my-container
 
 ### SEE ALSO
 
-* [riff container](riff_container.md)	 - containers built from source using container buildpacks
+* [riff container](riff_container.md)	 - containers resolve the latest image
 

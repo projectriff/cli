@@ -27,7 +27,7 @@ import (
 func NewContainerCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "container",
-		Short: "containers built from source using container buildpacks",
+		Short: "containers resolve the latest image",
 		Long: strings.TrimSpace(`
 Containers are a mechanism to resolve and detect the latest container image.
 

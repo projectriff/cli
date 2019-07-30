@@ -4,7 +4,7 @@ title: "riff container"
 ---
 ## riff container
 
-containers built from source using container buildpacks
+containers resolve the latest image
 
 ### Synopsis
 

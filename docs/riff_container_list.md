@@ -43,5 +43,5 @@ riff container list --all-namespaces
 
 ### SEE ALSO
 
-* [riff container](riff_container.md)	 - containers built from source using container buildpacks
+* [riff container](riff_container.md)	 - containers resolve the latest image
 
