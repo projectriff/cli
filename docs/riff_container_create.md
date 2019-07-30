@@ -8,14 +8,8 @@ create an container from source
 
 ### Synopsis
 
-Create an container from source using the container Cloud Native Buildpack
-builder.
-
-Container source can be specified either as a Git repository or as a local
-directory. Builds from Git are run in the cluster while builds from a local
-directory are run inside a local Docker daemon and are orchestrated by this
-command (in the future, builds from local source may also be run in the
-cluster).
+Create a container to watch for the latest image. There is no build performed
+for containers.
 
 ```
 riff container create <name> [flags]

@@ -10,10 +10,9 @@ delete container(s)
 
 Delete one or more containers by name or all containers within a namespace.
 
-Deleting an container prevents new builds while preserving built images in the
-registry. Handlers that reference this container will continue to use the last
-built image. A new container created with the same name will automatically be
-discovered by the handler.
+Deleting an container prevents resolution of new images. Handlers that reference
+this container will continue to use the last built image. A new container
+created with the same name will automatically be discovered by the handler.
 
 ```
 riff container delete <name(s)> [flags]

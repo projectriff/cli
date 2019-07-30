@@ -8,15 +8,11 @@ containers built from source using container buildpacks
 
 ### Synopsis
 
-Containers are a mechanism to convert web container source code into
-container images that can be invoked over HTTP. Cloud Native Buildpacks are
-provided to detect the language, provide a language runtime, install build and
-runtime dependencies, compile the container, and packaging everything as a
-container.
+Containers are a mechanism to resolve and detect the latest container image.
 
-The container resource is only responsible for converting source code into a
-container. The container container image may then be deployed as a request
-handler. See `riff handler --help` for detail.
+The container resource is only responsible for resolving the latest image. The
+container container image may then be deployed as a request handler. See
+`riff handler --help` for detail.
 
 ### Options
 
