@@ -47,7 +47,8 @@ var (
 
 type ContainerSpec struct {
 	// Image repository to watch for built images. May contain a leading underscore
-	// to have the default image prefix applied.
+	// to have the default image prefix applied, or be `_` to combine the default
+	// image prefix with the resource's name as a default value.
 	Image string `json:"image"`
 }
 
@@ -69,10 +70,10 @@ func (*Container) GetGroupVersionKind() schema.GroupVersionKind {
 	return SchemeGroupVersion.WithKind("Container")
 }
 
-func (a *Container) GetStatus() apis.Status {
-	return &a.Status
+func (c *Container) GetStatus() apis.Status {
+	return &c.Status
 }
 
-func (a *Container) GetImage() string {
-	return a.Spec.Image
+func (c *Container) GetImage() string {
+	return c.Spec.Image
 }
