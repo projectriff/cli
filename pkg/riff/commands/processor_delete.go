@@ -44,7 +44,7 @@ func (opts *ProcessorDeleteOptions) Validate(ctx context.Context) *cli.FieldErro
 }
 
 func (opts *ProcessorDeleteOptions) Exec(ctx context.Context, c *cli.Config) error {
-	client := c.Stream().Processors(opts.Namespace)
+	client := c.Streaming().Processors(opts.Namespace)
 
 	if opts.All {
 		if err := client.DeleteCollection(nil, metav1.ListOptions{}); err != nil {

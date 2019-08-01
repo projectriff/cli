@@ -26,7 +26,7 @@ import (
 	"github.com/projectriff/cli/pkg/riff/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 	kailtesting "github.com/projectriff/cli/pkg/testing/kail"
-	streamv1alpha1 "github.com/projectriff/system/pkg/apis/stream/v1alpha1"
+	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 	"github.com/stretchr/testify/mock"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -162,7 +162,7 @@ Created processor "my-processor"
 			Args: []string{processorName, cli.FunctionRefFlagName, functionRef, cli.InputFlagName, inputName, cli.DryRunFlagName},
 			ExpectOutput: `
 ---
-apiVersion: stream.projectriff.io/v1alpha1
+apiVersion: streaming.projectriff.io/v1alpha1
 kind: Processor
 metadata:
   creationTimestamp: null

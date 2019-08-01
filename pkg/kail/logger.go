@@ -31,8 +31,8 @@ import (
 	buildv1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
 	"github.com/projectriff/system/pkg/apis/request"
 	requestv1alpha1 "github.com/projectriff/system/pkg/apis/request/v1alpha1"
-	"github.com/projectriff/system/pkg/apis/stream"
-	streamv1alpha1 "github.com/projectriff/system/pkg/apis/stream/v1alpha1"
+	"github.com/projectriff/system/pkg/apis/streaming"
+	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
 )
@@ -82,7 +82,7 @@ func (c *logger) HandlerLogs(ctx context.Context, handler *requestv1alpha1.Handl
 }
 
 func (c *logger) ProcessorLogs(ctx context.Context, processor *streamv1alpha1.Processor, since time.Duration, out io.Writer) error {
-	selector, err := labels.Parse(fmt.Sprintf("%s=%s", stream.ProcessorLabelKey, processor.Name))
+	selector, err := labels.Parse(fmt.Sprintf("%s=%s", streaming.ProcessorLabelKey, processor.Name))
 	if err != nil {
 		panic(err)
 	}

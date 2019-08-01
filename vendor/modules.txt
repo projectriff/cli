@@ -301,23 +301,23 @@ github.com/peterbourgon/diskv
 github.com/pkg/errors
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
-# github.com/projectriff/system v0.0.0-20190731155923-fb59d90e6b2a
+# github.com/projectriff/system v0.0.0-20190731155923-fb59d90e6b2a => github.com/scothis/system v0.0.0-20190801132234-32f3ff9055a1
 github.com/projectriff/system/pkg/apis
 github.com/projectriff/system/pkg/client/clientset/versioned
 github.com/projectriff/system/pkg/client/clientset/versioned/typed/build/v1alpha1
 github.com/projectriff/system/pkg/client/clientset/versioned/typed/request/v1alpha1
-github.com/projectriff/system/pkg/client/clientset/versioned/typed/stream/v1alpha1
+github.com/projectriff/system/pkg/client/clientset/versioned/typed/streaming/v1alpha1
 github.com/projectriff/system/pkg/apis/build
 github.com/projectriff/system/pkg/apis/build/v1alpha1
 github.com/projectriff/system/pkg/apis/request
 github.com/projectriff/system/pkg/apis/request/v1alpha1
-github.com/projectriff/system/pkg/apis/stream
-github.com/projectriff/system/pkg/apis/stream/v1alpha1
+github.com/projectriff/system/pkg/apis/streaming
+github.com/projectriff/system/pkg/apis/streaming/v1alpha1
 github.com/projectriff/system/pkg/client/clientset/versioned/fake
 github.com/projectriff/system/pkg/client/clientset/versioned/scheme
 github.com/projectriff/system/pkg/client/clientset/versioned/typed/build/v1alpha1/fake
 github.com/projectriff/system/pkg/client/clientset/versioned/typed/request/v1alpha1/fake
-github.com/projectriff/system/pkg/client/clientset/versioned/typed/stream/v1alpha1/fake
+github.com/projectriff/system/pkg/client/clientset/versioned/typed/streaming/v1alpha1/fake
 # github.com/prometheus/client_golang v0.9.3-0.20190127221311-3c4408c8b829
 github.com/prometheus/client_golang/prometheus
 github.com/prometheus/client_golang/prometheus/promhttp

@@ -22,7 +22,7 @@ import (
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/riff/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
-	streamv1alpha1 "github.com/projectriff/system/pkg/apis/stream/v1alpha1"
+	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
@@ -71,7 +71,7 @@ func TestProcessorDeleteCommand(t *testing.T) {
 				},
 			},
 			ExpectDeleteCollections: []rifftesting.DeleteCollectionRef{{
-				Group:     "stream.projectriff.io",
+				Group:     "streaming.projectriff.io",
 				Resource:  "processors",
 				Namespace: defaultNamespace,
 			}},
@@ -94,7 +94,7 @@ Deleted processors in namespace "default"
 				rifftesting.InduceFailure("delete-collection", "processors"),
 			},
 			ExpectDeleteCollections: []rifftesting.DeleteCollectionRef{{
-				Group:     "stream.projectriff.io",
+				Group:     "streaming.projectriff.io",
 				Resource:  "processors",
 				Namespace: defaultNamespace,
 			}},
@@ -112,7 +112,7 @@ Deleted processors in namespace "default"
 				},
 			},
 			ExpectDeletes: []rifftesting.DeleteRef{{
-				Group:     "stream.projectriff.io",
+				Group:     "streaming.projectriff.io",
 				Resource:  "processors",
 				Namespace: defaultNamespace,
 				Name:      processorName,
@@ -139,12 +139,12 @@ Deleted processor "test-processor"
 				},
 			},
 			ExpectDeletes: []rifftesting.DeleteRef{{
-				Group:     "stream.projectriff.io",
+				Group:     "streaming.projectriff.io",
 				Resource:  "processors",
 				Namespace: defaultNamespace,
 				Name:      processorName,
 			}, {
-				Group:     "stream.projectriff.io",
+				Group:     "streaming.projectriff.io",
 				Resource:  "processors",
 				Namespace: defaultNamespace,
 				Name:      processorOtherName,
@@ -158,7 +158,7 @@ Deleted processor "test-other-processor"
 			Name: "processor does not exist",
 			Args: []string{processorName},
 			ExpectDeletes: []rifftesting.DeleteRef{{
-				Group:     "stream.projectriff.io",
+				Group:     "streaming.projectriff.io",
 				Resource:  "processors",
 				Namespace: defaultNamespace,
 				Name:      processorName,
@@ -180,7 +180,7 @@ Deleted processor "test-other-processor"
 				rifftesting.InduceFailure("delete", "processors"),
 			},
 			ExpectDeletes: []rifftesting.DeleteRef{{
-				Group:     "stream.projectriff.io",
+				Group:     "streaming.projectriff.io",
 				Resource:  "processors",
 				Namespace: defaultNamespace,
 				Name:      processorName,

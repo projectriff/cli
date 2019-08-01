@@ -12,14 +12,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package stream
+// +k8s:deepcopy-gen=package
+// +groupName=streaming.projectriff.io
 
-const (
-	GroupName = "stream.projectriff.io"
-
-	StreamLabelKey    = GroupName + "/stream"
-	ProcessorLabelKey = GroupName + "/processor"
-)
+package v1alpha1

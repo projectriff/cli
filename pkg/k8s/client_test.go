@@ -46,7 +46,7 @@ func TestNewClient(t *testing.T) {
 	if client.Request() == nil {
 		t.Errorf("Expected Request client to not be nil")
 	}
-	if client.Stream() == nil {
-		t.Errorf("Expected Stream client to not be nil")
+	if client.Streaming() == nil {
+		t.Errorf("Expected Streaming client to not be nil")
 	}
 }

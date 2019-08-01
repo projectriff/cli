@@ -22,7 +22,7 @@ import (
 	"strings"
 
 	"github.com/projectriff/cli/pkg/cli"
-	streamv1alpha1 "github.com/projectriff/system/pkg/apis/stream/v1alpha1"
+	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 	"github.com/spf13/cobra"
 	apierrs "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -46,7 +46,7 @@ func (opts *StreamStatusOptions) Validate(ctx context.Context) *cli.FieldError {
 }
 
 func (opts *StreamStatusOptions) Exec(ctx context.Context, c *cli.Config) error {
-	stream, err := c.Stream().Streams(opts.Namespace).Get(opts.Name, metav1.GetOptions{})
+	stream, err := c.Streaming().Streams(opts.Namespace).Get(opts.Name, metav1.GetOptions{})
 	if err != nil {
 		if !apierrs.IsNotFound(err) {
 			return err

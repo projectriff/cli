@@ -22,7 +22,7 @@ import (
 	"strings"
 
 	"github.com/projectriff/cli/pkg/cli"
-	streamv1alpha1 "github.com/projectriff/system/pkg/apis/stream/v1alpha1"
+	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 	"github.com/spf13/cobra"
 	apierrs "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -46,7 +46,7 @@ func (opts *ProcessorStatusOptions) Validate(ctx context.Context) *cli.FieldErro
 }
 
 func (opts *ProcessorStatusOptions) Exec(ctx context.Context, c *cli.Config) error {
-	processor, err := c.Stream().Processors(opts.Namespace).Get(opts.Name, metav1.GetOptions{})
+	processor, err := c.Streaming().Processors(opts.Namespace).Get(opts.Name, metav1.GetOptions{})
 	if err != nil {
 		if !apierrs.IsNotFound(err) {
 			return err

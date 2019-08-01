@@ -16,33 +16,33 @@
 package v1alpha1
 
 import (
-	v1alpha1 "github.com/projectriff/system/pkg/apis/stream/v1alpha1"
+	v1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 	"github.com/projectriff/system/pkg/client/clientset/versioned/scheme"
 	serializer "k8s.io/apimachinery/pkg/runtime/serializer"
 	rest "k8s.io/client-go/rest"
 )
 
-type StreamV1alpha1Interface interface {
+type StreamingV1alpha1Interface interface {
 	RESTClient() rest.Interface
 	ProcessorsGetter
 	StreamsGetter
 }
 
-// StreamV1alpha1Client is used to interact with features provided by the stream.projectriff.io group.
-type StreamV1alpha1Client struct {
+// StreamingV1alpha1Client is used to interact with features provided by the streaming.projectriff.io group.
+type StreamingV1alpha1Client struct {
 	restClient rest.Interface
 }
 
-func (c *StreamV1alpha1Client) Processors(namespace string) ProcessorInterface {
+func (c *StreamingV1alpha1Client) Processors(namespace string) ProcessorInterface {
 	return newProcessors(c, namespace)
 }
 
-func (c *StreamV1alpha1Client) Streams(namespace string) StreamInterface {
+func (c *StreamingV1alpha1Client) Streams(namespace string) StreamInterface {
 	return newStreams(c, namespace)
 }
 
-// NewForConfig creates a new StreamV1alpha1Client for the given config.
-func NewForConfig(c *rest.Config) (*StreamV1alpha1Client, error) {
+// NewForConfig creates a new StreamingV1alpha1Client for the given config.
+func NewForConfig(c *rest.Config) (*StreamingV1alpha1Client, error) {
 	config := *c
 	if err := setConfigDefaults(&config); err != nil {
 		return nil, err
@@ -51,12 +51,12 @@ func NewForConfig(c *rest.Config) (*StreamV1alpha1Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &StreamV1alpha1Client{client}, nil
+	return &StreamingV1alpha1Client{client}, nil
 }
 
-// NewForConfigOrDie creates a new StreamV1alpha1Client for the given config and
+// NewForConfigOrDie creates a new StreamingV1alpha1Client for the given config and
 // panics if there is an error in the config.
-func NewForConfigOrDie(c *rest.Config) *StreamV1alpha1Client {
+func NewForConfigOrDie(c *rest.Config) *StreamingV1alpha1Client {
 	client, err := NewForConfig(c)
 	if err != nil {
 		panic(err)
@@ -64,9 +64,9 @@ func NewForConfigOrDie(c *rest.Config) *StreamV1alpha1Client {
 	return client
 }
 
-// New creates a new StreamV1alpha1Client for the given RESTClient.
-func New(c rest.Interface) *StreamV1alpha1Client {
-	return &StreamV1alpha1Client{c}
+// New creates a new StreamingV1alpha1Client for the given RESTClient.
+func New(c rest.Interface) *StreamingV1alpha1Client {
+	return &StreamingV1alpha1Client{c}
 }
 
 func setConfigDefaults(config *rest.Config) error {
@@ -84,7 +84,7 @@ func setConfigDefaults(config *rest.Config) error {
 
 // RESTClient returns a RESTClient that is used to communicate
 // with API server by this client implementation.
-func (c *StreamV1alpha1Client) RESTClient() rest.Interface {
+func (c *StreamingV1alpha1Client) RESTClient() rest.Interface {
 	if c == nil {
 		return nil
 	}

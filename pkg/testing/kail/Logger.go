@@ -7,7 +7,7 @@ import io "io"
 
 import mock "github.com/stretchr/testify/mock"
 import requestv1alpha1 "github.com/projectriff/system/pkg/apis/request/v1alpha1"
-import streamv1alpha1 "github.com/projectriff/system/pkg/apis/stream/v1alpha1"
+import streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 import time "time"
 import v1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
 

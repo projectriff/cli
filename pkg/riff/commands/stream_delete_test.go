@@ -22,7 +22,7 @@ import (
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/riff/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
-	streamv1alpha1 "github.com/projectriff/system/pkg/apis/stream/v1alpha1"
+	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
@@ -71,7 +71,7 @@ func TestStreamDeleteCommand(t *testing.T) {
 				},
 			},
 			ExpectDeleteCollections: []rifftesting.DeleteCollectionRef{{
-				Group:     "stream.projectriff.io",
+				Group:     "streaming.projectriff.io",
 				Resource:  "streams",
 				Namespace: defaultNamespace,
 			}},
@@ -94,7 +94,7 @@ Deleted streams in namespace "default"
 				rifftesting.InduceFailure("delete-collection", "streams"),
 			},
 			ExpectDeleteCollections: []rifftesting.DeleteCollectionRef{{
-				Group:     "stream.projectriff.io",
+				Group:     "streaming.projectriff.io",
 				Resource:  "streams",
 				Namespace: defaultNamespace,
 			}},
@@ -112,7 +112,7 @@ Deleted streams in namespace "default"
 				},
 			},
 			ExpectDeletes: []rifftesting.DeleteRef{{
-				Group:     "stream.projectriff.io",
+				Group:     "streaming.projectriff.io",
 				Resource:  "streams",
 				Namespace: defaultNamespace,
 				Name:      streamName,
@@ -139,12 +139,12 @@ Deleted stream "test-stream"
 				},
 			},
 			ExpectDeletes: []rifftesting.DeleteRef{{
-				Group:     "stream.projectriff.io",
+				Group:     "streaming.projectriff.io",
 				Resource:  "streams",
 				Namespace: defaultNamespace,
 				Name:      streamName,
 			}, {
-				Group:     "stream.projectriff.io",
+				Group:     "streaming.projectriff.io",
 				Resource:  "streams",
 				Namespace: defaultNamespace,
 				Name:      streamOtherName,
@@ -158,7 +158,7 @@ Deleted stream "test-other-stream"
 			Name: "stream does not exist",
 			Args: []string{streamName},
 			ExpectDeletes: []rifftesting.DeleteRef{{
-				Group:     "stream.projectriff.io",
+				Group:     "streaming.projectriff.io",
 				Resource:  "streams",
 				Namespace: defaultNamespace,
 				Name:      streamName,
@@ -180,7 +180,7 @@ Deleted stream "test-other-stream"
 				rifftesting.InduceFailure("delete", "streams"),
 			},
 			ExpectDeletes: []rifftesting.DeleteRef{{
-				Group:     "stream.projectriff.io",
+				Group:     "streaming.projectriff.io",
 				Resource:  "streams",
 				Namespace: defaultNamespace,
 				Name:      streamName,

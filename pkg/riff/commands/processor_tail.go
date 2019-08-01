@@ -53,7 +53,7 @@ func (opts *ProcessorTailOptions) Validate(ctx context.Context) *cli.FieldError 
 }
 
 func (opts *ProcessorTailOptions) Exec(ctx context.Context, c *cli.Config) error {
-	processor, err := c.Stream().Processors(opts.Namespace).Get(opts.Name, metav1.GetOptions{})
+	processor, err := c.Streaming().Processors(opts.Namespace).Get(opts.Name, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}

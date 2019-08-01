@@ -59,3 +59,5 @@ replace (
 	k8s.io/apimachinery => k8s.io/apimachinery v0.0.0-20190221084156-01f179d85dbc
 	k8s.io/client-go => k8s.io/client-go v0.0.0-20190226174127-78295b709ec6
 )
+
+replace github.com/projectriff/system => github.com/scothis/system v0.0.0-20190801132234-32f3ff9055a1

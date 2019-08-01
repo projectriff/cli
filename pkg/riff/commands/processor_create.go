@@ -25,7 +25,7 @@ import (
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/k8s"
 	"github.com/projectriff/cli/pkg/race"
-	streamv1alpha1 "github.com/projectriff/system/pkg/apis/stream/v1alpha1"
+	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -94,7 +94,7 @@ func (opts *ProcessorCreateOptions) Exec(ctx context.Context, c *cli.Config) err
 		cli.DryRunResource(ctx, processor, processor.GetGroupVersionKind())
 	} else {
 		var err error
-		processor, err = c.Stream().Processors(opts.Namespace).Create(processor)
+		processor, err = c.Streaming().Processors(opts.Namespace).Create(processor)
 		if err != nil {
 			return err
 		}
@@ -105,7 +105,7 @@ func (opts *ProcessorCreateOptions) Exec(ctx context.Context, c *cli.Config) err
 		timeout, _ := time.ParseDuration(opts.WaitTimeout)
 		err := race.Run(ctx, timeout,
 			func(ctx context.Context) error {
-				return k8s.WaitUntilReady(ctx, c.Stream().RESTClient(), "processors", processor)
+				return k8s.WaitUntilReady(ctx, c.Streaming().RESTClient(), "processors", processor)
 			},
 			func(ctx context.Context) error {
 				return c.Kail.ProcessorLogs(ctx, processor, cli.TailSinceCreateDefault, c.Stdout)

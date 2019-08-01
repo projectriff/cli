@@ -23,7 +23,7 @@ import (
 
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/validation"
-	streamv1alpha1 "github.com/projectriff/system/pkg/apis/stream/v1alpha1"
+	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -76,7 +76,7 @@ func (opts *StreamCreateOptions) Exec(ctx context.Context, c *cli.Config) error 
 		cli.DryRunResource(ctx, stream, stream.GetGroupVersionKind())
 	} else {
 		var err error
-		stream, err = c.Stream().Streams(opts.Namespace).Create(stream)
+		stream, err = c.Streaming().Streams(opts.Namespace).Create(stream)
 		if err != nil {
 			return err
 		}

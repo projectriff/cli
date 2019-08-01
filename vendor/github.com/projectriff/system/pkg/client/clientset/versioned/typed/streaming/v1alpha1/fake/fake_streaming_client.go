@@ -16,26 +16,26 @@
 package fake
 
 import (
-	v1alpha1 "github.com/projectriff/system/pkg/client/clientset/versioned/typed/stream/v1alpha1"
+	v1alpha1 "github.com/projectriff/system/pkg/client/clientset/versioned/typed/streaming/v1alpha1"
 	rest "k8s.io/client-go/rest"
 	testing "k8s.io/client-go/testing"
 )
 
-type FakeStreamV1alpha1 struct {
+type FakeStreamingV1alpha1 struct {
 	*testing.Fake
 }
 
-func (c *FakeStreamV1alpha1) Processors(namespace string) v1alpha1.ProcessorInterface {
+func (c *FakeStreamingV1alpha1) Processors(namespace string) v1alpha1.ProcessorInterface {
 	return &FakeProcessors{c, namespace}
 }
 
-func (c *FakeStreamV1alpha1) Streams(namespace string) v1alpha1.StreamInterface {
+func (c *FakeStreamingV1alpha1) Streams(namespace string) v1alpha1.StreamInterface {
 	return &FakeStreams{c, namespace}
 }
 
 // RESTClient returns a RESTClient that is used to communicate
 // with API server by this client implementation.
-func (c *FakeStreamV1alpha1) RESTClient() rest.Interface {
+func (c *FakeStreamingV1alpha1) RESTClient() rest.Interface {
 	var ret *rest.RESTClient
 	return ret
 }

@@ -24,7 +24,7 @@ import (
 
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/cli/printers"
-	streamv1alpha1 "github.com/projectriff/system/pkg/apis/stream/v1alpha1"
+	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	metav1beta1 "k8s.io/apimachinery/pkg/apis/meta/v1beta1"
@@ -49,7 +49,7 @@ func (opts *ProcessorListOptions) Validate(ctx context.Context) *cli.FieldError 
 }
 
 func (opts *ProcessorListOptions) Exec(ctx context.Context, c *cli.Config) error {
-	processors, err := c.Stream().Processors(opts.Namespace).List(metav1.ListOptions{})
+	processors, err := c.Streaming().Processors(opts.Namespace).List(metav1.ListOptions{})
 	if err != nil {
 		return err
 	}
