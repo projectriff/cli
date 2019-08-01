@@ -4,15 +4,16 @@ title: "riff handler create"
 ---
 ## riff handler create
 
-create a handler to map HTTP requests to an application, function or image
+create a handler to map HTTP requests to an application, function, container or image
 
 ### Synopsis
 
 Create an HTTP request handler.
 
-There are three way to create a handler:
+There are four way to create a handler:
 - from an application reference
 - from a function reference
+- from a container reference
 - from an image
 
 Application and function references are resolved within the same namespace as
@@ -33,6 +34,7 @@ riff handler create <name> [flags]
 ```
 riff handler create my-app-handler --application-ref my-app
 riff handler create my-func-handler --function-ref my-func
+riff handler create my-func-handler --container-ref my-container
 riff handler create my-image-handler --image registry.example.com/my-image:latest
 ```
 
@@ -40,6 +42,7 @@ riff handler create my-image-handler --image registry.example.com/my-image:lates
 
 ```
       --application-ref name    name of application to deploy
+      --container-ref name      name of container to deploy
       --dry-run                 print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr
       --env variable            environment variable defined as a key value pair separated by an equals sign, example "--env MY_VAR=my-value" (may be set multiple times)
       --env-from variable       environment variable from a config map or secret, example "--env-from MY_SECRET_VALUE=secretKeyRef:my-secret-name:key-in-secret", "--env-from MY_CONFIG_MAP_VALUE=configMapKeyRef:my-config-map-name:key-in-config-map" (may be set multiple times)

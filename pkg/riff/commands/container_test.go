@@ -1,11 +1,11 @@
 /*
- * Copyright 2019 The original author or authors
+ * Copyright 2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,16 +14,22 @@
  * limitations under the License.
  */
 
-package v1alpha1
+package commands_test
 
-import "context"
+import (
+	"testing"
 
-func (f *Function) SetDefaults(ctx context.Context) {
-	f.Spec.SetDefaults(ctx)
-}
+	"github.com/projectriff/cli/pkg/riff/commands"
+	rifftesting "github.com/projectriff/cli/pkg/testing"
+)
 
-func (fs *FunctionSpec) SetDefaults(ctx context.Context) {
-	if fs.Image == "" {
-		fs.Image = "_"
+func TestContainerCommand(t *testing.T) {
+	table := rifftesting.CommandTable{
+		{
+			Name: "empty",
+			Args: []string{},
+		},
 	}
+
+	table.Run(t, commands.NewContainerCommand)
 }

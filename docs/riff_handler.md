@@ -41,7 +41,7 @@ The hostname to access the handler is available in the handler listing.
 ### SEE ALSO
 
 * [riff](riff.md)	 - riff is for functions
-* [riff handler create](riff_handler_create.md)	 - create a handler to map HTTP requests to an application, function or image
+* [riff handler create](riff_handler_create.md)	 - create a handler to map HTTP requests to an application, function, container or image
 * [riff handler delete](riff_handler_delete.md)	 - delete handler(s)
 * [riff handler list](riff_handler_list.md)	 - table listing of handlers
 * [riff handler status](riff_handler_status.md)	 - show handler status

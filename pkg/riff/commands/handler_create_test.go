@@ -42,7 +42,7 @@ func TestHandlerCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.InvalidResourceOptions,
 			},
 			ExpectFieldError: rifftesting.InvalidResourceOptionsFieldError.Also(
-				cli.ErrMissingOneOf(cli.ApplicationRefFlagName, cli.FunctionRefFlagName, cli.ImageFlagName),
+				cli.ErrMissingOneOf(cli.ApplicationRefFlagName, cli.ContainerRefFlagName, cli.FunctionRefFlagName, cli.ImageFlagName),
 			),
 		},
 		{
@@ -50,6 +50,14 @@ func TestHandlerCreateOptions(t *testing.T) {
 			Options: &commands.HandlerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				ApplicationRef:  "my-application",
+			},
+			ShouldValidate: true,
+		},
+		{
+			Name: "from container",
+			Options: &commands.HandlerCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				ContainerRef:    "my-container",
 			},
 			ShouldValidate: true,
 		},
@@ -70,14 +78,15 @@ func TestHandlerCreateOptions(t *testing.T) {
 			ShouldValidate: true,
 		},
 		{
-			Name: "from application, funcation and image",
+			Name: "from application, container, funcation and image",
 			Options: &commands.HandlerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				ApplicationRef:  "my-application",
+				ContainerRef:    "my-container",
 				FunctionRef:     "my-function",
 				Image:           "example.com/repo:tag",
 			},
-			ExpectFieldError: cli.ErrMultipleOneOf(cli.ApplicationRefFlagName, cli.FunctionRefFlagName, cli.ImageFlagName),
+			ExpectFieldError: cli.ErrMultipleOneOf(cli.ApplicationRefFlagName, cli.ContainerRefFlagName, cli.FunctionRefFlagName, cli.ImageFlagName),
 		},
 		{
 			Name: "with env",
@@ -183,6 +192,7 @@ func TestHandlerCreateCommand(t *testing.T) {
 	handlerName := "my-handler"
 	image := "registry.example.com/repo@sha256:deadbeefdeadbeefdeadbeefdeadbeef"
 	applicationRef := "my-app"
+	containerRef := "my-container"
 	functionRef := "my-func"
 	envName := "MY_VAR"
 	envValue := "my-value"
@@ -233,6 +243,26 @@ Created handler "my-handler"
 					Spec: requestv1alpha1.HandlerSpec{
 						Build: &requestv1alpha1.Build{
 							ApplicationRef: applicationRef,
+						},
+					},
+				},
+			},
+			ExpectOutput: `
+Created handler "my-handler"
+`,
+		},
+		{
+			Name: "create from container ref",
+			Args: []string{handlerName, cli.ContainerRefFlagName, containerRef},
+			ExpectCreates: []runtime.Object{
+				&requestv1alpha1.Handler{
+					ObjectMeta: metav1.ObjectMeta{
+						Namespace: defaultNamespace,
+						Name:      handlerName,
+					},
+					Spec: requestv1alpha1.HandlerSpec{
+						Build: &requestv1alpha1.Build{
+							ContainerRef: containerRef,
 						},
 					},
 				},
