@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package knative_commands_test
+package commands_test
 
 import (
 	"testing"
 
-	knativecommands "github.com/projectriff/cli/pkg/knative/commands"
+	"github.com/projectriff/cli/pkg/knative/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 )
 
@@ -31,5 +31,5 @@ func TestHandlerCommand(t *testing.T) {
 		},
 	}
 
-	table.Run(t, knativecommands.NewHandlerCommand)
+	table.Run(t, commands.NewHandlerCommand)
 }

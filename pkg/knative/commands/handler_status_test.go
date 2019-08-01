@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package knative_commands_test
+package commands_test
 
 import (
 	"testing"
@@ -22,7 +22,7 @@ import (
 
 	knapis "github.com/knative/pkg/apis"
 	duckv1beta1 "github.com/knative/pkg/apis/duck/v1beta1"
-	knativecommands "github.com/projectriff/cli/pkg/knative/commands"
+	"github.com/projectriff/cli/pkg/knative/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 	requestv1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
@@ -34,14 +34,14 @@ func TestHandlerStatusOptions(t *testing.T) {
 	table := rifftesting.OptionsTable{
 		{
 			Name: "invalid resource",
-			Options: &knativecommands.HandlerStatusOptions{
+			Options: &commands.HandlerStatusOptions{
 				ResourceOptions: rifftesting.InvalidResourceOptions,
 			},
 			ExpectFieldError: rifftesting.InvalidResourceOptionsFieldError,
 		},
 		{
 			Name: "valid resource",
-			Options: &knativecommands.HandlerStatusOptions{
+			Options: &commands.HandlerStatusOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 			},
 			ShouldValidate: true,
@@ -142,5 +142,5 @@ Handler "default/my-handler" not found
 		},
 	}
 
-	table.Run(t, knativecommands.NewHandlerStatusCommand)
+	table.Run(t, commands.NewHandlerStatusCommand)
 }

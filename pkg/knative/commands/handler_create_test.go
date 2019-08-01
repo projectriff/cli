@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package knative_commands_test
+package commands_test
 
 import (
 	"context"
@@ -23,8 +23,7 @@ import (
 
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/k8s"
-	knativecommands "github.com/projectriff/cli/pkg/knative/commands"
-
+	"github.com/projectriff/cli/pkg/knative/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 	kailtesting "github.com/projectriff/cli/pkg/testing/kail"
 	requestv1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
@@ -39,7 +38,7 @@ func TestHandlerCreateOptions(t *testing.T) {
 	table := rifftesting.OptionsTable{
 		{
 			Name: "invalid resource",
-			Options: &knativecommands.HandlerCreateOptions{
+			Options: &commands.HandlerCreateOptions{
 				ResourceOptions: rifftesting.InvalidResourceOptions,
 			},
 			ExpectFieldError: rifftesting.InvalidResourceOptionsFieldError.Also(
@@ -48,7 +47,7 @@ func TestHandlerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "from application",
-			Options: &knativecommands.HandlerCreateOptions{
+			Options: &commands.HandlerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				ApplicationRef:  "my-application",
 			},
@@ -56,7 +55,7 @@ func TestHandlerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "from container",
-			Options: &knativecommands.HandlerCreateOptions{
+			Options: &commands.HandlerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				ContainerRef:    "my-container",
 			},
@@ -64,7 +63,7 @@ func TestHandlerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "from function",
-			Options: &knativecommands.HandlerCreateOptions{
+			Options: &commands.HandlerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				FunctionRef:     "my-function",
 			},
@@ -72,7 +71,7 @@ func TestHandlerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "from image",
-			Options: &knativecommands.HandlerCreateOptions{
+			Options: &commands.HandlerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 			},
@@ -80,7 +79,7 @@ func TestHandlerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "from application, container, funcation and image",
-			Options: &knativecommands.HandlerCreateOptions{
+			Options: &commands.HandlerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				ApplicationRef:  "my-application",
 				ContainerRef:    "my-container",
@@ -91,7 +90,7 @@ func TestHandlerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "with env",
-			Options: &knativecommands.HandlerCreateOptions{
+			Options: &commands.HandlerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				Env:             []string{"VAR1=foo", "VAR2=bar"},
@@ -100,7 +99,7 @@ func TestHandlerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "with invalid env",
-			Options: &knativecommands.HandlerCreateOptions{
+			Options: &commands.HandlerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				Env:             []string{"=foo"},
@@ -109,7 +108,7 @@ func TestHandlerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "with envfrom secret",
-			Options: &knativecommands.HandlerCreateOptions{
+			Options: &commands.HandlerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				EnvFrom:         []string{"VAR1=secretKeyRef:name:key"},
@@ -118,7 +117,7 @@ func TestHandlerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "with envfrom configmap",
-			Options: &knativecommands.HandlerCreateOptions{
+			Options: &commands.HandlerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				EnvFrom:         []string{"VAR1=configMapKeyRef:name:key"},
@@ -127,7 +126,7 @@ func TestHandlerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "with invalid envfrom",
-			Options: &knativecommands.HandlerCreateOptions{
+			Options: &commands.HandlerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				EnvFrom:         []string{"VAR1=someOtherKeyRef:name:key"},
@@ -136,7 +135,7 @@ func TestHandlerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "with tail",
-			Options: &knativecommands.HandlerCreateOptions{
+			Options: &commands.HandlerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				Tail:            true,
@@ -146,7 +145,7 @@ func TestHandlerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "with tail, missing timeout",
-			Options: &knativecommands.HandlerCreateOptions{
+			Options: &commands.HandlerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				Tail:            true,
@@ -155,7 +154,7 @@ func TestHandlerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "with tail, invalid timeout",
-			Options: &knativecommands.HandlerCreateOptions{
+			Options: &commands.HandlerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				Tail:            true,
@@ -165,7 +164,7 @@ func TestHandlerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "dry run",
-			Options: &knativecommands.HandlerCreateOptions{
+			Options: &commands.HandlerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				DryRun:          true,
@@ -174,7 +173,7 @@ func TestHandlerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "dry run, tail",
-			Options: &knativecommands.HandlerCreateOptions{
+			Options: &commands.HandlerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				Tail:            true,
@@ -577,5 +576,5 @@ To continue watching logs run: riff handler tail my-handler --namespace default
 		},
 	}
 
-	table.Run(t, knativecommands.NewHandlerCreateCommand)
+	table.Run(t, commands.NewHandlerCreateCommand)
 }

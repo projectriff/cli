@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package knative_commands_test
+package commands_test
 
 import (
 	"context"
@@ -23,7 +23,7 @@ import (
 	"time"
 
 	"github.com/projectriff/cli/pkg/cli"
-	knativecommands "github.com/projectriff/cli/pkg/knative/commands"
+	"github.com/projectriff/cli/pkg/knative/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 	kailtesting "github.com/projectriff/cli/pkg/testing/kail"
 	requestv1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
@@ -36,21 +36,21 @@ func TestHandlerTailOptions(t *testing.T) {
 	table := rifftesting.OptionsTable{
 		{
 			Name: "invalid resource",
-			Options: &knativecommands.HandlerTailOptions{
+			Options: &commands.HandlerTailOptions{
 				ResourceOptions: rifftesting.InvalidResourceOptions,
 			},
 			ExpectFieldError: rifftesting.InvalidResourceOptionsFieldError,
 		},
 		{
 			Name: "valid resource",
-			Options: &knativecommands.HandlerTailOptions{
+			Options: &commands.HandlerTailOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 			},
 			ShouldValidate: true,
 		},
 		{
 			Name: "since duration",
-			Options: &knativecommands.HandlerTailOptions{
+			Options: &commands.HandlerTailOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Since:           "1m",
 			},
@@ -58,7 +58,7 @@ func TestHandlerTailOptions(t *testing.T) {
 		},
 		{
 			Name: "invalid duration",
-			Options: &knativecommands.HandlerTailOptions{
+			Options: &commands.HandlerTailOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Since:           "1",
 			},
@@ -157,5 +157,5 @@ func TestHandlerTailCommand(t *testing.T) {
 		},
 	}
 
-	table.Run(t, knativecommands.NewHandlerTailCommand)
+	table.Run(t, commands.NewHandlerTailCommand)
 }
