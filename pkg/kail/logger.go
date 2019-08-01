@@ -29,8 +29,8 @@ import (
 	"github.com/projectriff/cli/pkg/k8s"
 	"github.com/projectriff/system/pkg/apis/build"
 	buildv1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
-	"github.com/projectriff/system/pkg/apis/request"
-	requestv1alpha1 "github.com/projectriff/system/pkg/apis/request/v1alpha1"
+	"github.com/projectriff/system/pkg/apis/knative"
+	requestv1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
 	"github.com/projectriff/system/pkg/apis/streaming"
 	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -73,7 +73,7 @@ func (c *logger) FunctionLogs(ctx context.Context, function *buildv1alpha1.Funct
 }
 
 func (c *logger) HandlerLogs(ctx context.Context, handler *requestv1alpha1.Handler, since time.Duration, out io.Writer) error {
-	selector, err := labels.Parse(fmt.Sprintf("%s=%s", request.HandlerLabelKey, handler.Name))
+	selector, err := labels.Parse(fmt.Sprintf("%s=%s", knative.HandlerLabelKey, handler.Name))
 	if err != nil {
 		panic(err)
 	}

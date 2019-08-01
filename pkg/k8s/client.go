@@ -19,7 +19,7 @@ package k8s
 import (
 	projectriffclientset "github.com/projectriff/system/pkg/client/clientset/versioned"
 	buildv1alpha1 "github.com/projectriff/system/pkg/client/clientset/versioned/typed/build/v1alpha1"
-	requestv1alpha1 "github.com/projectriff/system/pkg/client/clientset/versioned/typed/request/v1alpha1"
+	requestv1alpha1 "github.com/projectriff/system/pkg/client/clientset/versioned/typed/knative/v1alpha1"
 	streamv1alpha1 "github.com/projectriff/system/pkg/client/clientset/versioned/typed/streaming/v1alpha1"
 	apiextensionsclientset "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	apiextensionsv1beta1 "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1"
@@ -38,7 +38,7 @@ type Client interface {
 	Auth() authv1client.AuthorizationV1Interface
 	APIExtension() apiextensionsv1beta1.ApiextensionsV1beta1Interface
 	Build() buildv1alpha1.BuildV1alpha1Interface
-	Request() requestv1alpha1.RequestV1alpha1Interface
+	Request() requestv1alpha1.KnativeV1alpha1Interface
 	Streaming() streamv1alpha1.StreamingV1alpha1Interface
 }
 
@@ -66,8 +66,8 @@ func (c *client) Build() buildv1alpha1.BuildV1alpha1Interface {
 	return c.lazyLoadRiffClientsetOrDie().BuildV1alpha1()
 }
 
-func (c *client) Request() requestv1alpha1.RequestV1alpha1Interface {
-	return c.lazyLoadRiffClientsetOrDie().RequestV1alpha1()
+func (c *client) Request() requestv1alpha1.KnativeV1alpha1Interface {
+	return c.lazyLoadRiffClientsetOrDie().KnativeV1alpha1()
 }
 
 func (c *client) Streaming() streamv1alpha1.StreamingV1alpha1Interface {
