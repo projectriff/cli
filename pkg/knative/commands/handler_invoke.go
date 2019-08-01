@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package commands_knative
+package knative_commands
 
 import (
 	"context"

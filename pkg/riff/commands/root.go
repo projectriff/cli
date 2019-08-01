@@ -23,6 +23,7 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/projectriff/cli/pkg/cli"
+	knativecommands "github.com/projectriff/cli/pkg/knative/commands"
 	streamingcommands "github.com/projectriff/cli/pkg/streaming/commands"
 	"github.com/spf13/cobra"
 )
@@ -47,6 +48,7 @@ func NewRootCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 
 	// add runtimes
 	cmd.AddCommand(streamingcommands.NewStreamingCommand(ctx, c))
+	cmd.AddCommand(knativecommands.NewKnativeCommand(ctx, c))
 
 	// add root-only commands
 	cmd.AddCommand(NewCompletionCommand(ctx, c))

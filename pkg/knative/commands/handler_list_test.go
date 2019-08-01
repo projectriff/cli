@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package commands_knative_test
+package knative_commands_test
 
 import (
 	"context"
@@ -23,7 +23,7 @@ import (
 	"github.com/knative/pkg/apis"
 	duckv1beta1 "github.com/knative/pkg/apis/duck/v1beta1"
 	"github.com/projectriff/cli/pkg/cli"
-	commands_knative "github.com/projectriff/cli/pkg/riff/commands/knative"
+	knativecommands "github.com/projectriff/cli/pkg/knative/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 	requestv1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
@@ -35,14 +35,14 @@ func TestHandlerListOptions(t *testing.T) {
 	table := rifftesting.OptionsTable{
 		{
 			Name: "invalid list",
-			Options: &commands_knative.HandlerListOptions{
+			Options: &knativecommands.HandlerListOptions{
 				ListOptions: rifftesting.InvalidListOptions,
 			},
 			ExpectFieldError: rifftesting.InvalidListOptionsFieldError,
 		},
 		{
 			Name: "valid list",
-			Options: &commands_knative.HandlerListOptions{
+			Options: &knativecommands.HandlerListOptions{
 				ListOptions: rifftesting.ValidListOptions,
 			},
 			ShouldValidate: true,
@@ -213,5 +213,5 @@ img    image         projectriff/upper   image.default.example.com   Ready    <u
 		},
 	}
 
-	table.Run(t, commands_knative.NewHandlerListCommand)
+	table.Run(t, knativecommands.NewHandlerListCommand)
 }

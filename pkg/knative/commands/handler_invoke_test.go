@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package commands_knative_test
+package knative_commands_test
 
 import (
 	"fmt"
@@ -26,7 +26,8 @@ import (
 	"github.com/knative/pkg/apis"
 	duckv1beta1 "github.com/knative/pkg/apis/duck/v1beta1"
 	"github.com/projectriff/cli/pkg/cli"
-	commands_knative "github.com/projectriff/cli/pkg/riff/commands/knative"
+	knativecommands "github.com/projectriff/cli/pkg/knative/commands"
+
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 	requestv1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
@@ -38,21 +39,21 @@ func TestHandlerInvokeOptions(t *testing.T) {
 	table := rifftesting.OptionsTable{
 		{
 			Name: "invalid resource",
-			Options: &commands_knative.HandlerInvokeOptions{
+			Options: &knativecommands.HandlerInvokeOptions{
 				ResourceOptions: rifftesting.InvalidResourceOptions,
 			},
 			ExpectFieldError: rifftesting.InvalidResourceOptionsFieldError,
 		},
 		{
 			Name: "valid resource",
-			Options: &commands_knative.HandlerInvokeOptions{
+			Options: &knativecommands.HandlerInvokeOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 			},
 			ShouldValidate: true,
 		},
 		{
 			Name: "json content type",
-			Options: &commands_knative.HandlerInvokeOptions{
+			Options: &knativecommands.HandlerInvokeOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				ContentTypeJSON: true,
 			},
@@ -60,7 +61,7 @@ func TestHandlerInvokeOptions(t *testing.T) {
 		},
 		{
 			Name: "text content type",
-			Options: &commands_knative.HandlerInvokeOptions{
+			Options: &knativecommands.HandlerInvokeOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				ContentTypeText: true,
 			},
@@ -68,7 +69,7 @@ func TestHandlerInvokeOptions(t *testing.T) {
 		},
 		{
 			Name: "multiple content types",
-			Options: &commands_knative.HandlerInvokeOptions{
+			Options: &knativecommands.HandlerInvokeOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				ContentTypeJSON: true,
 				ContentTypeText: true,
@@ -370,7 +371,7 @@ Command executed: curl localhost -H 'Host: test-handler.example.com'
 		},
 	}
 
-	table.Run(t, commands_knative.NewHandlerInvokeCommand)
+	table.Run(t, knativecommands.NewHandlerInvokeCommand)
 }
 
 func TestHelperProcess_HandlerInvoke(t *testing.T) {

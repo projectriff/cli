@@ -53,7 +53,6 @@ map those streams to function inputs and outputs with processors.
 	cmd.AddCommand(NewApplicationCommand(ctx, c))
 	cmd.AddCommand(NewContainerCommand(ctx, c))
 	cmd.AddCommand(NewFunctionCommand(ctx, c))
-	cmd.AddCommand(NewKnativeCommand(ctx, c))
 
 	return cmd
 }

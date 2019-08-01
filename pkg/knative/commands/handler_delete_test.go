@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package commands_knative_test
+package knative_commands_test
 
 import (
 	"testing"
 
 	"github.com/projectriff/cli/pkg/cli"
-	commands_knative "github.com/projectriff/cli/pkg/riff/commands/knative"
+	knativecommands "github.com/projectriff/cli/pkg/knative/commands"
+
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 	requestv1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -31,14 +32,14 @@ func TestHandlerDeleteOptions(t *testing.T) {
 	table := rifftesting.OptionsTable{
 		{
 			Name: "invalid delete",
-			Options: &commands_knative.HandlerDeleteOptions{
+			Options: &knativecommands.HandlerDeleteOptions{
 				DeleteOptions: rifftesting.InvalidDeleteOptions,
 			},
 			ExpectFieldError: rifftesting.InvalidDeleteOptionsFieldError,
 		},
 		{
 			Name: "valid delete",
-			Options: &commands_knative.HandlerDeleteOptions{
+			Options: &knativecommands.HandlerDeleteOptions{
 				DeleteOptions: rifftesting.ValidDeleteOptions,
 			},
 			ShouldValidate: true,
@@ -189,5 +190,5 @@ Deleted handler "test-other-handler"
 		},
 	}
 
-	table.Run(t, commands_knative.NewHandlerDeleteCommand)
+	table.Run(t, knativecommands.NewHandlerDeleteCommand)
 }

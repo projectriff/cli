@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package commands
+package knative_commands
 
 import (
 	"context"
 	"strings"
 
 	"github.com/projectriff/cli/pkg/cli"
-	commands_knative "github.com/projectriff/cli/pkg/riff/commands/knative"
 	"github.com/spf13/cobra"
 )
 
@@ -33,7 +32,7 @@ func NewKnativeCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 <todo>
 `),
 	}
-	cmd.AddCommand(commands_knative.NewHandlerCommand(ctx, c))
+	cmd.AddCommand(NewHandlerCommand(ctx, c))
 
 	return cmd
 }
