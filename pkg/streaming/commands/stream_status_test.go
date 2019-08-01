@@ -22,7 +22,7 @@ import (
 
 	knapis "github.com/knative/pkg/apis"
 	duckv1beta1 "github.com/knative/pkg/apis/duck/v1beta1"
-	"github.com/projectriff/cli/pkg/riff/commands"
+	"github.com/projectriff/cli/pkg/streaming/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 	corev1 "k8s.io/api/core/v1"

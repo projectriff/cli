@@ -1,8 +1,8 @@
 ---
-id: riff-stream-status
-title: "riff stream status"
+id: riff-streaming-stream-status
+title: "riff streaming stream status"
 ---
-## riff stream status
+## riff streaming stream status
 
 show stream status
 
@@ -16,7 +16,7 @@ may be: "True", "False" or "Unknown". An "Unknown" status is common while the
 stream is being processed.
 
 ```
-riff stream status <name> [flags]
+riff streaming stream status <name> [flags]
 ```
 
 ### Examples
@@ -42,5 +42,5 @@ riff stream status my-stream
 
 ### SEE ALSO
 
-* [riff stream](riff_stream.md)	 - (experimental) streams of messages
+* [riff streaming stream](riff_streaming_stream.md)	 - (experimental) streams of messages
 

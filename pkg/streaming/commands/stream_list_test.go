@@ -22,25 +22,25 @@ import (
 
 	duckv1beta1 "github.com/knative/pkg/apis/duck/v1beta1"
 	"github.com/projectriff/cli/pkg/cli"
-	"github.com/projectriff/cli/pkg/riff/commands"
+	"github.com/projectriff/cli/pkg/streaming/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-func TestProcessorListOptions(t *testing.T) {
+func TestStreamListOptions(t *testing.T) {
 	table := rifftesting.OptionsTable{
 		{
 			Name: "invalid list",
-			Options: &commands.ProcessorListOptions{
+			Options: &commands.StreamListOptions{
 				ListOptions: rifftesting.InvalidListOptions,
 			},
 			ExpectFieldError: rifftesting.InvalidListOptionsFieldError,
 		},
 		{
 			Name: "valid list",
-			Options: &commands.ProcessorListOptions{
+			Options: &commands.StreamListOptions{
 				ListOptions: rifftesting.ValidListOptions,
 			},
 			ShouldValidate: true,
@@ -50,9 +50,9 @@ func TestProcessorListOptions(t *testing.T) {
 	table.Run(t)
 }
 
-func TestProcessorListCommand(t *testing.T) {
-	processorName := "test-processor"
-	processorOtherName := "test-other-processor"
+func TestStreamListCommand(t *testing.T) {
+	streamName := "test-stream"
+	streamOtherName := "test-other-stream"
 	defaultNamespace := "default"
 	otherNamespace := "other-namespace"
 
@@ -71,100 +71,103 @@ func TestProcessorListCommand(t *testing.T) {
 			Name: "empty",
 			Args: []string{},
 			ExpectOutput: `
-No processors found.
+No streams found.
 `,
 		},
 		{
 			Name: "lists an item",
 			Args: []string{},
 			GivenObjects: []runtime.Object{
-				&streamv1alpha1.Processor{
+				&streamv1alpha1.Stream{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      processorName,
+						Name:      streamName,
 						Namespace: defaultNamespace,
 					},
 				},
 			},
 			ExpectOutput: `
-NAME             FUNCTION   INPUTS    OUTPUTS   STATUS      AGE
-test-processor   <empty>    <empty>   <empty>   <unknown>   <unknown>
+NAME          TOPIC     GATEWAY   PROVIDER   CONTENT-TYPE   STATUS      AGE
+test-stream   <empty>   <empty>   <empty>    <empty>        <unknown>   <unknown>
 `,
 		},
 		{
 			Name: "filters by namespace",
 			Args: []string{cli.NamespaceFlagName, otherNamespace},
 			GivenObjects: []runtime.Object{
-				&streamv1alpha1.Processor{
+				&streamv1alpha1.Stream{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      processorName,
+						Name:      streamName,
 						Namespace: defaultNamespace,
 					},
 				},
 			},
 			ExpectOutput: `
-No processors found.
+No streams found.
 `,
 		},
 		{
 			Name: "all namespace",
 			Args: []string{cli.AllNamespacesFlagName},
 			GivenObjects: []runtime.Object{
-				&streamv1alpha1.Processor{
+				&streamv1alpha1.Stream{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      processorName,
+						Name:      streamName,
 						Namespace: defaultNamespace,
 					},
 				},
-				&streamv1alpha1.Processor{
+				&streamv1alpha1.Stream{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      processorOtherName,
+						Name:      streamOtherName,
 						Namespace: otherNamespace,
 					},
 				},
 			},
 			ExpectOutput: `
-NAMESPACE         NAME                   FUNCTION   INPUTS    OUTPUTS   STATUS      AGE
-default           test-processor         <empty>    <empty>   <empty>   <unknown>   <unknown>
-other-namespace   test-other-processor   <empty>    <empty>   <empty>   <unknown>   <unknown>
+NAMESPACE         NAME                TOPIC     GATEWAY   PROVIDER   CONTENT-TYPE   STATUS      AGE
+default           test-stream         <empty>   <empty>   <empty>    <empty>        <unknown>   <unknown>
+other-namespace   test-other-stream   <empty>   <empty>   <empty>    <empty>        <unknown>   <unknown>
 `,
 		},
 		{
 			Name: "table populates all columns",
 			Args: []string{},
 			GivenObjects: []runtime.Object{
-				&streamv1alpha1.Processor{
+				&streamv1alpha1.Stream{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      "square",
+						Name:      "words",
 						Namespace: defaultNamespace,
 					},
-					Spec: streamv1alpha1.ProcessorSpec{
-						FunctionRef: "square",
-						Inputs:      []string{"numbers", "morenumbers"},
-						Outputs:     []string{"squares"},
+					Spec: streamv1alpha1.StreamSpec{
+						Provider:    "kafka",
+						ContentType: "text/csv",
 					},
-					Status: streamv1alpha1.ProcessorStatus{
+					Status: streamv1alpha1.StreamStatus{
 						Status: duckv1beta1.Status{
 							Conditions: duckv1beta1.Conditions{
-								{Type: streamv1alpha1.ProcessorConditionReady, Status: "True"},
+								{Type: streamv1alpha1.StreamConditionReady, Status: "True"},
 							},
+						},
+						Address: streamv1alpha1.StreamAddress{
+							Topic:   "words",
+							Gateway: "test-gateway:1234",
 						},
 					},
 				},
 			},
 			ExpectOutput: `
-NAME     FUNCTION   INPUTS                OUTPUTS   STATUS   AGE
-square   square     numbers,morenumbers   squares   Ready    <unknown>
+NAME    TOPIC   GATEWAY             PROVIDER   CONTENT-TYPE   STATUS   AGE
+words   words   test-gateway:1234   kafka      text/csv       Ready    <unknown>
 `,
 		},
 		{
 			Name: "list error",
 			Args: []string{},
 			WithReactors: []rifftesting.ReactionFunc{
-				rifftesting.InduceFailure("list", "processors"),
+				rifftesting.InduceFailure("list", "streams"),
 			},
 			ShouldError: true,
 		},
 	}
 
-	table.Run(t, commands.NewProcessorListCommand)
+	table.Run(t, commands.NewStreamListCommand)
 }

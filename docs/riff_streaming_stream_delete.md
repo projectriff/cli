@@ -1,8 +1,8 @@
 ---
-id: riff-stream-delete
-title: "riff stream delete"
+id: riff-streaming-stream-delete
+title: "riff streaming stream delete"
 ---
-## riff stream delete
+## riff streaming stream delete
 
 delete stream(s)
 
@@ -15,7 +15,7 @@ the stream. Existing messages in the stream may be preserved by the underlying
 messaging middleware, depending on the implementation.
 
 ```
-riff stream delete <name(s)> [flags]
+riff streaming stream delete <name(s)> [flags]
 ```
 
 ### Examples
@@ -43,5 +43,5 @@ riff stream delete --all
 
 ### SEE ALSO
 
-* [riff stream](riff_stream.md)	 - (experimental) streams of messages
+* [riff streaming stream](riff_streaming_stream.md)	 - (experimental) streams of messages
 

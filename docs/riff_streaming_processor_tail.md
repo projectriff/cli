@@ -1,8 +1,8 @@
 ---
-id: riff-processor-tail
-title: "riff processor tail"
+id: riff-streaming-processor-tail
+title: "riff streaming processor tail"
 ---
-## riff processor tail
+## riff streaming processor tail
 
 watch processor logs
 
@@ -15,7 +15,7 @@ As new processor instances are started, the logs are displayed. To show historic
 --since.
 
 ```
-riff processor tail <name> [flags]
+riff streaming processor tail <name> [flags]
 ```
 
 ### Examples
@@ -42,5 +42,5 @@ riff processor tail my-processor --since 1h
 
 ### SEE ALSO
 
-* [riff processor](riff_processor.md)	 - (experimental) processors apply functions to messages on streams
+* [riff streaming processor](riff_streaming_processor.md)	 - (experimental) processors apply functions to messages on streams
 

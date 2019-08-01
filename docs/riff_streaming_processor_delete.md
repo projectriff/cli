@@ -1,8 +1,8 @@
 ---
-id: riff-processor-delete
-title: "riff processor delete"
+id: riff-streaming-processor-delete
+title: "riff streaming processor delete"
 ---
-## riff processor delete
+## riff streaming processor delete
 
 delete processor(s)
 
@@ -14,7 +14,7 @@ The processor will stop processing messages from the input streams and writing
 to the output streams. The streams and messages in each stream are preserved.
 
 ```
-riff processor delete <name(s)> [flags]
+riff streaming processor delete <name(s)> [flags]
 ```
 
 ### Examples
@@ -42,5 +42,5 @@ riff processor delete --all
 
 ### SEE ALSO
 
-* [riff processor](riff_processor.md)	 - (experimental) processors apply functions to messages on streams
+* [riff streaming processor](riff_streaming_processor.md)	 - (experimental) processors apply functions to messages on streams
 

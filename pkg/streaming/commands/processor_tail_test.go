@@ -23,7 +23,7 @@ import (
 	"time"
 
 	"github.com/projectriff/cli/pkg/cli"
-	"github.com/projectriff/cli/pkg/riff/commands"
+	"github.com/projectriff/cli/pkg/streaming/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 	kailtesting "github.com/projectriff/cli/pkg/testing/kail"
 	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"

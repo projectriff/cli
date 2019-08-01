@@ -19,7 +19,7 @@ package commands_test
 import (
 	"testing"
 
-	"github.com/projectriff/cli/pkg/riff/commands"
+	"github.com/projectriff/cli/pkg/streaming/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 )
 

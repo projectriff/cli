@@ -1,28 +1,28 @@
 ---
-id: riff-stream-list
-title: "riff stream list"
+id: riff-streaming-processor-list
+title: "riff streaming processor list"
 ---
-## riff stream list
+## riff streaming processor list
 
-table listing of streams
+table listing of processors
 
 ### Synopsis
 
-List streams in a namespace or across all namespaces.
+List processors in a namespace or across all namespaces.
 
-For detail regarding the status of a single stream, run:
+For detail regarding the status of a single processor, run:
 
-	riff stream status <stream-name>
+	riff processor status <processor-name>
 
 ```
-riff stream list [flags]
+riff streaming processor list [flags]
 ```
 
 ### Examples
 
 ```
-riff stream list
-riff stream list --all-namespaces
+riff processor list
+riff processor list --all-namespaces
 ```
 
 ### Options
@@ -43,5 +43,5 @@ riff stream list --all-namespaces
 
 ### SEE ALSO
 
-* [riff stream](riff_stream.md)	 - (experimental) streams of messages
+* [riff streaming processor](riff_streaming_processor.md)	 - (experimental) processors apply functions to messages on streams
 

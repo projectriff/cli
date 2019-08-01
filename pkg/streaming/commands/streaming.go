@@ -14,22 +14,27 @@
  * limitations under the License.
  */
 
-package commands_test
+package commands
 
 import (
-	"testing"
+	"context"
+	"strings"
 
-	"github.com/projectriff/cli/pkg/riff/commands"
-	rifftesting "github.com/projectriff/cli/pkg/testing"
+	"github.com/projectriff/cli/pkg/cli"
+	"github.com/spf13/cobra"
 )
 
-func TestStreamCommand(t *testing.T) {
-	table := rifftesting.CommandTable{
-		{
-			Name: "empty",
-			Args: []string{},
-		},
+func NewStreamingCommand(ctx context.Context, c *cli.Config) *cobra.Command {
+	var cmd = &cobra.Command{
+		Use:   "streaming",
+		Short: "(experimental) streaming runtime for riff functions",
+		Long: strings.TrimSpace(`
+<todo>
+`),
 	}
 
-	table.Run(t, commands.NewStreamCommand)
+	cmd.AddCommand(NewStreamCommand(ctx, c))
+	cmd.AddCommand(NewProcessorCommand(ctx, c))
+
+	return cmd
 }

@@ -1,8 +1,8 @@
 ---
-id: riff-processor-status
-title: "riff processor status"
+id: riff-streaming-processor-status
+title: "riff streaming processor status"
 ---
-## riff processor status
+## riff streaming processor status
 
 show processor status
 
@@ -16,7 +16,7 @@ may be: "True", "False" or "Unknown". An "Unknown" status is common while the
 processor is processed.
 
 ```
-riff processor status <name> [flags]
+riff streaming processor status <name> [flags]
 ```
 
 ### Examples
@@ -42,5 +42,5 @@ riff processor status my-processor
 
 ### SEE ALSO
 
-* [riff processor](riff_processor.md)	 - (experimental) processors apply functions to messages on streams
+* [riff streaming processor](riff_streaming_processor.md)	 - (experimental) processors apply functions to messages on streams
 

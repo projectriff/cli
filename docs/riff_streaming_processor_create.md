@@ -1,8 +1,8 @@
 ---
-id: riff-processor-create
-title: "riff processor create"
+id: riff-streaming-processor-create
+title: "riff streaming processor create"
 ---
-## riff processor create
+## riff streaming processor create
 
 create a processor to apply a function to messages on streams
 
@@ -11,7 +11,7 @@ create a processor to apply a function to messages on streams
 <todo>
 
 ```
-riff processor create <name> [flags]
+riff streaming processor create <name> [flags]
 ```
 
 ### Examples
@@ -44,5 +44,5 @@ riff processor create my-processor --function-ref my-func --input my-input-strea
 
 ### SEE ALSO
 
-* [riff processor](riff_processor.md)	 - (experimental) processors apply functions to messages on streams
+* [riff streaming processor](riff_streaming_processor.md)	 - (experimental) processors apply functions to messages on streams
 

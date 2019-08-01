@@ -1,8 +1,8 @@
 ---
-id: riff-stream-create
-title: "riff stream create"
+id: riff-streaming-stream-create
+title: "riff streaming stream create"
 ---
-## riff stream create
+## riff streaming stream create
 
 create a stream of messages
 
@@ -11,7 +11,7 @@ create a stream of messages
 <todo>
 
 ```
-riff stream create <name> [flags]
+riff streaming stream create <name> [flags]
 ```
 
 ### Examples
@@ -40,5 +40,5 @@ riff stream create --provider my-provider
 
 ### SEE ALSO
 
-* [riff stream](riff_stream.md)	 - (experimental) streams of messages
+* [riff streaming stream](riff_streaming_stream.md)	 - (experimental) streams of messages
 

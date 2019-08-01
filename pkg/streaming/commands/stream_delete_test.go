@@ -20,25 +20,25 @@ import (
 	"testing"
 
 	"github.com/projectriff/cli/pkg/cli"
-	"github.com/projectriff/cli/pkg/riff/commands"
+	"github.com/projectriff/cli/pkg/streaming/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-func TestProcessorDeleteOptions(t *testing.T) {
+func TestStreamDeleteOptions(t *testing.T) {
 	table := rifftesting.OptionsTable{
 		{
 			Name: "invalid delete",
-			Options: &commands.ProcessorDeleteOptions{
+			Options: &commands.StreamDeleteOptions{
 				DeleteOptions: rifftesting.InvalidDeleteOptions,
 			},
 			ExpectFieldError: rifftesting.InvalidDeleteOptionsFieldError,
 		},
 		{
 			Name: "valid delete",
-			Options: &commands.ProcessorDeleteOptions{
+			Options: &commands.StreamDeleteOptions{
 				DeleteOptions: rifftesting.ValidDeleteOptions,
 			},
 			ShouldValidate: true,
@@ -48,9 +48,9 @@ func TestProcessorDeleteOptions(t *testing.T) {
 	table.Run(t)
 }
 
-func TestProcessorDeleteCommand(t *testing.T) {
-	processorName := "test-processor"
-	processorOtherName := "test-other-processor"
+func TestStreamDeleteCommand(t *testing.T) {
+	streamName := "test-stream"
+	streamOtherName := "test-other-stream"
 	defaultNamespace := "default"
 
 	table := rifftesting.CommandTable{
@@ -60,134 +60,134 @@ func TestProcessorDeleteCommand(t *testing.T) {
 			ShouldError: true,
 		},
 		{
-			Name: "delete all processors",
+			Name: "delete all streams",
 			Args: []string{cli.AllFlagName},
 			GivenObjects: []runtime.Object{
-				&streamv1alpha1.Processor{
+				&streamv1alpha1.Stream{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      processorName,
+						Name:      streamName,
 						Namespace: defaultNamespace,
 					},
 				},
 			},
 			ExpectDeleteCollections: []rifftesting.DeleteCollectionRef{{
 				Group:     "streaming.projectriff.io",
-				Resource:  "processors",
+				Resource:  "streams",
 				Namespace: defaultNamespace,
 			}},
 			ExpectOutput: `
-Deleted processors in namespace "default"
+Deleted streams in namespace "default"
 `,
 		},
 		{
-			Name: "delete all processors error",
+			Name: "delete all streams error",
 			Args: []string{cli.AllFlagName},
 			GivenObjects: []runtime.Object{
-				&streamv1alpha1.Processor{
+				&streamv1alpha1.Stream{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      processorName,
+						Name:      streamName,
 						Namespace: defaultNamespace,
 					},
 				},
 			},
 			WithReactors: []rifftesting.ReactionFunc{
-				rifftesting.InduceFailure("delete-collection", "processors"),
+				rifftesting.InduceFailure("delete-collection", "streams"),
 			},
 			ExpectDeleteCollections: []rifftesting.DeleteCollectionRef{{
 				Group:     "streaming.projectriff.io",
-				Resource:  "processors",
+				Resource:  "streams",
 				Namespace: defaultNamespace,
 			}},
 			ShouldError: true,
 		},
 		{
-			Name: "delete processor",
-			Args: []string{processorName},
+			Name: "delete stream",
+			Args: []string{streamName},
 			GivenObjects: []runtime.Object{
-				&streamv1alpha1.Processor{
+				&streamv1alpha1.Stream{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      processorName,
+						Name:      streamName,
 						Namespace: defaultNamespace,
 					},
 				},
 			},
 			ExpectDeletes: []rifftesting.DeleteRef{{
 				Group:     "streaming.projectriff.io",
-				Resource:  "processors",
+				Resource:  "streams",
 				Namespace: defaultNamespace,
-				Name:      processorName,
+				Name:      streamName,
 			}},
 			ExpectOutput: `
-Deleted processor "test-processor"
+Deleted stream "test-stream"
 `,
 		},
 		{
-			Name: "delete processors",
-			Args: []string{processorName, processorOtherName},
+			Name: "delete streams",
+			Args: []string{streamName, streamOtherName},
 			GivenObjects: []runtime.Object{
-				&streamv1alpha1.Processor{
+				&streamv1alpha1.Stream{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      processorName,
+						Name:      streamName,
 						Namespace: defaultNamespace,
 					},
 				},
-				&streamv1alpha1.Processor{
+				&streamv1alpha1.Stream{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      processorOtherName,
+						Name:      streamOtherName,
 						Namespace: defaultNamespace,
 					},
 				},
 			},
 			ExpectDeletes: []rifftesting.DeleteRef{{
 				Group:     "streaming.projectriff.io",
-				Resource:  "processors",
+				Resource:  "streams",
 				Namespace: defaultNamespace,
-				Name:      processorName,
+				Name:      streamName,
 			}, {
 				Group:     "streaming.projectriff.io",
-				Resource:  "processors",
+				Resource:  "streams",
 				Namespace: defaultNamespace,
-				Name:      processorOtherName,
+				Name:      streamOtherName,
 			}},
 			ExpectOutput: `
-Deleted processor "test-processor"
-Deleted processor "test-other-processor"
+Deleted stream "test-stream"
+Deleted stream "test-other-stream"
 `,
 		},
 		{
-			Name: "processor does not exist",
-			Args: []string{processorName},
+			Name: "stream does not exist",
+			Args: []string{streamName},
 			ExpectDeletes: []rifftesting.DeleteRef{{
 				Group:     "streaming.projectriff.io",
-				Resource:  "processors",
+				Resource:  "streams",
 				Namespace: defaultNamespace,
-				Name:      processorName,
+				Name:      streamName,
 			}},
 			ShouldError: true,
 		},
 		{
 			Name: "delete error",
-			Args: []string{processorName},
+			Args: []string{streamName},
 			GivenObjects: []runtime.Object{
-				&streamv1alpha1.Processor{
+				&streamv1alpha1.Stream{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      processorName,
+						Name:      streamName,
 						Namespace: defaultNamespace,
 					},
 				},
 			},
 			WithReactors: []rifftesting.ReactionFunc{
-				rifftesting.InduceFailure("delete", "processors"),
+				rifftesting.InduceFailure("delete", "streams"),
 			},
 			ExpectDeletes: []rifftesting.DeleteRef{{
 				Group:     "streaming.projectriff.io",
-				Resource:  "processors",
+				Resource:  "streams",
 				Namespace: defaultNamespace,
-				Name:      processorName,
+				Name:      streamName,
 			}},
 			ShouldError: true,
 		},
 	}
 
-	table.Run(t, commands.NewProcessorDeleteCommand)
+	table.Run(t, commands.NewStreamDeleteCommand)
 }
