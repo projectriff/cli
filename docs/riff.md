@@ -44,6 +44,5 @@ map those streams to function inputs and outputs with processors.
 * [riff doctor](riff_doctor.md)	 - check riff's requirements are installed
 * [riff function](riff_function.md)	 - functions built from source using function buildpacks
 * [riff handler](riff_handler.md)	 - handlers map HTTP requests to applications, functions or images
-* [riff processor](riff_processor.md)	 - (experimental) processors apply functions to messages on streams
-* [riff stream](riff_stream.md)	 - (experimental) streams of messages
+* [riff streaming](riff_streaming.md)	 - (experimental) streaming runtime for riff functions
 

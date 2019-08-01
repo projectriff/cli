@@ -74,16 +74,16 @@ knative-build     missing
 knative-serving   missing
 riff-system       missing
 
-RESOURCE                            READ      WRITE
-configmaps                          allowed   allowed
-secrets                             allowed   allowed
-pods                                allowed   n/a
-pods/log                            allowed   n/a
-applications.build.projectriff.io   missing   missing
-functions.build.projectriff.io      missing   missing
-handlers.request.projectriff.io     missing   missing
-processors.stream.projectriff.io    missing   missing
-streams.stream.projectriff.io       missing   missing
+RESOURCE                              READ      WRITE
+configmaps                            allowed   allowed
+secrets                               allowed   allowed
+pods                                  allowed   n/a
+pods/log                              allowed   n/a
+applications.build.projectriff.io     missing   missing
+functions.build.projectriff.io        missing   missing
+handlers.request.projectriff.io       missing   missing
+processors.streaming.projectriff.io   missing   missing
+streams.streaming.projectriff.io      missing   missing
 
 Installation is not OK
 `,
@@ -99,8 +99,8 @@ Installation is not OK
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "handlers.request.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.stream.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.stream.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
 			},
 			ExpectCreates: merge(
 				selfSubjectAccessReviewRequests("default", "core", "configmaps", "", verbs...),
@@ -110,8 +110,8 @@ Installation is not OK
 				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "applications", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "functions", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "request.projectriff.io", "handlers", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "processors", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "streams", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "streaming.projectriff.io", "processors", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "streaming.projectriff.io", "streams", "", verbs...),
 			),
 			WithReactors: []rifftesting.ReactionFunc{
 				passAccessReview(),
@@ -123,16 +123,16 @@ knative-build     ok
 knative-serving   ok
 riff-system       ok
 
-RESOURCE                            READ      WRITE
-configmaps                          allowed   allowed
-secrets                             allowed   allowed
-pods                                allowed   n/a
-pods/log                            allowed   n/a
-applications.build.projectriff.io   allowed   allowed
-functions.build.projectriff.io      allowed   allowed
-handlers.request.projectriff.io     allowed   allowed
-processors.stream.projectriff.io    allowed   allowed
-streams.stream.projectriff.io       allowed   allowed
+RESOURCE                              READ      WRITE
+configmaps                            allowed   allowed
+secrets                               allowed   allowed
+pods                                  allowed   n/a
+pods/log                              allowed   n/a
+applications.build.projectriff.io     allowed   allowed
+functions.build.projectriff.io        allowed   allowed
+handlers.request.projectriff.io       allowed   allowed
+processors.streaming.projectriff.io   allowed   allowed
+streams.streaming.projectriff.io      allowed   allowed
 
 Installation is OK
 `,
@@ -148,8 +148,8 @@ Installation is OK
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "handlers.request.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.stream.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.stream.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
 			},
 			ExpectCreates: merge(
 				selfSubjectAccessReviewRequests("default", "core", "configmaps", "", verbs...),
@@ -159,8 +159,8 @@ Installation is OK
 				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "applications", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "functions", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "request.projectriff.io", "handlers", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "processors", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "streams", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "streaming.projectriff.io", "processors", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "streaming.projectriff.io", "streams", "", verbs...),
 			),
 			WithReactors: []rifftesting.ReactionFunc{
 				denyAccessReviewOn("*", "create"),
@@ -177,16 +177,16 @@ knative-build     ok
 knative-serving   ok
 riff-system       ok
 
-RESOURCE                            READ      WRITE
-configmaps                          allowed   denied
-secrets                             allowed   denied
-pods                                allowed   n/a
-pods/log                            allowed   n/a
-applications.build.projectriff.io   allowed   denied
-functions.build.projectriff.io      allowed   denied
-handlers.request.projectriff.io     allowed   denied
-processors.stream.projectriff.io    allowed   denied
-streams.stream.projectriff.io       allowed   denied
+RESOURCE                              READ      WRITE
+configmaps                            allowed   denied
+secrets                               allowed   denied
+pods                                  allowed   n/a
+pods/log                              allowed   n/a
+applications.build.projectriff.io     allowed   denied
+functions.build.projectriff.io        allowed   denied
+handlers.request.projectriff.io       allowed   denied
+processors.streaming.projectriff.io   allowed   denied
+streams.streaming.projectriff.io      allowed   denied
 
 Installation is not OK
 `,
@@ -202,8 +202,8 @@ Installation is not OK
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "handlers.request.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.stream.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.stream.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
 			},
 			ExpectCreates: merge(
 				selfSubjectAccessReviewRequests("default", "core", "configmaps", "", verbs...),
@@ -213,8 +213,8 @@ Installation is not OK
 				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "applications", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "functions", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "request.projectriff.io", "handlers", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "processors", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "streams", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "streaming.projectriff.io", "processors", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "streaming.projectriff.io", "streams", "", verbs...),
 			),
 			WithReactors: []rifftesting.ReactionFunc{
 				denyAccessReviewOn("*", "watch"),
@@ -228,16 +228,16 @@ knative-build     ok
 knative-serving   ok
 riff-system       ok
 
-RESOURCE                            READ    WRITE
-configmaps                          mixed   allowed
-secrets                             mixed   allowed
-pods                                mixed   n/a
-pods/log                            mixed   n/a
-applications.build.projectriff.io   mixed   allowed
-functions.build.projectriff.io      mixed   allowed
-handlers.request.projectriff.io     mixed   allowed
-processors.stream.projectriff.io    mixed   allowed
-streams.stream.projectriff.io       mixed   allowed
+RESOURCE                              READ    WRITE
+configmaps                            mixed   allowed
+secrets                               mixed   allowed
+pods                                  mixed   n/a
+pods/log                              mixed   n/a
+applications.build.projectriff.io     mixed   allowed
+functions.build.projectriff.io        mixed   allowed
+handlers.request.projectriff.io       mixed   allowed
+processors.streaming.projectriff.io   mixed   allowed
+streams.streaming.projectriff.io      mixed   allowed
 
 Installation is not OK
 `,
@@ -253,8 +253,8 @@ Installation is not OK
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "handlers.request.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.stream.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.stream.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
 			},
 			WithReactors: []rifftesting.ReactionFunc{
 				rifftesting.InduceFailure("list", "namespaces"),
@@ -272,8 +272,8 @@ Installation is not OK
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "handlers.request.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.stream.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.stream.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
 			},
 			ExpectCreates: merge(
 				selfSubjectAccessReviewRequests("default", "core", "configmaps", "", verbs...),
@@ -298,8 +298,8 @@ Installation is not OK
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "handlers.request.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.stream.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.stream.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
 			},
 			ExpectCreates: selfSubjectAccessReviewRequests("default", "core", "configmaps", "", "get"),
 			WithReactors: []rifftesting.ReactionFunc{
@@ -318,8 +318,8 @@ Installation is not OK
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "handlers.request.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.stream.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.stream.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
 			},
 			ExpectCreates: selfSubjectAccessReviewRequests("default", "core", "configmaps", "", "get"),
 			WithReactors: []rifftesting.ReactionFunc{
@@ -338,8 +338,8 @@ Installation is not OK
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "handlers.request.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.stream.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.stream.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
 			},
 			ExpectCreates: merge(
 				selfSubjectAccessReviewRequests("default", "core", "configmaps", "", verbs...),
@@ -349,8 +349,8 @@ Installation is not OK
 				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "applications", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "functions", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "request.projectriff.io", "handlers", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "processors", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "stream.projectriff.io", "streams", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "streaming.projectriff.io", "processors", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "streaming.projectriff.io", "streams", "", verbs...),
 			),
 			WithReactors: []rifftesting.ReactionFunc{
 				unknownAccessReviewOn("*", "*"),
@@ -363,16 +363,16 @@ knative-build     ok
 knative-serving   ok
 riff-system       ok
 
-RESOURCE                            READ      WRITE
-configmaps                          unknown   unknown
-secrets                             unknown   unknown
-pods                                unknown   n/a
-pods/log                            unknown   n/a
-applications.build.projectriff.io   unknown   unknown
-functions.build.projectriff.io      unknown   unknown
-handlers.request.projectriff.io     unknown   unknown
-processors.stream.projectriff.io    unknown   unknown
-streams.stream.projectriff.io       unknown   unknown
+RESOURCE                              READ      WRITE
+configmaps                            unknown   unknown
+secrets                               unknown   unknown
+pods                                  unknown   n/a
+pods/log                              unknown   n/a
+applications.build.projectriff.io     unknown   unknown
+functions.build.projectriff.io        unknown   unknown
+handlers.request.projectriff.io       unknown   unknown
+processors.streaming.projectriff.io   unknown   unknown
+streams.streaming.projectriff.io      unknown   unknown
 
 Installation is not OK
 `,

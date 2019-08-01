@@ -13,7 +13,7 @@ require (
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51
 	github.com/knative/pkg v0.0.0-20190624141606-d82505e6c5b4
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/projectriff/system v0.0.0-20190731155923-fb59d90e6b2a
+	github.com/projectriff/system v0.0.0-20190801150455-63de08e932e4
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/viper v1.3.2
 	github.com/stretchr/testify v1.3.0
