@@ -11,7 +11,7 @@ containers resolve the latest image
 Containers are a mechanism to resolve and detect the latest container image.
 
 The container resource is only responsible for resolving the latest image. The
-container container image may then be deployed as a request handler. See
+container image may then be deployed as a request handler. See
 `riff handler --help` for detail.
 
 ### Options
@@ -31,7 +31,7 @@ container container image may then be deployed as a request handler. See
 ### SEE ALSO
 
 * [riff](riff.md)	 - riff is for functions
-* [riff container create](riff_container_create.md)	 - create an container from source
+* [riff container create](riff_container_create.md)	 - watch for new images in a repository
 * [riff container delete](riff_container_delete.md)	 - delete container(s)
 * [riff container list](riff_container_list.md)	 - table listing of containers
 * [riff container status](riff_container_status.md)	 - show container status

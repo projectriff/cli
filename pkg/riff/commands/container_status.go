@@ -68,7 +68,7 @@ func NewContainerStatusCommand(ctx context.Context, c *cli.Config) *cobra.Comman
 		Use:   "status",
 		Short: "show container status",
 		Long: strings.TrimSpace(`
-Display status details for an container.
+Display status details for a container.
 
 The Ready condition is shown which should include a reason code and a
 descriptive message when the status is not "True". The status for the condition

@@ -122,7 +122,7 @@ func NewContainerCreateCommand(ctx context.Context, c *cli.Config) *cobra.Comman
 
 	cmd := &cobra.Command{
 		Use:   "create",
-		Short: "create an container from source",
+		Short: "watch for new images in a repository",
 		Long: strings.TrimSpace(`
 Create a container to watch for the latest image. There is no build performed
 for containers.

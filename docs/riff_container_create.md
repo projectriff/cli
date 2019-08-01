@@ -4,7 +4,7 @@ title: "riff container create"
 ---
 ## riff container create
 
-create an container from source
+watch for new images in a repository
 
 ### Synopsis
 
