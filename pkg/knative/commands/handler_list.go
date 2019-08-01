@@ -84,7 +84,7 @@ List handlers in a namespace or across all namespaces.
 
 For detail regarding the status of a single handler, run:
 
-	` + c.Name + ` handler status <handler-name>
+	` + c.Name + ` knative handler status <handler-name>
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s knative handler list", c.Name),

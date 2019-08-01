@@ -44,6 +44,6 @@ The hostname to access the handler is available in the handler listing.
 * [riff knative handler create](riff_knative_handler_create.md)	 - create a handler to map HTTP requests to an application, function, container or image
 * [riff knative handler delete](riff_knative_handler_delete.md)	 - delete handler(s)
 * [riff knative handler list](riff_knative_handler_list.md)	 - table listing of handlers
-* [riff knative handler status](riff_knative_handler_status.md)	 - show handler status
+* [riff knative handler status](riff_knative_handler_status.md)	 - show knative handler status
 * [riff knative handler tail](riff_knative_handler_tail.md)	 - watch handler logs
 

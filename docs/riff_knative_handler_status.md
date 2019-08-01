@@ -4,7 +4,7 @@ title: "riff knative handler status"
 ---
 ## riff knative handler status
 
-show handler status
+show knative handler status
 
 ### Synopsis
 

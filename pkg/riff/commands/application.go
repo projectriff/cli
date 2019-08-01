@@ -36,8 +36,8 @@ runtime dependencies, compile the application, and packaging everything as a
 container.
 
 The application resource is only responsible for converting source code into a
-container. The application container image may then be deployed as a request
-handler. See ` + "`" + c.Name + " handler --help" + "`" + ` for detail.
+container. The application container image may then be deployed on the core or
+knative runtime as a handler.
 `),
 		Aliases: []string{"applications", "app", "apps"},
 	}

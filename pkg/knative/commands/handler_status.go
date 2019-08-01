@@ -66,7 +66,7 @@ func NewHandlerStatusCommand(ctx context.Context, c *cli.Config) *cobra.Command 
 
 	cmd := &cobra.Command{
 		Use:   "status",
-		Short: "show handler status",
+		Short: "show knative handler status",
 		Long: strings.TrimSpace(`
 Display status details for a handler.
 

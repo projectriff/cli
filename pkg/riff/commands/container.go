@@ -32,8 +32,9 @@ func NewContainerCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 Containers are a mechanism to resolve and detect the latest container image.
 
 The container resource is only responsible for resolving the latest image. The
-container image may then be deployed as a request handler. See
-` + "`" + c.Name + " handler --help" + "`" + ` for detail.
+container image may then be deployed to core or knative runtime a as a request handler.
+See ` + "`" + c.Name + " knative handler --help" + "`" + ` and
+` + "`" + c.Name + " core handler --help" + "`" + ` for detail.
 `),
 		Aliases: []string{"containers"},
 	}

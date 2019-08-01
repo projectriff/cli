@@ -12,7 +12,7 @@ List handlers in a namespace or across all namespaces.
 
 For detail regarding the status of a single handler, run:
 
-	riff handler status <handler-name>
+	riff knative handler status <handler-name>
 
 ```
 riff knative handler list [flags]
