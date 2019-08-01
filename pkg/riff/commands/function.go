@@ -36,10 +36,12 @@ language runtime, install build and runtime dependencies, compile the function,
 and packaging everything as a container.
 
 The function resource is only responsible for converting source code into a
-container. The function container image may then be deployed on the core or knative
-runtime as request handler, or on streaming runtime as a stream processor. See
-` + "`" + c.Name + " knative handler --help" + "`" + `, ` + "`" + c.Name + " core handler --help" + "`" + ` and
-` + "`" + c.Name + " processor --help" + "`" + ` for detail.
+container. The function container image may then be deployed on the core or
+knative runtime as request handler, or on streaming runtime as a stream processor.
+For details see:
+` + "`" + c.Name + " knative handler --help" + "`" + `,
+` + "`" + c.Name + " core handler --help" + "`" + ` and
+` + "`" + c.Name + " processor --help" + "`" + `.
 
 Functions are distinct from applications in the scope and responsibilities of
 the source code. Unlike applications, functions:
