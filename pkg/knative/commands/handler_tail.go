@@ -79,8 +79,8 @@ As new handler instances are started, the logs are displayed. To show historical
 ` + cli.SinceFlagName + `.
 `),
 		Example: strings.Join([]string{
-			fmt.Sprintf("%s handler tail my-handler", c.Name),
-			fmt.Sprintf("%s handler tail my-handler %s 1h", c.Name, cli.SinceFlagName),
+			fmt.Sprintf("%s knative handler tail my-handler", c.Name),
+			fmt.Sprintf("%s knative handler tail my-handler %s 1h", c.Name, cli.SinceFlagName),
 		}, "\n"),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),

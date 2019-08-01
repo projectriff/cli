@@ -221,10 +221,10 @@ The runtime environment can be configured by ` + cli.EnvFlagName + ` for static 
 and ` + cli.EnvFromFlagName + ` to map values from a ConfigMap or Secret.
 `),
 		Example: strings.Join([]string{
-			fmt.Sprintf("%s handler create my-app-handler %s my-app", c.Name, cli.ApplicationRefFlagName),
-			fmt.Sprintf("%s handler create my-func-handler %s my-func", c.Name, cli.FunctionRefFlagName),
-			fmt.Sprintf("%s handler create my-func-handler %s my-container", c.Name, cli.ContainerRefFlagName),
-			fmt.Sprintf("%s handler create my-image-handler %s registry.example.com/my-image:latest", c.Name, cli.ImageFlagName),
+			fmt.Sprintf("%s knative handler create my-app-handler %s my-app", c.Name, cli.ApplicationRefFlagName),
+			fmt.Sprintf("%s knative handler create my-func-handler %s my-func", c.Name, cli.FunctionRefFlagName),
+			fmt.Sprintf("%s knative handler create my-func-handler %s my-container", c.Name, cli.ContainerRefFlagName),
+			fmt.Sprintf("%s knative handler create my-image-handler %s registry.example.com/my-image:latest", c.Name, cli.ImageFlagName),
 		}, "\n"),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),

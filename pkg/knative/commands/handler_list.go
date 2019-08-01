@@ -87,8 +87,8 @@ For detail regarding the status of a single handler, run:
 	` + c.Name + ` handler status <handler-name>
 `),
 		Example: strings.Join([]string{
-			fmt.Sprintf("%s handler list", c.Name),
-			fmt.Sprintf("%s handler list %s", c.Name, cli.AllNamespacesFlagName),
+			fmt.Sprintf("%s knative handler list", c.Name),
+			fmt.Sprintf("%s knative handler list %s", c.Name, cli.AllNamespacesFlagName),
 		}, "\n"),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),

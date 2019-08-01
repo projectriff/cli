@@ -95,9 +95,9 @@ func NewHandlerInvokeCommand(ctx context.Context, c *cli.Config) *cobra.Command 
 This command is not supported and may be removed in the future.
 `),
 		Example: strings.Join([]string{
-			fmt.Sprintf("%s handler invoke my-handler", c.Name),
-			fmt.Sprintf("%s handler invoke my-handler --text -- -d 'hello' -w '\\n'", c.Name),
-			fmt.Sprintf("%s handler invoke my-handler /request/path", c.Name),
+			fmt.Sprintf("%s knative handler invoke my-handler", c.Name),
+			fmt.Sprintf("%s knative handler invoke my-handler --text -- -d 'hello' -w '\\n'", c.Name),
+			fmt.Sprintf("%s knative handler invoke my-handler /request/path", c.Name),
 		}, "\n"),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),

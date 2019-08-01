@@ -21,8 +21,8 @@ riff knative handler list [flags]
 ### Examples
 
 ```
-riff handler list
-riff handler list --all-namespaces
+riff knative handler list
+riff knative handler list --all-namespaces
 ```
 
 ### Options

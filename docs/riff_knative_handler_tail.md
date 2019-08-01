@@ -21,8 +21,8 @@ riff knative handler tail <name> [flags]
 ### Examples
 
 ```
-riff handler tail my-handler
-riff handler tail my-handler --since 1h
+riff knative handler tail my-handler
+riff knative handler tail my-handler --since 1h
 ```
 
 ### Options

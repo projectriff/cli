@@ -22,7 +22,7 @@ riff knative handler status <name> [flags]
 ### Examples
 
 ```
-riff handler status my-handler
+riff knative handler status my-handler
 ```
 
 ### Options

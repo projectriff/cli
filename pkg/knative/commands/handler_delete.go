@@ -78,8 +78,8 @@ the same name will start to receive new HTTP requests addressed to the same
 handler.
 `),
 		Example: strings.Join([]string{
-			fmt.Sprintf("%s handler delete my-handler", c.Name),
-			fmt.Sprintf("%s handler delete %s ", c.Name, cli.AllFlagName),
+			fmt.Sprintf("%s knative handler delete my-handler", c.Name),
+			fmt.Sprintf("%s knative handler delete %s ", c.Name, cli.AllFlagName),
 		}, "\n"),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),

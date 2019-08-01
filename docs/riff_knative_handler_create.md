@@ -32,10 +32,10 @@ riff knative handler create <name> [flags]
 ### Examples
 
 ```
-riff handler create my-app-handler --application-ref my-app
-riff handler create my-func-handler --function-ref my-func
-riff handler create my-func-handler --container-ref my-container
-riff handler create my-image-handler --image registry.example.com/my-image:latest
+riff knative handler create my-app-handler --application-ref my-app
+riff knative handler create my-func-handler --function-ref my-func
+riff knative handler create my-func-handler --container-ref my-container
+riff knative handler create my-image-handler --image registry.example.com/my-image:latest
 ```
 
 ### Options

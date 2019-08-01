@@ -76,7 +76,7 @@ may be: "True", "False" or "Unknown". An "Unknown" status is common while the
 handler is processed.
 `),
 		Example: strings.Join([]string{
-			fmt.Sprintf("%s handler status my-handler", c.Name),
+			fmt.Sprintf("%s knative handler status my-handler", c.Name),
 		}, "\n"),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),

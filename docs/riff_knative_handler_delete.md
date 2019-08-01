@@ -21,8 +21,8 @@ riff knative handler delete <name(s)> [flags]
 ### Examples
 
 ```
-riff handler delete my-handler
-riff handler delete --all 
+riff knative handler delete my-handler
+riff knative handler delete --all 
 ```
 
 ### Options
