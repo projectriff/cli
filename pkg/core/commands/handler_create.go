@@ -41,8 +41,9 @@ type HandlerCreateOptions struct {
 	ContainerRef   string
 	FunctionRef    string
 
-	Env     []string
-	EnvFrom []string
+	Env           []string
+	EnvFromSource []string
+	EnvValueFrom  []string
 
 	Tail        bool
 	WaitTimeout string
@@ -96,7 +97,8 @@ func (opts *HandlerCreateOptions) Validate(ctx context.Context) *cli.FieldError 
 	}
 
 	errs = errs.Also(validation.EnvVars(opts.Env, cli.EnvFlagName))
-	errs = errs.Also(validation.EnvVarFroms(opts.EnvFrom, cli.EnvFromFlagName))
+	errs = errs.Also(validation.EnvVarValueFroms(opts.EnvValueFrom, cli.EnvValueFromFlagName))
+	errs = errs.Also(validation.EnvFromSources(opts.EnvFromSource, cli.EnvFromSourceFlagName))
 
 	if opts.Tail {
 		if opts.WaitTimeout == "" {
@@ -151,11 +153,17 @@ func (opts *HandlerCreateOptions) Exec(ctx context.Context, c *cli.Config) error
 		}
 		handler.Spec.Template.Containers[0].Env = append(handler.Spec.Template.Containers[0].Env, parsers.EnvVar(env))
 	}
-	for _, env := range opts.EnvFrom {
+	for _, envValueFrom := range opts.EnvValueFrom {
 		if handler.Spec.Template.Containers[0].Env == nil {
 			handler.Spec.Template.Containers[0].Env = []corev1.EnvVar{}
 		}
-		handler.Spec.Template.Containers[0].Env = append(handler.Spec.Template.Containers[0].Env, parsers.EnvVarFrom(env))
+		handler.Spec.Template.Containers[0].Env = append(handler.Spec.Template.Containers[0].Env, parsers.EnvVarValueFrom(envValueFrom))
+	}
+	for _, envFromSurce := range opts.EnvFromSource {
+		if handler.Spec.Template.Containers[0].EnvFrom == nil {
+			handler.Spec.Template.Containers[0].EnvFrom = []corev1.EnvFromSource{}
+		}
+		handler.Spec.Template.Containers[0].EnvFrom = append(handler.Spec.Template.Containers[0].EnvFrom, parsers.EnvFromSource(envFromSurce))
 	}
 
 	if opts.DryRun {
@@ -218,7 +226,7 @@ automatically.
 Image based handlers must be updated manually to roll out new images.
 
 The runtime environment can be configured by ` + cli.EnvFlagName + ` for static key-value pairs
-and ` + cli.EnvFromFlagName + ` to map values from a ConfigMap or Secret.
+and ` + cli.EnvValueFromFlagName + ` to map values from a ConfigMap or Secret.
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s core handler create my-app-handler %s my-app", c.Name, cli.ApplicationRefFlagName),
@@ -240,7 +248,8 @@ and ` + cli.EnvFromFlagName + ` to map values from a ConfigMap or Secret.
 	cmd.Flags().StringVar(&opts.ContainerRef, cli.StripDash(cli.ContainerRefFlagName), "", "`name` of container to deploy")
 	cmd.Flags().StringVar(&opts.FunctionRef, cli.StripDash(cli.FunctionRefFlagName), "", "`name` of function to deploy")
 	cmd.Flags().StringArrayVar(&opts.Env, cli.StripDash(cli.EnvFlagName), []string{}, fmt.Sprintf("environment `variable` defined as a key value pair separated by an equals sign, example %q (may be set multiple times)", fmt.Sprintf("%s MY_VAR=my-value", cli.EnvFlagName)))
-	cmd.Flags().StringArrayVar(&opts.EnvFrom, cli.StripDash(cli.EnvFromFlagName), []string{}, fmt.Sprintf("environment `variable` from a config map or secret, example %q, %q (may be set multiple times)", fmt.Sprintf("%s MY_SECRET_VALUE=secretKeyRef:my-secret-name:key-in-secret", cli.EnvFromFlagName), fmt.Sprintf("%s MY_CONFIG_MAP_VALUE=configMapKeyRef:my-config-map-name:key-in-config-map", cli.EnvFromFlagName)))
+	cmd.Flags().StringArrayVar(&opts.EnvValueFrom, cli.StripDash(cli.EnvValueFromFlagName), []string{}, fmt.Sprintf("environment `variable` from a config map or secret, example %q, %q (may be set multiple times)", fmt.Sprintf("%s MY_SECRET_VALUE=secretKeyRef:my-secret-name:key-in-secret", cli.EnvValueFromFlagName), fmt.Sprintf("%s MY_CONFIG_MAP_VALUE=configMapKeyRef:my-config-map-name:key-in-config-map", cli.EnvValueFromFlagName)))
+	cmd.Flags().StringArrayVar(&opts.EnvFromSource, cli.StripDash(cli.EnvFromSourceFlagName), []string{}, fmt.Sprintf("environment variables added to the environment based on the `expression` that references a config map or secret with an optional prefix, example %q, %q (may be set multiple times)", fmt.Sprintf("%s configMapRef:my-config-map-name", cli.EnvFromSourceFlagName), fmt.Sprintf("%s prefix_:secretRef:my-secret-name", cli.EnvFromSourceFlagName)))
 	cmd.Flags().BoolVar(&opts.Tail, cli.StripDash(cli.TailFlagName), false, "watch handler logs")
 	cmd.Flags().StringVar(&opts.WaitTimeout, cli.StripDash(cli.WaitTimeoutFlagName), "10m", "`duration` to wait for the handler to become ready when watching logs")
 	cmd.Flags().BoolVar(&opts.DryRun, cli.StripDash(cli.DryRunFlagName), false, "print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr")

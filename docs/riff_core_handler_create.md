@@ -23,7 +23,7 @@ automatically.
 Image based handlers must be updated manually to roll out new images.
 
 The runtime environment can be configured by --env for static key-value pairs
-and --env-from to map values from a ConfigMap or Secret.
+and --env-value-from to map values from a ConfigMap or Secret.
 
 ```
 riff core handler create <name> [flags]
@@ -41,17 +41,18 @@ riff core handler create my-image-handler --image registry.example.com/my-image:
 ### Options
 
 ```
-      --application-ref name    name of application to deploy
-      --container-ref name      name of container to deploy
-      --dry-run                 print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr
-      --env variable            environment variable defined as a key value pair separated by an equals sign, example "--env MY_VAR=my-value" (may be set multiple times)
-      --env-from variable       environment variable from a config map or secret, example "--env-from MY_SECRET_VALUE=secretKeyRef:my-secret-name:key-in-secret", "--env-from MY_CONFIG_MAP_VALUE=configMapKeyRef:my-config-map-name:key-in-config-map" (may be set multiple times)
-      --function-ref name       name of function to deploy
-  -h, --help                    help for create
-      --image image             container image to deploy
-  -n, --namespace name          kubernetes namespace (defaulted from kube config)
-      --tail                    watch handler logs
-      --wait-timeout duration   duration to wait for the handler to become ready when watching logs (default "10m")
+      --application-ref name         name of application to deploy
+      --container-ref name           name of container to deploy
+      --dry-run                      print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr
+      --env variable                 environment variable defined as a key value pair separated by an equals sign, example "--env MY_VAR=my-value" (may be set multiple times)
+      --env-from-source expression   environment variables added to the environment based on the expression that references a config map or secret with an optional prefix, example "--env-from-source configMapRef:my-config-map-name", "--env-from-source prefix_:secretRef:my-secret-name" (may be set multiple times)
+      --env-value-from variable      environment variable from a config map or secret, example "--env-value-from MY_SECRET_VALUE=secretKeyRef:my-secret-name:key-in-secret", "--env-value-from MY_CONFIG_MAP_VALUE=configMapKeyRef:my-config-map-name:key-in-config-map" (may be set multiple times)
+      --function-ref name            name of function to deploy
+  -h, --help                         help for create
+      --image image                  container image to deploy
+  -n, --namespace name               kubernetes namespace (defaulted from kube config)
+      --tail                         watch handler logs
+      --wait-timeout duration        duration to wait for the handler to become ready when watching logs (default "10m")
 ```
 
 ### Options inherited from parent commands
