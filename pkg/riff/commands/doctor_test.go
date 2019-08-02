@@ -80,6 +80,7 @@ secrets                               allowed   allowed
 pods                                  allowed   n/a
 pods/log                              allowed   n/a
 applications.build.projectriff.io     missing   missing
+containers.build.projectriff.io       missing   missing
 functions.build.projectriff.io        missing   missing
 handlers.core.projectriff.io          missing   missing
 processors.streaming.projectriff.io   missing   missing
@@ -99,6 +100,7 @@ Installation is not OK
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "containers.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "handlers.core.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
@@ -112,6 +114,7 @@ Installation is not OK
 				selfSubjectAccessReviewRequests("default", "core", "pods", "", readVerbs...),
 				selfSubjectAccessReviewRequests("default", "core", "pods", "log", readVerbs...),
 				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "applications", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "containers", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "functions", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "core.projectriff.io", "handlers", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "streaming.projectriff.io", "processors", "", verbs...),
@@ -135,6 +138,7 @@ secrets                               allowed   allowed
 pods                                  allowed   n/a
 pods/log                              allowed   n/a
 applications.build.projectriff.io     allowed   allowed
+containers.build.projectriff.io       allowed   allowed
 functions.build.projectriff.io        allowed   allowed
 handlers.core.projectriff.io          allowed   allowed
 processors.streaming.projectriff.io   allowed   allowed
@@ -154,6 +158,7 @@ Installation is OK
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "containers.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "handlers.core.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
@@ -167,6 +172,7 @@ Installation is OK
 				selfSubjectAccessReviewRequests("default", "core", "pods", "", readVerbs...),
 				selfSubjectAccessReviewRequests("default", "core", "pods", "log", readVerbs...),
 				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "applications", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "containers", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "functions", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "core.projectriff.io", "handlers", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "streaming.projectriff.io", "processors", "", verbs...),
@@ -195,6 +201,7 @@ secrets                               allowed   denied
 pods                                  allowed   n/a
 pods/log                              allowed   n/a
 applications.build.projectriff.io     allowed   denied
+containers.build.projectriff.io       allowed   denied
 functions.build.projectriff.io        allowed   denied
 handlers.core.projectriff.io          allowed   denied
 processors.streaming.projectriff.io   allowed   denied
@@ -214,6 +221,7 @@ Installation is not OK
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "containers.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "handlers.core.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
@@ -227,6 +235,7 @@ Installation is not OK
 				selfSubjectAccessReviewRequests("default", "core", "pods", "", readVerbs...),
 				selfSubjectAccessReviewRequests("default", "core", "pods", "log", readVerbs...),
 				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "applications", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "containers", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "functions", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "core.projectriff.io", "handlers", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "streaming.projectriff.io", "processors", "", verbs...),
@@ -252,6 +261,7 @@ secrets                               mixed   allowed
 pods                                  mixed   n/a
 pods/log                              mixed   n/a
 applications.build.projectriff.io     mixed   allowed
+containers.build.projectriff.io       mixed   allowed
 functions.build.projectriff.io        mixed   allowed
 handlers.core.projectriff.io          mixed   allowed
 processors.streaming.projectriff.io   mixed   allowed
@@ -271,6 +281,7 @@ Installation is not OK
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "containers.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "handlers.core.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
@@ -292,6 +303,7 @@ Installation is not OK
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "containers.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "handlers.core.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
@@ -320,6 +332,7 @@ Installation is not OK
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "containers.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "handlers.core.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
@@ -342,6 +355,7 @@ Installation is not OK
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "containers.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "handlers.core.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
@@ -364,6 +378,7 @@ Installation is not OK
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "containers.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "handlers.core.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
@@ -377,6 +392,7 @@ Installation is not OK
 				selfSubjectAccessReviewRequests("default", "core", "pods", "", readVerbs...),
 				selfSubjectAccessReviewRequests("default", "core", "pods", "log", readVerbs...),
 				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "applications", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "containers", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "build.projectriff.io", "functions", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "core.projectriff.io", "handlers", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "streaming.projectriff.io", "processors", "", verbs...),
@@ -401,6 +417,7 @@ secrets                               unknown   unknown
 pods                                  unknown   n/a
 pods/log                              unknown   n/a
 applications.build.projectriff.io     unknown   unknown
+containers.build.projectriff.io       unknown   unknown
 functions.build.projectriff.io        unknown   unknown
 handlers.core.projectriff.io          unknown   unknown
 processors.streaming.projectriff.io   unknown   unknown
