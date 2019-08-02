@@ -11,8 +11,8 @@ containers resolve the latest image
 Containers are a mechanism to resolve and detect the latest container image.
 
 The container resource is only responsible for resolving the latest image. The
-container image may then be deployed to core or knative runtime a as a request handler.
-See `riff knative handler --help` and
+container image may then be deployed to core or knative runtime a as a request
+handler. See `riff knative handler --help` and
 `riff core handler --help` for detail.
 
 ### Options
