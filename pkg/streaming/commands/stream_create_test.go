@@ -69,7 +69,7 @@ func TestStreamCreateOptions(t *testing.T) {
 				Provider:        "test-provider",
 				ContentType:     "invalid-content-type",
 			},
-			ExpectFieldError: cli.ErrInvalidValue("invalid-content-type", cli.ContentTypeName),
+			ExpectFieldError: cli.ErrInvalidValue("invalid-content-type", cli.ContentTypeFlagName),
 		},
 		{
 			Name: "dry run",
@@ -139,7 +139,7 @@ Created stream "my-stream"
 		},
 		{
 			Name: "with optional content-type",
-			Args: []string{streamName, cli.ProviderFlagName, provider, cli.ContentTypeName, contentType},
+			Args: []string{streamName, cli.ProviderFlagName, provider, cli.ContentTypeFlagName, contentType},
 			ExpectCreates: []runtime.Object{
 				&streamv1alpha1.Stream{
 					ObjectMeta: metav1.ObjectMeta{
