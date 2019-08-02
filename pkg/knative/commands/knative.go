@@ -24,25 +24,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewContainerCommand(ctx context.Context, c *cli.Config) *cobra.Command {
+func NewKnativeCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "container",
-		Short: "containers resolve the latest image",
+		Use:   "knative",
+		Short: "knative runtime for riff functions",
 		Long: strings.TrimSpace(`
-Containers are a mechanism to resolve and detect the latest container image.
-
-The container resource is only responsible for resolving the latest image. The
-container image may then be deployed to core or knative runtime a as a request
-handler. See ` + "`" + c.Name + " knative handler --help" + "`" + ` and
-` + "`" + c.Name + " core handler --help" + "`" + ` for detail.
+<todo>
 `),
-		Aliases: []string{"containers"},
 	}
-
-	cmd.AddCommand(NewContainerListCommand(ctx, c))
-	cmd.AddCommand(NewContainerCreateCommand(ctx, c))
-	cmd.AddCommand(NewContainerDeleteCommand(ctx, c))
-	cmd.AddCommand(NewContainerStatusCommand(ctx, c))
+	cmd.AddCommand(NewHandlerCommand(ctx, c))
 
 	return cmd
 }

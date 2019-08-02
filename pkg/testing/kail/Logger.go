@@ -5,9 +5,9 @@ package kail
 import context "context"
 import io "io"
 
+import knativev1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
 import mock "github.com/stretchr/testify/mock"
-import requestv1alpha1 "github.com/projectriff/system/pkg/apis/request/v1alpha1"
-import streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
+import streamingv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 import time "time"
 import v1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
 
@@ -45,11 +45,11 @@ func (_m *Logger) FunctionLogs(ctx context.Context, function *v1alpha1.Function,
 }
 
 // HandlerLogs provides a mock function with given fields: ctx, handler, since, out
-func (_m *Logger) HandlerLogs(ctx context.Context, handler *requestv1alpha1.Handler, since time.Duration, out io.Writer) error {
+func (_m *Logger) HandlerLogs(ctx context.Context, handler *knativev1alpha1.Handler, since time.Duration, out io.Writer) error {
 	ret := _m.Called(ctx, handler, since, out)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *requestv1alpha1.Handler, time.Duration, io.Writer) error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *knativev1alpha1.Handler, time.Duration, io.Writer) error); ok {
 		r0 = rf(ctx, handler, since, out)
 	} else {
 		r0 = ret.Error(0)
@@ -59,11 +59,11 @@ func (_m *Logger) HandlerLogs(ctx context.Context, handler *requestv1alpha1.Hand
 }
 
 // ProcessorLogs provides a mock function with given fields: ctx, processor, since, out
-func (_m *Logger) ProcessorLogs(ctx context.Context, processor *streamv1alpha1.Processor, since time.Duration, out io.Writer) error {
+func (_m *Logger) ProcessorLogs(ctx context.Context, processor *streamingv1alpha1.Processor, since time.Duration, out io.Writer) error {
 	ret := _m.Called(ctx, processor, since, out)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *streamv1alpha1.Processor, time.Duration, io.Writer) error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, *streamingv1alpha1.Processor, time.Duration, io.Writer) error); ok {
 		r0 = rf(ctx, processor, since, out)
 	} else {
 		r0 = ret.Error(0)
