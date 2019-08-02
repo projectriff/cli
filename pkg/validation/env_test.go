@@ -91,7 +91,7 @@ func TestEnvVars(t *testing.T) {
 	}
 }
 
-func TestEnvVarFrom(t *testing.T) {
+func TestEnvVarValueFrom(t *testing.T) {
 	tests := []struct {
 		name     string
 		expected *cli.FieldError
@@ -137,7 +137,7 @@ func TestEnvVarFrom(t *testing.T) {
 	}
 }
 
-func TestEnvVarFroms(t *testing.T) {
+func TestEnvVarValueFroms(t *testing.T) {
 	tests := []struct {
 		name     string
 		expected *cli.FieldError
@@ -167,6 +167,89 @@ func TestEnvVarFroms(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			expected := test.expected
 			actual := validation.EnvVarValueFroms(test.values, rifftesting.TestField)
+			if diff := rifftesting.DiffFieldErrors(expected, actual); diff != "" {
+				t.Errorf("%s() = (-expected, +actual): %s", test.name, diff)
+			}
+		})
+	}
+}
+
+func TestEnvFromSource(t *testing.T) {
+	tests := []struct {
+		name     string
+		expected *cli.FieldError
+		value    string
+	}{{
+		name:     "valid configmap",
+		expected: cli.EmptyFieldError,
+		value:    "configMapRef:my-configmap",
+	}, {
+		name:     "valid configmap with prefix",
+		expected: cli.EmptyFieldError,
+		value:    "PREFIX_:configMapRef:my-configmap",
+	}, {
+		name:     "valid secret",
+		expected: cli.EmptyFieldError,
+		value:    "secretRef:my-secret",
+	}, {
+		name:     "valid secret with prefix",
+		expected: cli.EmptyFieldError,
+		value:    "PREFIX_:secretRef:my-secret",
+	}, {
+		name:     "empty",
+		expected: cli.ErrInvalidValue("", rifftesting.TestField),
+		value:    "",
+	}, {
+		name:     "unknown type",
+		expected: cli.ErrInvalidValue("otherRef:my-other", rifftesting.TestField),
+		value:    "otherRef:my-other",
+	}, {
+		name:     "missing resource",
+		expected: cli.ErrInvalidValue("configMapRef:", rifftesting.TestField),
+		value:    "configMapRef:",
+	}}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			expected := test.expected
+			actual := validation.EnvFromSource(test.value, rifftesting.TestField)
+			if diff := rifftesting.DiffFieldErrors(expected, actual); diff != "" {
+				t.Errorf("%s() = (-expected, +actual): %s", test.name, diff)
+			}
+		})
+	}
+}
+
+func TestEnvFromSources(t *testing.T) {
+	tests := []struct {
+		name     string
+		expected *cli.FieldError
+		values   []string
+	}{{
+		name:     "valid, empty",
+		expected: cli.EmptyFieldError,
+		values:   []string{},
+	}, {
+		name:     "valid, not empty",
+		expected: cli.EmptyFieldError,
+		values:   []string{"configMapRef:my-configmap"},
+	}, {
+		name:     "invalid",
+		expected: cli.ErrInvalidValue("", cli.CurrentField).ViaFieldIndex(rifftesting.TestField, 0),
+		values:   []string{""},
+	}, {
+		name: "multiple invalid",
+		expected: cli.EmptyFieldError.Also(
+			cli.ErrInvalidValue("", cli.CurrentField).ViaFieldIndex(rifftesting.TestField, 0),
+			cli.ErrInvalidValue("", cli.CurrentField).ViaFieldIndex(rifftesting.TestField, 1),
+		),
+		values: []string{"", ""},
+	}}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			expected := test.expected
+			actual := validation.EnvFromSources(test.values, rifftesting.TestField)
 			if diff := rifftesting.DiffFieldErrors(expected, actual); diff != "" {
 				t.Errorf("%s() = (-expected, +actual): %s", test.name, diff)
 			}

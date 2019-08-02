@@ -49,7 +49,7 @@ func TestEnvVar(t *testing.T) {
 	}
 }
 
-func TestEnvVarFrom(t *testing.T) {
+func TestEnvVarValueFrom(t *testing.T) {
 	tests := []struct {
 		name     string
 		expected corev1.EnvVar
@@ -88,6 +88,66 @@ func TestEnvVarFrom(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			expected := test.expected
 			actual := parsers.EnvVarValueFrom(test.value)
+			if diff := cmp.Diff(expected, actual); diff != "" {
+				t.Errorf("%s() = (-expected, +actual): %s", test.name, diff)
+			}
+		})
+	}
+}
+
+func TestEnvVarFromSource(t *testing.T) {
+	tests := []struct {
+		name     string
+		expected corev1.EnvFromSource
+		value    string
+	}{{
+		name:  "configmap",
+		value: "configMapRef:my-configmap",
+		expected: corev1.EnvFromSource{
+			ConfigMapRef: &corev1.ConfigMapEnvSource{
+				LocalObjectReference: corev1.LocalObjectReference{
+					Name: "my-configmap",
+				},
+			},
+		},
+	}, {
+		name:  "configmap with prefix",
+		value: "PREFIX_:configMapRef:my-configmap",
+		expected: corev1.EnvFromSource{
+			Prefix: "PREFIX_",
+			ConfigMapRef: &corev1.ConfigMapEnvSource{
+				LocalObjectReference: corev1.LocalObjectReference{
+					Name: "my-configmap",
+				},
+			},
+		},
+	}, {
+		name:  "secret",
+		value: "secretRef:my-secret",
+		expected: corev1.EnvFromSource{
+			SecretRef: &corev1.SecretEnvSource{
+				LocalObjectReference: corev1.LocalObjectReference{
+					Name: "my-secret",
+				},
+			},
+		},
+	}, {
+		name:  "secret with prefix",
+		value: "PREFIX_:secretRef:my-secret",
+		expected: corev1.EnvFromSource{
+			Prefix: "PREFIX_",
+			SecretRef: &corev1.SecretEnvSource{
+				LocalObjectReference: corev1.LocalObjectReference{
+					Name: "my-secret",
+				},
+			},
+		},
+	}}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			expected := test.expected
+			actual := parsers.EnvFromSource(test.value)
 			if diff := cmp.Diff(expected, actual); diff != "" {
 				t.Errorf("%s() = (-expected, +actual): %s", test.name, diff)
 			}
