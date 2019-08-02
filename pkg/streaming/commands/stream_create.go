@@ -76,7 +76,7 @@ func (opts *StreamCreateOptions) Exec(ctx context.Context, c *cli.Config) error 
 		cli.DryRunResource(ctx, stream, stream.GetGroupVersionKind())
 	} else {
 		var err error
-		stream, err = c.Streaming().Streams(opts.Namespace).Create(stream)
+		stream, err = c.StreamingRuntime().Streams(opts.Namespace).Create(stream)
 		if err != nil {
 			return err
 		}

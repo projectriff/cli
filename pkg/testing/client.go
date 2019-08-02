@@ -20,7 +20,8 @@ import (
 	kntesting "github.com/knative/pkg/reconciler/testing"
 	projectriffclientset "github.com/projectriff/system/pkg/client/clientset/versioned/fake"
 	buildv1alpha1clientset "github.com/projectriff/system/pkg/client/clientset/versioned/typed/build/v1alpha1"
-	requestv1alpha1clientset "github.com/projectriff/system/pkg/client/clientset/versioned/typed/knative/v1alpha1"
+	corev1alpha1clientset "github.com/projectriff/system/pkg/client/clientset/versioned/typed/core/v1alpha1"
+	knativev1alpha1clientset "github.com/projectriff/system/pkg/client/clientset/versioned/typed/knative/v1alpha1"
 	streamv1alpha1clientset "github.com/projectriff/system/pkg/client/clientset/versioned/typed/streaming/v1alpha1"
 	apiextensionsv1beta1clientset "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/fake"
 	apiextensionsv1beta1 "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1"
@@ -64,12 +65,16 @@ func (c *FakeClient) Build() buildv1alpha1clientset.BuildV1alpha1Interface {
 	return c.FakeRiffClientset.BuildV1alpha1()
 }
 
-func (c *FakeClient) Request() requestv1alpha1clientset.KnativeV1alpha1Interface {
-	return c.FakeRiffClientset.KnativeV1alpha1()
+func (c *FakeClient) CoreRuntime() corev1alpha1clientset.CoreV1alpha1Interface {
+	return c.FakeRiffClientset.CoreV1alpha1()
 }
 
-func (c *FakeClient) Streaming() streamv1alpha1clientset.StreamingV1alpha1Interface {
+func (c *FakeClient) StreamingRuntime() streamv1alpha1clientset.StreamingV1alpha1Interface {
 	return c.FakeRiffClientset.StreamingV1alpha1()
+}
+
+func (c *FakeClient) KnativeRuntime() knativev1alpha1clientset.KnativeV1alpha1Interface {
+	return c.FakeRiffClientset.KnativeV1alpha1()
 }
 
 func (c *FakeClient) PrependReactor(verb, resource string, reaction ReactionFunc) {

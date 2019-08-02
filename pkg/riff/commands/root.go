@@ -23,6 +23,7 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/projectriff/cli/pkg/cli"
+	corecommands "github.com/projectriff/cli/pkg/core/commands"
 	knativecommands "github.com/projectriff/cli/pkg/knative/commands"
 	streamingcommands "github.com/projectriff/cli/pkg/streaming/commands"
 	"github.com/spf13/cobra"
@@ -47,6 +48,7 @@ func NewRootCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 	cmd.PersistentFlags().BoolVar(&color.NoColor, cli.StripDash(cli.NoColorFlagName), color.NoColor, "disable color output in terminals")
 
 	// add runtimes
+	cmd.AddCommand(corecommands.NewCoreCommand(ctx, c))
 	cmd.AddCommand(streamingcommands.NewStreamingCommand(ctx, c))
 	cmd.AddCommand(knativecommands.NewKnativeCommand(ctx, c))
 

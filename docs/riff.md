@@ -40,6 +40,7 @@ map those streams to function inputs and outputs with processors.
 * [riff application](riff_application.md)	 - applications built from source using application buildpacks
 * [riff completion](riff_completion.md)	 - generate shell completion script
 * [riff container](riff_container.md)	 - containers resolve the latest image
+* [riff core](riff_core.md)	 - core runtime for riff functions and applications
 * [riff credential](riff_credential.md)	 - credentials for container registries
 * [riff doctor](riff_doctor.md)	 - check riff's requirements are installed
 * [riff function](riff_function.md)	 - functions built from source using function buildpacks

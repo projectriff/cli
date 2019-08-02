@@ -44,7 +44,7 @@ func (opts *StreamDeleteOptions) Validate(ctx context.Context) *cli.FieldError {
 }
 
 func (opts *StreamDeleteOptions) Exec(ctx context.Context, c *cli.Config) error {
-	client := c.Streaming().Streams(opts.Namespace)
+	client := c.StreamingRuntime().Streams(opts.Namespace)
 
 	if opts.All {
 		if err := client.DeleteCollection(nil, metav1.ListOptions{}); err != nil {

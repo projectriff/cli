@@ -27,7 +27,7 @@ import (
 	"github.com/projectriff/cli/pkg/parsers"
 	"github.com/projectriff/cli/pkg/race"
 	"github.com/projectriff/cli/pkg/validation"
-	requestv1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
+	knativev1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
 	"github.com/spf13/cobra"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -114,12 +114,12 @@ func (opts *HandlerCreateOptions) Validate(ctx context.Context) *cli.FieldError 
 }
 
 func (opts *HandlerCreateOptions) Exec(ctx context.Context, c *cli.Config) error {
-	handler := &requestv1alpha1.Handler{
+	handler := &knativev1alpha1.Handler{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: opts.Namespace,
 			Name:      opts.Name,
 		},
-		Spec: requestv1alpha1.HandlerSpec{
+		Spec: knativev1alpha1.HandlerSpec{
 			Template: &corev1.PodSpec{
 				Containers: []corev1.Container{{}},
 			},
@@ -127,17 +127,17 @@ func (opts *HandlerCreateOptions) Exec(ctx context.Context, c *cli.Config) error
 	}
 
 	if opts.ApplicationRef != "" {
-		handler.Spec.Build = &requestv1alpha1.Build{
+		handler.Spec.Build = &knativev1alpha1.Build{
 			ApplicationRef: opts.ApplicationRef,
 		}
 	}
 	if opts.ContainerRef != "" {
-		handler.Spec.Build = &requestv1alpha1.Build{
+		handler.Spec.Build = &knativev1alpha1.Build{
 			ContainerRef: opts.ContainerRef,
 		}
 	}
 	if opts.FunctionRef != "" {
-		handler.Spec.Build = &requestv1alpha1.Build{
+		handler.Spec.Build = &knativev1alpha1.Build{
 			FunctionRef: opts.FunctionRef,
 		}
 	}
@@ -162,7 +162,7 @@ func (opts *HandlerCreateOptions) Exec(ctx context.Context, c *cli.Config) error
 		cli.DryRunResource(ctx, handler, handler.GetGroupVersionKind())
 	} else {
 		var err error
-		handler, err = c.Request().Handlers(opts.Namespace).Create(handler)
+		handler, err = c.KnativeRuntime().Handlers(opts.Namespace).Create(handler)
 		if err != nil {
 			return err
 		}
@@ -173,10 +173,10 @@ func (opts *HandlerCreateOptions) Exec(ctx context.Context, c *cli.Config) error
 		timeout, _ := time.ParseDuration(opts.WaitTimeout)
 		err := race.Run(ctx, timeout,
 			func(ctx context.Context) error {
-				return k8s.WaitUntilReady(ctx, c.Request().RESTClient(), "handlers", handler)
+				return k8s.WaitUntilReady(ctx, c.KnativeRuntime().RESTClient(), "handlers", handler)
 			},
 			func(ctx context.Context) error {
-				return c.Kail.HandlerLogs(ctx, handler, cli.TailSinceCreateDefault, c.Stdout)
+				return c.Kail.KnativeHandlerLogs(ctx, handler, cli.TailSinceCreateDefault, c.Stdout)
 			},
 		)
 		if err == context.DeadlineExceeded {
@@ -203,7 +203,7 @@ func NewHandlerCreateCommand(ctx context.Context, c *cli.Config) *cobra.Command 
 		Use:   "create",
 		Short: "create a handler to map HTTP requests to an application, function, container or image",
 		Long: strings.TrimSpace(`
-Create an HTTP request handler.
+Create a knative handler.
 
 There are four way to create a handler:
 - from an application reference

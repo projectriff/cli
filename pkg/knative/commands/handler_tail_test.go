@@ -26,7 +26,7 @@ import (
 	"github.com/projectriff/cli/pkg/knative/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 	kailtesting "github.com/projectriff/cli/pkg/testing/kail"
-	requestv1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
+	knativev1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
 	"github.com/stretchr/testify/mock"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -72,7 +72,7 @@ func TestHandlerTailOptions(t *testing.T) {
 func TestHandlerTailCommand(t *testing.T) {
 	defaultNamespace := "default"
 	handlerName := "my-handler"
-	handler := &requestv1alpha1.Handler{
+	handler := &knativev1alpha1.Handler{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: defaultNamespace,
 			Name:      handlerName,
@@ -91,7 +91,7 @@ func TestHandlerTailCommand(t *testing.T) {
 			Prepare: func(t *testing.T, ctx context.Context, c *cli.Config) (context.Context, error) {
 				kail := &kailtesting.Logger{}
 				c.Kail = kail
-				kail.On("HandlerLogs", mock.Anything, handler, cli.TailSinceDefault, mock.Anything).Return(nil).Run(func(args mock.Arguments) {
+				kail.On("KnativeHandlerLogs", mock.Anything, handler, cli.TailSinceDefault, mock.Anything).Return(nil).Run(func(args mock.Arguments) {
 					fmt.Fprintf(c.Stdout, "...log output...\n")
 				})
 				return ctx, nil
@@ -114,7 +114,7 @@ func TestHandlerTailCommand(t *testing.T) {
 			Prepare: func(t *testing.T, ctx context.Context, c *cli.Config) (context.Context, error) {
 				kail := &kailtesting.Logger{}
 				c.Kail = kail
-				kail.On("HandlerLogs", mock.Anything, handler, time.Hour, mock.Anything).Return(nil).Run(func(args mock.Arguments) {
+				kail.On("KnativeHandlerLogs", mock.Anything, handler, time.Hour, mock.Anything).Return(nil).Run(func(args mock.Arguments) {
 					fmt.Fprintf(c.Stdout, "...log output...\n")
 				})
 				return ctx, nil
@@ -142,7 +142,7 @@ func TestHandlerTailCommand(t *testing.T) {
 			Prepare: func(t *testing.T, ctx context.Context, c *cli.Config) (context.Context, error) {
 				kail := &kailtesting.Logger{}
 				c.Kail = kail
-				kail.On("HandlerLogs", mock.Anything, handler, cli.TailSinceDefault, mock.Anything).Return(fmt.Errorf("kail error"))
+				kail.On("KnativeHandlerLogs", mock.Anything, handler, cli.TailSinceDefault, mock.Anything).Return(fmt.Errorf("kail error"))
 				return ctx, nil
 			},
 			CleanUp: func(t *testing.T, ctx context.Context, c *cli.Config) error {

@@ -3,6 +3,7 @@
 package kail
 
 import context "context"
+import corev1alpha1 "github.com/projectriff/system/pkg/apis/core/v1alpha1"
 import io "io"
 
 import knativev1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
@@ -30,6 +31,20 @@ func (_m *Logger) ApplicationLogs(ctx context.Context, application *v1alpha1.App
 	return r0
 }
 
+// CoreHandlerLogs provides a mock function with given fields: ctx, handler, since, out
+func (_m *Logger) CoreHandlerLogs(ctx context.Context, handler *corev1alpha1.Handler, since time.Duration, out io.Writer) error {
+	ret := _m.Called(ctx, handler, since, out)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *corev1alpha1.Handler, time.Duration, io.Writer) error); ok {
+		r0 = rf(ctx, handler, since, out)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // FunctionLogs provides a mock function with given fields: ctx, function, since, out
 func (_m *Logger) FunctionLogs(ctx context.Context, function *v1alpha1.Function, since time.Duration, out io.Writer) error {
 	ret := _m.Called(ctx, function, since, out)
@@ -44,8 +59,8 @@ func (_m *Logger) FunctionLogs(ctx context.Context, function *v1alpha1.Function,
 	return r0
 }
 
-// HandlerLogs provides a mock function with given fields: ctx, handler, since, out
-func (_m *Logger) HandlerLogs(ctx context.Context, handler *knativev1alpha1.Handler, since time.Duration, out io.Writer) error {
+// KnativeHandlerLogs provides a mock function with given fields: ctx, handler, since, out
+func (_m *Logger) KnativeHandlerLogs(ctx context.Context, handler *knativev1alpha1.Handler, since time.Duration, out io.Writer) error {
 	ret := _m.Called(ctx, handler, since, out)
 
 	var r0 error
@@ -58,8 +73,8 @@ func (_m *Logger) HandlerLogs(ctx context.Context, handler *knativev1alpha1.Hand
 	return r0
 }
 
-// ProcessorLogs provides a mock function with given fields: ctx, processor, since, out
-func (_m *Logger) ProcessorLogs(ctx context.Context, processor *streamingv1alpha1.Processor, since time.Duration, out io.Writer) error {
+// StreamingProcessorLogs provides a mock function with given fields: ctx, processor, since, out
+func (_m *Logger) StreamingProcessorLogs(ctx context.Context, processor *streamingv1alpha1.Processor, since time.Duration, out io.Writer) error {
 	ret := _m.Called(ctx, processor, since, out)
 
 	var r0 error

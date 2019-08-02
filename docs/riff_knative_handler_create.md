@@ -8,7 +8,7 @@ create a handler to map HTTP requests to an application, function, container or 
 
 ### Synopsis
 
-Create an HTTP request handler.
+Create a knative handler.
 
 There are four way to create a handler:
 - from an application reference

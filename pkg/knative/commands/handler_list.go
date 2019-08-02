@@ -24,7 +24,7 @@ import (
 
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/cli/printers"
-	requestv1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
+	knativev1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	metav1beta1 "k8s.io/apimachinery/pkg/apis/meta/v1beta1"
@@ -49,7 +49,7 @@ func (opts *HandlerListOptions) Validate(ctx context.Context) *cli.FieldError {
 }
 
 func (opts *HandlerListOptions) Exec(ctx context.Context, c *cli.Config) error {
-	handlers, err := c.Request().Handlers(opts.Namespace).List(metav1.ListOptions{})
+	handlers, err := c.KnativeRuntime().Handlers(opts.Namespace).List(metav1.ListOptions{})
 	if err != nil {
 		return err
 	}
@@ -99,7 +99,7 @@ For detail regarding the status of a single handler, run:
 	return cmd
 }
 
-func (opts *HandlerListOptions) printList(handlers *requestv1alpha1.HandlerList, printOpts printers.PrintOptions) ([]metav1beta1.TableRow, error) {
+func (opts *HandlerListOptions) printList(handlers *knativev1alpha1.HandlerList, printOpts printers.PrintOptions) ([]metav1beta1.TableRow, error) {
 	rows := make([]metav1beta1.TableRow, 0, len(handlers.Items))
 	for i := range handlers.Items {
 		r, err := opts.print(&handlers.Items[i], printOpts)
@@ -111,7 +111,7 @@ func (opts *HandlerListOptions) printList(handlers *requestv1alpha1.HandlerList,
 	return rows, nil
 }
 
-func (opts *HandlerListOptions) print(handler *requestv1alpha1.Handler, _ printers.PrintOptions) ([]metav1beta1.TableRow, error) {
+func (opts *HandlerListOptions) print(handler *knativev1alpha1.Handler, _ printers.PrintOptions) ([]metav1beta1.TableRow, error) {
 	now := time.Now()
 	row := metav1beta1.TableRow{
 		Object: runtime.RawExtension{Object: handler},
@@ -126,7 +126,7 @@ func (opts *HandlerListOptions) print(handler *requestv1alpha1.Handler, _ printe
 		refType,
 		refValue,
 		cli.FormatEmptyString(host),
-		cli.FormatConditionStatus(handler.Status.GetCondition(requestv1alpha1.HandlerConditionReady)),
+		cli.FormatConditionStatus(handler.Status.GetCondition(knativev1alpha1.HandlerConditionReady)),
 		cli.FormatTimestampSince(handler.CreationTimestamp, now),
 	)
 	return []metav1beta1.TableRow{row}, nil
@@ -143,13 +143,16 @@ func (opts *HandlerListOptions) printColumns() []metav1beta1.TableColumnDefiniti
 	}
 }
 
-func (opts *HandlerListOptions) formatRef(handler *requestv1alpha1.Handler) (string, string) {
+func (opts *HandlerListOptions) formatRef(handler *knativev1alpha1.Handler) (string, string) {
 	if handler.Spec.Build != nil {
 		if handler.Spec.Build.ApplicationRef != "" {
 			return "application", handler.Spec.Build.ApplicationRef
 		}
 		if handler.Spec.Build.FunctionRef != "" {
 			return "function", handler.Spec.Build.FunctionRef
+		}
+		if handler.Spec.Build.ContainerRef != "" {
+			return "container", handler.Spec.Build.ContainerRef
 		}
 	} else if handler.Spec.Template != nil && handler.Spec.Template.Containers[0].Image != "" {
 		return "image", handler.Spec.Template.Containers[0].Image

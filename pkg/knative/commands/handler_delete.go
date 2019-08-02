@@ -44,7 +44,7 @@ func (opts *HandlerDeleteOptions) Validate(ctx context.Context) *cli.FieldError 
 }
 
 func (opts *HandlerDeleteOptions) Exec(ctx context.Context, c *cli.Config) error {
-	client := c.Request().Handlers(opts.Namespace)
+	client := c.KnativeRuntime().Handlers(opts.Namespace)
 
 	if opts.All {
 		if err := client.DeleteCollection(nil, metav1.ListOptions{}); err != nil {
@@ -79,7 +79,7 @@ handler.
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s knative handler delete my-handler", c.Name),
-			fmt.Sprintf("%s knative handler delete %s ", c.Name, cli.AllFlagName),
+			fmt.Sprintf("%s knative handler delete %s", c.Name, cli.AllFlagName),
 		}, "\n"),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),

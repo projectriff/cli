@@ -53,7 +53,7 @@ func (opts *ProcessorTailOptions) Validate(ctx context.Context) *cli.FieldError 
 }
 
 func (opts *ProcessorTailOptions) Exec(ctx context.Context, c *cli.Config) error {
-	processor, err := c.Streaming().Processors(opts.Namespace).Get(opts.Name, metav1.GetOptions{})
+	processor, err := c.StreamingRuntime().Processors(opts.Namespace).Get(opts.Name, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}
@@ -62,7 +62,7 @@ func (opts *ProcessorTailOptions) Exec(ctx context.Context, c *cli.Config) error
 		// error is protected by Validate()
 		since, _ = time.ParseDuration(opts.Since)
 	}
-	return c.Kail.ProcessorLogs(ctx, processor, since, c.Stdout)
+	return c.Kail.StreamingProcessorLogs(ctx, processor, since, c.Stdout)
 }
 
 func NewProcessorTailCommand(ctx context.Context, c *cli.Config) *cobra.Command {

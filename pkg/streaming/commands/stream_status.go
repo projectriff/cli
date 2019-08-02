@@ -46,7 +46,7 @@ func (opts *StreamStatusOptions) Validate(ctx context.Context) *cli.FieldError {
 }
 
 func (opts *StreamStatusOptions) Exec(ctx context.Context, c *cli.Config) error {
-	stream, err := c.Streaming().Streams(opts.Namespace).Get(opts.Name, metav1.GetOptions{})
+	stream, err := c.StreamingRuntime().Streams(opts.Namespace).Get(opts.Name, metav1.GetOptions{})
 	if err != nil {
 		if !apierrs.IsNotFound(err) {
 			return err

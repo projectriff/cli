@@ -25,7 +25,7 @@ import (
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/knative/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
-	requestv1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
+	knativev1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -80,7 +80,7 @@ No handlers found.
 			Name: "lists an item",
 			Args: []string{},
 			GivenObjects: []runtime.Object{
-				&requestv1alpha1.Handler{
+				&knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      handlerName,
 						Namespace: defaultNamespace,
@@ -96,7 +96,7 @@ test-handler   <unknown>   <unknown>   <empty>   <unknown>   <unknown>
 			Name: "filters by namespace",
 			Args: []string{cli.NamespaceFlagName, otherNamespace},
 			GivenObjects: []runtime.Object{
-				&requestv1alpha1.Handler{
+				&knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      handlerName,
 						Namespace: defaultNamespace,
@@ -111,13 +111,13 @@ No handlers found.
 			Name: "all namespace",
 			Args: []string{cli.AllNamespacesFlagName},
 			GivenObjects: []runtime.Object{
-				&requestv1alpha1.Handler{
+				&knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      handlerName,
 						Namespace: defaultNamespace,
 					},
 				},
-				&requestv1alpha1.Handler{
+				&knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      handlerOtherName,
 						Namespace: otherNamespace,
@@ -134,41 +134,41 @@ other-namespace   test-other-handler   <unknown>   <unknown>   <empty>   <unknow
 			Name: "table populates all columns",
 			Args: []string{},
 			GivenObjects: []runtime.Object{
-				&requestv1alpha1.Handler{
+				&knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "img",
 						Namespace: defaultNamespace,
 					},
-					Spec: requestv1alpha1.HandlerSpec{
+					Spec: knativev1alpha1.HandlerSpec{
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{
 								{Image: "projectriff/upper"},
 							},
 						},
 					},
-					Status: requestv1alpha1.HandlerStatus{
+					Status: knativev1alpha1.HandlerStatus{
 						Status: duckv1beta1.Status{
 							Conditions: duckv1beta1.Conditions{
-								{Type: requestv1alpha1.HandlerConditionReady, Status: "True"},
+								{Type: knativev1alpha1.HandlerConditionReady, Status: "True"},
 							},
 						},
 						URL: &apis.URL{
-							Host: "image.default.example.com",
+							Host: "img.default.example.com",
 						},
 					},
 				},
-				&requestv1alpha1.Handler{
+				&knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "app",
 						Namespace: defaultNamespace,
 					},
-					Spec: requestv1alpha1.HandlerSpec{
-						Build: &requestv1alpha1.Build{ApplicationRef: "petclinic"},
+					Spec: knativev1alpha1.HandlerSpec{
+						Build: &knativev1alpha1.Build{ApplicationRef: "petclinic"},
 					},
-					Status: requestv1alpha1.HandlerStatus{
+					Status: knativev1alpha1.HandlerStatus{
 						Status: duckv1beta1.Status{
 							Conditions: duckv1beta1.Conditions{
-								{Type: requestv1alpha1.HandlerConditionReady, Status: "True"},
+								{Type: knativev1alpha1.HandlerConditionReady, Status: "True"},
 							},
 						},
 						URL: &apis.URL{
@@ -176,18 +176,18 @@ other-namespace   test-other-handler   <unknown>   <unknown>   <empty>   <unknow
 						},
 					},
 				},
-				&requestv1alpha1.Handler{
+				&knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "func",
 						Namespace: defaultNamespace,
 					},
-					Spec: requestv1alpha1.HandlerSpec{
-						Build: &requestv1alpha1.Build{FunctionRef: "square"},
+					Spec: knativev1alpha1.HandlerSpec{
+						Build: &knativev1alpha1.Build{FunctionRef: "square"},
 					},
-					Status: requestv1alpha1.HandlerStatus{
+					Status: knativev1alpha1.HandlerStatus{
 						Status: duckv1beta1.Status{
 							Conditions: duckv1beta1.Conditions{
-								{Type: requestv1alpha1.HandlerConditionReady, Status: "True"},
+								{Type: knativev1alpha1.HandlerConditionReady, Status: "True"},
 							},
 						},
 						URL: &apis.URL{
@@ -195,12 +195,32 @@ other-namespace   test-other-handler   <unknown>   <unknown>   <empty>   <unknow
 						},
 					},
 				},
+				&knativev1alpha1.Handler{
+					ObjectMeta: metav1.ObjectMeta{
+						Name:      "container",
+						Namespace: defaultNamespace,
+					},
+					Spec: knativev1alpha1.HandlerSpec{
+						Build: &knativev1alpha1.Build{ContainerRef: "busybox"},
+					},
+					Status: knativev1alpha1.HandlerStatus{
+						Status: duckv1beta1.Status{
+							Conditions: duckv1beta1.Conditions{
+								{Type: knativev1alpha1.HandlerConditionReady, Status: "True"},
+							},
+						},
+						URL: &apis.URL{
+							Host: "container.default.example.com",
+						},
+					},
+				},
 			},
 			ExpectOutput: `
-NAME   TYPE          REF                 HOST                        STATUS   AGE
-app    application   petclinic           app.default.example.com     Ready    <unknown>
-func   function      square              func.default.example.com    Ready    <unknown>
-img    image         projectriff/upper   image.default.example.com   Ready    <unknown>
+NAME        TYPE          REF                 HOST                            STATUS   AGE
+app         application   petclinic           app.default.example.com         Ready    <unknown>
+container   container     busybox             container.default.example.com   Ready    <unknown>
+func        function      square              func.default.example.com        Ready    <unknown>
+img         image         projectriff/upper   img.default.example.com         Ready    <unknown>
 `,
 		},
 		{

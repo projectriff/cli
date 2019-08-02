@@ -49,7 +49,7 @@ func (opts *StreamListOptions) Validate(ctx context.Context) *cli.FieldError {
 }
 
 func (opts *StreamListOptions) Exec(ctx context.Context, c *cli.Config) error {
-	streams, err := c.Streaming().Streams(opts.Namespace).List(metav1.ListOptions{})
+	streams, err := c.StreamingRuntime().Streams(opts.Namespace).List(metav1.ListOptions{})
 	if err != nil {
 		return err
 	}

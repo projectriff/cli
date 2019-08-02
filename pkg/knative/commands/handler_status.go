@@ -22,7 +22,7 @@ import (
 	"strings"
 
 	"github.com/projectriff/cli/pkg/cli"
-	requestv1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
+	knativev1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
 	"github.com/spf13/cobra"
 	apierrs "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -46,7 +46,7 @@ func (opts *HandlerStatusOptions) Validate(ctx context.Context) *cli.FieldError 
 }
 
 func (opts *HandlerStatusOptions) Exec(ctx context.Context, c *cli.Config) error {
-	handler, err := c.Request().Handlers(opts.Namespace).Get(opts.Name, metav1.GetOptions{})
+	handler, err := c.KnativeRuntime().Handlers(opts.Namespace).Get(opts.Name, metav1.GetOptions{})
 	if err != nil {
 		if !apierrs.IsNotFound(err) {
 			return err
@@ -55,7 +55,7 @@ func (opts *HandlerStatusOptions) Exec(ctx context.Context, c *cli.Config) error
 		return cli.SilenceError(err)
 	}
 
-	ready := handler.Status.GetCondition(requestv1alpha1.HandlerConditionReady)
+	ready := handler.Status.GetCondition(knativev1alpha1.HandlerConditionReady)
 	cli.PrintResourceStatus(c, handler.Name, ready)
 
 	return nil

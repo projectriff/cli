@@ -24,7 +24,7 @@ import (
 	duckv1beta1 "github.com/knative/pkg/apis/duck/v1beta1"
 	"github.com/projectriff/cli/pkg/knative/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
-	requestv1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
+	knativev1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -65,12 +65,12 @@ func TestHandlerStatusCommand(t *testing.T) {
 			Name: "show status",
 			Args: []string{handlerName},
 			GivenObjects: []runtime.Object{
-				&requestv1alpha1.Handler{
+				&knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      handlerName,
 						Namespace: defaultNamespace,
 					},
-					Status: requestv1alpha1.HandlerStatus{
+					Status: knativev1alpha1.HandlerStatus{
 						Status: duckv1beta1.Status{
 							Conditions: duckv1beta1.Conditions{
 								{
@@ -111,12 +111,12 @@ Handler "default/my-handler" not found
 			Name: "get error",
 			Args: []string{handlerName},
 			GivenObjects: []runtime.Object{
-				&requestv1alpha1.Handler{
+				&knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      handlerName,
 						Namespace: defaultNamespace,
 					},
-					Status: requestv1alpha1.HandlerStatus{
+					Status: knativev1alpha1.HandlerStatus{
 						Status: duckv1beta1.Status{
 							Conditions: duckv1beta1.Conditions{
 								{
