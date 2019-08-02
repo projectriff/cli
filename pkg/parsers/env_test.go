@@ -87,7 +87,7 @@ func TestEnvVarFrom(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			expected := test.expected
-			actual := parsers.EnvVarFrom(test.value)
+			actual := parsers.EnvVarValueFrom(test.value)
 			if diff := cmp.Diff(expected, actual); diff != "" {
 				t.Errorf("%s() = (-expected, +actual): %s", test.name, diff)
 			}

@@ -107,31 +107,85 @@ func TestHandlerCreateOptions(t *testing.T) {
 			ExpectFieldError: cli.ErrInvalidArrayValue("=foo", cli.EnvFlagName, 0),
 		},
 		{
-			Name: "with envfrom secret",
+			Name: "with env-value-from secret",
 			Options: &commands.HandlerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
-				EnvFrom:         []string{"VAR1=secretKeyRef:name:key"},
+				EnvValueFrom:    []string{"VAR1=secretKeyRef:name:key"},
 			},
 			ShouldValidate: true,
 		},
 		{
-			Name: "with envfrom configmap",
+			Name: "with env-value-from configmap",
 			Options: &commands.HandlerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
-				EnvFrom:         []string{"VAR1=configMapKeyRef:name:key"},
+				EnvValueFrom:    []string{"VAR1=configMapKeyRef:name:key"},
 			},
 			ShouldValidate: true,
 		},
 		{
-			Name: "with invalid envfrom",
+			Name: "with invalid env-value-from",
 			Options: &commands.HandlerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
-				EnvFrom:         []string{"VAR1=someOtherKeyRef:name:key"},
+				EnvValueFrom:    []string{"VAR1=someOtherKeyRef:name:key"},
 			},
-			ExpectFieldError: cli.ErrInvalidArrayValue("VAR1=someOtherKeyRef:name:key", cli.EnvFromFlagName, 0),
+			ExpectFieldError: cli.ErrInvalidArrayValue("VAR1=someOtherKeyRef:name:key", cli.EnvValueFromFlagName, 0),
+		},
+		{
+			Name: "with env-from-source secret",
+			Options: &commands.HandlerCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Image:           "example.com/repo:tag",
+				EnvFromSource:   []string{"secretRef:name"},
+			},
+			ShouldValidate: true,
+		},
+		{
+			Name: "with env-from-source secret with prefix",
+			Options: &commands.HandlerCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Image:           "example.com/repo:tag",
+				EnvFromSource:   []string{"prefix:secretRef:name"},
+			},
+			ShouldValidate: true,
+		},
+		{
+			Name: "with env-from-source configmap",
+			Options: &commands.HandlerCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Image:           "example.com/repo:tag",
+				EnvFromSource:   []string{"configMapRef:name"},
+			},
+			ShouldValidate: true,
+		},
+		{
+			Name: "with env-from-source configmap with prefix",
+			Options: &commands.HandlerCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Image:           "example.com/repo:tag",
+				EnvFromSource:   []string{"prefix:configMapRef:name"},
+			},
+			ShouldValidate: true,
+		},
+		{
+			Name: "with invalid env-from-source wrong ref type",
+			Options: &commands.HandlerCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Image:           "example.com/repo:tag",
+				EnvFromSource:   []string{"someOtherRef:name"},
+			},
+			ExpectFieldError: cli.ErrInvalidArrayValue("someOtherRef:name", cli.EnvFromSourceFlagName, 0),
+		},
+		{
+			Name: "with invalid env-from-source no secret name",
+			Options: &commands.HandlerCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Image:           "example.com/repo:tag",
+				EnvFromSource:   []string{"prefix:secretRef"},
+			},
+			ExpectFieldError: cli.ErrInvalidArrayValue("prefix:secretRef", cli.EnvFromSourceFlagName, 0),
 		},
 		{
 			Name: "with tail",
@@ -200,8 +254,10 @@ func TestHandlerCreateCommand(t *testing.T) {
 	envNameOther := "MY_VAR_OTHER"
 	envValueOther := "my-value-other"
 	envVarOther := fmt.Sprintf("%s=%s", envNameOther, envValueOther)
-	envVarFromConfigMap := "MY_VAR_FROM_CONFIGMAP=configMapKeyRef:my-configmap:my-key"
-	envVarFromSecret := "MY_VAR_FROM_SECRET=secretKeyRef:my-secret:my-key"
+	envVarValueFromConfigMap := "MY_VAR_FROM_CONFIGMAP=configMapKeyRef:my-configmap:my-key"
+	envVarValueFromSecret := "MY_VAR_FROM_SECRET=secretKeyRef:my-secret:my-key"
+	envVarFromConfigMap := "configMapRef:my-configmap"
+	envVarFromSecretWithPrefix := "prefix-:secretRef:my-secret"
 
 	table := rifftesting.CommandTable{
 		{
@@ -314,8 +370,8 @@ Created handler "my-handler"
 `,
 		},
 		{
-			Name: "create from image with env and env-from",
-			Args: []string{handlerName, cli.ImageFlagName, image, cli.EnvFlagName, envVar, cli.EnvFlagName, envVarOther, cli.EnvFromFlagName, envVarFromConfigMap, cli.EnvFromFlagName, envVarFromSecret},
+			Name: "create from image with env, env-value-from and enf-from-source",
+			Args: []string{handlerName, cli.ImageFlagName, image, cli.EnvFlagName, envVar, cli.EnvFlagName, envVarOther, cli.EnvValueFromFlagName, envVarValueFromConfigMap, cli.EnvValueFromFlagName, envVarValueFromSecret, cli.EnvFromSourceFlagName, envVarFromConfigMap, cli.EnvFromSourceFlagName, envVarFromSecretWithPrefix},
 			ExpectCreates: []runtime.Object{
 				&corev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
@@ -349,6 +405,23 @@ Created handler "my-handler"
 														Name: "my-secret",
 													},
 													Key: "my-key",
+												},
+											},
+										},
+									},
+									EnvFrom: []corev1.EnvFromSource{
+										{
+											ConfigMapRef: &corev1.ConfigMapEnvSource{
+												LocalObjectReference: corev1.LocalObjectReference{
+													Name: "my-configmap",
+												},
+											},
+										},
+										{
+											Prefix: "prefix-",
+											SecretRef: &corev1.SecretEnvSource{
+												LocalObjectReference: corev1.LocalObjectReference{
+													Name: "my-secret",
 												},
 											},
 										},

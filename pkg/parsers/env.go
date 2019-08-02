@@ -31,15 +31,15 @@ func EnvVar(str string) corev1.EnvVar {
 	}
 }
 
-func EnvVarFrom(str string) corev1.EnvVar {
+func EnvVarValueFrom(str string) corev1.EnvVar {
 	parts := strings.SplitN(str, "=", 2)
 	source := strings.SplitN(parts[1], ":", 3)
 
-	envvar := corev1.EnvVar{
+	envVar := corev1.EnvVar{
 		Name: parts[0],
 	}
 	if source[0] == "secretKeyRef" {
-		envvar.ValueFrom = &corev1.EnvVarSource{
+		envVar.ValueFrom = &corev1.EnvVarSource{
 			SecretKeyRef: &corev1.SecretKeySelector{
 				LocalObjectReference: corev1.LocalObjectReference{
 					Name: source[1],
@@ -49,7 +49,7 @@ func EnvVarFrom(str string) corev1.EnvVar {
 		}
 	}
 	if source[0] == "configMapKeyRef" {
-		envvar.ValueFrom = &corev1.EnvVarSource{
+		envVar.ValueFrom = &corev1.EnvVarSource{
 			ConfigMapKeyRef: &corev1.ConfigMapKeySelector{
 				LocalObjectReference: corev1.LocalObjectReference{
 					Name: source[1],
@@ -59,5 +59,44 @@ func EnvVarFrom(str string) corev1.EnvVar {
 		}
 	}
 
-	return envvar
+	return envVar
+}
+
+func EnvFromSource(str string) corev1.EnvFromSource {
+	refType := ""
+	refName := ""
+	prefix := ""
+	parts := strings.SplitN(str, ":", 3)
+	switch len(parts) {
+	case 2:
+		prefix = ""
+		refType = parts[0]
+		refName = parts[1]
+	case 3:
+		prefix = parts[0]
+		refType = parts[1]
+		refName = parts[2]
+	}
+
+	envFromSource := corev1.EnvFromSource{}
+	if refType == "secretRef" {
+		envFromSource.SecretRef = &corev1.SecretEnvSource{
+			LocalObjectReference: corev1.LocalObjectReference{
+				Name: refName,
+			},
+		}
+	}
+	if refType == "configMapRef" {
+		envFromSource.ConfigMapRef = &corev1.ConfigMapEnvSource{
+			LocalObjectReference: corev1.LocalObjectReference{
+				Name: refName,
+			},
+		}
+	}
+
+	if prefix != "" {
+		envFromSource.Prefix = prefix
+	}
+
+	return envFromSource
 }

@@ -129,7 +129,7 @@ func TestEnvVarFrom(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			expected := test.expected
-			actual := validation.EnvVarFrom(test.value, rifftesting.TestField)
+			actual := validation.EnvVarValueFrom(test.value, rifftesting.TestField)
 			if diff := rifftesting.DiffFieldErrors(expected, actual); diff != "" {
 				t.Errorf("%s() = (-expected, +actual): %s", test.name, diff)
 			}
@@ -166,7 +166,7 @@ func TestEnvVarFroms(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			expected := test.expected
-			actual := validation.EnvVarFroms(test.values, rifftesting.TestField)
+			actual := validation.EnvVarValueFroms(test.values, rifftesting.TestField)
 			if diff := rifftesting.DiffFieldErrors(expected, actual); diff != "" {
 				t.Errorf("%s() = (-expected, +actual): %s", test.name, diff)
 			}

@@ -42,7 +42,7 @@ func EnvVars(envs []string, field string) *apis.FieldError {
 	return errs
 }
 
-func EnvVarFrom(env, field string) *apis.FieldError {
+func EnvVarValueFrom(env, field string) *apis.FieldError {
 	errs := &apis.FieldError{}
 
 	parts := strings.SplitN(env, "=", 2)
@@ -62,11 +62,46 @@ func EnvVarFrom(env, field string) *apis.FieldError {
 	return errs
 }
 
-func EnvVarFroms(envs []string, field string) *apis.FieldError {
+func EnvVarValueFroms(envs []string, field string) *apis.FieldError {
 	errs := &apis.FieldError{}
 
 	for i, env := range envs {
-		errs = errs.Also(EnvVarFrom(env, apis.CurrentField).ViaFieldIndex(field, i))
+		errs = errs.Also(EnvVarValueFrom(env, apis.CurrentField).ViaFieldIndex(field, i))
+	}
+
+	return errs
+}
+
+func EnvFromSource(env, field string) *apis.FieldError {
+	errs := &apis.FieldError{}
+
+	parts := strings.SplitN(env, ":", 3)
+	if len(parts) < 2 || len(parts) > 3 {
+		errs = errs.Also(apis.ErrInvalidValue(env, field))
+	} else {
+		if len(parts) == 3 {
+			if parts[1] != "configMapRef" && parts[1] != "secretRef" {
+				errs = errs.Also(apis.ErrInvalidValue(env, field))
+			} else if len(parts[2]) < 1 {
+				errs = errs.Also(apis.ErrInvalidValue(env, field))
+			}
+		} else if len(parts) == 2 {
+			if parts[0] != "configMapRef" && parts[0] != "secretRef" {
+				errs = errs.Also(apis.ErrInvalidValue(env, field))
+			} else if len(parts[1]) < 1 {
+				errs = errs.Also(apis.ErrInvalidValue(env, field))
+			}
+		}
+	}
+
+	return errs
+}
+
+func EnvFromSources(envs []string, field string) *apis.FieldError {
+	errs := &apis.FieldError{}
+
+	for i, env := range envs {
+		errs = errs.Also(EnvFromSource(env, apis.CurrentField).ViaFieldIndex(field, i))
 	}
 
 	return errs
