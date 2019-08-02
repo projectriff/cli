@@ -53,6 +53,7 @@ The hostname to access the handler is available in the handler listing.
 	cmd.AddCommand(NewHandlerDeleteCommand(ctx, c))
 	cmd.AddCommand(NewHandlerStatusCommand(ctx, c))
 	cmd.AddCommand(NewHandlerTailCommand(ctx, c))
+	cmd.AddCommand(NewHandlerInvokeCommand(ctx, c))
 
 	return cmd
 }
