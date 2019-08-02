@@ -257,7 +257,7 @@ func TestHandlerCreateCommand(t *testing.T) {
 	envVarValueFromConfigMap := "MY_VAR_FROM_CONFIGMAP=configMapKeyRef:my-configmap:my-key"
 	envVarValueFromSecret := "MY_VAR_FROM_SECRET=secretKeyRef:my-secret:my-key"
 	envVarFromConfigMap := "configMapRef:my-configmap"
-	envVarFromSecretWithPrefix := "prefix-:secretRef:my-secret"
+	envVarFromSecretWithPrefix := "PREFIX_:secretRef:my-secret"
 
 	table := rifftesting.CommandTable{
 		{
@@ -418,7 +418,7 @@ Created handler "my-handler"
 											},
 										},
 										{
-											Prefix: "prefix-",
+											Prefix: "PREFIX_",
 											SecretRef: &corev1.SecretEnvSource{
 												LocalObjectReference: corev1.LocalObjectReference{
 													Name: "my-secret",
