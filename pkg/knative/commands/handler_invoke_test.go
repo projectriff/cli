@@ -28,7 +28,7 @@ import (
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/knative/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
-	requestv1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
+	knativev1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -86,15 +86,15 @@ func TestHandlerInvokeCommand(t *testing.T) {
 	handlerName := "test-handler"
 	defaultNamespace := "default"
 
-	handler := &requestv1alpha1.Handler{
+	handler := &knativev1alpha1.Handler{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: defaultNamespace,
 			Name:      handlerName,
 		},
-		Status: requestv1alpha1.HandlerStatus{
+		Status: knativev1alpha1.HandlerStatus{
 			Status: duckv1beta1.Status{
 				Conditions: duckv1beta1.Conditions{
-					{Type: requestv1alpha1.HandlerConditionReady, Status: "True"},
+					{Type: knativev1alpha1.HandlerConditionReady, Status: "True"},
 				},
 			},
 			URL: &apis.URL{
@@ -311,12 +311,12 @@ Command executed: curl localhost -H 'Host: test-handler.example.com' -w '` + "\n
 			Name: "handler not ready",
 			Args: []string{handlerName},
 			GivenObjects: []runtime.Object{
-				&requestv1alpha1.Handler{
+				&knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      handlerName,
 					},
-					Status: requestv1alpha1.HandlerStatus{
+					Status: knativev1alpha1.HandlerStatus{
 						URL: &apis.URL{
 							Host: fmt.Sprintf("%s.example.com", handlerName),
 						},
@@ -330,15 +330,15 @@ Command executed: curl localhost -H 'Host: test-handler.example.com' -w '` + "\n
 			Name: "handler missing domain",
 			Args: []string{handlerName},
 			GivenObjects: []runtime.Object{
-				&requestv1alpha1.Handler{
+				&knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      handlerName,
 					},
-					Status: requestv1alpha1.HandlerStatus{
+					Status: knativev1alpha1.HandlerStatus{
 						Status: duckv1beta1.Status{
 							Conditions: duckv1beta1.Conditions{
-								{Type: requestv1alpha1.HandlerConditionReady, Status: "True"},
+								{Type: knativev1alpha1.HandlerConditionReady, Status: "True"},
 							},
 						},
 					},

@@ -29,8 +29,10 @@ import (
 	"github.com/projectriff/cli/pkg/k8s"
 	"github.com/projectriff/system/pkg/apis/build"
 	buildv1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
+	"github.com/projectriff/system/pkg/apis/core"
+	corev1alpha1 "github.com/projectriff/system/pkg/apis/core/v1alpha1"
 	"github.com/projectriff/system/pkg/apis/knative"
-	requestv1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
+	knativev1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
 	"github.com/projectriff/system/pkg/apis/streaming"
 	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -40,8 +42,9 @@ import (
 type Logger interface {
 	ApplicationLogs(ctx context.Context, application *buildv1alpha1.Application, since time.Duration, out io.Writer) error
 	FunctionLogs(ctx context.Context, function *buildv1alpha1.Function, since time.Duration, out io.Writer) error
-	HandlerLogs(ctx context.Context, handler *requestv1alpha1.Handler, since time.Duration, out io.Writer) error
-	ProcessorLogs(ctx context.Context, processor *streamv1alpha1.Processor, since time.Duration, out io.Writer) error
+	CoreHandlerLogs(ctx context.Context, handler *corev1alpha1.Handler, since time.Duration, out io.Writer) error
+	StreamingProcessorLogs(ctx context.Context, processor *streamv1alpha1.Processor, since time.Duration, out io.Writer) error
+	KnativeHandlerLogs(ctx context.Context, handler *knativev1alpha1.Handler, since time.Duration, out io.Writer) error
 }
 
 func NewDefault(k8s k8s.Client) Logger {
@@ -72,22 +75,31 @@ func (c *logger) FunctionLogs(ctx context.Context, function *buildv1alpha1.Funct
 	return c.stream(ctx, function.Namespace, selector, containers, since, out)
 }
 
-func (c *logger) HandlerLogs(ctx context.Context, handler *requestv1alpha1.Handler, since time.Duration, out io.Writer) error {
-	selector, err := labels.Parse(fmt.Sprintf("%s=%s", knative.HandlerLabelKey, handler.Name))
+func (c *logger) CoreHandlerLogs(ctx context.Context, handler *corev1alpha1.Handler, since time.Duration, out io.Writer) error {
+	selector, err := labels.Parse(fmt.Sprintf("%s=%s", core.HandlerLabelKey, handler.Name))
 	if err != nil {
 		panic(err)
 	}
-	containers := []string{"user-container"}
+	containers := []string{}
 	return c.stream(ctx, handler.Namespace, selector, containers, since, out)
 }
 
-func (c *logger) ProcessorLogs(ctx context.Context, processor *streamv1alpha1.Processor, since time.Duration, out io.Writer) error {
+func (c *logger) StreamingProcessorLogs(ctx context.Context, processor *streamv1alpha1.Processor, since time.Duration, out io.Writer) error {
 	selector, err := labels.Parse(fmt.Sprintf("%s=%s", streaming.ProcessorLabelKey, processor.Name))
 	if err != nil {
 		panic(err)
 	}
 	containers := []string{"function", "processor"}
 	return c.stream(ctx, processor.Namespace, selector, containers, since, out)
+}
+
+func (c *logger) KnativeHandlerLogs(ctx context.Context, handler *knativev1alpha1.Handler, since time.Duration, out io.Writer) error {
+	selector, err := labels.Parse(fmt.Sprintf("%s=%s", knative.HandlerLabelKey, handler.Name))
+	if err != nil {
+		panic(err)
+	}
+	containers := []string{"user-container"}
+	return c.stream(ctx, handler.Namespace, selector, containers, since, out)
 }
 
 func (c *logger) stream(ctx context.Context, namespace string, selector labels.Selector, containers []string, since time.Duration, out io.Writer) error {

@@ -291,7 +291,7 @@ Created processor "my-processor"
 
 				kail := &kailtesting.Logger{}
 				c.Kail = kail
-				kail.On("ProcessorLogs", mock.Anything, &streamv1alpha1.Processor{
+				kail.On("StreamingProcessorLogs", mock.Anything, &streamv1alpha1.Processor{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      processorName,
@@ -342,7 +342,7 @@ Created processor "my-processor"
 
 				kail := &kailtesting.Logger{}
 				c.Kail = kail
-				kail.On("ProcessorLogs", mock.Anything, &streamv1alpha1.Processor{
+				kail.On("StreamingProcessorLogs", mock.Anything, &streamv1alpha1.Processor{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      processorName,
@@ -405,7 +405,7 @@ To continue watching logs run: riff processor tail my-processor --namespace defa
 
 				kail := &kailtesting.Logger{}
 				c.Kail = kail
-				kail.On("ProcessorLogs", mock.Anything, &streamv1alpha1.Processor{
+				kail.On("StreamingProcessorLogs", mock.Anything, &streamv1alpha1.Processor{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      processorName,

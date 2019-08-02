@@ -22,7 +22,7 @@ import (
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/knative/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
-	requestv1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
+	knativev1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
@@ -63,7 +63,7 @@ func TestHandlerDeleteCommand(t *testing.T) {
 			Name: "delete all handlers",
 			Args: []string{cli.AllFlagName},
 			GivenObjects: []runtime.Object{
-				&requestv1alpha1.Handler{
+				&knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      handlerName,
 						Namespace: defaultNamespace,
@@ -83,7 +83,7 @@ Deleted handlers in namespace "default"
 			Name: "delete all handlers error",
 			Args: []string{cli.AllFlagName},
 			GivenObjects: []runtime.Object{
-				&requestv1alpha1.Handler{
+				&knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      handlerName,
 						Namespace: defaultNamespace,
@@ -104,7 +104,7 @@ Deleted handlers in namespace "default"
 			Name: "delete handler",
 			Args: []string{handlerName},
 			GivenObjects: []runtime.Object{
-				&requestv1alpha1.Handler{
+				&knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      handlerName,
 						Namespace: defaultNamespace,
@@ -125,13 +125,13 @@ Deleted handler "test-handler"
 			Name: "delete handlers",
 			Args: []string{handlerName, handlerOtherName},
 			GivenObjects: []runtime.Object{
-				&requestv1alpha1.Handler{
+				&knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      handlerName,
 						Namespace: defaultNamespace,
 					},
 				},
-				&requestv1alpha1.Handler{
+				&knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      handlerOtherName,
 						Namespace: defaultNamespace,
@@ -169,7 +169,7 @@ Deleted handler "test-other-handler"
 			Name: "delete error",
 			Args: []string{handlerName},
 			GivenObjects: []runtime.Object{
-				&requestv1alpha1.Handler{
+				&knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      handlerName,
 						Namespace: defaultNamespace,

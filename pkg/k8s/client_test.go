@@ -43,10 +43,13 @@ func TestNewClient(t *testing.T) {
 	if client.Build() == nil {
 		t.Errorf("Expected Build client to not be nil")
 	}
-	if client.Request() == nil {
-		t.Errorf("Expected Request client to not be nil")
+	if client.CoreRuntime() == nil {
+		t.Errorf("Expected CoreRuntime client to not be nil")
 	}
-	if client.Streaming() == nil {
-		t.Errorf("Expected Streaming client to not be nil")
+	if client.StreamingRuntime() == nil {
+		t.Errorf("Expected StreamingRuntime client to not be nil")
+	}
+	if client.KnativeRuntime() == nil {
+		t.Errorf("Expected KnativeRuntime client to not be nil")
 	}
 }

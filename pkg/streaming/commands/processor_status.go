@@ -46,7 +46,7 @@ func (opts *ProcessorStatusOptions) Validate(ctx context.Context) *cli.FieldErro
 }
 
 func (opts *ProcessorStatusOptions) Exec(ctx context.Context, c *cli.Config) error {
-	processor, err := c.Streaming().Processors(opts.Namespace).Get(opts.Name, metav1.GetOptions{})
+	processor, err := c.StreamingRuntime().Processors(opts.Namespace).Get(opts.Name, metav1.GetOptions{})
 	if err != nil {
 		if !apierrs.IsNotFound(err) {
 			return err

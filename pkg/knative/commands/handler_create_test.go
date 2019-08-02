@@ -26,7 +26,7 @@ import (
 	"github.com/projectriff/cli/pkg/knative/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 	kailtesting "github.com/projectriff/cli/pkg/testing/kail"
-	requestv1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
+	knativev1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
 	"github.com/stretchr/testify/mock"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -213,12 +213,12 @@ func TestHandlerCreateCommand(t *testing.T) {
 			Name: "create from image",
 			Args: []string{handlerName, cli.ImageFlagName, image},
 			ExpectCreates: []runtime.Object{
-				&requestv1alpha1.Handler{
+				&knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      handlerName,
 					},
-					Spec: requestv1alpha1.HandlerSpec{
+					Spec: knativev1alpha1.HandlerSpec{
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{
 								{Image: image},
@@ -235,13 +235,13 @@ Created handler "my-handler"
 			Name: "create from application ref",
 			Args: []string{handlerName, cli.ApplicationRefFlagName, applicationRef},
 			ExpectCreates: []runtime.Object{
-				&requestv1alpha1.Handler{
+				&knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      handlerName,
 					},
-					Spec: requestv1alpha1.HandlerSpec{
-						Build: &requestv1alpha1.Build{
+					Spec: knativev1alpha1.HandlerSpec{
+						Build: &knativev1alpha1.Build{
 							ApplicationRef: applicationRef,
 						},
 					},
@@ -255,13 +255,13 @@ Created handler "my-handler"
 			Name: "create from container ref",
 			Args: []string{handlerName, cli.ContainerRefFlagName, containerRef},
 			ExpectCreates: []runtime.Object{
-				&requestv1alpha1.Handler{
+				&knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      handlerName,
 					},
-					Spec: requestv1alpha1.HandlerSpec{
-						Build: &requestv1alpha1.Build{
+					Spec: knativev1alpha1.HandlerSpec{
+						Build: &knativev1alpha1.Build{
 							ContainerRef: containerRef,
 						},
 					},
@@ -275,13 +275,13 @@ Created handler "my-handler"
 			Name: "create from function ref",
 			Args: []string{handlerName, cli.FunctionRefFlagName, functionRef},
 			ExpectCreates: []runtime.Object{
-				&requestv1alpha1.Handler{
+				&knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      handlerName,
 					},
-					Spec: requestv1alpha1.HandlerSpec{
-						Build: &requestv1alpha1.Build{
+					Spec: knativev1alpha1.HandlerSpec{
+						Build: &knativev1alpha1.Build{
 							FunctionRef: functionRef,
 						},
 					},
@@ -317,12 +317,12 @@ Created handler "my-handler"
 			Name: "create from image with env and env-from",
 			Args: []string{handlerName, cli.ImageFlagName, image, cli.EnvFlagName, envVar, cli.EnvFlagName, envVarOther, cli.EnvFromFlagName, envVarFromConfigMap, cli.EnvFromFlagName, envVarFromSecret},
 			ExpectCreates: []runtime.Object{
-				&requestv1alpha1.Handler{
+				&knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      handlerName,
 					},
-					Spec: requestv1alpha1.HandlerSpec{
+					Spec: knativev1alpha1.HandlerSpec{
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{
 								{
@@ -367,7 +367,7 @@ Created handler "my-handler"
 			Name: "error existing handler",
 			Args: []string{handlerName, cli.ImageFlagName, image},
 			GivenObjects: []runtime.Object{
-				&requestv1alpha1.Handler{
+				&knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      handlerName,
@@ -375,12 +375,12 @@ Created handler "my-handler"
 				},
 			},
 			ExpectCreates: []runtime.Object{
-				&requestv1alpha1.Handler{
+				&knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      handlerName,
 					},
-					Spec: requestv1alpha1.HandlerSpec{
+					Spec: knativev1alpha1.HandlerSpec{
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{
 								{Image: image},
@@ -398,12 +398,12 @@ Created handler "my-handler"
 				rifftesting.InduceFailure("create", "handlers"),
 			},
 			ExpectCreates: []runtime.Object{
-				&requestv1alpha1.Handler{
+				&knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      handlerName,
 					},
-					Spec: requestv1alpha1.HandlerSpec{
+					Spec: knativev1alpha1.HandlerSpec{
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{
 								{Image: image},
@@ -423,12 +423,12 @@ Created handler "my-handler"
 
 				kail := &kailtesting.Logger{}
 				c.Kail = kail
-				kail.On("HandlerLogs", mock.Anything, &requestv1alpha1.Handler{
+				kail.On("KnativeHandlerLogs", mock.Anything, &knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      handlerName,
 					},
-					Spec: requestv1alpha1.HandlerSpec{
+					Spec: knativev1alpha1.HandlerSpec{
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{{Image: image}},
 						},
@@ -448,12 +448,12 @@ Created handler "my-handler"
 				return nil
 			},
 			ExpectCreates: []runtime.Object{
-				&requestv1alpha1.Handler{
+				&knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      handlerName,
 					},
-					Spec: requestv1alpha1.HandlerSpec{
+					Spec: knativev1alpha1.HandlerSpec{
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{{Image: image}},
 						},
@@ -474,12 +474,12 @@ Created handler "my-handler"
 
 				kail := &kailtesting.Logger{}
 				c.Kail = kail
-				kail.On("HandlerLogs", mock.Anything, &requestv1alpha1.Handler{
+				kail.On("KnativeHandlerLogs", mock.Anything, &knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      handlerName,
 					},
-					Spec: requestv1alpha1.HandlerSpec{
+					Spec: knativev1alpha1.HandlerSpec{
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{{Image: image}},
 						},
@@ -502,12 +502,12 @@ Created handler "my-handler"
 				return nil
 			},
 			ExpectCreates: []runtime.Object{
-				&requestv1alpha1.Handler{
+				&knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      handlerName,
 					},
-					Spec: requestv1alpha1.HandlerSpec{
+					Spec: knativev1alpha1.HandlerSpec{
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{{Image: image}},
 						},
@@ -537,12 +537,12 @@ To continue watching logs run: riff handler tail my-handler --namespace default
 
 				kail := &kailtesting.Logger{}
 				c.Kail = kail
-				kail.On("HandlerLogs", mock.Anything, &requestv1alpha1.Handler{
+				kail.On("KnativeHandlerLogs", mock.Anything, &knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      handlerName,
 					},
-					Spec: requestv1alpha1.HandlerSpec{
+					Spec: knativev1alpha1.HandlerSpec{
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{{Image: image}},
 						},
@@ -560,12 +560,12 @@ To continue watching logs run: riff handler tail my-handler --namespace default
 				return nil
 			},
 			ExpectCreates: []runtime.Object{
-				&requestv1alpha1.Handler{
+				&knativev1alpha1.Handler{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      handlerName,
 					},
-					Spec: requestv1alpha1.HandlerSpec{
+					Spec: knativev1alpha1.HandlerSpec{
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{{Image: image}},
 						},

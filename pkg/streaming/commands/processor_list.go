@@ -49,7 +49,7 @@ func (opts *ProcessorListOptions) Validate(ctx context.Context) *cli.FieldError 
 }
 
 func (opts *ProcessorListOptions) Exec(ctx context.Context, c *cli.Config) error {
-	processors, err := c.Streaming().Processors(opts.Namespace).List(metav1.ListOptions{})
+	processors, err := c.StreamingRuntime().Processors(opts.Namespace).List(metav1.ListOptions{})
 	if err != nil {
 		return err
 	}

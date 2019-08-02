@@ -53,7 +53,7 @@ func (opts *HandlerInvokeOptions) Validate(ctx context.Context) *cli.FieldError 
 }
 
 func (opts *HandlerInvokeOptions) Exec(ctx context.Context, c *cli.Config) error {
-	handler, err := c.Request().Handlers(opts.Namespace).Get(opts.Name, metav1.GetOptions{})
+	handler, err := c.KnativeRuntime().Handlers(opts.Namespace).Get(opts.Name, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}

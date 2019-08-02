@@ -19,7 +19,8 @@ package k8s
 import (
 	projectriffclientset "github.com/projectriff/system/pkg/client/clientset/versioned"
 	buildv1alpha1 "github.com/projectriff/system/pkg/client/clientset/versioned/typed/build/v1alpha1"
-	requestv1alpha1 "github.com/projectriff/system/pkg/client/clientset/versioned/typed/knative/v1alpha1"
+	corev1alpha1 "github.com/projectriff/system/pkg/client/clientset/versioned/typed/core/v1alpha1"
+	knativev1alpha1 "github.com/projectriff/system/pkg/client/clientset/versioned/typed/knative/v1alpha1"
 	streamv1alpha1 "github.com/projectriff/system/pkg/client/clientset/versioned/typed/streaming/v1alpha1"
 	apiextensionsclientset "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	apiextensionsv1beta1 "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1"
@@ -38,8 +39,9 @@ type Client interface {
 	Auth() authv1client.AuthorizationV1Interface
 	APIExtension() apiextensionsv1beta1.ApiextensionsV1beta1Interface
 	Build() buildv1alpha1.BuildV1alpha1Interface
-	Request() requestv1alpha1.KnativeV1alpha1Interface
-	Streaming() streamv1alpha1.StreamingV1alpha1Interface
+	CoreRuntime() corev1alpha1.CoreV1alpha1Interface
+	StreamingRuntime() streamv1alpha1.StreamingV1alpha1Interface
+	KnativeRuntime() knativev1alpha1.KnativeV1alpha1Interface
 }
 
 func (c *client) DefaultNamespace() string {
@@ -66,12 +68,16 @@ func (c *client) Build() buildv1alpha1.BuildV1alpha1Interface {
 	return c.lazyLoadRiffClientsetOrDie().BuildV1alpha1()
 }
 
-func (c *client) Request() requestv1alpha1.KnativeV1alpha1Interface {
-	return c.lazyLoadRiffClientsetOrDie().KnativeV1alpha1()
+func (c *client) CoreRuntime() corev1alpha1.CoreV1alpha1Interface {
+	return c.lazyLoadRiffClientsetOrDie().CoreV1alpha1()
 }
 
-func (c *client) Streaming() streamv1alpha1.StreamingV1alpha1Interface {
+func (c *client) StreamingRuntime() streamv1alpha1.StreamingV1alpha1Interface {
 	return c.lazyLoadRiffClientsetOrDie().StreamingV1alpha1()
+}
+
+func (c *client) KnativeRuntime() knativev1alpha1.KnativeV1alpha1Interface {
+	return c.lazyLoadRiffClientsetOrDie().KnativeV1alpha1()
 }
 
 func NewClient(kubeConfigFile string) Client {

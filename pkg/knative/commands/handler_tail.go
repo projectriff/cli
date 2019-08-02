@@ -53,7 +53,7 @@ func (opts *HandlerTailOptions) Validate(ctx context.Context) *cli.FieldError {
 }
 
 func (opts *HandlerTailOptions) Exec(ctx context.Context, c *cli.Config) error {
-	handler, err := c.Request().Handlers(opts.Namespace).Get(opts.Name, metav1.GetOptions{})
+	handler, err := c.KnativeRuntime().Handlers(opts.Namespace).Get(opts.Name, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}
@@ -62,7 +62,7 @@ func (opts *HandlerTailOptions) Exec(ctx context.Context, c *cli.Config) error {
 		// error is protected by Validate()
 		since, _ = time.ParseDuration(opts.Since)
 	}
-	return c.Kail.HandlerLogs(ctx, handler, since, c.Stdout)
+	return c.Kail.KnativeHandlerLogs(ctx, handler, since, c.Stdout)
 }
 
 func NewHandlerTailCommand(ctx context.Context, c *cli.Config) *cobra.Command {
