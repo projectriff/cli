@@ -4,13 +4,12 @@ title: "riff core"
 ---
 ## riff core
 
-core runtime for riff functions and applications
+core runtime for riff workloads
 
 ### Synopsis
 
-The core runtime uses stock kubernetes resources to deploy a function or
-application. A Deployment is created along with a Service to forward traffic to
-the deployment.
+The core runtime uses stock kubernetes resources to deploy a workload. A
+Deployment is created along with a Service to forward traffic to the deployment.
 
 Ingress and autoscalers are not provided.
 
@@ -31,5 +30,5 @@ Ingress and autoscalers are not provided.
 ### SEE ALSO
 
 * [riff](riff.md)	 - riff is for functions
-* [riff core handler](riff_core_handler.md)	 - handlers map HTTP requests to applications, functions or images
+* [riff core handler](riff_core_handler.md)	 - handlers deploy a workload
 

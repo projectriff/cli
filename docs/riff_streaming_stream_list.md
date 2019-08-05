@@ -12,7 +12,7 @@ List streams in a namespace or across all namespaces.
 
 For detail regarding the status of a single stream, run:
 
-	riff stream status <stream-name>
+    riff stream status <stream-name>
 
 ```
 riff streaming stream list [flags]

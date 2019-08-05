@@ -27,11 +27,10 @@ import (
 func NewKnativeCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "knative",
-		Short: "Knative runtime for riff functions",
+		Short: "Knative runtime for riff workloads",
 		Long: strings.TrimSpace(`
 The Knative runtime uses Knative Configuration and Route resources to deploy
-an application or function. Knative provides both a zero-to-n autoscaler and
-managed ingress.
+a workload. Knative provides both a zero-to-n autoscaler and managed ingress.
 `),
 	}
 

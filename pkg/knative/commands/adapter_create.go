@@ -199,7 +199,11 @@ func NewAdapterCreateCommand(ctx context.Context, c *cli.Config) *cobra.Command 
 		Use:   "create",
 		Short: "create an adapter to Knative Serving",
 		Long: strings.TrimSpace(`
-<todo>
+Create a new adapter by watching a build for the latest image, pushing those
+images to a target Knative Service or Configuration.
+
+No new Knative resources are created directly by the adapter, it only updates
+the image for an existing resource.
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s knative adapter create my-adapter %s my-app %s my-kservice", c.Name, cli.ApplicationRefFlagName, cli.ServiceRefFlagName),

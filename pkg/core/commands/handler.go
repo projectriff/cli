@@ -27,23 +27,19 @@ import (
 func NewHandlerCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "handler",
-		Short: "handlers map HTTP requests to applications, functions or images",
+		Short: "handlers deploy a workload",
 		Long: strings.TrimSpace(`
-Handlers can be created for one of an application, function or image.
-Application and function based handlers continuously watch for the latest built
-image and will deploy new images. If the underlying application or function is
-deleted, the handler will continue to run, but will no longer self update. Image
-based handlers must be manually updated to trigger roll out of an updated image.
-
-Applications, functions and images are logically equivalent at runtime.
-Functions with an invoker are more focused and opinionated applications, and
-images are compiled applications.
+Handlers can be created for a build or an image. Build based handlers
+continuously watch for the latest image and will deploy new images. If the
+underlying build is deleted, the handler will continue to run, but will no
+longer self update. Image based handlers must be manually updated to trigger
+roll out of an updated image.
 
 Users wishing to perform checks on built images before deploying them can
-provide their own external process to watch the application/function for new
-images and only update the handler image once those checks pass.
+provide their own external process to watch the build for new images and only
+update the handler image once those checks pass.
 
-The hostname to access the handler is available in the handler listing.
+The service to access the handler is available in the handler listing.
 `),
 		Aliases: []string{"handlers"},
 	}

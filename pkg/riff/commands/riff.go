@@ -30,22 +30,17 @@ func NewRiffCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 		Short: "riff is for functions",
 		Long: strings.TrimSpace(`
 The ` + c.Name + ` CLI combines with the projectriff system CRDs to build, run and wire
-workloads (applications and functions). The CRDs provide the riff API of which
-this CLI is a client.
+workloads (functions, applications and containers). The CRDs provide the riff
+API of which this CLI is a client.
 
 Before running ` + c.Name + `, please install the projectriff system and its dependencies.
 See https://projectriff.io/docs/getting-started/
 
-This CLI contains commands that fit into three themes:
-
-Builds - the application and function commands to define build plans and the
+The application, function and container commands define build plans and the
 credential commands to authenticate builds to container registries.
 
-Requests - the handler command to map HTTP requests to a built application,
-function or container image.
-
-Streams - the stream and processor commands to define streams of messages and
-map those streams to function inputs and outputs with processors.
+Runtimes provide ways to execute the workloads. Different runtimes provide
+alternate execution models and capabilities.
 `),
 	}
 

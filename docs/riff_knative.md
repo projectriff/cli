@@ -4,13 +4,12 @@ title: "riff knative"
 ---
 ## riff knative
 
-Knative runtime for riff functions
+Knative runtime for riff workloads
 
 ### Synopsis
 
 The Knative runtime uses Knative Configuration and Route resources to deploy
-an application or function. Knative provides both a zero-to-n autoscaler and
-managed ingress.
+a workload. Knative provides both a zero-to-n autoscaler and managed ingress.
 
 ### Options
 
@@ -30,5 +29,5 @@ managed ingress.
 
 * [riff](riff.md)	 - riff is for functions
 * [riff knative adapter](riff_knative_adapter.md)	 - adapters push built images to Knative
-* [riff knative handler](riff_knative_handler.md)	 - handlers map HTTP requests to applications, functions or images
+* [riff knative handler](riff_knative_handler.md)	 - handlers map HTTP requests to a workload
 

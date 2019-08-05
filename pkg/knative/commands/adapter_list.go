@@ -84,7 +84,7 @@ List adapters in a namespace or across all namespaces.
 
 For detail regarding the status of a single adapter, run:
 
-	` + c.Name + ` knative adapter status <adapter-name>
+    ` + c.Name + ` knative adapter status <adapter-name>
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s knative adapter list", c.Name),

@@ -13,7 +13,7 @@ Display status details for a handler.
 The Ready condition is shown which should include a reason code and a
 descriptive message when the status is not "True". The status for the condition
 may be: "True", "False" or "Unknown". An "Unknown" status is common while the
-handler is processed.
+handler roll out is processed.
 
 ```
 riff core handler status <name> [flags]
@@ -42,5 +42,5 @@ riff core handler status my-handler
 
 ### SEE ALSO
 
-* [riff core handler](riff_core_handler.md)	 - handlers map HTTP requests to applications, functions or images
+* [riff core handler](riff_core_handler.md)	 - handlers deploy a workload
 

@@ -87,8 +87,8 @@ No handlers found.
 				},
 			},
 			ExpectOutput: `
-NAME           TYPE        REF         STATUS      AGE
-test-handler   <unknown>   <unknown>   <unknown>   <unknown>
+NAME           TYPE        REF         SERVICE   STATUS      AGE
+test-handler   <unknown>   <unknown>   <empty>   <unknown>   <unknown>
 `,
 		},
 		{
@@ -124,9 +124,9 @@ No handlers found.
 				},
 			},
 			ExpectOutput: `
-NAMESPACE         NAME                 TYPE        REF         STATUS      AGE
-default           test-handler         <unknown>   <unknown>   <unknown>   <unknown>
-other-namespace   test-other-handler   <unknown>   <unknown>   <unknown>   <unknown>
+NAMESPACE         NAME                 TYPE        REF         SERVICE   STATUS      AGE
+default           test-handler         <unknown>   <unknown>   <empty>   <unknown>   <unknown>
+other-namespace   test-other-handler   <unknown>   <unknown>   <empty>   <unknown>   <unknown>
 `,
 		},
 		{
@@ -151,6 +151,8 @@ other-namespace   test-other-handler   <unknown>   <unknown>   <unknown>   <unkn
 								{Type: corev1alpha1.HandlerConditionReady, Status: "True"},
 							},
 						},
+						DeploymentName: "img-handler",
+						ServiceName:    "img-handler",
 					},
 				},
 				&corev1alpha1.Handler{
@@ -167,6 +169,8 @@ other-namespace   test-other-handler   <unknown>   <unknown>   <unknown>   <unkn
 								{Type: corev1alpha1.HandlerConditionReady, Status: "True"},
 							},
 						},
+						DeploymentName: "app-handler",
+						ServiceName:    "app-handler",
 					},
 				},
 				&corev1alpha1.Handler{
@@ -183,6 +187,8 @@ other-namespace   test-other-handler   <unknown>   <unknown>   <unknown>   <unkn
 								{Type: corev1alpha1.HandlerConditionReady, Status: "True"},
 							},
 						},
+						DeploymentName: "func-handler",
+						ServiceName:    "func-handler",
 					},
 				},
 				&corev1alpha1.Handler{
@@ -199,15 +205,17 @@ other-namespace   test-other-handler   <unknown>   <unknown>   <unknown>   <unkn
 								{Type: corev1alpha1.HandlerConditionReady, Status: "True"},
 							},
 						},
+						DeploymentName: "container-handler",
+						ServiceName:    "container-handler",
 					},
 				},
 			},
 			ExpectOutput: `
-NAME        TYPE          REF                 STATUS   AGE
-app         application   petclinic           Ready    <unknown>
-container   container     busybox             Ready    <unknown>
-func        function      square              Ready    <unknown>
-img         image         projectriff/upper   Ready    <unknown>
+NAME        TYPE          REF                 SERVICE             STATUS   AGE
+app         application   petclinic           app-handler         Ready    <unknown>
+container   container     busybox             container-handler   Ready    <unknown>
+func        function      square              func-handler        Ready    <unknown>
+img         image         projectriff/upper   img-handler         Ready    <unknown>
 `,
 		},
 		{

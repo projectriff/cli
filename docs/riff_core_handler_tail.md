@@ -11,8 +11,8 @@ watch handler logs
 Stream runtime logs for a handler until canceled. To cancel, press Ctl-c in the
 shell or kill the process.
 
-As new handler instances are started, the logs are displayed. To show historical logs use
---since.
+As new handler pods are started, the logs are displayed. To show historical logs
+use --since.
 
 ```
 riff core handler tail <name> [flags]
@@ -43,5 +43,5 @@ riff core handler tail my-handler --since 1h
 
 ### SEE ALSO
 
-* [riff core handler](riff_core_handler.md)	 - handlers map HTTP requests to applications, functions or images
+* [riff core handler](riff_core_handler.md)	 - handlers deploy a workload
 

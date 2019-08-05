@@ -29,7 +29,12 @@ func NewAdapterCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 		Use:   "adapter",
 		Short: "adapters push built images to Knative",
 		Long: strings.TrimSpace(`
-<todo>
+The Knative runtime adapter updates a Knative Service or Configuration with the
+latest image from a riff build. As the build produces new images, they will be
+rolled out automatically to the target Knative resource.
+
+No new Knative resources are created directly by the adapter, it only updates
+the image for an existing resource.
 `),
 		Aliases: []string{"adapters"},
 	}

@@ -201,21 +201,13 @@ func NewHandlerCreateCommand(ctx context.Context, c *cli.Config) *cobra.Command 
 
 	cmd := &cobra.Command{
 		Use:   "create",
-		Short: "create a handler to create a Deployment for an application, function, container or image",
+		Short: "create a handler to deploy a workload",
 		Long: strings.TrimSpace(`
 Create a core handler.
 
-There are four way to create a handler:
-- from an application reference
-- from a function reference
-- from a container reference
-- from an image
-
-Application and function references are resolved within the same namespace as
-the handler. As the build produces new images, the image will roll out
-automatically.
-
-Image based handlers must be updated manually to roll out new images.
+Build references are resolved within the same namespace as the handler. As the
+build produces new images, the image will roll out automatically. Image based
+handlers must be updated manually to roll out new images.
 
 The runtime environment can be configured by ` + cli.EnvFlagName + ` for static key-value pairs
 and ` + cli.EnvFromFlagName + ` to map values from a ConfigMap or Secret.

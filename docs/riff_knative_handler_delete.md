@@ -43,5 +43,5 @@ riff knative handler delete --all
 
 ### SEE ALSO
 
-* [riff knative handler](riff_knative_handler.md)	 - handlers map HTTP requests to applications, functions or images
+* [riff knative handler](riff_knative_handler.md)	 - handlers map HTTP requests to a workload
 

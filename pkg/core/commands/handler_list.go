@@ -84,7 +84,7 @@ List handlers in a namespace or across all namespaces.
 
 For detail regarding the status of a single handler, run:
 
-	` + c.Name + ` core handler status <handler-name>
+    ` + c.Name + ` core handler status <handler-name>
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s core handler list", c.Name),
@@ -121,6 +121,7 @@ func (opts *HandlerListOptions) print(handler *corev1alpha1.Handler, _ printers.
 		handler.Name,
 		refType,
 		refValue,
+		cli.FormatEmptyString(handler.Status.ServiceName),
 		cli.FormatConditionStatus(handler.Status.GetCondition(corev1alpha1.HandlerConditionReady)),
 		cli.FormatTimestampSince(handler.CreationTimestamp, now),
 	)
@@ -132,6 +133,7 @@ func (opts *HandlerListOptions) printColumns() []metav1beta1.TableColumnDefiniti
 		{Name: "Name", Type: "string"},
 		{Name: "Type", Type: "string"},
 		{Name: "Ref", Type: "string"},
+		{Name: "Service", Type: "string"},
 		{Name: "Status", Type: "string"},
 		{Name: "Age", Type: "string"},
 	}

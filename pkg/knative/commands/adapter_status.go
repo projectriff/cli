@@ -73,7 +73,7 @@ Display status details for a adapter.
 The Ready condition is shown which should include a reason code and a
 descriptive message when the status is not "True". The status for the condition
 may be: "True", "False" or "Unknown". An "Unknown" status is common while the
-adapter is processed.
+adapter roll out is processed.
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s knative adapter status my-adapter", c.Name),
