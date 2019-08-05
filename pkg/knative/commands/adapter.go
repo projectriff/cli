@@ -24,19 +24,20 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewKnativeCommand(ctx context.Context, c *cli.Config) *cobra.Command {
+func NewAdapterCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "knative",
-		Short: "Knative runtime for riff functions",
+		Use:   "adapter",
+		Short: "adapters push built images to Knative",
 		Long: strings.TrimSpace(`
-The Knative runtime uses Knative Configuration and Route resources to deploy
-an application or function. Knative provides both a zero-to-n autoscaler and
-managed ingress.
+<todo>
 `),
+		Aliases: []string{"adapters"},
 	}
 
-	cmd.AddCommand(NewAdapterCommand(ctx, c))
-	cmd.AddCommand(NewHandlerCommand(ctx, c))
+	cmd.AddCommand(NewAdapterListCommand(ctx, c))
+	cmd.AddCommand(NewAdapterCreateCommand(ctx, c))
+	cmd.AddCommand(NewAdapterDeleteCommand(ctx, c))
+	cmd.AddCommand(NewAdapterStatusCommand(ctx, c))
 
 	return cmd
 }

@@ -54,7 +54,7 @@ func (opts *StreamCreateOptions) Validate(ctx context.Context) *cli.FieldError {
 
 	contentType := opts.ContentType
 	if contentType != "" {
-		errs = errs.Also(validation.MimeType(contentType, cli.ContentTypeName))
+		errs = errs.Also(validation.MimeType(contentType, cli.ContentTypeFlagName))
 	}
 
 	return errs
@@ -109,7 +109,7 @@ func NewStreamCreateCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 
 	cli.NamespaceFlag(cmd, c, &opts.Namespace)
 	cmd.Flags().StringVar(&opts.Provider, cli.StripDash(cli.ProviderFlagName), "", "`name` of stream provider")
-	cmd.Flags().StringVar(&opts.ContentType, cli.StripDash(cli.ContentTypeName), "", "`MIME type` for message payloads accepted by the stream")
+	cmd.Flags().StringVar(&opts.ContentType, cli.StripDash(cli.ContentTypeFlagName), "", "`MIME type` for message payloads accepted by the stream")
 	cmd.Flags().BoolVar(&opts.DryRun, cli.StripDash(cli.DryRunFlagName), false, "print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr")
 
 	return cmd

@@ -14,29 +14,22 @@
  * limitations under the License.
  */
 
-package commands
+package commands_test
 
 import (
-	"context"
-	"strings"
+	"testing"
 
-	"github.com/projectriff/cli/pkg/cli"
-	"github.com/spf13/cobra"
+	"github.com/projectriff/cli/pkg/knative/commands"
+	rifftesting "github.com/projectriff/cli/pkg/testing"
 )
 
-func NewKnativeCommand(ctx context.Context, c *cli.Config) *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "knative",
-		Short: "Knative runtime for riff functions",
-		Long: strings.TrimSpace(`
-The Knative runtime uses Knative Configuration and Route resources to deploy
-an application or function. Knative provides both a zero-to-n autoscaler and
-managed ingress.
-`),
+func TestAdapterCommand(t *testing.T) {
+	table := rifftesting.CommandTable{
+		{
+			Name: "empty",
+			Args: []string{},
+		},
 	}
 
-	cmd.AddCommand(NewAdapterCommand(ctx, c))
-	cmd.AddCommand(NewHandlerCommand(ctx, c))
-
-	return cmd
+	table.Run(t, commands.NewAdapterCommand)
 }

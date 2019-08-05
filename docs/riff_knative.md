@@ -29,5 +29,6 @@ managed ingress.
 ### SEE ALSO
 
 * [riff](riff.md)	 - riff is for functions
+* [riff knative adapter](riff_knative_adapter.md)	 - adapters push built images to Knative
 * [riff knative handler](riff_knative_handler.md)	 - handlers map HTTP requests to applications, functions or images
 
