@@ -8,7 +8,11 @@ core runtime for riff functions and applications
 
 ### Synopsis
 
-<todo>
+The core runtime uses stock kubernetes resources to deploy a function or
+application. A Deployment is created along with a Service to forward traffic to
+the deployment.
+
+Ingress and autoscalers are not provided.
 
 ### Options
 

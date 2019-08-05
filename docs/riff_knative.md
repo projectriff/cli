@@ -4,11 +4,13 @@ title: "riff knative"
 ---
 ## riff knative
 
-knative runtime for riff functions
+Knative runtime for riff functions
 
 ### Synopsis
 
-<todo>
+The Knative runtime uses Knative Configuration and Route resources to deploy
+an application or function. Knative provides both a zero-to-n autoscaler and
+managed ingress.
 
 ### Options
 

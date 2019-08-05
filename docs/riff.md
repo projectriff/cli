@@ -44,6 +44,6 @@ map those streams to function inputs and outputs with processors.
 * [riff credential](riff_credential.md)	 - credentials for container registries
 * [riff doctor](riff_doctor.md)	 - check riff's requirements are installed
 * [riff function](riff_function.md)	 - functions built from source using function buildpacks
-* [riff knative](riff_knative.md)	 - knative runtime for riff functions
+* [riff knative](riff_knative.md)	 - Knative runtime for riff functions
 * [riff streaming](riff_streaming.md)	 - (experimental) streaming runtime for riff functions
 

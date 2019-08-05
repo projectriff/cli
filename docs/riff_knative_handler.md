@@ -40,7 +40,7 @@ The hostname to access the handler is available in the handler listing.
 
 ### SEE ALSO
 
-* [riff knative](riff_knative.md)	 - knative runtime for riff functions
+* [riff knative](riff_knative.md)	 - Knative runtime for riff functions
 * [riff knative handler create](riff_knative_handler_create.md)	 - create a handler to map HTTP requests to an application, function, container or image
 * [riff knative handler delete](riff_knative_handler_delete.md)	 - delete handler(s)
 * [riff knative handler list](riff_knative_handler_list.md)	 - table listing of handlers
