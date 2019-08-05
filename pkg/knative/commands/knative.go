@@ -27,9 +27,11 @@ import (
 func NewKnativeCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "knative",
-		Short: "knative runtime for riff functions",
+		Short: "Knative runtime for riff functions",
 		Long: strings.TrimSpace(`
-<todo>
+The Knative runtime uses Knative Configuration and Route resources to deploy
+an application or function. Knative provides both a zero-to-n autoscaler and
+managed ingress.
 `),
 	}
 	cmd.AddCommand(NewHandlerCommand(ctx, c))
