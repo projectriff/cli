@@ -181,8 +181,8 @@ func (opts *HandlerCreateOptions) Exec(ctx context.Context, c *cli.Config) error
 		)
 		if err == context.DeadlineExceeded {
 			c.Errorf("Timeout after %q waiting for %q to become ready\n", opts.WaitTimeout, opts.Name)
-			c.Infof("To view status run: %s handler list %s %s\n", c.Name, cli.NamespaceFlagName, opts.Namespace)
-			c.Infof("To continue watching logs run: %s handler tail %s %s %s\n", c.Name, opts.Name, cli.NamespaceFlagName, opts.Namespace)
+			c.Infof("To view status run: %s core handler list %s %s\n", c.Name, cli.NamespaceFlagName, opts.Namespace)
+			c.Infof("To continue watching logs run: %s core handler tail %s %s %s\n", c.Name, opts.Name, cli.NamespaceFlagName, opts.Namespace)
 			err = cli.SilenceError(err)
 		}
 		if err != nil {
