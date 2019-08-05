@@ -26,7 +26,7 @@ adapters push built images to Knative
 
 ### SEE ALSO
 
-* [riff knative](riff_knative.md)	 - knative runtime for riff functions
+* [riff knative](riff_knative.md)	 - Knative runtime for riff functions
 * [riff knative adapter create](riff_knative_adapter_create.md)	 - create an adapter to Knative Serving
 * [riff knative adapter delete](riff_knative_adapter_delete.md)	 - delete adapter(s)
 * [riff knative adapter list](riff_knative_adapter_list.md)	 - table listing of adapters
