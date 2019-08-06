@@ -19,11 +19,11 @@ package commands_test
 import (
 	"testing"
 
-	"github.com/projectriff/cli/pkg/riff/commands"
+	"github.com/projectriff/cli/pkg/build/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 )
 
-func TestApplicationCommand(t *testing.T) {
+func TestFunctionCommand(t *testing.T) {
 	table := rifftesting.CommandTable{
 		{
 			Name: "empty",
@@ -31,5 +31,5 @@ func TestApplicationCommand(t *testing.T) {
 		},
 	}
 
-	table.Run(t, commands.NewApplicationCommand)
+	table.Run(t, commands.NewFunctionCommand)
 }

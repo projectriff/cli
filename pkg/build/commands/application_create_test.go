@@ -24,9 +24,9 @@ import (
 	"testing"
 
 	"github.com/buildpack/pack"
+	"github.com/projectriff/cli/pkg/build/commands"
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/k8s"
-	"github.com/projectriff/cli/pkg/riff/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 	kailtesting "github.com/projectriff/cli/pkg/testing/kail"
 	packtesting "github.com/projectriff/cli/pkg/testing/pack"
@@ -39,11 +39,11 @@ import (
 	cachetesting "k8s.io/client-go/tools/cache/testing"
 )
 
-func TestFunctionCreateOptions(t *testing.T) {
+func TestApplicationCreateOptions(t *testing.T) {
 	table := rifftesting.OptionsTable{
 		{
 			Name: "invalid resource",
-			Options: &commands.FunctionCreateOptions{
+			Options: &commands.ApplicationCreateOptions{
 				ResourceOptions: rifftesting.InvalidResourceOptions,
 			},
 			ExpectFieldError: rifftesting.InvalidResourceOptionsFieldError.Also(
@@ -53,7 +53,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "git source",
-			Options: &commands.FunctionCreateOptions{
+			Options: &commands.ApplicationCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
@@ -63,7 +63,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "local source",
-			Options: &commands.FunctionCreateOptions{
+			Options: &commands.ApplicationCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				LocalPath:       ".",
@@ -72,7 +72,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "no source",
-			Options: &commands.FunctionCreateOptions{
+			Options: &commands.ApplicationCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 			},
@@ -80,7 +80,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "multiple sources",
-			Options: &commands.FunctionCreateOptions{
+			Options: &commands.ApplicationCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
@@ -91,7 +91,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "git source with cache",
-			Options: &commands.FunctionCreateOptions{
+			Options: &commands.ApplicationCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
@@ -102,7 +102,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "local source with cache",
-			Options: &commands.FunctionCreateOptions{
+			Options: &commands.ApplicationCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				LocalPath:       ".",
@@ -112,7 +112,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "invalid cache",
-			Options: &commands.FunctionCreateOptions{
+			Options: &commands.ApplicationCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
@@ -123,7 +123,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "with git subpath",
-			Options: &commands.FunctionCreateOptions{
+			Options: &commands.ApplicationCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
@@ -134,7 +134,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "with local subpath",
-			Options: &commands.FunctionCreateOptions{
+			Options: &commands.ApplicationCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				LocalPath:       ".",
@@ -144,7 +144,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "missing git revision",
-			Options: &commands.FunctionCreateOptions{
+			Options: &commands.ApplicationCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
@@ -154,7 +154,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "git source, tail",
-			Options: &commands.FunctionCreateOptions{
+			Options: &commands.ApplicationCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
@@ -166,7 +166,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "git source, tail missing timeout",
-			Options: &commands.FunctionCreateOptions{
+			Options: &commands.ApplicationCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
@@ -177,7 +177,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "git source, tail invalid timeout",
-			Options: &commands.FunctionCreateOptions{
+			Options: &commands.ApplicationCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
@@ -189,7 +189,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "dry run",
-			Options: &commands.FunctionCreateOptions{
+			Options: &commands.ApplicationCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
@@ -200,7 +200,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "dry run, tail",
-			Options: &commands.FunctionCreateOptions{
+			Options: &commands.ApplicationCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
@@ -215,7 +215,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 
 	if goruntime.GOOS == "windows" {
 		for i, tr := range table {
-			opts, _ := tr.Options.(*commands.FunctionCreateOptions)
+			opts, _ := tr.Options.(*commands.ApplicationCreateOptions)
 			if opts.LocalPath != "" {
 				tr.ShouldValidate = false
 				tr.ExpectFieldError = tr.ExpectFieldError.Also(
@@ -229,9 +229,9 @@ func TestFunctionCreateOptions(t *testing.T) {
 	table.Run(t)
 }
 
-func TestFunctionCreateCommand(t *testing.T) {
+func TestApplicationCreateCommand(t *testing.T) {
 	defaultNamespace := "default"
-	functionName := "my-function"
+	applicationName := "my-application"
 	imageDefault := "_"
 	imageTag := "registry.example.com/repo:tag"
 	registryHost := "registry.example.com"
@@ -242,9 +242,6 @@ func TestFunctionCreateCommand(t *testing.T) {
 	cacheSize := "8Gi"
 	cacheSizeQuantity := resource.MustParse(cacheSize)
 	localPath := "."
-	artifact := "test-artifact.js"
-	handler := "functions.Handler"
-	invoker := "java"
 
 	table := rifftesting.CommandTable{
 		{
@@ -254,14 +251,14 @@ func TestFunctionCreateCommand(t *testing.T) {
 		},
 		{
 			Name: "git repo",
-			Args: []string{functionName, cli.ImageFlagName, imageTag, cli.GitRepoFlagName, gitRepo},
+			Args: []string{applicationName, cli.ImageFlagName, imageTag, cli.GitRepoFlagName, gitRepo},
 			ExpectCreates: []runtime.Object{
-				&buildv1alpha1.Function{
+				&buildv1alpha1.Application{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      functionName,
+						Name:      applicationName,
 					},
-					Spec: buildv1alpha1.FunctionSpec{
+					Spec: buildv1alpha1.ApplicationSpec{
 						Image: imageTag,
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.GitSource{
@@ -273,19 +270,19 @@ func TestFunctionCreateCommand(t *testing.T) {
 				},
 			},
 			ExpectOutput: `
-Created function "my-function"
+Created application "my-application"
 `,
 		},
 		{
 			Name: "git repo, dry run",
-			Args: []string{functionName, cli.ImageFlagName, imageTag, cli.GitRepoFlagName, gitRepo, cli.DryRunFlagName},
+			Args: []string{applicationName, cli.ImageFlagName, imageTag, cli.GitRepoFlagName, gitRepo, cli.DryRunFlagName},
 			ExpectOutput: `
 ---
 apiVersion: build.projectriff.io/v1alpha1
-kind: Function
+kind: Application
 metadata:
   creationTimestamp: null
-  name: my-function
+  name: my-application
   namespace: default
 spec:
   image: registry.example.com/repo:tag
@@ -295,19 +292,19 @@ spec:
       url: https://example.com/repo.git
 status: {}
 
-Created function "my-function"
+Created application "my-application"
 `,
 		},
 		{
 			Name: "git repo with revision",
-			Args: []string{functionName, cli.ImageFlagName, imageTag, cli.GitRepoFlagName, gitRepo, cli.GitRevisionFlagName, gitSha},
+			Args: []string{applicationName, cli.ImageFlagName, imageTag, cli.GitRepoFlagName, gitRepo, cli.GitRevisionFlagName, gitSha},
 			ExpectCreates: []runtime.Object{
-				&buildv1alpha1.Function{
+				&buildv1alpha1.Application{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      functionName,
+						Name:      applicationName,
 					},
-					Spec: buildv1alpha1.FunctionSpec{
+					Spec: buildv1alpha1.ApplicationSpec{
 						Image: imageTag,
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.GitSource{
@@ -319,19 +316,19 @@ Created function "my-function"
 				},
 			},
 			ExpectOutput: `
-Created function "my-function"
+Created application "my-application"
 `,
 		},
 		{
 			Name: "git repo with subpath",
-			Args: []string{functionName, cli.ImageFlagName, imageTag, cli.GitRepoFlagName, gitRepo, cli.SubPathFlagName, subPath},
+			Args: []string{applicationName, cli.ImageFlagName, imageTag, cli.GitRepoFlagName, gitRepo, cli.SubPathFlagName, subPath},
 			ExpectCreates: []runtime.Object{
-				&buildv1alpha1.Function{
+				&buildv1alpha1.Application{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      functionName,
+						Name:      applicationName,
 					},
-					Spec: buildv1alpha1.FunctionSpec{
+					Spec: buildv1alpha1.ApplicationSpec{
 						Image: imageTag,
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.GitSource{
@@ -344,19 +341,19 @@ Created function "my-function"
 				},
 			},
 			ExpectOutput: `
-Created function "my-function"
+Created application "my-application"
 `,
 		},
 		{
 			Name: "git repo with cache",
-			Args: []string{functionName, cli.ImageFlagName, imageTag, cli.GitRepoFlagName, gitRepo, cli.CacheSizeFlagName, cacheSize},
+			Args: []string{applicationName, cli.ImageFlagName, imageTag, cli.GitRepoFlagName, gitRepo, cli.CacheSizeFlagName, cacheSize},
 			ExpectCreates: []runtime.Object{
-				&buildv1alpha1.Function{
+				&buildv1alpha1.Application{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      functionName,
+						Name:      applicationName,
 					},
-					Spec: buildv1alpha1.FunctionSpec{
+					Spec: buildv1alpha1.ApplicationSpec{
 						Image:     imageTag,
 						CacheSize: &cacheSizeQuantity,
 						Source: &buildv1alpha1.Source{
@@ -369,25 +366,19 @@ Created function "my-function"
 				},
 			},
 			ExpectOutput: `
-Created function "my-function"
+Created application "my-application"
 `,
 		},
 		{
 			Name: "local path",
-			Args: []string{functionName, cli.ImageFlagName, imageTag, cli.LocalPathFlagName, localPath, cli.ArtifactFlagName, artifact, cli.HandlerFlagName, handler, cli.InvokerFlagName, invoker},
+			Args: []string{applicationName, cli.ImageFlagName, imageTag, cli.LocalPathFlagName, localPath},
 			Prepare: func(t *testing.T, ctx context.Context, c *cli.Config) (context.Context, error) {
 				packClient := &packtesting.Client{}
 				c.Pack = packClient
 				packClient.On("Build", mock.Anything, pack.BuildOptions{
 					Image:   imageTag,
 					AppPath: localPath,
-					Builder: "projectriff/builder:0.2.0",
-					Env: map[string]string{
-						"RIFF":          "true",
-						"RIFF_ARTIFACT": artifact,
-						"RIFF_HANDLER":  handler,
-						"RIFF_OVERRIDE": invoker,
-					},
+					Builder: "cloudfoundry/cnb:bionic",
 					Publish: true,
 				}).Return(nil).Run(func(args mock.Arguments) {
 					fmt.Fprintf(c.Stdout, "...build output...\n")
@@ -406,45 +397,36 @@ Created function "my-function"
 						Name:      "builders",
 					},
 					Data: map[string]string{
-						"riff-function": "projectriff/builder:0.2.0",
+						"riff-application": "cloudfoundry/cnb:bionic",
 					},
 				},
 			},
 			ExpectCreates: []runtime.Object{
-				&buildv1alpha1.Function{
+				&buildv1alpha1.Application{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      functionName,
+						Name:      applicationName,
 					},
-					Spec: buildv1alpha1.FunctionSpec{
-						Image:    imageTag,
-						Artifact: artifact,
-						Handler:  handler,
-						Invoker:  invoker,
+					Spec: buildv1alpha1.ApplicationSpec{
+						Image: imageTag,
 					},
 				},
 			},
 			ExpectOutput: `
 ...build output...
-Created function "my-function"
+Created application "my-application"
 `,
 		},
 		{
 			Name: "local path, dry run",
-			Args: []string{functionName, cli.ImageFlagName, imageTag, cli.LocalPathFlagName, localPath, cli.ArtifactFlagName, artifact, cli.HandlerFlagName, handler, cli.InvokerFlagName, invoker, cli.DryRunFlagName},
+			Args: []string{applicationName, cli.ImageFlagName, imageTag, cli.LocalPathFlagName, localPath, cli.DryRunFlagName},
 			Prepare: func(t *testing.T, ctx context.Context, c *cli.Config) (context.Context, error) {
 				packClient := &packtesting.Client{}
 				c.Pack = packClient
 				packClient.On("Build", mock.Anything, pack.BuildOptions{
 					Image:   imageTag,
 					AppPath: localPath,
-					Builder: "projectriff/builder:0.2.0",
-					Env: map[string]string{
-						"RIFF":          "true",
-						"RIFF_ARTIFACT": artifact,
-						"RIFF_HANDLER":  handler,
-						"RIFF_OVERRIDE": invoker,
-					},
+					Builder: "cloudfoundry/cnb:bionic",
 					Publish: true,
 				}).Return(nil).Run(func(args mock.Arguments) {
 					fmt.Fprintf(c.Stdout, "...build output...\n")
@@ -463,7 +445,7 @@ Created function "my-function"
 						Name:      "builders",
 					},
 					Data: map[string]string{
-						"riff-function": "projectriff/builder:0.2.0",
+						"riff-application": "cloudfoundry/cnb:bionic",
 					},
 				},
 			},
@@ -471,24 +453,21 @@ Created function "my-function"
 ...build output...
 ---
 apiVersion: build.projectriff.io/v1alpha1
-kind: Function
+kind: Application
 metadata:
   creationTimestamp: null
-  name: my-function
+  name: my-application
   namespace: default
 spec:
-  artifact: test-artifact.js
-  handler: functions.Handler
   image: registry.example.com/repo:tag
-  invoker: java
 status: {}
 
-Created function "my-function"
+Created application "my-application"
 `,
 		},
 		{
 			Name: "local path, no builders",
-			Args: []string{functionName, cli.ImageFlagName, imageTag, cli.LocalPathFlagName, localPath},
+			Args: []string{applicationName, cli.ImageFlagName, imageTag, cli.LocalPathFlagName, localPath},
 			ExpectOutput: `
 `,
 			ShouldError: true,
@@ -499,8 +478,8 @@ Created function "my-function"
 			},
 		},
 		{
-			Name: "local path, no function builder",
-			Args: []string{functionName, cli.ImageFlagName, imageTag, cli.LocalPathFlagName, localPath},
+			Name: "local path, no application builder",
+			Args: []string{applicationName, cli.ImageFlagName, imageTag, cli.LocalPathFlagName, localPath},
 			GivenObjects: []runtime.Object{
 				&corev1.ConfigMap{
 					ObjectMeta: metav1.ObjectMeta{
@@ -514,27 +493,21 @@ Created function "my-function"
 `,
 			ShouldError: true,
 			Verify: func(t *testing.T, output string, err error) {
-				if expected, actual := `unknown builder for "riff-function"`, err.Error(); expected != actual {
+				if expected, actual := `unknown builder for "riff-application"`, err.Error(); expected != actual {
 					t.Errorf("expected error %q, actual %q", expected, actual)
 				}
 			},
 		},
 		{
 			Name: "local path, pack error",
-			Args: []string{functionName, cli.ImageFlagName, imageTag, cli.LocalPathFlagName, localPath, cli.ArtifactFlagName, artifact, cli.HandlerFlagName, handler, cli.InvokerFlagName, invoker},
+			Args: []string{applicationName, cli.ImageFlagName, imageTag, cli.LocalPathFlagName, localPath},
 			Prepare: func(t *testing.T, ctx context.Context, c *cli.Config) (context.Context, error) {
 				packClient := &packtesting.Client{}
 				c.Pack = packClient
 				packClient.On("Build", mock.Anything, pack.BuildOptions{
 					Image:   imageTag,
 					AppPath: localPath,
-					Builder: "projectriff/builder:0.2.0",
-					Env: map[string]string{
-						"RIFF":          "true",
-						"RIFF_ARTIFACT": artifact,
-						"RIFF_HANDLER":  handler,
-						"RIFF_OVERRIDE": invoker,
-					},
+					Builder: "cloudfoundry/cnb:bionic",
 					Publish: true,
 				}).Return(fmt.Errorf("pack error")).Run(func(args mock.Arguments) {
 					fmt.Fprintf(c.Stdout, "...build output...\n")
@@ -553,7 +526,7 @@ Created function "my-function"
 						Name:      "builders",
 					},
 					Data: map[string]string{
-						"riff-function": "projectriff/builder:0.2.0",
+						"riff-application": "cloudfoundry/cnb:bionic",
 					},
 				},
 			},
@@ -569,20 +542,14 @@ Created function "my-function"
 		},
 		{
 			Name: "local path, default image",
-			Args: []string{functionName, cli.LocalPathFlagName, localPath, cli.ArtifactFlagName, artifact, cli.HandlerFlagName, handler, cli.InvokerFlagName, invoker},
+			Args: []string{applicationName, cli.LocalPathFlagName, localPath},
 			Prepare: func(t *testing.T, ctx context.Context, c *cli.Config) (context.Context, error) {
 				packClient := &packtesting.Client{}
 				c.Pack = packClient
 				packClient.On("Build", mock.Anything, pack.BuildOptions{
-					Image:   fmt.Sprintf("%s/%s", registryHost, functionName),
+					Image:   fmt.Sprintf("%s/%s", registryHost, applicationName),
 					AppPath: localPath,
-					Builder: "projectriff/builder:0.2.0",
-					Env: map[string]string{
-						"RIFF":          "true",
-						"RIFF_ARTIFACT": artifact,
-						"RIFF_HANDLER":  handler,
-						"RIFF_OVERRIDE": invoker,
-					},
+					Builder: "cloudfoundry/cnb:bionic",
 					Publish: true,
 				}).Return(nil).Run(func(args mock.Arguments) {
 					fmt.Fprintf(c.Stdout, "...build output...\n")
@@ -610,37 +577,34 @@ Created function "my-function"
 						Name:      "builders",
 					},
 					Data: map[string]string{
-						"riff-function": "projectriff/builder:0.2.0",
+						"riff-application": "cloudfoundry/cnb:bionic",
 					},
 				},
 			},
 			ExpectCreates: []runtime.Object{
-				&buildv1alpha1.Function{
+				&buildv1alpha1.Application{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      functionName,
+						Name:      applicationName,
 					},
-					Spec: buildv1alpha1.FunctionSpec{
-						Image:    imageDefault,
-						Artifact: artifact,
-						Handler:  handler,
-						Invoker:  invoker,
+					Spec: buildv1alpha1.ApplicationSpec{
+						Image: imageDefault,
 					},
 				},
 			},
 			ExpectOutput: `
 ...build output...
-Created function "my-function"
+Created application "my-application"
 `,
 		},
 		{
 			Name:        "local path, default image, bad default",
-			Args:        []string{functionName, cli.LocalPathFlagName, localPath, cli.ArtifactFlagName, artifact, cli.HandlerFlagName, handler, cli.InvokerFlagName, invoker},
+			Args:        []string{applicationName, cli.LocalPathFlagName, localPath},
 			ShouldError: true,
 		},
 		{
 			Name: "local path, default image",
-			Args: []string{functionName, cli.LocalPathFlagName, localPath, cli.ArtifactFlagName, artifact, cli.HandlerFlagName, handler, cli.InvokerFlagName, invoker},
+			Args: []string{applicationName, cli.LocalPathFlagName, localPath},
 			GivenObjects: []runtime.Object{
 				&corev1.ConfigMap{
 					ObjectMeta: metav1.ObjectMeta{
@@ -655,23 +619,23 @@ Created function "my-function"
 			ShouldError: true,
 		},
 		{
-			Name: "error existing function",
-			Args: []string{functionName, cli.ImageFlagName, imageTag, cli.GitRepoFlagName, gitRepo},
+			Name: "error existing application",
+			Args: []string{applicationName, cli.ImageFlagName, imageTag, cli.GitRepoFlagName, gitRepo},
 			GivenObjects: []runtime.Object{
-				&buildv1alpha1.Function{
+				&buildv1alpha1.Application{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      functionName,
+						Name:      applicationName,
 					},
 				},
 			},
 			ExpectCreates: []runtime.Object{
-				&buildv1alpha1.Function{
+				&buildv1alpha1.Application{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      functionName,
+						Name:      applicationName,
 					},
-					Spec: buildv1alpha1.FunctionSpec{
+					Spec: buildv1alpha1.ApplicationSpec{
 						Image: imageTag,
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.GitSource{
@@ -686,17 +650,17 @@ Created function "my-function"
 		},
 		{
 			Name: "error during create",
-			Args: []string{functionName, cli.ImageFlagName, imageTag, cli.GitRepoFlagName, gitRepo},
+			Args: []string{applicationName, cli.ImageFlagName, imageTag, cli.GitRepoFlagName, gitRepo},
 			WithReactors: []rifftesting.ReactionFunc{
-				rifftesting.InduceFailure("create", "functions"),
+				rifftesting.InduceFailure("create", "applications"),
 			},
 			ExpectCreates: []runtime.Object{
-				&buildv1alpha1.Function{
+				&buildv1alpha1.Application{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      functionName,
+						Name:      applicationName,
 					},
-					Spec: buildv1alpha1.FunctionSpec{
+					Spec: buildv1alpha1.ApplicationSpec{
 						Image: imageTag,
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.GitSource{
@@ -711,19 +675,19 @@ Created function "my-function"
 		},
 		{
 			Name: "tail logs",
-			Args: []string{functionName, cli.ImageFlagName, imageTag, cli.GitRepoFlagName, gitRepo, cli.TailFlagName},
+			Args: []string{applicationName, cli.ImageFlagName, imageTag, cli.GitRepoFlagName, gitRepo, cli.TailFlagName},
 			Prepare: func(t *testing.T, ctx context.Context, c *cli.Config) (context.Context, error) {
 				lw := cachetesting.NewFakeControllerSource()
 				ctx = k8s.WithListerWatcher(ctx, lw)
 
 				kail := &kailtesting.Logger{}
 				c.Kail = kail
-				kail.On("FunctionLogs", mock.Anything, &buildv1alpha1.Function{
+				kail.On("ApplicationLogs", mock.Anything, &buildv1alpha1.Application{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      functionName,
+						Name:      applicationName,
 					},
-					Spec: buildv1alpha1.FunctionSpec{
+					Spec: buildv1alpha1.ApplicationSpec{
 						Image: imageTag,
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.GitSource{
@@ -747,12 +711,12 @@ Created function "my-function"
 				return nil
 			},
 			ExpectCreates: []runtime.Object{
-				&buildv1alpha1.Function{
+				&buildv1alpha1.Application{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      functionName,
+						Name:      applicationName,
 					},
-					Spec: buildv1alpha1.FunctionSpec{
+					Spec: buildv1alpha1.ApplicationSpec{
 						Image: imageTag,
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.GitSource{
@@ -764,25 +728,25 @@ Created function "my-function"
 				},
 			},
 			ExpectOutput: `
-Created function "my-function"
+Created application "my-application"
 ...log output...
 `,
 		},
 		{
 			Name: "tail timeout",
-			Args: []string{functionName, cli.ImageFlagName, imageTag, cli.GitRepoFlagName, gitRepo, cli.TailFlagName, cli.WaitTimeoutFlagName, "5ms"},
+			Args: []string{applicationName, cli.ImageFlagName, imageTag, cli.GitRepoFlagName, gitRepo, cli.TailFlagName, cli.WaitTimeoutFlagName, "5ms"},
 			Prepare: func(t *testing.T, ctx context.Context, c *cli.Config) (context.Context, error) {
 				lw := cachetesting.NewFakeControllerSource()
 				ctx = k8s.WithListerWatcher(ctx, lw)
 
 				kail := &kailtesting.Logger{}
 				c.Kail = kail
-				kail.On("FunctionLogs", mock.Anything, &buildv1alpha1.Function{
+				kail.On("ApplicationLogs", mock.Anything, &buildv1alpha1.Application{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      functionName,
+						Name:      applicationName,
 					},
-					Spec: buildv1alpha1.FunctionSpec{
+					Spec: buildv1alpha1.ApplicationSpec{
 						Image: imageTag,
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.GitSource{
@@ -809,12 +773,12 @@ Created function "my-function"
 				return nil
 			},
 			ExpectCreates: []runtime.Object{
-				&buildv1alpha1.Function{
+				&buildv1alpha1.Application{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      functionName,
+						Name:      applicationName,
 					},
-					Spec: buildv1alpha1.FunctionSpec{
+					Spec: buildv1alpha1.ApplicationSpec{
 						Image: imageTag,
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.GitSource{
@@ -826,11 +790,11 @@ Created function "my-function"
 				},
 			},
 			ExpectOutput: `
-Created function "my-function"
+Created application "my-application"
 ...log output...
-Timeout after "5ms" waiting for "my-function" to become ready
-To view status run: riff function list --namespace default
-To continue watching logs run: riff function tail my-function --namespace default
+Timeout after "5ms" waiting for "my-application" to become ready
+To view status run: riff application list --namespace default
+To continue watching logs run: riff application tail my-application --namespace default
 `,
 			ShouldError: true,
 			Verify: func(t *testing.T, output string, err error) {
@@ -841,19 +805,19 @@ To continue watching logs run: riff function tail my-function --namespace defaul
 		},
 		{
 			Name: "tail error",
-			Args: []string{functionName, cli.ImageFlagName, imageTag, cli.GitRepoFlagName, gitRepo, cli.TailFlagName},
+			Args: []string{applicationName, cli.ImageFlagName, imageTag, cli.GitRepoFlagName, gitRepo, cli.TailFlagName},
 			Prepare: func(t *testing.T, ctx context.Context, c *cli.Config) (context.Context, error) {
 				lw := cachetesting.NewFakeControllerSource()
 				ctx = k8s.WithListerWatcher(ctx, lw)
 
 				kail := &kailtesting.Logger{}
 				c.Kail = kail
-				kail.On("FunctionLogs", mock.Anything, &buildv1alpha1.Function{
+				kail.On("ApplicationLogs", mock.Anything, &buildv1alpha1.Application{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      functionName,
+						Name:      applicationName,
 					},
-					Spec: buildv1alpha1.FunctionSpec{
+					Spec: buildv1alpha1.ApplicationSpec{
 						Image: imageTag,
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.GitSource{
@@ -875,12 +839,12 @@ To continue watching logs run: riff function tail my-function --namespace defaul
 				return nil
 			},
 			ExpectCreates: []runtime.Object{
-				&buildv1alpha1.Function{
+				&buildv1alpha1.Application{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      functionName,
+						Name:      applicationName,
 					},
-					Spec: buildv1alpha1.FunctionSpec{
+					Spec: buildv1alpha1.ApplicationSpec{
 						Image: imageTag,
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.GitSource{
@@ -904,5 +868,5 @@ To continue watching logs run: riff function tail my-function --namespace defaul
 		}
 	}
 
-	table.Run(t, commands.NewFunctionCreateCommand)
+	table.Run(t, commands.NewApplicationCreateCommand)
 }

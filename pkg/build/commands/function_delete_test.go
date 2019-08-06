@@ -19,26 +19,26 @@ package commands_test
 import (
 	"testing"
 
+	"github.com/projectriff/cli/pkg/build/commands"
 	"github.com/projectriff/cli/pkg/cli"
-	"github.com/projectriff/cli/pkg/riff/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 	buildv1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-func TestContainerDeleteOptions(t *testing.T) {
+func TestFunctionDeleteOptions(t *testing.T) {
 	table := rifftesting.OptionsTable{
 		{
 			Name: "invalid delete",
-			Options: &commands.ContainerDeleteOptions{
+			Options: &commands.FunctionDeleteOptions{
 				DeleteOptions: rifftesting.InvalidDeleteOptions,
 			},
 			ExpectFieldError: rifftesting.InvalidDeleteOptionsFieldError,
 		},
 		{
 			Name: "valid delete",
-			Options: &commands.ContainerDeleteOptions{
+			Options: &commands.FunctionDeleteOptions{
 				DeleteOptions: rifftesting.ValidDeleteOptions,
 			},
 			ShouldValidate: true,
@@ -48,9 +48,9 @@ func TestContainerDeleteOptions(t *testing.T) {
 	table.Run(t)
 }
 
-func TestContainerDeleteCommand(t *testing.T) {
-	containerName := "test-container"
-	containerOtherName := "test-other-container"
+func TestFunctionDeleteCommand(t *testing.T) {
+	functionName := "test-function"
+	functionOtherName := "test-other-function"
 	defaultNamespace := "default"
 
 	table := rifftesting.CommandTable{
@@ -60,134 +60,134 @@ func TestContainerDeleteCommand(t *testing.T) {
 			ShouldError: true,
 		},
 		{
-			Name: "delete all containers",
+			Name: "delete all functions",
 			Args: []string{cli.AllFlagName},
 			GivenObjects: []runtime.Object{
-				&buildv1alpha1.Container{
+				&buildv1alpha1.Function{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      containerName,
+						Name:      functionName,
 						Namespace: defaultNamespace,
 					},
 				},
 			},
 			ExpectDeleteCollections: []rifftesting.DeleteCollectionRef{{
 				Group:     "build.projectriff.io",
-				Resource:  "containers",
+				Resource:  "functions",
 				Namespace: defaultNamespace,
 			}},
 			ExpectOutput: `
-Deleted containers in namespace "default"
+Deleted functions in namespace "default"
 `,
 		},
 		{
-			Name: "delete all containers error",
+			Name: "delete all functions error",
 			Args: []string{cli.AllFlagName},
 			GivenObjects: []runtime.Object{
-				&buildv1alpha1.Container{
+				&buildv1alpha1.Function{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      containerName,
+						Name:      functionName,
 						Namespace: defaultNamespace,
 					},
 				},
 			},
 			WithReactors: []rifftesting.ReactionFunc{
-				rifftesting.InduceFailure("delete-collection", "containers"),
+				rifftesting.InduceFailure("delete-collection", "functions"),
 			},
 			ExpectDeleteCollections: []rifftesting.DeleteCollectionRef{{
 				Group:     "build.projectriff.io",
-				Resource:  "containers",
+				Resource:  "functions",
 				Namespace: defaultNamespace,
 			}},
 			ShouldError: true,
 		},
 		{
-			Name: "delete container",
-			Args: []string{containerName},
+			Name: "delete function",
+			Args: []string{functionName},
 			GivenObjects: []runtime.Object{
-				&buildv1alpha1.Container{
+				&buildv1alpha1.Function{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      containerName,
+						Name:      functionName,
 						Namespace: defaultNamespace,
 					},
 				},
 			},
 			ExpectDeletes: []rifftesting.DeleteRef{{
 				Group:     "build.projectriff.io",
-				Resource:  "containers",
+				Resource:  "functions",
 				Namespace: defaultNamespace,
-				Name:      containerName,
+				Name:      functionName,
 			}},
 			ExpectOutput: `
-Deleted container "test-container"
+Deleted function "test-function"
 `,
 		},
 		{
-			Name: "delete containers",
-			Args: []string{containerName, containerOtherName},
+			Name: "delete functions",
+			Args: []string{functionName, functionOtherName},
 			GivenObjects: []runtime.Object{
-				&buildv1alpha1.Container{
+				&buildv1alpha1.Function{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      containerName,
+						Name:      functionName,
 						Namespace: defaultNamespace,
 					},
 				},
-				&buildv1alpha1.Container{
+				&buildv1alpha1.Function{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      containerOtherName,
+						Name:      functionOtherName,
 						Namespace: defaultNamespace,
 					},
 				},
 			},
 			ExpectDeletes: []rifftesting.DeleteRef{{
 				Group:     "build.projectriff.io",
-				Resource:  "containers",
+				Resource:  "functions",
 				Namespace: defaultNamespace,
-				Name:      containerName,
+				Name:      functionName,
 			}, {
 				Group:     "build.projectriff.io",
-				Resource:  "containers",
+				Resource:  "functions",
 				Namespace: defaultNamespace,
-				Name:      containerOtherName,
+				Name:      functionOtherName,
 			}},
 			ExpectOutput: `
-Deleted container "test-container"
-Deleted container "test-other-container"
+Deleted function "test-function"
+Deleted function "test-other-function"
 `,
 		},
 		{
-			Name: "container does not exist",
-			Args: []string{containerName},
+			Name: "function does not exist",
+			Args: []string{functionName},
 			ExpectDeletes: []rifftesting.DeleteRef{{
 				Group:     "build.projectriff.io",
-				Resource:  "containers",
+				Resource:  "functions",
 				Namespace: defaultNamespace,
-				Name:      containerName,
+				Name:      functionName,
 			}},
 			ShouldError: true,
 		},
 		{
 			Name: "delete error",
-			Args: []string{containerName},
+			Args: []string{functionName},
 			GivenObjects: []runtime.Object{
-				&buildv1alpha1.Container{
+				&buildv1alpha1.Function{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      containerName,
+						Name:      functionName,
 						Namespace: defaultNamespace,
 					},
 				},
 			},
 			WithReactors: []rifftesting.ReactionFunc{
-				rifftesting.InduceFailure("delete", "containers"),
+				rifftesting.InduceFailure("delete", "functions"),
 			},
 			ExpectDeletes: []rifftesting.DeleteRef{{
 				Group:     "build.projectriff.io",
-				Resource:  "containers",
+				Resource:  "functions",
 				Namespace: defaultNamespace,
-				Name:      containerName,
+				Name:      functionName,
 			}},
 			ShouldError: true,
 		},
 	}
 
-	table.Run(t, commands.NewContainerDeleteCommand)
+	table.Run(t, commands.NewFunctionDeleteCommand)
 }

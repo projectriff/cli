@@ -21,26 +21,26 @@ import (
 	"testing"
 
 	duckv1beta1 "github.com/knative/pkg/apis/duck/v1beta1"
+	"github.com/projectriff/cli/pkg/build/commands"
 	"github.com/projectriff/cli/pkg/cli"
-	"github.com/projectriff/cli/pkg/riff/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 	buildv1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-func TestFunctionListOptions(t *testing.T) {
+func TestApplicationListOptions(t *testing.T) {
 	table := rifftesting.OptionsTable{
 		{
 			Name: "invalid list",
-			Options: &commands.FunctionListOptions{
+			Options: &commands.ApplicationListOptions{
 				ListOptions: rifftesting.InvalidListOptions,
 			},
 			ExpectFieldError: rifftesting.InvalidListOptionsFieldError,
 		},
 		{
 			Name: "valid list",
-			Options: &commands.FunctionListOptions{
+			Options: &commands.ApplicationListOptions{
 				ListOptions: rifftesting.ValidListOptions,
 			},
 			ShouldValidate: true,
@@ -50,9 +50,9 @@ func TestFunctionListOptions(t *testing.T) {
 	table.Run(t)
 }
 
-func TestFunctionListCommand(t *testing.T) {
-	functionName := "test-function"
-	functionOtherName := "test-other-function"
+func TestApplicationListCommand(t *testing.T) {
+	applicationName := "test-application"
+	applicationOtherName := "test-other-application"
 	defaultNamespace := "default"
 	otherNamespace := "other-namespace"
 
@@ -71,103 +71,101 @@ func TestFunctionListCommand(t *testing.T) {
 			Name: "empty",
 			Args: []string{},
 			ExpectOutput: `
-No functions found.
+No applications found.
 `,
 		},
 		{
 			Name: "lists an item",
 			Args: []string{},
 			GivenObjects: []runtime.Object{
-				&buildv1alpha1.Function{
+				&buildv1alpha1.Application{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      functionName,
+						Name:      applicationName,
 						Namespace: defaultNamespace,
 					},
 				},
 			},
 			ExpectOutput: `
-NAME            LATEST IMAGE   ARTIFACT   HANDLER   INVOKER   STATUS      AGE
-test-function   <empty>        <empty>    <empty>   <empty>   <unknown>   <unknown>
+NAME               LATEST IMAGE   STATUS      AGE
+test-application   <empty>        <unknown>   <unknown>
 `,
 		},
 		{
 			Name: "filters by namespace",
 			Args: []string{cli.NamespaceFlagName, otherNamespace},
 			GivenObjects: []runtime.Object{
-				&buildv1alpha1.Function{
+				&buildv1alpha1.Application{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      functionName,
+						Name:      applicationName,
 						Namespace: defaultNamespace,
 					},
 				},
 			},
 			ExpectOutput: `
-No functions found.
+No applications found.
 `,
 		},
 		{
 			Name: "all namespace",
 			Args: []string{cli.AllNamespacesFlagName},
 			GivenObjects: []runtime.Object{
-				&buildv1alpha1.Function{
+				&buildv1alpha1.Application{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      functionName,
+						Name:      applicationName,
 						Namespace: defaultNamespace,
 					},
 				},
-				&buildv1alpha1.Function{
+				&buildv1alpha1.Application{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      functionOtherName,
+						Name:      applicationOtherName,
 						Namespace: otherNamespace,
 					},
 				},
 			},
 			ExpectOutput: `
-NAMESPACE         NAME                  LATEST IMAGE   ARTIFACT   HANDLER   INVOKER   STATUS      AGE
-default           test-function         <empty>        <empty>    <empty>   <empty>   <unknown>   <unknown>
-other-namespace   test-other-function   <empty>        <empty>    <empty>   <empty>   <unknown>   <unknown>
+NAMESPACE         NAME                     LATEST IMAGE   STATUS      AGE
+default           test-application         <empty>        <unknown>   <unknown>
+other-namespace   test-other-application   <empty>        <unknown>   <unknown>
 `,
 		},
 		{
 			Name: "table populates all columns",
 			Args: []string{},
 			GivenObjects: []runtime.Object{
-				&buildv1alpha1.Function{
+				&buildv1alpha1.Application{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      "upper",
+						Name:      "petclinic",
 						Namespace: defaultNamespace,
 					},
-					Spec: buildv1alpha1.FunctionSpec{
-						Image:    "projectriff/upper",
-						Artifact: "uppercase.js",
-						Handler:  "functions.Uppercase",
+					Spec: buildv1alpha1.ApplicationSpec{
+						Image: "projectriff/petclinic",
 					},
-					Status: buildv1alpha1.FunctionStatus{
+					Status: buildv1alpha1.ApplicationStatus{
 						Status: duckv1beta1.Status{
 							Conditions: duckv1beta1.Conditions{
-								{Type: buildv1alpha1.FunctionConditionReady, Status: "True"},
+								{Type: buildv1alpha1.ApplicationConditionReady, Status: "True"},
 							},
 						},
 						BuildStatus: buildv1alpha1.BuildStatus{
-							LatestImage: "projectriff/upper@sah256:abcdef1234",
+							LatestImage: "projectriff/petclinic@sah256:abcdef1234",
 						},
 					},
 				},
 			},
 			ExpectOutput: `
-NAME    LATEST IMAGE                          ARTIFACT       HANDLER               INVOKER   STATUS   AGE
-upper   projectriff/upper@sah256:abcdef1234   uppercase.js   functions.Uppercase   <empty>   Ready    <unknown>
+NAME        LATEST IMAGE                              STATUS   AGE
+petclinic   projectriff/petclinic@sah256:abcdef1234   Ready    <unknown>
 `,
 		},
 		{
 			Name: "list error",
 			Args: []string{},
 			WithReactors: []rifftesting.ReactionFunc{
-				rifftesting.InduceFailure("list", "functions"),
+				rifftesting.InduceFailure("list", "applications"),
 			},
 			ShouldError: true,
 		},
 	}
 
-	table.Run(t, commands.NewFunctionListCommand)
+	table.Run(t, commands.NewApplicationListCommand)
 }

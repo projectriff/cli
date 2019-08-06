@@ -22,7 +22,7 @@ import (
 
 	knapis "github.com/knative/pkg/apis"
 	duckv1beta1 "github.com/knative/pkg/apis/duck/v1beta1"
-	"github.com/projectriff/cli/pkg/riff/commands"
+	"github.com/projectriff/cli/pkg/build/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 	buildv1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
@@ -30,18 +30,18 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-func TestApplicationStatusOptions(t *testing.T) {
+func TestContainerStatusOptions(t *testing.T) {
 	table := rifftesting.OptionsTable{
 		{
 			Name: "invalid resource",
-			Options: &commands.ApplicationStatusOptions{
+			Options: &commands.ContainerStatusOptions{
 				ResourceOptions: rifftesting.InvalidResourceOptions,
 			},
 			ExpectFieldError: rifftesting.InvalidResourceOptionsFieldError,
 		},
 		{
 			Name: "valid resource",
-			Options: &commands.ApplicationStatusOptions{
+			Options: &commands.ContainerStatusOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 			},
 			ShouldValidate: true,
@@ -51,9 +51,9 @@ func TestApplicationStatusOptions(t *testing.T) {
 	table.Run(t)
 }
 
-func TestApplicationStatusCommand(t *testing.T) {
+func TestContainerStatusCommand(t *testing.T) {
 	defaultNamespace := "default"
-	applicationName := "my-application"
+	containerName := "my-container"
 
 	table := rifftesting.CommandTable{
 		{
@@ -63,14 +63,14 @@ func TestApplicationStatusCommand(t *testing.T) {
 		},
 		{
 			Name: "show status",
-			Args: []string{applicationName},
+			Args: []string{containerName},
 			GivenObjects: []runtime.Object{
-				&buildv1alpha1.Application{
+				&buildv1alpha1.Container{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      applicationName,
+						Name:      containerName,
 						Namespace: defaultNamespace,
 					},
-					Status: buildv1alpha1.ApplicationStatus{
+					Status: buildv1alpha1.ContainerStatus{
 						Status: duckv1beta1.Status{
 							Conditions: duckv1beta1.Conditions{
 								{
@@ -90,7 +90,7 @@ func TestApplicationStatusCommand(t *testing.T) {
 				},
 			},
 			ExpectOutput: `
-# my-application: OopsieDoodle
+# my-container: OopsieDoodle
 ---
 lastTransitionTime: "2019-06-29T01:44:05Z"
 message: a hopefully informative message about what went wrong
@@ -101,22 +101,22 @@ type: Ready
 		},
 		{
 			Name: "not found",
-			Args: []string{applicationName},
+			Args: []string{containerName},
 			ExpectOutput: `
-Application "default/my-application" not found
+Container "default/my-container" not found
 `,
 			ShouldError: true,
 		},
 		{
 			Name: "get error",
-			Args: []string{applicationName},
+			Args: []string{containerName},
 			GivenObjects: []runtime.Object{
-				&buildv1alpha1.Application{
+				&buildv1alpha1.Container{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      applicationName,
+						Name:      containerName,
 						Namespace: defaultNamespace,
 					},
-					Status: buildv1alpha1.ApplicationStatus{
+					Status: buildv1alpha1.ContainerStatus{
 						Status: duckv1beta1.Status{
 							Conditions: duckv1beta1.Conditions{
 								{
@@ -136,11 +136,11 @@ Application "default/my-application" not found
 				},
 			},
 			WithReactors: []rifftesting.ReactionFunc{
-				rifftesting.InduceFailure("get", "applications"),
+				rifftesting.InduceFailure("get", "containers"),
 			},
 			ShouldError: true,
 		},
 	}
 
-	table.Run(t, commands.NewApplicationStatusCommand)
+	table.Run(t, commands.NewContainerStatusCommand)
 }
