@@ -20,6 +20,7 @@ import (
 	"context"
 	"strings"
 
+	buildcommands "github.com/projectriff/cli/pkg/build/commands"
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/spf13/cobra"
 )
@@ -49,10 +50,10 @@ map those streams to function inputs and outputs with processors.
 `),
 	}
 
-	cmd.AddCommand(NewCredentialCommand(ctx, c))
-	cmd.AddCommand(NewApplicationCommand(ctx, c))
-	cmd.AddCommand(NewContainerCommand(ctx, c))
-	cmd.AddCommand(NewFunctionCommand(ctx, c))
+	cmd.AddCommand(buildcommands.NewCredentialCommand(ctx, c))
+	cmd.AddCommand(buildcommands.NewApplicationCommand(ctx, c))
+	cmd.AddCommand(buildcommands.NewContainerCommand(ctx, c))
+	cmd.AddCommand(buildcommands.NewFunctionCommand(ctx, c))
 
 	return cmd
 }

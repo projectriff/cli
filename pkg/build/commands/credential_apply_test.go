@@ -20,8 +20,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/projectriff/cli/pkg/build/commands"
 	"github.com/projectriff/cli/pkg/cli"
-	"github.com/projectriff/cli/pkg/riff/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 	"github.com/projectriff/system/pkg/apis/build"
 	corev1 "k8s.io/api/core/v1"

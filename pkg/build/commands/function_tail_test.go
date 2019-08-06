@@ -22,8 +22,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/projectriff/cli/pkg/build/commands"
 	"github.com/projectriff/cli/pkg/cli"
-	"github.com/projectriff/cli/pkg/riff/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 	kailtesting "github.com/projectriff/cli/pkg/testing/kail"
 	buildv1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
