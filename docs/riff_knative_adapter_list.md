@@ -12,7 +12,7 @@ List adapters in a namespace or across all namespaces.
 
 For detail regarding the status of a single adapter, run:
 
-	riff knative adapter status <adapter-name>
+    riff knative adapter status <adapter-name>
 
 ```
 riff knative adapter list [flags]

@@ -8,7 +8,11 @@ create an adapter to Knative Serving
 
 ### Synopsis
 
-<todo>
+Create a new adapter by watching a build for the latest image, pushing those
+images to a target Knative Service or Configuration.
+
+No new Knative resources are created directly by the adapter, it only updates
+the image for an existing resource.
 
 ```
 riff knative adapter create <name> [flags]

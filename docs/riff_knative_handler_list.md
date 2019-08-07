@@ -12,7 +12,7 @@ List handlers in a namespace or across all namespaces.
 
 For detail regarding the status of a single handler, run:
 
-	riff knative handler status <handler-name>
+    riff knative handler status <handler-name>
 
 ```
 riff knative handler list [flags]
@@ -43,5 +43,5 @@ riff knative handler list --all-namespaces
 
 ### SEE ALSO
 
-* [riff knative handler](riff_knative_handler.md)	 - handlers map HTTP requests to applications, functions or images
+* [riff knative handler](riff_knative_handler.md)	 - handlers map HTTP requests to a workload
 

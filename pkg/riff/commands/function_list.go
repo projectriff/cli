@@ -84,7 +84,7 @@ List functions in a namespace or across all namespaces.
 
 For detail regarding the status of a single function, run:
 
-	` + c.Name + ` function status <function-name>
+    ` + c.Name + ` function status <function-name>
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s function list", c.Name),

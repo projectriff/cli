@@ -4,23 +4,15 @@ title: "riff core handler create"
 ---
 ## riff core handler create
 
-create a handler to create a Deployment for an application, function, container or image
+create a handler to deploy a workload
 
 ### Synopsis
 
 Create a core handler.
 
-There are four way to create a handler:
-- from an application reference
-- from a function reference
-- from a container reference
-- from an image
-
-Application and function references are resolved within the same namespace as
-the handler. As the build produces new images, the image will roll out
-automatically.
-
-Image based handlers must be updated manually to roll out new images.
+Build references are resolved within the same namespace as the handler. As the
+build produces new images, the image will roll out automatically. Image based
+handlers must be updated manually to roll out new images.
 
 The runtime environment can be configured by --env for static key-value pairs
 and --env-from to map values from a ConfigMap or Secret.
@@ -64,5 +56,5 @@ riff core handler create my-image-handler --image registry.example.com/my-image:
 
 ### SEE ALSO
 
-* [riff core handler](riff_core_handler.md)	 - handlers map HTTP requests to applications, functions or images
+* [riff core handler](riff_core_handler.md)	 - handlers deploy a workload
 

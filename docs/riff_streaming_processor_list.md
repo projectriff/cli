@@ -12,7 +12,7 @@ List processors in a namespace or across all namespaces.
 
 For detail regarding the status of a single processor, run:
 
-	riff processor status <processor-name>
+    riff processor status <processor-name>
 
 ```
 riff streaming processor list [flags]

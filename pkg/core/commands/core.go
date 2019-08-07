@@ -27,11 +27,10 @@ import (
 func NewCoreCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "core",
-		Short: "core runtime for riff functions and applications",
+		Short: "core runtime for riff workloads",
 		Long: strings.TrimSpace(`
-The core runtime uses stock kubernetes resources to deploy a function or
-application. A Deployment is created along with a Service to forward traffic to
-the deployment.
+The core runtime uses stock kubernetes resources to deploy a workload. A
+Deployment is created along with a Service to forward traffic to the deployment.
 
 Ingress and autoscalers are not provided.
 `),

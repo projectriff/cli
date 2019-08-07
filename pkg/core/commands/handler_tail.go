@@ -75,8 +75,8 @@ func NewHandlerTailCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 Stream runtime logs for a handler until canceled. To cancel, press Ctl-c in the
 shell or kill the process.
 
-As new handler instances are started, the logs are displayed. To show historical logs use
-` + cli.SinceFlagName + `.
+As new handler pods are started, the logs are displayed. To show historical logs
+use ` + cli.SinceFlagName + `.
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s core handler tail my-handler", c.Name),

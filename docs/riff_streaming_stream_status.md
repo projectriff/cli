@@ -13,7 +13,7 @@ Display status details for a stream.
 The Ready condition is shown which should include a reason code and a
 descriptive message when the status is not "True". The status for the condition
 may be: "True", "False" or "Unknown". An "Unknown" status is common while the
-stream is being processed.
+stream roll out is being processed.
 
 ```
 riff streaming stream status <name> [flags]

@@ -12,7 +12,7 @@ List handlers in a namespace or across all namespaces.
 
 For detail regarding the status of a single handler, run:
 
-	riff core handler status <handler-name>
+    riff core handler status <handler-name>
 
 ```
 riff core handler list [flags]
@@ -43,5 +43,5 @@ riff core handler list --all-namespaces
 
 ### SEE ALSO
 
-* [riff core handler](riff_core_handler.md)	 - handlers map HTTP requests to applications, functions or images
+* [riff core handler](riff_core_handler.md)	 - handlers deploy a workload
 

@@ -49,8 +49,24 @@ func NewRootCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 
 	// add runtimes
 	cmd.AddCommand(corecommands.NewCoreCommand(ctx, c))
+	cmd.Long = strings.TrimSpace(cmd.Long + `
+
+The core runtime uses core Kubernetes resources like Deployment and Service to
+expose the workload over HTTP.
+`)
+
 	cmd.AddCommand(streamingcommands.NewStreamingCommand(ctx, c))
+	cmd.Long = strings.TrimSpace(cmd.Long + `
+
+The streaming runtime maps one or more input and output streams to a function.
+`)
+
 	cmd.AddCommand(knativecommands.NewKnativeCommand(ctx, c))
+	cmd.Long = strings.TrimSpace(cmd.Long + `
+
+The Knative runtime uses Knative Serving to expose the workload over HTTP with
+zero-to-n autoscaling and managed ingress.
+`)
 
 	// add root-only commands
 	cmd.AddCommand(NewCompletionCommand(ctx, c))

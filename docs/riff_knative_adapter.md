@@ -8,7 +8,12 @@ adapters push built images to Knative
 
 ### Synopsis
 
-<todo>
+The Knative runtime adapter updates a Knative Service or Configuration with the
+latest image from a riff build. As the build produces new images, they will be
+rolled out automatically to the target Knative resource.
+
+No new Knative resources are created directly by the adapter, it only updates
+the image for an existing resource.
 
 ### Options
 
@@ -26,7 +31,7 @@ adapters push built images to Knative
 
 ### SEE ALSO
 
-* [riff knative](riff_knative.md)	 - Knative runtime for riff functions
+* [riff knative](riff_knative.md)	 - Knative runtime for riff workloads
 * [riff knative adapter create](riff_knative_adapter_create.md)	 - create an adapter to Knative Serving
 * [riff knative adapter delete](riff_knative_adapter_delete.md)	 - delete adapter(s)
 * [riff knative adapter list](riff_knative_adapter_list.md)	 - table listing of adapters

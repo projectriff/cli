@@ -84,7 +84,7 @@ List processors in a namespace or across all namespaces.
 
 For detail regarding the status of a single processor, run:
 
-	` + c.Name + ` processor status <processor-name>
+    ` + c.Name + ` processor status <processor-name>
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s processor list", c.Name),

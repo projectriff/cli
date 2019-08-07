@@ -39,5 +39,5 @@ riff core handler delete --all
 
 ### SEE ALSO
 
-* [riff core handler](riff_core_handler.md)	 - handlers map HTTP requests to applications, functions or images
+* [riff core handler](riff_core_handler.md)	 - handlers deploy a workload
 
