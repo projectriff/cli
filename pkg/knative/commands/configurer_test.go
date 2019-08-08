@@ -23,7 +23,7 @@ import (
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 )
 
-func TestConfigurerCommand(t *testing.T) {
+func TestDeployerCommand(t *testing.T) {
 	table := rifftesting.CommandTable{
 		{
 			Name: "empty",
@@ -31,5 +31,5 @@ func TestConfigurerCommand(t *testing.T) {
 		},
 	}
 
-	table.Run(t, commands.NewConfigurerCommand)
+	table.Run(t, commands.NewDeployerCommand)
 }

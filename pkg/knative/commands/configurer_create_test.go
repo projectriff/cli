@@ -34,11 +34,11 @@ import (
 	cachetesting "k8s.io/client-go/tools/cache/testing"
 )
 
-func TestConfigurerCreateOptions(t *testing.T) {
+func TestDeployerCreateOptions(t *testing.T) {
 	table := rifftesting.OptionsTable{
 		{
 			Name: "invalid resource",
-			Options: &commands.ConfigurerCreateOptions{
+			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.InvalidResourceOptions,
 			},
 			ExpectFieldError: rifftesting.InvalidResourceOptionsFieldError.Also(
@@ -47,7 +47,7 @@ func TestConfigurerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "from application",
-			Options: &commands.ConfigurerCreateOptions{
+			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				ApplicationRef:  "my-application",
 			},
@@ -55,7 +55,7 @@ func TestConfigurerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "from container",
-			Options: &commands.ConfigurerCreateOptions{
+			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				ContainerRef:    "my-container",
 			},
@@ -63,7 +63,7 @@ func TestConfigurerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "from function",
-			Options: &commands.ConfigurerCreateOptions{
+			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				FunctionRef:     "my-function",
 			},
@@ -71,7 +71,7 @@ func TestConfigurerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "from image",
-			Options: &commands.ConfigurerCreateOptions{
+			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 			},
@@ -79,7 +79,7 @@ func TestConfigurerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "from application, container, funcation and image",
-			Options: &commands.ConfigurerCreateOptions{
+			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				ApplicationRef:  "my-application",
 				ContainerRef:    "my-container",
@@ -90,7 +90,7 @@ func TestConfigurerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "with env",
-			Options: &commands.ConfigurerCreateOptions{
+			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				Env:             []string{"VAR1=foo", "VAR2=bar"},
@@ -99,7 +99,7 @@ func TestConfigurerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "with invalid env",
-			Options: &commands.ConfigurerCreateOptions{
+			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				Env:             []string{"=foo"},
@@ -108,7 +108,7 @@ func TestConfigurerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "with envfrom secret",
-			Options: &commands.ConfigurerCreateOptions{
+			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				EnvFrom:         []string{"VAR1=secretKeyRef:name:key"},
@@ -117,7 +117,7 @@ func TestConfigurerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "with envfrom configmap",
-			Options: &commands.ConfigurerCreateOptions{
+			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				EnvFrom:         []string{"VAR1=configMapKeyRef:name:key"},
@@ -126,7 +126,7 @@ func TestConfigurerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "with invalid envfrom",
-			Options: &commands.ConfigurerCreateOptions{
+			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				EnvFrom:         []string{"VAR1=someOtherKeyRef:name:key"},
@@ -135,7 +135,7 @@ func TestConfigurerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "with tail",
-			Options: &commands.ConfigurerCreateOptions{
+			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				Tail:            true,
@@ -145,7 +145,7 @@ func TestConfigurerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "with tail, missing timeout",
-			Options: &commands.ConfigurerCreateOptions{
+			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				Tail:            true,
@@ -154,7 +154,7 @@ func TestConfigurerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "with tail, invalid timeout",
-			Options: &commands.ConfigurerCreateOptions{
+			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				Tail:            true,
@@ -164,7 +164,7 @@ func TestConfigurerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "dry run",
-			Options: &commands.ConfigurerCreateOptions{
+			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				DryRun:          true,
@@ -173,7 +173,7 @@ func TestConfigurerCreateOptions(t *testing.T) {
 		},
 		{
 			Name: "dry run, tail",
-			Options: &commands.ConfigurerCreateOptions{
+			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				Tail:            true,
@@ -187,9 +187,9 @@ func TestConfigurerCreateOptions(t *testing.T) {
 	table.Run(t)
 }
 
-func TestConfigurerCreateCommand(t *testing.T) {
+func TestDeployerCreateCommand(t *testing.T) {
 	defaultNamespace := "default"
-	configurerName := "my-configurer"
+	deployerName := "my-deployer"
 	image := "registry.example.com/repo@sha256:deadbeefdeadbeefdeadbeefdeadbeef"
 	applicationRef := "my-app"
 	containerRef := "my-container"
@@ -211,14 +211,14 @@ func TestConfigurerCreateCommand(t *testing.T) {
 		},
 		{
 			Name: "create from image",
-			Args: []string{configurerName, cli.ImageFlagName, image},
+			Args: []string{deployerName, cli.ImageFlagName, image},
 			ExpectCreates: []runtime.Object{
-				&knativev1alpha1.Configurer{
+				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      configurerName,
+						Name:      deployerName,
 					},
-					Spec: knativev1alpha1.ConfigurerSpec{
+					Spec: knativev1alpha1.DeployerSpec{
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{
 								{Image: image},
@@ -228,19 +228,19 @@ func TestConfigurerCreateCommand(t *testing.T) {
 				},
 			},
 			ExpectOutput: `
-Created configurer "my-configurer"
+Created deployer "my-deployer"
 `,
 		},
 		{
 			Name: "create from application ref",
-			Args: []string{configurerName, cli.ApplicationRefFlagName, applicationRef},
+			Args: []string{deployerName, cli.ApplicationRefFlagName, applicationRef},
 			ExpectCreates: []runtime.Object{
-				&knativev1alpha1.Configurer{
+				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      configurerName,
+						Name:      deployerName,
 					},
-					Spec: knativev1alpha1.ConfigurerSpec{
+					Spec: knativev1alpha1.DeployerSpec{
 						Build: &knativev1alpha1.Build{
 							ApplicationRef: applicationRef,
 						},
@@ -248,19 +248,19 @@ Created configurer "my-configurer"
 				},
 			},
 			ExpectOutput: `
-Created configurer "my-configurer"
+Created deployer "my-deployer"
 `,
 		},
 		{
 			Name: "create from container ref",
-			Args: []string{configurerName, cli.ContainerRefFlagName, containerRef},
+			Args: []string{deployerName, cli.ContainerRefFlagName, containerRef},
 			ExpectCreates: []runtime.Object{
-				&knativev1alpha1.Configurer{
+				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      configurerName,
+						Name:      deployerName,
 					},
-					Spec: knativev1alpha1.ConfigurerSpec{
+					Spec: knativev1alpha1.DeployerSpec{
 						Build: &knativev1alpha1.Build{
 							ContainerRef: containerRef,
 						},
@@ -268,19 +268,19 @@ Created configurer "my-configurer"
 				},
 			},
 			ExpectOutput: `
-Created configurer "my-configurer"
+Created deployer "my-deployer"
 `,
 		},
 		{
 			Name: "create from function ref",
-			Args: []string{configurerName, cli.FunctionRefFlagName, functionRef},
+			Args: []string{deployerName, cli.FunctionRefFlagName, functionRef},
 			ExpectCreates: []runtime.Object{
-				&knativev1alpha1.Configurer{
+				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      configurerName,
+						Name:      deployerName,
 					},
-					Spec: knativev1alpha1.ConfigurerSpec{
+					Spec: knativev1alpha1.DeployerSpec{
 						Build: &knativev1alpha1.Build{
 							FunctionRef: functionRef,
 						},
@@ -288,19 +288,19 @@ Created configurer "my-configurer"
 				},
 			},
 			ExpectOutput: `
-Created configurer "my-configurer"
+Created deployer "my-deployer"
 `,
 		},
 		{
 			Name: "dry run",
-			Args: []string{configurerName, cli.ImageFlagName, image, cli.DryRunFlagName},
+			Args: []string{deployerName, cli.ImageFlagName, image, cli.DryRunFlagName},
 			ExpectOutput: `
 ---
 apiVersion: knative.projectriff.io/v1alpha1
-kind: Configurer
+kind: Deployer
 metadata:
   creationTimestamp: null
-  name: my-configurer
+  name: my-deployer
   namespace: default
 spec:
   template:
@@ -310,19 +310,19 @@ spec:
       resources: {}
 status: {}
 
-Created configurer "my-configurer"
+Created deployer "my-deployer"
 `,
 		},
 		{
 			Name: "create from image with env and env-from",
-			Args: []string{configurerName, cli.ImageFlagName, image, cli.EnvFlagName, envVar, cli.EnvFlagName, envVarOther, cli.EnvFromFlagName, envVarFromConfigMap, cli.EnvFromFlagName, envVarFromSecret},
+			Args: []string{deployerName, cli.ImageFlagName, image, cli.EnvFlagName, envVar, cli.EnvFlagName, envVarOther, cli.EnvFromFlagName, envVarFromConfigMap, cli.EnvFromFlagName, envVarFromSecret},
 			ExpectCreates: []runtime.Object{
-				&knativev1alpha1.Configurer{
+				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      configurerName,
+						Name:      deployerName,
 					},
-					Spec: knativev1alpha1.ConfigurerSpec{
+					Spec: knativev1alpha1.DeployerSpec{
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{
 								{
@@ -360,27 +360,27 @@ Created configurer "my-configurer"
 				},
 			},
 			ExpectOutput: `
-Created configurer "my-configurer"
+Created deployer "my-deployer"
 `,
 		},
 		{
-			Name: "error existing configurer",
-			Args: []string{configurerName, cli.ImageFlagName, image},
+			Name: "error existing deployer",
+			Args: []string{deployerName, cli.ImageFlagName, image},
 			GivenObjects: []runtime.Object{
-				&knativev1alpha1.Configurer{
+				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      configurerName,
+						Name:      deployerName,
 					},
 				},
 			},
 			ExpectCreates: []runtime.Object{
-				&knativev1alpha1.Configurer{
+				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      configurerName,
+						Name:      deployerName,
 					},
-					Spec: knativev1alpha1.ConfigurerSpec{
+					Spec: knativev1alpha1.DeployerSpec{
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{
 								{Image: image},
@@ -393,17 +393,17 @@ Created configurer "my-configurer"
 		},
 		{
 			Name: "error during create",
-			Args: []string{configurerName, cli.ImageFlagName, image},
+			Args: []string{deployerName, cli.ImageFlagName, image},
 			WithReactors: []rifftesting.ReactionFunc{
-				rifftesting.InduceFailure("create", "configurers"),
+				rifftesting.InduceFailure("create", "deployers"),
 			},
 			ExpectCreates: []runtime.Object{
-				&knativev1alpha1.Configurer{
+				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      configurerName,
+						Name:      deployerName,
 					},
-					Spec: knativev1alpha1.ConfigurerSpec{
+					Spec: knativev1alpha1.DeployerSpec{
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{
 								{Image: image},
@@ -416,19 +416,19 @@ Created configurer "my-configurer"
 		},
 		{
 			Name: "tail logs",
-			Args: []string{configurerName, cli.ImageFlagName, image, cli.TailFlagName},
+			Args: []string{deployerName, cli.ImageFlagName, image, cli.TailFlagName},
 			Prepare: func(t *testing.T, ctx context.Context, c *cli.Config) (context.Context, error) {
 				lw := cachetesting.NewFakeControllerSource()
 				ctx = k8s.WithListerWatcher(ctx, lw)
 
 				kail := &kailtesting.Logger{}
 				c.Kail = kail
-				kail.On("KnativeConfigurerLogs", mock.Anything, &knativev1alpha1.Configurer{
+				kail.On("KnativeDeployerLogs", mock.Anything, &knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      configurerName,
+						Name:      deployerName,
 					},
-					Spec: knativev1alpha1.ConfigurerSpec{
+					Spec: knativev1alpha1.DeployerSpec{
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{{Image: image}},
 						},
@@ -448,12 +448,12 @@ Created configurer "my-configurer"
 				return nil
 			},
 			ExpectCreates: []runtime.Object{
-				&knativev1alpha1.Configurer{
+				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      configurerName,
+						Name:      deployerName,
 					},
-					Spec: knativev1alpha1.ConfigurerSpec{
+					Spec: knativev1alpha1.DeployerSpec{
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{{Image: image}},
 						},
@@ -461,25 +461,25 @@ Created configurer "my-configurer"
 				},
 			},
 			ExpectOutput: `
-Created configurer "my-configurer"
+Created deployer "my-deployer"
 ...log output...
 `,
 		},
 		{
 			Name: "tail timeout",
-			Args: []string{configurerName, cli.ImageFlagName, image, cli.TailFlagName, cli.WaitTimeoutFlagName, "5ms"},
+			Args: []string{deployerName, cli.ImageFlagName, image, cli.TailFlagName, cli.WaitTimeoutFlagName, "5ms"},
 			Prepare: func(t *testing.T, ctx context.Context, c *cli.Config) (context.Context, error) {
 				lw := cachetesting.NewFakeControllerSource()
 				ctx = k8s.WithListerWatcher(ctx, lw)
 
 				kail := &kailtesting.Logger{}
 				c.Kail = kail
-				kail.On("KnativeConfigurerLogs", mock.Anything, &knativev1alpha1.Configurer{
+				kail.On("KnativeDeployerLogs", mock.Anything, &knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      configurerName,
+						Name:      deployerName,
 					},
-					Spec: knativev1alpha1.ConfigurerSpec{
+					Spec: knativev1alpha1.DeployerSpec{
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{{Image: image}},
 						},
@@ -502,12 +502,12 @@ Created configurer "my-configurer"
 				return nil
 			},
 			ExpectCreates: []runtime.Object{
-				&knativev1alpha1.Configurer{
+				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      configurerName,
+						Name:      deployerName,
 					},
-					Spec: knativev1alpha1.ConfigurerSpec{
+					Spec: knativev1alpha1.DeployerSpec{
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{{Image: image}},
 						},
@@ -515,11 +515,11 @@ Created configurer "my-configurer"
 				},
 			},
 			ExpectOutput: `
-Created configurer "my-configurer"
+Created deployer "my-deployer"
 ...log output...
-Timeout after "5ms" waiting for "my-configurer" to become ready
-To view status run: riff knative configurer list --namespace default
-To continue watching logs run: riff knative configurer tail my-configurer --namespace default
+Timeout after "5ms" waiting for "my-deployer" to become ready
+To view status run: riff knative deployer list --namespace default
+To continue watching logs run: riff knative deployer tail my-deployer --namespace default
 `,
 			ShouldError: true,
 			Verify: func(t *testing.T, output string, err error) {
@@ -530,19 +530,19 @@ To continue watching logs run: riff knative configurer tail my-configurer --name
 		},
 		{
 			Name: "tail error",
-			Args: []string{configurerName, cli.ImageFlagName, image, cli.TailFlagName},
+			Args: []string{deployerName, cli.ImageFlagName, image, cli.TailFlagName},
 			Prepare: func(t *testing.T, ctx context.Context, c *cli.Config) (context.Context, error) {
 				lw := cachetesting.NewFakeControllerSource()
 				ctx = k8s.WithListerWatcher(ctx, lw)
 
 				kail := &kailtesting.Logger{}
 				c.Kail = kail
-				kail.On("KnativeConfigurerLogs", mock.Anything, &knativev1alpha1.Configurer{
+				kail.On("KnativeDeployerLogs", mock.Anything, &knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      configurerName,
+						Name:      deployerName,
 					},
-					Spec: knativev1alpha1.ConfigurerSpec{
+					Spec: knativev1alpha1.DeployerSpec{
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{{Image: image}},
 						},
@@ -560,12 +560,12 @@ To continue watching logs run: riff knative configurer tail my-configurer --name
 				return nil
 			},
 			ExpectCreates: []runtime.Object{
-				&knativev1alpha1.Configurer{
+				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      configurerName,
+						Name:      deployerName,
 					},
-					Spec: knativev1alpha1.ConfigurerSpec{
+					Spec: knativev1alpha1.DeployerSpec{
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{{Image: image}},
 						},
@@ -576,5 +576,5 @@ To continue watching logs run: riff knative configurer tail my-configurer --name
 		},
 	}
 
-	table.Run(t, commands.NewConfigurerCreateCommand)
+	table.Run(t, commands.NewDeployerCreateCommand)
 }

@@ -59,23 +59,33 @@ func (ds *DeployerStatus) MarkDeploymentNotOwned(name string) {
 }
 
 func (ds *DeployerStatus) PropagateDeploymentStatus(cds *appsv1.DeploymentStatus) {
-	var ac *appsv1.DeploymentCondition
+	var available, progressing *appsv1.DeploymentCondition
 	for _, c := range cds.Conditions {
-		if c.Type == appsv1.DeploymentAvailable {
-			ac = &c
-			break
+		switch c.Type {
+		case appsv1.DeploymentAvailable:
+			available = &c
+		case appsv1.DeploymentProgressing:
+			progressing = &c
 		}
 	}
-	if ac == nil {
+	if available == nil || progressing == nil {
+		return
+	}
+	if progressing.Status != corev1.ConditionTrue {
+		deployerCondSet.Manage(ds).MarkUnknown(DeployerConditionDeploymentReady, progressing.Reason, progressing.Message)
+		return
+	}
+	if available.Status == corev1.ConditionTrue && cds.ReadyReplicas == 0 {
+		deployerCondSet.Manage(ds).MarkUnknown(DeployerConditionDeploymentReady, "PendingReady", "waiting for at least one pod to be available")
 		return
 	}
 	switch {
-	case ac.Status == corev1.ConditionUnknown:
-		deployerCondSet.Manage(ds).MarkUnknown(DeployerConditionDeploymentReady, ac.Reason, ac.Message)
-	case ac.Status == corev1.ConditionTrue:
+	case available.Status == corev1.ConditionUnknown:
+		deployerCondSet.Manage(ds).MarkUnknown(DeployerConditionDeploymentReady, available.Reason, available.Message)
+	case available.Status == corev1.ConditionTrue:
 		deployerCondSet.Manage(ds).MarkTrue(DeployerConditionDeploymentReady)
-	case ac.Status == corev1.ConditionFalse:
-		deployerCondSet.Manage(ds).MarkFalse(DeployerConditionDeploymentReady, ac.Reason, ac.Message)
+	case available.Status == corev1.ConditionFalse:
+		deployerCondSet.Manage(ds).MarkFalse(DeployerConditionDeploymentReady, available.Reason, available.Message)
 	}
 }
 

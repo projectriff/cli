@@ -59,13 +59,13 @@ func (_m *Logger) FunctionLogs(ctx context.Context, function *v1alpha1.Function,
 	return r0
 }
 
-// KnativeConfigurerLogs provides a mock function with given fields: ctx, configurer, since, out
-func (_m *Logger) KnativeConfigurerLogs(ctx context.Context, configurer *knativev1alpha1.Configurer, since time.Duration, out io.Writer) error {
-	ret := _m.Called(ctx, configurer, since, out)
+// KnativeDeployerLogs provides a mock function with given fields: ctx, deployer, since, out
+func (_m *Logger) KnativeDeployerLogs(ctx context.Context, deployer *knativev1alpha1.Deployer, since time.Duration, out io.Writer) error {
+	ret := _m.Called(ctx, deployer, since, out)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *knativev1alpha1.Configurer, time.Duration, io.Writer) error); ok {
-		r0 = rf(ctx, configurer, since, out)
+	if rf, ok := ret.Get(0).(func(context.Context, *knativev1alpha1.Deployer, time.Duration, io.Writer) error); ok {
+		r0 = rf(ctx, deployer, since, out)
 	} else {
 		r0 = ret.Error(0)
 	}

@@ -35,7 +35,7 @@ a workload. Knative provides both a zero-to-n autoscaler and managed ingress.
 	}
 
 	cmd.AddCommand(NewAdapterCommand(ctx, c))
-	cmd.AddCommand(NewConfigurerCommand(ctx, c))
+	cmd.AddCommand(NewDeployerCommand(ctx, c))
 
 	return cmd
 }

@@ -24,32 +24,32 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewConfigurerCommand(ctx context.Context, c *cli.Config) *cobra.Command {
+func NewDeployerCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "configurer",
-		Short: "configurers map HTTP requests to a workload",
+		Use:   "deployer",
+		Short: "deployers map HTTP requests to a workload",
 		Long: strings.TrimSpace(`
-Configurers can be created for a build reference or image. Build based configurers
+Deployers can be created for a build reference or image. Build based deployers
 continuously watch for the latest built image and will deploy new images. If the
-underlying build resource is deleted, the configurer will continue to run, but will
-no longer self update. Image based configurers must be manually updated to trigger
+underlying build resource is deleted, the deployer will continue to run, but will
+no longer self update. Image based deployers must be manually updated to trigger
 roll out of an updated image.
 
 Users wishing to perform checks on built images before deploying them can
 provide their own external process to watch the build resource for new images
-and only update the configurer image once those checks pass.
+and only update the deployer image once those checks pass.
 
-The hostname to access the configurer is available in the configurer listing.
+The hostname to access the deployer is available in the deployer listing.
 `),
-		Aliases: []string{"configurers"},
+		Aliases: []string{"deployers"},
 	}
 
-	cmd.AddCommand(NewConfigurerListCommand(ctx, c))
-	cmd.AddCommand(NewConfigurerCreateCommand(ctx, c))
-	cmd.AddCommand(NewConfigurerDeleteCommand(ctx, c))
-	cmd.AddCommand(NewConfigurerStatusCommand(ctx, c))
-	cmd.AddCommand(NewConfigurerTailCommand(ctx, c))
-	cmd.AddCommand(NewConfigurerInvokeCommand(ctx, c))
+	cmd.AddCommand(NewDeployerListCommand(ctx, c))
+	cmd.AddCommand(NewDeployerCreateCommand(ctx, c))
+	cmd.AddCommand(NewDeployerDeleteCommand(ctx, c))
+	cmd.AddCommand(NewDeployerStatusCommand(ctx, c))
+	cmd.AddCommand(NewDeployerTailCommand(ctx, c))
+	cmd.AddCommand(NewDeployerInvokeCommand(ctx, c))
 
 	return cmd
 }

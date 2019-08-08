@@ -13,7 +13,7 @@ require (
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51
 	github.com/knative/pkg v0.0.0-20190624141606-d82505e6c5b4
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/projectriff/system v0.0.0-20190801222411-8820118ced4d
+	github.com/projectriff/system v0.0.0-20190809014550-2ab4df7b13f0
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.4.0
 	github.com/stretchr/testify v1.3.0
@@ -53,5 +53,3 @@ replace (
 	k8s.io/apimachinery => k8s.io/apimachinery v0.0.0-20190221084156-01f179d85dbc
 	k8s.io/client-go => k8s.io/client-go v0.0.0-20190226174127-78295b709ec6
 )
-
-replace github.com/projectriff/system => github.com/scothis/system v0.0.0-20190808010947-c8a2f5bc2649

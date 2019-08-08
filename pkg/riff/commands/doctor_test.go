@@ -86,7 +86,7 @@ deployers.core.projectriff.io         missing   missing
 processors.streaming.projectriff.io   missing   missing
 streams.streaming.projectriff.io      missing   missing
 adapters.knative.projectriff.io       missing   missing
-configurers.knative.projectriff.io    missing   missing
+deployers.knative.projectriff.io      missing   missing
 
 Installation is not OK
 `,
@@ -106,7 +106,7 @@ Installation is not OK
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "adapters.knative.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "configurers.knative.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.knative.projectriff.io"}},
 			},
 			ExpectCreates: merge(
 				selfSubjectAccessReviewRequests("default", "core", "configmaps", "", verbs...),
@@ -120,7 +120,7 @@ Installation is not OK
 				selfSubjectAccessReviewRequests("default", "streaming.projectriff.io", "processors", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "streaming.projectriff.io", "streams", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "knative.projectriff.io", "adapters", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "knative.projectriff.io", "configurers", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "knative.projectriff.io", "deployers", "", verbs...),
 			),
 			WithReactors: []rifftesting.ReactionFunc{
 				passAccessReview(),
@@ -144,7 +144,7 @@ deployers.core.projectriff.io         allowed   allowed
 processors.streaming.projectriff.io   allowed   allowed
 streams.streaming.projectriff.io      allowed   allowed
 adapters.knative.projectriff.io       allowed   allowed
-configurers.knative.projectriff.io    allowed   allowed
+deployers.knative.projectriff.io      allowed   allowed
 
 Installation is OK
 `,
@@ -164,7 +164,7 @@ Installation is OK
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "adapters.knative.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "configurers.knative.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.knative.projectriff.io"}},
 			},
 			ExpectCreates: merge(
 				selfSubjectAccessReviewRequests("default", "core", "configmaps", "", verbs...),
@@ -178,7 +178,7 @@ Installation is OK
 				selfSubjectAccessReviewRequests("default", "streaming.projectriff.io", "processors", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "streaming.projectriff.io", "streams", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "knative.projectriff.io", "adapters", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "knative.projectriff.io", "configurers", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "knative.projectriff.io", "deployers", "", verbs...),
 			),
 			WithReactors: []rifftesting.ReactionFunc{
 				denyAccessReviewOn("*", "create"),
@@ -207,7 +207,7 @@ deployers.core.projectriff.io         allowed   denied
 processors.streaming.projectriff.io   allowed   denied
 streams.streaming.projectriff.io      allowed   denied
 adapters.knative.projectriff.io       allowed   denied
-configurers.knative.projectriff.io    allowed   denied
+deployers.knative.projectriff.io      allowed   denied
 
 Installation is not OK
 `,
@@ -227,7 +227,7 @@ Installation is not OK
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "adapters.knative.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "configurers.knative.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.knative.projectriff.io"}},
 			},
 			ExpectCreates: merge(
 				selfSubjectAccessReviewRequests("default", "core", "configmaps", "", verbs...),
@@ -241,7 +241,7 @@ Installation is not OK
 				selfSubjectAccessReviewRequests("default", "streaming.projectriff.io", "processors", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "streaming.projectriff.io", "streams", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "knative.projectriff.io", "adapters", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "knative.projectriff.io", "configurers", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "knative.projectriff.io", "deployers", "", verbs...),
 			),
 			WithReactors: []rifftesting.ReactionFunc{
 				denyAccessReviewOn("*", "watch"),
@@ -267,7 +267,7 @@ deployers.core.projectriff.io         mixed   allowed
 processors.streaming.projectriff.io   mixed   allowed
 streams.streaming.projectriff.io      mixed   allowed
 adapters.knative.projectriff.io       mixed   allowed
-configurers.knative.projectriff.io    mixed   allowed
+deployers.knative.projectriff.io      mixed   allowed
 
 Installation is not OK
 `,
@@ -287,7 +287,7 @@ Installation is not OK
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "adapters.knative.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "configurers.knative.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.knative.projectriff.io"}},
 			},
 			WithReactors: []rifftesting.ReactionFunc{
 				rifftesting.InduceFailure("list", "namespaces"),
@@ -309,7 +309,7 @@ Installation is not OK
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "adapters.knative.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "configurers.knative.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.knative.projectriff.io"}},
 			},
 			ExpectCreates: merge(
 				selfSubjectAccessReviewRequests("default", "core", "configmaps", "", verbs...),
@@ -338,7 +338,7 @@ Installation is not OK
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "adapters.knative.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "configurers.knative.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.knative.projectriff.io"}},
 			},
 			ExpectCreates: selfSubjectAccessReviewRequests("default", "core", "configmaps", "", "get"),
 			WithReactors: []rifftesting.ReactionFunc{
@@ -361,7 +361,7 @@ Installation is not OK
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "adapters.knative.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "configurers.knative.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.knative.projectriff.io"}},
 			},
 			ExpectCreates: selfSubjectAccessReviewRequests("default", "core", "configmaps", "", "get"),
 			WithReactors: []rifftesting.ReactionFunc{
@@ -384,7 +384,7 @@ Installation is not OK
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "adapters.knative.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "configurers.knative.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.knative.projectriff.io"}},
 			},
 			ExpectCreates: merge(
 				selfSubjectAccessReviewRequests("default", "core", "configmaps", "", verbs...),
@@ -398,7 +398,7 @@ Installation is not OK
 				selfSubjectAccessReviewRequests("default", "streaming.projectriff.io", "processors", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "streaming.projectriff.io", "streams", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "knative.projectriff.io", "adapters", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "knative.projectriff.io", "configurers", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "knative.projectriff.io", "deployers", "", verbs...),
 			),
 			WithReactors: []rifftesting.ReactionFunc{
 				unknownAccessReviewOn("*", "*"),
@@ -423,7 +423,7 @@ deployers.core.projectriff.io         unknown   unknown
 processors.streaming.projectriff.io   unknown   unknown
 streams.streaming.projectriff.io      unknown   unknown
 adapters.knative.projectriff.io       unknown   unknown
-configurers.knative.projectriff.io    unknown   unknown
+deployers.knative.projectriff.io      unknown   unknown
 
 Installation is not OK
 `,

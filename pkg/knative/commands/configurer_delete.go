@@ -26,16 +26,16 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-type ConfigurerDeleteOptions struct {
+type DeployerDeleteOptions struct {
 	cli.DeleteOptions
 }
 
 var (
-	_ cli.Validatable = (*ConfigurerDeleteOptions)(nil)
-	_ cli.Executable  = (*ConfigurerDeleteOptions)(nil)
+	_ cli.Validatable = (*DeployerDeleteOptions)(nil)
+	_ cli.Executable  = (*DeployerDeleteOptions)(nil)
 )
 
-func (opts *ConfigurerDeleteOptions) Validate(ctx context.Context) *cli.FieldError {
+func (opts *DeployerDeleteOptions) Validate(ctx context.Context) *cli.FieldError {
 	errs := cli.EmptyFieldError
 
 	errs = errs.Also(opts.DeleteOptions.Validate(ctx))
@@ -43,14 +43,14 @@ func (opts *ConfigurerDeleteOptions) Validate(ctx context.Context) *cli.FieldErr
 	return errs
 }
 
-func (opts *ConfigurerDeleteOptions) Exec(ctx context.Context, c *cli.Config) error {
-	client := c.KnativeRuntime().Configurers(opts.Namespace)
+func (opts *DeployerDeleteOptions) Exec(ctx context.Context, c *cli.Config) error {
+	client := c.KnativeRuntime().Deployers(opts.Namespace)
 
 	if opts.All {
 		if err := client.DeleteCollection(nil, metav1.ListOptions{}); err != nil {
 			return err
 		}
-		c.Successf("Deleted configurers in namespace %q\n", opts.Namespace)
+		c.Successf("Deleted deployers in namespace %q\n", opts.Namespace)
 		return nil
 	}
 
@@ -58,28 +58,28 @@ func (opts *ConfigurerDeleteOptions) Exec(ctx context.Context, c *cli.Config) er
 		if err := client.Delete(name, nil); err != nil {
 			return err
 		}
-		c.Successf("Deleted configurer %q\n", name)
+		c.Successf("Deleted deployer %q\n", name)
 	}
 
 	return nil
 }
 
-func NewConfigurerDeleteCommand(ctx context.Context, c *cli.Config) *cobra.Command {
-	opts := &ConfigurerDeleteOptions{}
+func NewDeployerDeleteCommand(ctx context.Context, c *cli.Config) *cobra.Command {
+	opts := &DeployerDeleteOptions{}
 
 	cmd := &cobra.Command{
 		Use:   "delete",
-		Short: "delete configurer(s)",
+		Short: "delete deployer(s)",
 		Long: strings.TrimSpace(`
-Delete one or more configurers by name or all configurers within a namespace.
+Delete one or more deployers by name or all deployers within a namespace.
 
-New HTTP requests addressed to the configurer will fail. A new configurer created with
+New HTTP requests addressed to the deployer will fail. A new deployer created with
 the same name will start to receive new HTTP requests addressed to the same
-configurer.
+deployer.
 `),
 		Example: strings.Join([]string{
-			fmt.Sprintf("%s knative configurer delete my-configurer", c.Name),
-			fmt.Sprintf("%s knative configurer delete %s", c.Name, cli.AllFlagName),
+			fmt.Sprintf("%s knative deployer delete my-deployer", c.Name),
+			fmt.Sprintf("%s knative deployer delete %s", c.Name, cli.AllFlagName),
 		}, "\n"),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),
@@ -90,7 +90,7 @@ configurer.
 	)
 
 	cli.NamespaceFlag(cmd, c, &opts.Namespace)
-	cmd.Flags().BoolVar(&opts.All, cli.StripDash(cli.AllFlagName), false, "delete all configurers within the namespace")
+	cmd.Flags().BoolVar(&opts.All, cli.StripDash(cli.AllFlagName), false, "delete all deployers within the namespace")
 
 	return cmd
 }

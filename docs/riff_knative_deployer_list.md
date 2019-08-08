@@ -1,28 +1,28 @@
 ---
-id: riff-knative-configurer-list
-title: "riff knative configurer list"
+id: riff-knative-deployer-list
+title: "riff knative deployer list"
 ---
-## riff knative configurer list
+## riff knative deployer list
 
-table listing of configurers
+table listing of deployers
 
 ### Synopsis
 
-List configurers in a namespace or across all namespaces.
+List deployers in a namespace or across all namespaces.
 
-For detail regarding the status of a single configurer, run:
+For detail regarding the status of a single deployer, run:
 
-    riff knative configurer status <configurer-name>
+    riff knative deployer status <deployer-name>
 
 ```
-riff knative configurer list [flags]
+riff knative deployer list [flags]
 ```
 
 ### Examples
 
 ```
-riff knative configurer list
-riff knative configurer list --all-namespaces
+riff knative deployer list
+riff knative deployer list --all-namespaces
 ```
 
 ### Options
@@ -43,5 +43,5 @@ riff knative configurer list --all-namespaces
 
 ### SEE ALSO
 
-* [riff knative configurer](riff_knative_configurer.md)	 - configurers map HTTP requests to a workload
+* [riff knative deployer](riff_knative_deployer.md)	 - deployers map HTTP requests to a workload
 

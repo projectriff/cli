@@ -1,33 +1,33 @@
 ---
-id: riff-knative-configurer-create
-title: "riff knative configurer create"
+id: riff-knative-deployer-create
+title: "riff knative deployer create"
 ---
-## riff knative configurer create
+## riff knative deployer create
 
-create a configurer to map HTTP requests to a workload
+create a deployer to map HTTP requests to a workload
 
 ### Synopsis
 
-Create a Knative configurer.
+Create a Knative deployer.
 
-Build references are resolved within the same namespace as the configurer. As the
+Build references are resolved within the same namespace as the deployer. As the
 build produces new images, the image will roll out automatically. Image based
-configurers must be updated manually to roll out new images.
+deployers must be updated manually to roll out new images.
 
 The runtime environment can be configured by --env for static key-value pairs
 and --env-from to map values from a ConfigMap or Secret.
 
 ```
-riff knative configurer create <name> [flags]
+riff knative deployer create <name> [flags]
 ```
 
 ### Examples
 
 ```
-riff knative configurer create my-app-configurer --application-ref my-app
-riff knative configurer create my-func-configurer --function-ref my-func
-riff knative configurer create my-func-configurer --container-ref my-container
-riff knative configurer create my-image-configurer --image registry.example.com/my-image:latest
+riff knative deployer create my-app-deployer --application-ref my-app
+riff knative deployer create my-func-deployer --function-ref my-func
+riff knative deployer create my-func-deployer --container-ref my-container
+riff knative deployer create my-image-deployer --image registry.example.com/my-image:latest
 ```
 
 ### Options
@@ -42,8 +42,8 @@ riff knative configurer create my-image-configurer --image registry.example.com/
   -h, --help                    help for create
       --image image             container image to deploy
   -n, --namespace name          kubernetes namespace (defaulted from kube config)
-      --tail                    watch configurer logs
-      --wait-timeout duration   duration to wait for the configurer to become ready when watching logs (default "10m")
+      --tail                    watch deployer logs
+      --wait-timeout duration   duration to wait for the deployer to become ready when watching logs (default "10m")
 ```
 
 ### Options inherited from parent commands
@@ -56,5 +56,5 @@ riff knative configurer create my-image-configurer --image registry.example.com/
 
 ### SEE ALSO
 
-* [riff knative configurer](riff_knative_configurer.md)	 - configurers map HTTP requests to a workload
+* [riff knative deployer](riff_knative_deployer.md)	 - deployers map HTTP requests to a workload
 

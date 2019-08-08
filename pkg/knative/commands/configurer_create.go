@@ -33,7 +33,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-type ConfigurerCreateOptions struct {
+type DeployerCreateOptions struct {
 	cli.ResourceOptions
 
 	Image          string
@@ -51,12 +51,12 @@ type ConfigurerCreateOptions struct {
 }
 
 var (
-	_ cli.Validatable = (*ConfigurerCreateOptions)(nil)
-	_ cli.Executable  = (*ConfigurerCreateOptions)(nil)
-	_ cli.DryRunable  = (*ConfigurerCreateOptions)(nil)
+	_ cli.Validatable = (*DeployerCreateOptions)(nil)
+	_ cli.Executable  = (*DeployerCreateOptions)(nil)
+	_ cli.DryRunable  = (*DeployerCreateOptions)(nil)
 )
 
-func (opts *ConfigurerCreateOptions) Validate(ctx context.Context) *cli.FieldError {
+func (opts *DeployerCreateOptions) Validate(ctx context.Context) *cli.FieldError {
 	errs := cli.EmptyFieldError
 
 	errs = errs.Also(opts.ResourceOptions.Validate((ctx)))
@@ -113,13 +113,13 @@ func (opts *ConfigurerCreateOptions) Validate(ctx context.Context) *cli.FieldErr
 	return errs
 }
 
-func (opts *ConfigurerCreateOptions) Exec(ctx context.Context, c *cli.Config) error {
-	configurer := &knativev1alpha1.Configurer{
+func (opts *DeployerCreateOptions) Exec(ctx context.Context, c *cli.Config) error {
+	deployer := &knativev1alpha1.Deployer{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: opts.Namespace,
 			Name:      opts.Name,
 		},
-		Spec: knativev1alpha1.ConfigurerSpec{
+		Spec: knativev1alpha1.DeployerSpec{
 			Template: &corev1.PodSpec{
 				Containers: []corev1.Container{{}},
 			},
@@ -127,62 +127,62 @@ func (opts *ConfigurerCreateOptions) Exec(ctx context.Context, c *cli.Config) er
 	}
 
 	if opts.ApplicationRef != "" {
-		configurer.Spec.Build = &knativev1alpha1.Build{
+		deployer.Spec.Build = &knativev1alpha1.Build{
 			ApplicationRef: opts.ApplicationRef,
 		}
 	}
 	if opts.ContainerRef != "" {
-		configurer.Spec.Build = &knativev1alpha1.Build{
+		deployer.Spec.Build = &knativev1alpha1.Build{
 			ContainerRef: opts.ContainerRef,
 		}
 	}
 	if opts.FunctionRef != "" {
-		configurer.Spec.Build = &knativev1alpha1.Build{
+		deployer.Spec.Build = &knativev1alpha1.Build{
 			FunctionRef: opts.FunctionRef,
 		}
 	}
 	if opts.Image != "" {
-		configurer.Spec.Template.Containers[0].Image = opts.Image
+		deployer.Spec.Template.Containers[0].Image = opts.Image
 	}
 
 	for _, env := range opts.Env {
-		if configurer.Spec.Template.Containers[0].Env == nil {
-			configurer.Spec.Template.Containers[0].Env = []corev1.EnvVar{}
+		if deployer.Spec.Template.Containers[0].Env == nil {
+			deployer.Spec.Template.Containers[0].Env = []corev1.EnvVar{}
 		}
-		configurer.Spec.Template.Containers[0].Env = append(configurer.Spec.Template.Containers[0].Env, parsers.EnvVar(env))
+		deployer.Spec.Template.Containers[0].Env = append(deployer.Spec.Template.Containers[0].Env, parsers.EnvVar(env))
 	}
 	for _, env := range opts.EnvFrom {
-		if configurer.Spec.Template.Containers[0].Env == nil {
-			configurer.Spec.Template.Containers[0].Env = []corev1.EnvVar{}
+		if deployer.Spec.Template.Containers[0].Env == nil {
+			deployer.Spec.Template.Containers[0].Env = []corev1.EnvVar{}
 		}
-		configurer.Spec.Template.Containers[0].Env = append(configurer.Spec.Template.Containers[0].Env, parsers.EnvVarFrom(env))
+		deployer.Spec.Template.Containers[0].Env = append(deployer.Spec.Template.Containers[0].Env, parsers.EnvVarFrom(env))
 	}
 
 	if opts.DryRun {
-		cli.DryRunResource(ctx, configurer, configurer.GetGroupVersionKind())
+		cli.DryRunResource(ctx, deployer, deployer.GetGroupVersionKind())
 	} else {
 		var err error
-		configurer, err = c.KnativeRuntime().Configurers(opts.Namespace).Create(configurer)
+		deployer, err = c.KnativeRuntime().Deployers(opts.Namespace).Create(deployer)
 		if err != nil {
 			return err
 		}
 	}
-	c.Successf("Created configurer %q\n", configurer.Name)
+	c.Successf("Created deployer %q\n", deployer.Name)
 	if opts.Tail {
 		// err guarded by Validate()
 		timeout, _ := time.ParseDuration(opts.WaitTimeout)
 		err := race.Run(ctx, timeout,
 			func(ctx context.Context) error {
-				return k8s.WaitUntilReady(ctx, c.KnativeRuntime().RESTClient(), "configurers", configurer)
+				return k8s.WaitUntilReady(ctx, c.KnativeRuntime().RESTClient(), "deployers", deployer)
 			},
 			func(ctx context.Context) error {
-				return c.Kail.KnativeConfigurerLogs(ctx, configurer, cli.TailSinceCreateDefault, c.Stdout)
+				return c.Kail.KnativeDeployerLogs(ctx, deployer, cli.TailSinceCreateDefault, c.Stdout)
 			},
 		)
 		if err == context.DeadlineExceeded {
 			c.Errorf("Timeout after %q waiting for %q to become ready\n", opts.WaitTimeout, opts.Name)
-			c.Infof("To view status run: %s knative configurer list %s %s\n", c.Name, cli.NamespaceFlagName, opts.Namespace)
-			c.Infof("To continue watching logs run: %s knative configurer tail %s %s %s\n", c.Name, opts.Name, cli.NamespaceFlagName, opts.Namespace)
+			c.Infof("To view status run: %s knative deployer list %s %s\n", c.Name, cli.NamespaceFlagName, opts.Namespace)
+			c.Infof("To continue watching logs run: %s knative deployer tail %s %s %s\n", c.Name, opts.Name, cli.NamespaceFlagName, opts.Namespace)
 			err = cli.SilenceError(err)
 		}
 		if err != nil {
@@ -192,31 +192,31 @@ func (opts *ConfigurerCreateOptions) Exec(ctx context.Context, c *cli.Config) er
 	return nil
 }
 
-func (opts *ConfigurerCreateOptions) IsDryRun() bool {
+func (opts *DeployerCreateOptions) IsDryRun() bool {
 	return opts.DryRun
 }
 
-func NewConfigurerCreateCommand(ctx context.Context, c *cli.Config) *cobra.Command {
-	opts := &ConfigurerCreateOptions{}
+func NewDeployerCreateCommand(ctx context.Context, c *cli.Config) *cobra.Command {
+	opts := &DeployerCreateOptions{}
 
 	cmd := &cobra.Command{
 		Use:   "create",
-		Short: "create a configurer to map HTTP requests to a workload",
+		Short: "create a deployer to map HTTP requests to a workload",
 		Long: strings.TrimSpace(`
-Create a Knative configurer.
+Create a Knative deployer.
 
-Build references are resolved within the same namespace as the configurer. As the
+Build references are resolved within the same namespace as the deployer. As the
 build produces new images, the image will roll out automatically. Image based
-configurers must be updated manually to roll out new images.
+deployers must be updated manually to roll out new images.
 
 The runtime environment can be configured by ` + cli.EnvFlagName + ` for static key-value pairs
 and ` + cli.EnvFromFlagName + ` to map values from a ConfigMap or Secret.
 `),
 		Example: strings.Join([]string{
-			fmt.Sprintf("%s knative configurer create my-app-configurer %s my-app", c.Name, cli.ApplicationRefFlagName),
-			fmt.Sprintf("%s knative configurer create my-func-configurer %s my-func", c.Name, cli.FunctionRefFlagName),
-			fmt.Sprintf("%s knative configurer create my-func-configurer %s my-container", c.Name, cli.ContainerRefFlagName),
-			fmt.Sprintf("%s knative configurer create my-image-configurer %s registry.example.com/my-image:latest", c.Name, cli.ImageFlagName),
+			fmt.Sprintf("%s knative deployer create my-app-deployer %s my-app", c.Name, cli.ApplicationRefFlagName),
+			fmt.Sprintf("%s knative deployer create my-func-deployer %s my-func", c.Name, cli.FunctionRefFlagName),
+			fmt.Sprintf("%s knative deployer create my-func-deployer %s my-container", c.Name, cli.ContainerRefFlagName),
+			fmt.Sprintf("%s knative deployer create my-image-deployer %s registry.example.com/my-image:latest", c.Name, cli.ImageFlagName),
 		}, "\n"),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),
@@ -233,8 +233,8 @@ and ` + cli.EnvFromFlagName + ` to map values from a ConfigMap or Secret.
 	cmd.Flags().StringVar(&opts.FunctionRef, cli.StripDash(cli.FunctionRefFlagName), "", "`name` of function to deploy")
 	cmd.Flags().StringArrayVar(&opts.Env, cli.StripDash(cli.EnvFlagName), []string{}, fmt.Sprintf("environment `variable` defined as a key value pair separated by an equals sign, example %q (may be set multiple times)", fmt.Sprintf("%s MY_VAR=my-value", cli.EnvFlagName)))
 	cmd.Flags().StringArrayVar(&opts.EnvFrom, cli.StripDash(cli.EnvFromFlagName), []string{}, fmt.Sprintf("environment `variable` from a config map or secret, example %q, %q (may be set multiple times)", fmt.Sprintf("%s MY_SECRET_VALUE=secretKeyRef:my-secret-name:key-in-secret", cli.EnvFromFlagName), fmt.Sprintf("%s MY_CONFIG_MAP_VALUE=configMapKeyRef:my-config-map-name:key-in-config-map", cli.EnvFromFlagName)))
-	cmd.Flags().BoolVar(&opts.Tail, cli.StripDash(cli.TailFlagName), false, "watch configurer logs")
-	cmd.Flags().StringVar(&opts.WaitTimeout, cli.StripDash(cli.WaitTimeoutFlagName), "10m", "`duration` to wait for the configurer to become ready when watching logs")
+	cmd.Flags().BoolVar(&opts.Tail, cli.StripDash(cli.TailFlagName), false, "watch deployer logs")
+	cmd.Flags().StringVar(&opts.WaitTimeout, cli.StripDash(cli.WaitTimeoutFlagName), "10m", "`duration` to wait for the deployer to become ready when watching logs")
 	cmd.Flags().BoolVar(&opts.DryRun, cli.StripDash(cli.DryRunFlagName), false, "print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr")
 
 	return cmd

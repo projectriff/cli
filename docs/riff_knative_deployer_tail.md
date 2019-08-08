@@ -1,28 +1,28 @@
 ---
-id: riff-knative-configurer-tail
-title: "riff knative configurer tail"
+id: riff-knative-deployer-tail
+title: "riff knative deployer tail"
 ---
-## riff knative configurer tail
+## riff knative deployer tail
 
-watch configurer logs
+watch deployer logs
 
 ### Synopsis
 
-Stream runtime logs for a configurer until canceled. To cancel, press Ctl-c in the
+Stream runtime logs for a deployer until canceled. To cancel, press Ctl-c in the
 shell or kill the process.
 
-As new configurer pods are started, the logs are displayed. To show historical logs
+As new deployer pods are started, the logs are displayed. To show historical logs
 use --since.
 
 ```
-riff knative configurer tail <name> [flags]
+riff knative deployer tail <name> [flags]
 ```
 
 ### Examples
 
 ```
-riff knative configurer tail my-configurer
-riff knative configurer tail my-configurer --since 1h
+riff knative deployer tail my-deployer
+riff knative deployer tail my-deployer --since 1h
 ```
 
 ### Options
@@ -43,5 +43,5 @@ riff knative configurer tail my-configurer --since 1h
 
 ### SEE ALSO
 
-* [riff knative configurer](riff_knative_configurer.md)	 - configurers map HTTP requests to a workload
+* [riff knative deployer](riff_knative_deployer.md)	 - deployers map HTTP requests to a workload
 

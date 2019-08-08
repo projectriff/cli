@@ -301,7 +301,7 @@ github.com/peterbourgon/diskv
 github.com/pkg/errors
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
-# github.com/projectriff/system v0.0.0-20190801222411-8820118ced4d => github.com/scothis/system v0.0.0-20190808010947-c8a2f5bc2649
+# github.com/projectriff/system v0.0.0-20190809014550-2ab4df7b13f0
 github.com/projectriff/system/pkg/apis/build
 github.com/projectriff/system/pkg/apis/build/v1alpha1
 github.com/projectriff/system/pkg/apis/core/v1alpha1

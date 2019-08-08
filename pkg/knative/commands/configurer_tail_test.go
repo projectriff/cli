@@ -32,25 +32,25 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-func TestConfigurerTailOptions(t *testing.T) {
+func TestDeployerTailOptions(t *testing.T) {
 	table := rifftesting.OptionsTable{
 		{
 			Name: "invalid resource",
-			Options: &commands.ConfigurerTailOptions{
+			Options: &commands.DeployerTailOptions{
 				ResourceOptions: rifftesting.InvalidResourceOptions,
 			},
 			ExpectFieldError: rifftesting.InvalidResourceOptionsFieldError,
 		},
 		{
 			Name: "valid resource",
-			Options: &commands.ConfigurerTailOptions{
+			Options: &commands.DeployerTailOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 			},
 			ShouldValidate: true,
 		},
 		{
 			Name: "since duration",
-			Options: &commands.ConfigurerTailOptions{
+			Options: &commands.DeployerTailOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Since:           "1m",
 			},
@@ -58,7 +58,7 @@ func TestConfigurerTailOptions(t *testing.T) {
 		},
 		{
 			Name: "invalid duration",
-			Options: &commands.ConfigurerTailOptions{
+			Options: &commands.DeployerTailOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Since:           "1",
 			},
@@ -69,13 +69,13 @@ func TestConfigurerTailOptions(t *testing.T) {
 	table.Run(t)
 }
 
-func TestConfigurerTailCommand(t *testing.T) {
+func TestDeployerTailCommand(t *testing.T) {
 	defaultNamespace := "default"
-	configurerName := "my-configurer"
-	configurer := &knativev1alpha1.Configurer{
+	deployerName := "my-deployer"
+	deployer := &knativev1alpha1.Deployer{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: defaultNamespace,
-			Name:      configurerName,
+			Name:      deployerName,
 		},
 	}
 
@@ -87,11 +87,11 @@ func TestConfigurerTailCommand(t *testing.T) {
 		},
 		{
 			Name: "show logs",
-			Args: []string{configurerName},
+			Args: []string{deployerName},
 			Prepare: func(t *testing.T, ctx context.Context, c *cli.Config) (context.Context, error) {
 				kail := &kailtesting.Logger{}
 				c.Kail = kail
-				kail.On("KnativeConfigurerLogs", mock.Anything, configurer, cli.TailSinceDefault, mock.Anything).Return(nil).Run(func(args mock.Arguments) {
+				kail.On("KnativeDeployerLogs", mock.Anything, deployer, cli.TailSinceDefault, mock.Anything).Return(nil).Run(func(args mock.Arguments) {
 					fmt.Fprintf(c.Stdout, "...log output...\n")
 				})
 				return ctx, nil
@@ -102,7 +102,7 @@ func TestConfigurerTailCommand(t *testing.T) {
 				return nil
 			},
 			GivenObjects: []runtime.Object{
-				configurer,
+				deployer,
 			},
 			ExpectOutput: `
 ...log output...
@@ -110,11 +110,11 @@ func TestConfigurerTailCommand(t *testing.T) {
 		},
 		{
 			Name: "show logs since",
-			Args: []string{configurerName, cli.SinceFlagName, "1h"},
+			Args: []string{deployerName, cli.SinceFlagName, "1h"},
 			Prepare: func(t *testing.T, ctx context.Context, c *cli.Config) (context.Context, error) {
 				kail := &kailtesting.Logger{}
 				c.Kail = kail
-				kail.On("KnativeConfigurerLogs", mock.Anything, configurer, time.Hour, mock.Anything).Return(nil).Run(func(args mock.Arguments) {
+				kail.On("KnativeDeployerLogs", mock.Anything, deployer, time.Hour, mock.Anything).Return(nil).Run(func(args mock.Arguments) {
 					fmt.Fprintf(c.Stdout, "...log output...\n")
 				})
 				return ctx, nil
@@ -125,24 +125,24 @@ func TestConfigurerTailCommand(t *testing.T) {
 				return nil
 			},
 			GivenObjects: []runtime.Object{
-				configurer,
+				deployer,
 			},
 			ExpectOutput: `
 ...log output...
 `,
 		},
 		{
-			Name:        "unknown configurer",
-			Args:        []string{configurerName},
+			Name:        "unknown deployer",
+			Args:        []string{deployerName},
 			ShouldError: true,
 		},
 		{
 			Name: "kail error",
-			Args: []string{configurerName},
+			Args: []string{deployerName},
 			Prepare: func(t *testing.T, ctx context.Context, c *cli.Config) (context.Context, error) {
 				kail := &kailtesting.Logger{}
 				c.Kail = kail
-				kail.On("KnativeConfigurerLogs", mock.Anything, configurer, cli.TailSinceDefault, mock.Anything).Return(fmt.Errorf("kail error"))
+				kail.On("KnativeDeployerLogs", mock.Anything, deployer, cli.TailSinceDefault, mock.Anything).Return(fmt.Errorf("kail error"))
 				return ctx, nil
 			},
 			CleanUp: func(t *testing.T, ctx context.Context, c *cli.Config) error {
@@ -151,11 +151,11 @@ func TestConfigurerTailCommand(t *testing.T) {
 				return nil
 			},
 			GivenObjects: []runtime.Object{
-				configurer,
+				deployer,
 			},
 			ShouldError: true,
 		},
 	}
 
-	table.Run(t, commands.NewConfigurerTailCommand)
+	table.Run(t, commands.NewDeployerTailCommand)
 }

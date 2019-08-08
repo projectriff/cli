@@ -30,18 +30,18 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-func TestConfigurerStatusOptions(t *testing.T) {
+func TestDeployerStatusOptions(t *testing.T) {
 	table := rifftesting.OptionsTable{
 		{
 			Name: "invalid resource",
-			Options: &commands.ConfigurerStatusOptions{
+			Options: &commands.DeployerStatusOptions{
 				ResourceOptions: rifftesting.InvalidResourceOptions,
 			},
 			ExpectFieldError: rifftesting.InvalidResourceOptionsFieldError,
 		},
 		{
 			Name: "valid resource",
-			Options: &commands.ConfigurerStatusOptions{
+			Options: &commands.DeployerStatusOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 			},
 			ShouldValidate: true,
@@ -51,9 +51,9 @@ func TestConfigurerStatusOptions(t *testing.T) {
 	table.Run(t)
 }
 
-func TestConfigurerStatusCommand(t *testing.T) {
+func TestDeployerStatusCommand(t *testing.T) {
 	defaultNamespace := "default"
-	configurerName := "my-configurer"
+	deployerName := "my-deployer"
 
 	table := rifftesting.CommandTable{
 		{
@@ -63,14 +63,14 @@ func TestConfigurerStatusCommand(t *testing.T) {
 		},
 		{
 			Name: "show status",
-			Args: []string{configurerName},
+			Args: []string{deployerName},
 			GivenObjects: []runtime.Object{
-				&knativev1alpha1.Configurer{
+				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      configurerName,
+						Name:      deployerName,
 						Namespace: defaultNamespace,
 					},
-					Status: knativev1alpha1.ConfigurerStatus{
+					Status: knativev1alpha1.DeployerStatus{
 						Status: duckv1beta1.Status{
 							Conditions: duckv1beta1.Conditions{
 								{
@@ -90,7 +90,7 @@ func TestConfigurerStatusCommand(t *testing.T) {
 				},
 			},
 			ExpectOutput: `
-# my-configurer: OopsieDoodle
+# my-deployer: OopsieDoodle
 ---
 lastTransitionTime: "2019-06-29T01:44:05Z"
 message: a hopefully informative message about what went wrong
@@ -101,22 +101,22 @@ type: Ready
 		},
 		{
 			Name: "not found",
-			Args: []string{configurerName},
+			Args: []string{deployerName},
 			ExpectOutput: `
-Configurer "default/my-configurer" not found
+Deployer "default/my-deployer" not found
 `,
 			ShouldError: true,
 		},
 		{
 			Name: "get error",
-			Args: []string{configurerName},
+			Args: []string{deployerName},
 			GivenObjects: []runtime.Object{
-				&knativev1alpha1.Configurer{
+				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      configurerName,
+						Name:      deployerName,
 						Namespace: defaultNamespace,
 					},
-					Status: knativev1alpha1.ConfigurerStatus{
+					Status: knativev1alpha1.DeployerStatus{
 						Status: duckv1beta1.Status{
 							Conditions: duckv1beta1.Conditions{
 								{
@@ -136,11 +136,11 @@ Configurer "default/my-configurer" not found
 				},
 			},
 			WithReactors: []rifftesting.ReactionFunc{
-				rifftesting.InduceFailure("get", "configurers"),
+				rifftesting.InduceFailure("get", "deployers"),
 			},
 			ShouldError: true,
 		},
 	}
 
-	table.Run(t, commands.NewConfigurerStatusCommand)
+	table.Run(t, commands.NewDeployerStatusCommand)
 }

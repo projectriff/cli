@@ -31,16 +31,16 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-type ConfigurerListOptions struct {
+type DeployerListOptions struct {
 	cli.ListOptions
 }
 
 var (
-	_ cli.Validatable = (*ConfigurerListOptions)(nil)
-	_ cli.Executable  = (*ConfigurerListOptions)(nil)
+	_ cli.Validatable = (*DeployerListOptions)(nil)
+	_ cli.Executable  = (*DeployerListOptions)(nil)
 )
 
-func (opts *ConfigurerListOptions) Validate(ctx context.Context) *cli.FieldError {
+func (opts *DeployerListOptions) Validate(ctx context.Context) *cli.FieldError {
 	errs := cli.EmptyFieldError
 
 	errs = errs.Also(opts.ListOptions.Validate(ctx))
@@ -48,14 +48,14 @@ func (opts *ConfigurerListOptions) Validate(ctx context.Context) *cli.FieldError
 	return errs
 }
 
-func (opts *ConfigurerListOptions) Exec(ctx context.Context, c *cli.Config) error {
-	configurers, err := c.KnativeRuntime().Configurers(opts.Namespace).List(metav1.ListOptions{})
+func (opts *DeployerListOptions) Exec(ctx context.Context, c *cli.Config) error {
+	deployers, err := c.KnativeRuntime().Deployers(opts.Namespace).List(metav1.ListOptions{})
 	if err != nil {
 		return err
 	}
 
-	if len(configurers.Items) == 0 {
-		c.Infof("No configurers found.\n")
+	if len(deployers.Items) == 0 {
+		c.Infof("No deployers found.\n")
 		return nil
 	}
 
@@ -67,28 +67,28 @@ func (opts *ConfigurerListOptions) Exec(ctx context.Context, c *cli.Config) erro
 		h.TableHandler(columns, opts.print)
 	})
 
-	configurers = configurers.DeepCopy()
-	cli.SortByNamespaceAndName(configurers.Items)
+	deployers = deployers.DeepCopy()
+	cli.SortByNamespaceAndName(deployers.Items)
 
-	return tablePrinter.PrintObj(configurers, c.Stdout)
+	return tablePrinter.PrintObj(deployers, c.Stdout)
 }
 
-func NewConfigurerListCommand(ctx context.Context, c *cli.Config) *cobra.Command {
-	opts := &ConfigurerListOptions{}
+func NewDeployerListCommand(ctx context.Context, c *cli.Config) *cobra.Command {
+	opts := &DeployerListOptions{}
 
 	cmd := &cobra.Command{
 		Use:   "list",
-		Short: "table listing of configurers",
+		Short: "table listing of deployers",
 		Long: strings.TrimSpace(`
-List configurers in a namespace or across all namespaces.
+List deployers in a namespace or across all namespaces.
 
-For detail regarding the status of a single configurer, run:
+For detail regarding the status of a single deployer, run:
 
-    ` + c.Name + ` knative configurer status <configurer-name>
+    ` + c.Name + ` knative deployer status <deployer-name>
 `),
 		Example: strings.Join([]string{
-			fmt.Sprintf("%s knative configurer list", c.Name),
-			fmt.Sprintf("%s knative configurer list %s", c.Name, cli.AllNamespacesFlagName),
+			fmt.Sprintf("%s knative deployer list", c.Name),
+			fmt.Sprintf("%s knative deployer list %s", c.Name, cli.AllNamespacesFlagName),
 		}, "\n"),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),
@@ -99,10 +99,10 @@ For detail regarding the status of a single configurer, run:
 	return cmd
 }
 
-func (opts *ConfigurerListOptions) printList(configurers *knativev1alpha1.ConfigurerList, printOpts printers.PrintOptions) ([]metav1beta1.TableRow, error) {
-	rows := make([]metav1beta1.TableRow, 0, len(configurers.Items))
-	for i := range configurers.Items {
-		r, err := opts.print(&configurers.Items[i], printOpts)
+func (opts *DeployerListOptions) printList(deployers *knativev1alpha1.DeployerList, printOpts printers.PrintOptions) ([]metav1beta1.TableRow, error) {
+	rows := make([]metav1beta1.TableRow, 0, len(deployers.Items))
+	for i := range deployers.Items {
+		r, err := opts.print(&deployers.Items[i], printOpts)
 		if err != nil {
 			return nil, err
 		}
@@ -111,28 +111,28 @@ func (opts *ConfigurerListOptions) printList(configurers *knativev1alpha1.Config
 	return rows, nil
 }
 
-func (opts *ConfigurerListOptions) print(configurer *knativev1alpha1.Configurer, _ printers.PrintOptions) ([]metav1beta1.TableRow, error) {
+func (opts *DeployerListOptions) print(deployer *knativev1alpha1.Deployer, _ printers.PrintOptions) ([]metav1beta1.TableRow, error) {
 	now := time.Now()
 	row := metav1beta1.TableRow{
-		Object: runtime.RawExtension{Object: configurer},
+		Object: runtime.RawExtension{Object: deployer},
 	}
-	refType, refValue := opts.formatRef(configurer)
+	refType, refValue := opts.formatRef(deployer)
 	host := ""
-	if configurer.Status.URL != nil {
-		host = configurer.Status.URL.Host
+	if deployer.Status.URL != nil {
+		host = deployer.Status.URL.Host
 	}
 	row.Cells = append(row.Cells,
-		configurer.Name,
+		deployer.Name,
 		refType,
 		refValue,
 		cli.FormatEmptyString(host),
-		cli.FormatConditionStatus(configurer.Status.GetCondition(knativev1alpha1.ConfigurerConditionReady)),
-		cli.FormatTimestampSince(configurer.CreationTimestamp, now),
+		cli.FormatConditionStatus(deployer.Status.GetCondition(knativev1alpha1.DeployerConditionReady)),
+		cli.FormatTimestampSince(deployer.CreationTimestamp, now),
 	)
 	return []metav1beta1.TableRow{row}, nil
 }
 
-func (opts *ConfigurerListOptions) printColumns() []metav1beta1.TableColumnDefinition {
+func (opts *DeployerListOptions) printColumns() []metav1beta1.TableColumnDefinition {
 	return []metav1beta1.TableColumnDefinition{
 		{Name: "Name", Type: "string"},
 		{Name: "Type", Type: "string"},
@@ -143,19 +143,19 @@ func (opts *ConfigurerListOptions) printColumns() []metav1beta1.TableColumnDefin
 	}
 }
 
-func (opts *ConfigurerListOptions) formatRef(configurer *knativev1alpha1.Configurer) (string, string) {
-	if configurer.Spec.Build != nil {
-		if configurer.Spec.Build.ApplicationRef != "" {
-			return "application", configurer.Spec.Build.ApplicationRef
+func (opts *DeployerListOptions) formatRef(deployer *knativev1alpha1.Deployer) (string, string) {
+	if deployer.Spec.Build != nil {
+		if deployer.Spec.Build.ApplicationRef != "" {
+			return "application", deployer.Spec.Build.ApplicationRef
 		}
-		if configurer.Spec.Build.FunctionRef != "" {
-			return "function", configurer.Spec.Build.FunctionRef
+		if deployer.Spec.Build.FunctionRef != "" {
+			return "function", deployer.Spec.Build.FunctionRef
 		}
-		if configurer.Spec.Build.ContainerRef != "" {
-			return "container", configurer.Spec.Build.ContainerRef
+		if deployer.Spec.Build.ContainerRef != "" {
+			return "container", deployer.Spec.Build.ContainerRef
 		}
-	} else if configurer.Spec.Template != nil && configurer.Spec.Template.Containers[0].Image != "" {
-		return "image", configurer.Spec.Template.Containers[0].Image
+	} else if deployer.Spec.Template != nil && deployer.Spec.Template.Containers[0].Image != "" {
+		return "image", deployer.Spec.Template.Containers[0].Image
 	}
 	return cli.Swarnf("<unknown>"), cli.Swarnf("<unknown>")
 }

@@ -27,18 +27,18 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-type ConfigurerTailOptions struct {
+type DeployerTailOptions struct {
 	cli.ResourceOptions
 
 	Since string
 }
 
 var (
-	_ cli.Validatable = (*ConfigurerTailOptions)(nil)
-	_ cli.Executable  = (*ConfigurerTailOptions)(nil)
+	_ cli.Validatable = (*DeployerTailOptions)(nil)
+	_ cli.Executable  = (*DeployerTailOptions)(nil)
 )
 
-func (opts *ConfigurerTailOptions) Validate(ctx context.Context) *cli.FieldError {
+func (opts *DeployerTailOptions) Validate(ctx context.Context) *cli.FieldError {
 	errs := cli.EmptyFieldError
 
 	errs = errs.Also(opts.ResourceOptions.Validate(ctx))
@@ -52,8 +52,8 @@ func (opts *ConfigurerTailOptions) Validate(ctx context.Context) *cli.FieldError
 	return errs
 }
 
-func (opts *ConfigurerTailOptions) Exec(ctx context.Context, c *cli.Config) error {
-	configurer, err := c.KnativeRuntime().Configurers(opts.Namespace).Get(opts.Name, metav1.GetOptions{})
+func (opts *DeployerTailOptions) Exec(ctx context.Context, c *cli.Config) error {
+	deployer, err := c.KnativeRuntime().Deployers(opts.Namespace).Get(opts.Name, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}
@@ -62,25 +62,25 @@ func (opts *ConfigurerTailOptions) Exec(ctx context.Context, c *cli.Config) erro
 		// error is protected by Validate()
 		since, _ = time.ParseDuration(opts.Since)
 	}
-	return c.Kail.KnativeConfigurerLogs(ctx, configurer, since, c.Stdout)
+	return c.Kail.KnativeDeployerLogs(ctx, deployer, since, c.Stdout)
 }
 
-func NewConfigurerTailCommand(ctx context.Context, c *cli.Config) *cobra.Command {
-	opts := &ConfigurerTailOptions{}
+func NewDeployerTailCommand(ctx context.Context, c *cli.Config) *cobra.Command {
+	opts := &DeployerTailOptions{}
 
 	cmd := &cobra.Command{
 		Use:   "tail",
-		Short: "watch configurer logs",
+		Short: "watch deployer logs",
 		Long: strings.TrimSpace(`
-Stream runtime logs for a configurer until canceled. To cancel, press Ctl-c in the
+Stream runtime logs for a deployer until canceled. To cancel, press Ctl-c in the
 shell or kill the process.
 
-As new configurer pods are started, the logs are displayed. To show historical logs
+As new deployer pods are started, the logs are displayed. To show historical logs
 use ` + cli.SinceFlagName + `.
 `),
 		Example: strings.Join([]string{
-			fmt.Sprintf("%s knative configurer tail my-configurer", c.Name),
-			fmt.Sprintf("%s knative configurer tail my-configurer %s 1h", c.Name, cli.SinceFlagName),
+			fmt.Sprintf("%s knative deployer tail my-deployer", c.Name),
+			fmt.Sprintf("%s knative deployer tail my-deployer %s 1h", c.Name, cli.SinceFlagName),
 		}, "\n"),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),

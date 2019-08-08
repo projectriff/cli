@@ -26,7 +26,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-type ConfigurerInvokeOptions struct {
+type DeployerInvokeOptions struct {
 	cli.ResourceOptions
 
 	ContentTypeJSON bool
@@ -36,11 +36,11 @@ type ConfigurerInvokeOptions struct {
 }
 
 var (
-	_ cli.Validatable = (*ConfigurerInvokeOptions)(nil)
-	_ cli.Executable  = (*ConfigurerInvokeOptions)(nil)
+	_ cli.Validatable = (*DeployerInvokeOptions)(nil)
+	_ cli.Executable  = (*DeployerInvokeOptions)(nil)
 )
 
-func (opts *ConfigurerInvokeOptions) Validate(ctx context.Context) *cli.FieldError {
+func (opts *DeployerInvokeOptions) Validate(ctx context.Context) *cli.FieldError {
 	errs := cli.EmptyFieldError
 
 	errs = errs.Also(opts.ResourceOptions.Validate(ctx))
@@ -52,13 +52,13 @@ func (opts *ConfigurerInvokeOptions) Validate(ctx context.Context) *cli.FieldErr
 	return errs
 }
 
-func (opts *ConfigurerInvokeOptions) Exec(ctx context.Context, c *cli.Config) error {
-	configurer, err := c.KnativeRuntime().Configurers(opts.Namespace).Get(opts.Name, metav1.GetOptions{})
+func (opts *DeployerInvokeOptions) Exec(ctx context.Context, c *cli.Config) error {
+	deployer, err := c.KnativeRuntime().Deployers(opts.Namespace).Get(opts.Name, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}
-	if !configurer.Status.IsReady() || configurer.Status.URL == nil || configurer.Status.URL.Host == "" {
-		return fmt.Errorf("configurer %q is not ready", opts.Name)
+	if !deployer.Status.IsReady() || deployer.Status.URL == nil || deployer.Status.URL.Host == "" {
+		return fmt.Errorf("deployer %q is not ready", opts.Name)
 	}
 
 	ingress, err := opts.ingressServiceHost(c)
@@ -66,7 +66,7 @@ func (opts *ConfigurerInvokeOptions) Exec(ctx context.Context, c *cli.Config) er
 		return err
 	}
 
-	curlArgs := []string{ingress + opts.Path, "-H", fmt.Sprintf("Host: %s", configurer.Status.URL.Host)}
+	curlArgs := []string{ingress + opts.Path, "-H", fmt.Sprintf("Host: %s", deployer.Status.URL.Host)}
 	if opts.ContentTypeJSON {
 		curlArgs = append(curlArgs, "-H", "Content-Type: application/json")
 	}
@@ -84,20 +84,20 @@ func (opts *ConfigurerInvokeOptions) Exec(ctx context.Context, c *cli.Config) er
 	return curl.Run()
 }
 
-func NewConfigurerInvokeCommand(ctx context.Context, c *cli.Config) *cobra.Command {
-	opts := &ConfigurerInvokeOptions{}
+func NewDeployerInvokeCommand(ctx context.Context, c *cli.Config) *cobra.Command {
+	opts := &DeployerInvokeOptions{}
 
 	cmd := &cobra.Command{
 		Use:    "invoke",
 		Hidden: true,
-		Short:  "invoke an http request configurer using curl",
+		Short:  "invoke an http request deployer using curl",
 		Long: strings.TrimSpace(`
 This command is not supported and may be removed in the future.
 `),
 		Example: strings.Join([]string{
-			fmt.Sprintf("%s knative configurer invoke my-configurer", c.Name),
-			fmt.Sprintf("%s knative configurer invoke my-configurer --text -- -d 'hello' -w '\\n'", c.Name),
-			fmt.Sprintf("%s knative configurer invoke my-configurer /request/path", c.Name),
+			fmt.Sprintf("%s knative deployer invoke my-deployer", c.Name),
+			fmt.Sprintf("%s knative deployer invoke my-deployer --text -- -d 'hello' -w '\\n'", c.Name),
+			fmt.Sprintf("%s knative deployer invoke my-deployer /request/path", c.Name),
 		}, "\n"),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),
@@ -127,7 +127,7 @@ This command is not supported and may be removed in the future.
 	return cmd
 }
 
-func (opts *ConfigurerInvokeOptions) ingressServiceHost(c *cli.Config) (string, error) {
+func (opts *DeployerInvokeOptions) ingressServiceHost(c *cli.Config) (string, error) {
 	// TODO allow setting ingress manually
 	svc, err := c.Core().Services("istio-system").Get("istio-ingressgateway", metav1.GetOptions{})
 	if err != nil {

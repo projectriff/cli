@@ -28,16 +28,16 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-type ConfigurerStatusOptions struct {
+type DeployerStatusOptions struct {
 	cli.ResourceOptions
 }
 
 var (
-	_ cli.Validatable = (*ConfigurerStatusOptions)(nil)
-	_ cli.Executable  = (*ConfigurerStatusOptions)(nil)
+	_ cli.Validatable = (*DeployerStatusOptions)(nil)
+	_ cli.Executable  = (*DeployerStatusOptions)(nil)
 )
 
-func (opts *ConfigurerStatusOptions) Validate(ctx context.Context) *cli.FieldError {
+func (opts *DeployerStatusOptions) Validate(ctx context.Context) *cli.FieldError {
 	errs := cli.EmptyFieldError
 
 	errs = errs.Also(opts.ResourceOptions.Validate(ctx))
@@ -45,38 +45,38 @@ func (opts *ConfigurerStatusOptions) Validate(ctx context.Context) *cli.FieldErr
 	return errs
 }
 
-func (opts *ConfigurerStatusOptions) Exec(ctx context.Context, c *cli.Config) error {
-	configurer, err := c.KnativeRuntime().Configurers(opts.Namespace).Get(opts.Name, metav1.GetOptions{})
+func (opts *DeployerStatusOptions) Exec(ctx context.Context, c *cli.Config) error {
+	deployer, err := c.KnativeRuntime().Deployers(opts.Namespace).Get(opts.Name, metav1.GetOptions{})
 	if err != nil {
 		if !apierrs.IsNotFound(err) {
 			return err
 		}
-		c.Errorf("Configurer %q not found\n", fmt.Sprintf("%s/%s", opts.Namespace, opts.Name))
+		c.Errorf("Deployer %q not found\n", fmt.Sprintf("%s/%s", opts.Namespace, opts.Name))
 		return cli.SilenceError(err)
 	}
 
-	ready := configurer.Status.GetCondition(knativev1alpha1.ConfigurerConditionReady)
-	cli.PrintResourceStatus(c, configurer.Name, ready)
+	ready := deployer.Status.GetCondition(knativev1alpha1.DeployerConditionReady)
+	cli.PrintResourceStatus(c, deployer.Name, ready)
 
 	return nil
 }
 
-func NewConfigurerStatusCommand(ctx context.Context, c *cli.Config) *cobra.Command {
-	opts := &ConfigurerStatusOptions{}
+func NewDeployerStatusCommand(ctx context.Context, c *cli.Config) *cobra.Command {
+	opts := &DeployerStatusOptions{}
 
 	cmd := &cobra.Command{
 		Use:   "status",
-		Short: "show knative configurer status",
+		Short: "show knative deployer status",
 		Long: strings.TrimSpace(`
-Display status details for a configurer.
+Display status details for a deployer.
 
 The Ready condition is shown which should include a reason code and a
 descriptive message when the status is not "True". The status for the condition
 may be: "True", "False" or "Unknown". An "Unknown" status is common while the
-configurer roll out is processed.
+deployer roll out is processed.
 `),
 		Example: strings.Join([]string{
-			fmt.Sprintf("%s knative configurer status my-configurer", c.Name),
+			fmt.Sprintf("%s knative deployer status my-deployer", c.Name),
 		}, "\n"),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),

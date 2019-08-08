@@ -31,18 +31,18 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-func TestConfigurerListOptions(t *testing.T) {
+func TestDeployerListOptions(t *testing.T) {
 	table := rifftesting.OptionsTable{
 		{
 			Name: "invalid list",
-			Options: &commands.ConfigurerListOptions{
+			Options: &commands.DeployerListOptions{
 				ListOptions: rifftesting.InvalidListOptions,
 			},
 			ExpectFieldError: rifftesting.InvalidListOptionsFieldError,
 		},
 		{
 			Name: "valid list",
-			Options: &commands.ConfigurerListOptions{
+			Options: &commands.DeployerListOptions{
 				ListOptions: rifftesting.ValidListOptions,
 			},
 			ShouldValidate: true,
@@ -52,9 +52,9 @@ func TestConfigurerListOptions(t *testing.T) {
 	table.Run(t)
 }
 
-func TestConfigurerListCommand(t *testing.T) {
-	configurerName := "test-configurer"
-	configurerOtherName := "test-other-configurer"
+func TestDeployerListCommand(t *testing.T) {
+	deployerName := "test-deployer"
+	deployerOtherName := "test-other-deployer"
 	defaultNamespace := "default"
 	otherNamespace := "other-namespace"
 
@@ -73,83 +73,83 @@ func TestConfigurerListCommand(t *testing.T) {
 			Name: "empty",
 			Args: []string{},
 			ExpectOutput: `
-No configurers found.
+No deployers found.
 `,
 		},
 		{
 			Name: "lists an item",
 			Args: []string{},
 			GivenObjects: []runtime.Object{
-				&knativev1alpha1.Configurer{
+				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      configurerName,
+						Name:      deployerName,
 						Namespace: defaultNamespace,
 					},
 				},
 			},
 			ExpectOutput: `
-NAME              TYPE        REF         HOST      STATUS      AGE
-test-configurer   <unknown>   <unknown>   <empty>   <unknown>   <unknown>
+NAME            TYPE        REF         HOST      STATUS      AGE
+test-deployer   <unknown>   <unknown>   <empty>   <unknown>   <unknown>
 `,
 		},
 		{
 			Name: "filters by namespace",
 			Args: []string{cli.NamespaceFlagName, otherNamespace},
 			GivenObjects: []runtime.Object{
-				&knativev1alpha1.Configurer{
+				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      configurerName,
+						Name:      deployerName,
 						Namespace: defaultNamespace,
 					},
 				},
 			},
 			ExpectOutput: `
-No configurers found.
+No deployers found.
 `,
 		},
 		{
 			Name: "all namespace",
 			Args: []string{cli.AllNamespacesFlagName},
 			GivenObjects: []runtime.Object{
-				&knativev1alpha1.Configurer{
+				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      configurerName,
+						Name:      deployerName,
 						Namespace: defaultNamespace,
 					},
 				},
-				&knativev1alpha1.Configurer{
+				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      configurerOtherName,
+						Name:      deployerOtherName,
 						Namespace: otherNamespace,
 					},
 				},
 			},
 			ExpectOutput: `
-NAMESPACE         NAME                    TYPE        REF         HOST      STATUS      AGE
-default           test-configurer         <unknown>   <unknown>   <empty>   <unknown>   <unknown>
-other-namespace   test-other-configurer   <unknown>   <unknown>   <empty>   <unknown>   <unknown>
+NAMESPACE         NAME                  TYPE        REF         HOST      STATUS      AGE
+default           test-deployer         <unknown>   <unknown>   <empty>   <unknown>   <unknown>
+other-namespace   test-other-deployer   <unknown>   <unknown>   <empty>   <unknown>   <unknown>
 `,
 		},
 		{
 			Name: "table populates all columns",
 			Args: []string{},
 			GivenObjects: []runtime.Object{
-				&knativev1alpha1.Configurer{
+				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "img",
 						Namespace: defaultNamespace,
 					},
-					Spec: knativev1alpha1.ConfigurerSpec{
+					Spec: knativev1alpha1.DeployerSpec{
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{
 								{Image: "projectriff/upper"},
 							},
 						},
 					},
-					Status: knativev1alpha1.ConfigurerStatus{
+					Status: knativev1alpha1.DeployerStatus{
 						Status: duckv1beta1.Status{
 							Conditions: duckv1beta1.Conditions{
-								{Type: knativev1alpha1.ConfigurerConditionReady, Status: "True"},
+								{Type: knativev1alpha1.DeployerConditionReady, Status: "True"},
 							},
 						},
 						URL: &apis.URL{
@@ -157,18 +157,18 @@ other-namespace   test-other-configurer   <unknown>   <unknown>   <empty>   <unk
 						},
 					},
 				},
-				&knativev1alpha1.Configurer{
+				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "app",
 						Namespace: defaultNamespace,
 					},
-					Spec: knativev1alpha1.ConfigurerSpec{
+					Spec: knativev1alpha1.DeployerSpec{
 						Build: &knativev1alpha1.Build{ApplicationRef: "petclinic"},
 					},
-					Status: knativev1alpha1.ConfigurerStatus{
+					Status: knativev1alpha1.DeployerStatus{
 						Status: duckv1beta1.Status{
 							Conditions: duckv1beta1.Conditions{
-								{Type: knativev1alpha1.ConfigurerConditionReady, Status: "True"},
+								{Type: knativev1alpha1.DeployerConditionReady, Status: "True"},
 							},
 						},
 						URL: &apis.URL{
@@ -176,18 +176,18 @@ other-namespace   test-other-configurer   <unknown>   <unknown>   <empty>   <unk
 						},
 					},
 				},
-				&knativev1alpha1.Configurer{
+				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "func",
 						Namespace: defaultNamespace,
 					},
-					Spec: knativev1alpha1.ConfigurerSpec{
+					Spec: knativev1alpha1.DeployerSpec{
 						Build: &knativev1alpha1.Build{FunctionRef: "square"},
 					},
-					Status: knativev1alpha1.ConfigurerStatus{
+					Status: knativev1alpha1.DeployerStatus{
 						Status: duckv1beta1.Status{
 							Conditions: duckv1beta1.Conditions{
-								{Type: knativev1alpha1.ConfigurerConditionReady, Status: "True"},
+								{Type: knativev1alpha1.DeployerConditionReady, Status: "True"},
 							},
 						},
 						URL: &apis.URL{
@@ -195,18 +195,18 @@ other-namespace   test-other-configurer   <unknown>   <unknown>   <empty>   <unk
 						},
 					},
 				},
-				&knativev1alpha1.Configurer{
+				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "container",
 						Namespace: defaultNamespace,
 					},
-					Spec: knativev1alpha1.ConfigurerSpec{
+					Spec: knativev1alpha1.DeployerSpec{
 						Build: &knativev1alpha1.Build{ContainerRef: "busybox"},
 					},
-					Status: knativev1alpha1.ConfigurerStatus{
+					Status: knativev1alpha1.DeployerStatus{
 						Status: duckv1beta1.Status{
 							Conditions: duckv1beta1.Conditions{
-								{Type: knativev1alpha1.ConfigurerConditionReady, Status: "True"},
+								{Type: knativev1alpha1.DeployerConditionReady, Status: "True"},
 							},
 						},
 						URL: &apis.URL{
@@ -227,11 +227,11 @@ img         image         projectriff/upper   img.default.example.com         Re
 			Name: "list error",
 			Args: []string{},
 			WithReactors: []rifftesting.ReactionFunc{
-				rifftesting.InduceFailure("list", "configurers"),
+				rifftesting.InduceFailure("list", "deployers"),
 			},
 			ShouldError: true,
 		},
 	}
 
-	table.Run(t, commands.NewConfigurerListCommand)
+	table.Run(t, commands.NewDeployerListCommand)
 }

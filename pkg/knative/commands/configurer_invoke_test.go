@@ -34,25 +34,25 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-func TestConfigurerInvokeOptions(t *testing.T) {
+func TestDeployerInvokeOptions(t *testing.T) {
 	table := rifftesting.OptionsTable{
 		{
 			Name: "invalid resource",
-			Options: &commands.ConfigurerInvokeOptions{
+			Options: &commands.DeployerInvokeOptions{
 				ResourceOptions: rifftesting.InvalidResourceOptions,
 			},
 			ExpectFieldError: rifftesting.InvalidResourceOptionsFieldError,
 		},
 		{
 			Name: "valid resource",
-			Options: &commands.ConfigurerInvokeOptions{
+			Options: &commands.DeployerInvokeOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 			},
 			ShouldValidate: true,
 		},
 		{
 			Name: "json content type",
-			Options: &commands.ConfigurerInvokeOptions{
+			Options: &commands.DeployerInvokeOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				ContentTypeJSON: true,
 			},
@@ -60,7 +60,7 @@ func TestConfigurerInvokeOptions(t *testing.T) {
 		},
 		{
 			Name: "text content type",
-			Options: &commands.ConfigurerInvokeOptions{
+			Options: &commands.DeployerInvokeOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				ContentTypeText: true,
 			},
@@ -68,7 +68,7 @@ func TestConfigurerInvokeOptions(t *testing.T) {
 		},
 		{
 			Name: "multiple content types",
-			Options: &commands.ConfigurerInvokeOptions{
+			Options: &commands.DeployerInvokeOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				ContentTypeJSON: true,
 				ContentTypeText: true,
@@ -80,25 +80,25 @@ func TestConfigurerInvokeOptions(t *testing.T) {
 	table.Run(t)
 }
 
-func TestConfigurerInvokeCommand(t *testing.T) {
+func TestDeployerInvokeCommand(t *testing.T) {
 	t.Parallel()
 
-	configurerName := "test-configurer"
+	deployerName := "test-deployer"
 	defaultNamespace := "default"
 
-	configurer := &knativev1alpha1.Configurer{
+	deployer := &knativev1alpha1.Deployer{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: defaultNamespace,
-			Name:      configurerName,
+			Name:      deployerName,
 		},
-		Status: knativev1alpha1.ConfigurerStatus{
+		Status: knativev1alpha1.DeployerStatus{
 			Status: duckv1beta1.Status{
 				Conditions: duckv1beta1.Conditions{
-					{Type: knativev1alpha1.ConfigurerConditionReady, Status: "True"},
+					{Type: knativev1alpha1.DeployerConditionReady, Status: "True"},
 				},
 			},
 			URL: &apis.URL{
-				Host: fmt.Sprintf("%s.example.com", configurerName),
+				Host: fmt.Sprintf("%s.example.com", deployerName),
 			},
 		},
 	}
@@ -123,10 +123,10 @@ func TestConfigurerInvokeCommand(t *testing.T) {
 	table := rifftesting.CommandTable{
 		{
 			Name:       "ingress loadbalancer hostname",
-			Args:       []string{configurerName},
-			ExecHelper: "ConfigurerInvoke",
+			Args:       []string{deployerName},
+			ExecHelper: "DeployerInvoke",
 			GivenObjects: []runtime.Object{
-				configurer,
+				deployer,
 				&corev1.Service{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: "istio-system",
@@ -146,7 +146,7 @@ func TestConfigurerInvokeCommand(t *testing.T) {
 			},
 			Verify: func(t *testing.T, output string, err error) {
 				for _, expected := range []string{
-					"curl localhost -H 'Host: test-configurer.example.com'\n",
+					"curl localhost -H 'Host: test-deployer.example.com'\n",
 				} {
 					if !strings.Contains(output, expected) {
 						t.Errorf("expected command output to contain %q, actually %q", expected, output)
@@ -156,10 +156,10 @@ func TestConfigurerInvokeCommand(t *testing.T) {
 		},
 		{
 			Name:       "ingress loadbalancer ip",
-			Args:       []string{configurerName},
-			ExecHelper: "ConfigurerInvoke",
+			Args:       []string{deployerName},
+			ExecHelper: "DeployerInvoke",
 			GivenObjects: []runtime.Object{
-				configurer,
+				deployer,
 				&corev1.Service{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: "istio-system",
@@ -179,7 +179,7 @@ func TestConfigurerInvokeCommand(t *testing.T) {
 			},
 			Verify: func(t *testing.T, output string, err error) {
 				for _, expected := range []string{
-					"curl 127.0.0.1 -H 'Host: test-configurer.example.com'\n",
+					"curl 127.0.0.1 -H 'Host: test-deployer.example.com'\n",
 				} {
 					if !strings.Contains(output, expected) {
 						t.Errorf("expected command output to contain %q, actually %q", expected, output)
@@ -189,10 +189,10 @@ func TestConfigurerInvokeCommand(t *testing.T) {
 		},
 		{
 			Name:       "ingress nodeport",
-			Args:       []string{configurerName},
-			ExecHelper: "ConfigurerInvoke",
+			Args:       []string{deployerName},
+			ExecHelper: "DeployerInvoke",
 			GivenObjects: []runtime.Object{
-				configurer,
+				deployer,
 				&corev1.Service{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: "istio-system",
@@ -207,7 +207,7 @@ func TestConfigurerInvokeCommand(t *testing.T) {
 			},
 			Verify: func(t *testing.T, output string, err error) {
 				for _, expected := range []string{
-					"curl http://localhost:54321 -H 'Host: test-configurer.example.com'\n",
+					"curl http://localhost:54321 -H 'Host: test-deployer.example.com'\n",
 				} {
 					if !strings.Contains(output, expected) {
 						t.Errorf("expected command output to contain %q, actually %q", expected, output)
@@ -217,15 +217,15 @@ func TestConfigurerInvokeCommand(t *testing.T) {
 		},
 		{
 			Name:       "request path",
-			Args:       []string{configurerName, "/path"},
-			ExecHelper: "ConfigurerInvoke",
+			Args:       []string{deployerName, "/path"},
+			ExecHelper: "DeployerInvoke",
 			GivenObjects: []runtime.Object{
-				configurer,
+				deployer,
 				ingressService,
 			},
 			Verify: func(t *testing.T, output string, err error) {
 				for _, expected := range []string{
-					"curl localhost/path -H 'Host: test-configurer.example.com'\n",
+					"curl localhost/path -H 'Host: test-deployer.example.com'\n",
 				} {
 					if !strings.Contains(output, expected) {
 						t.Errorf("expected command output to contain %q, actually %q", expected, output)
@@ -235,15 +235,15 @@ func TestConfigurerInvokeCommand(t *testing.T) {
 		},
 		{
 			Name:       "content type json",
-			Args:       []string{configurerName, cli.JSONFlagName},
-			ExecHelper: "ConfigurerInvoke",
+			Args:       []string{deployerName, cli.JSONFlagName},
+			ExecHelper: "DeployerInvoke",
 			GivenObjects: []runtime.Object{
-				configurer,
+				deployer,
 				ingressService,
 			},
 			Verify: func(t *testing.T, output string, err error) {
 				for _, expected := range []string{
-					"curl localhost -H 'Host: test-configurer.example.com' -H 'Content-Type: application/json'\n",
+					"curl localhost -H 'Host: test-deployer.example.com' -H 'Content-Type: application/json'\n",
 				} {
 					if !strings.Contains(output, expected) {
 						t.Errorf("expected command output to contain %q, actually %q", expected, output)
@@ -253,15 +253,15 @@ func TestConfigurerInvokeCommand(t *testing.T) {
 		},
 		{
 			Name:       "content type text",
-			Args:       []string{configurerName, cli.TextFlagName},
-			ExecHelper: "ConfigurerInvoke",
+			Args:       []string{deployerName, cli.TextFlagName},
+			ExecHelper: "DeployerInvoke",
 			GivenObjects: []runtime.Object{
-				configurer,
+				deployer,
 				ingressService,
 			},
 			Verify: func(t *testing.T, output string, err error) {
 				for _, expected := range []string{
-					"curl localhost -H 'Host: test-configurer.example.com' -H 'Content-Type: text/plain'\n",
+					"curl localhost -H 'Host: test-deployer.example.com' -H 'Content-Type: text/plain'\n",
 				} {
 					if !strings.Contains(output, expected) {
 						t.Errorf("expected command output to contain %q, actually %q", expected, output)
@@ -271,21 +271,21 @@ func TestConfigurerInvokeCommand(t *testing.T) {
 		},
 		{
 			Name:       "pass extra args to curl",
-			Args:       []string{configurerName, "--", "-w", "\n"},
-			ExecHelper: "ConfigurerInvoke",
+			Args:       []string{deployerName, "--", "-w", "\n"},
+			ExecHelper: "DeployerInvoke",
 			GivenObjects: []runtime.Object{
-				configurer,
+				deployer,
 				ingressService,
 			},
 			ExpectOutput: `
-Command executed: curl localhost -H 'Host: test-configurer.example.com' -w '` + "\n" + `'
+Command executed: curl localhost -H 'Host: test-deployer.example.com' -w '` + "\n" + `'
 `,
 		},
 		{
 			Name: "unknown ingress",
-			Args: []string{configurerName},
+			Args: []string{deployerName},
 			GivenObjects: []runtime.Object{
-				configurer,
+				deployer,
 				&corev1.Service{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: "istio-system",
@@ -300,25 +300,25 @@ Command executed: curl localhost -H 'Host: test-configurer.example.com' -w '` + 
 		},
 		{
 			Name:       "missing ingress",
-			Args:       []string{configurerName},
-			ExecHelper: "ConfigurerInvoke",
+			Args:       []string{deployerName},
+			ExecHelper: "DeployerInvoke",
 			GivenObjects: []runtime.Object{
-				configurer,
+				deployer,
 			},
 			ShouldError: true,
 		},
 		{
-			Name: "configurer not ready",
-			Args: []string{configurerName},
+			Name: "deployer not ready",
+			Args: []string{deployerName},
 			GivenObjects: []runtime.Object{
-				&knativev1alpha1.Configurer{
+				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      configurerName,
+						Name:      deployerName,
 					},
-					Status: knativev1alpha1.ConfigurerStatus{
+					Status: knativev1alpha1.DeployerStatus{
 						URL: &apis.URL{
-							Host: fmt.Sprintf("%s.example.com", configurerName),
+							Host: fmt.Sprintf("%s.example.com", deployerName),
 						},
 					},
 				},
@@ -327,18 +327,18 @@ Command executed: curl localhost -H 'Host: test-configurer.example.com' -w '` + 
 			ShouldError: true,
 		},
 		{
-			Name: "configurer missing domain",
-			Args: []string{configurerName},
+			Name: "deployer missing domain",
+			Args: []string{deployerName},
 			GivenObjects: []runtime.Object{
-				&knativev1alpha1.Configurer{
+				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
-						Name:      configurerName,
+						Name:      deployerName,
 					},
-					Status: knativev1alpha1.ConfigurerStatus{
+					Status: knativev1alpha1.DeployerStatus{
 						Status: duckv1beta1.Status{
 							Conditions: duckv1beta1.Conditions{
-								{Type: knativev1alpha1.ConfigurerConditionReady, Status: "True"},
+								{Type: knativev1alpha1.DeployerConditionReady, Status: "True"},
 							},
 						},
 					},
@@ -348,8 +348,8 @@ Command executed: curl localhost -H 'Host: test-configurer.example.com' -w '` + 
 			ShouldError: true,
 		},
 		{
-			Name: "missing configurer",
-			Args: []string{configurerName},
+			Name: "missing deployer",
+			Args: []string{deployerName},
 			GivenObjects: []runtime.Object{
 				ingressService,
 			},
@@ -357,23 +357,23 @@ Command executed: curl localhost -H 'Host: test-configurer.example.com' -w '` + 
 		},
 		{
 			Name:       "curl error",
-			Args:       []string{configurerName},
-			ExecHelper: "ConfigurerInvokeError",
+			Args:       []string{deployerName},
+			ExecHelper: "DeployerInvokeError",
 			GivenObjects: []runtime.Object{
-				configurer,
+				deployer,
 				ingressService,
 			},
 			ExpectOutput: `
-Command executed: curl localhost -H 'Host: test-configurer.example.com'
+Command executed: curl localhost -H 'Host: test-deployer.example.com'
 `,
 			ShouldError: true,
 		},
 	}
 
-	table.Run(t, commands.NewConfigurerInvokeCommand)
+	table.Run(t, commands.NewDeployerInvokeCommand)
 }
 
-func TestHelperProcess_ConfigurerInvoke(t *testing.T) {
+func TestHelperProcess_DeployerInvoke(t *testing.T) {
 	if os.Getenv("GO_WANT_HELPER_PROCESS") != "1" {
 		return
 	}
@@ -381,7 +381,7 @@ func TestHelperProcess_ConfigurerInvoke(t *testing.T) {
 	os.Exit(0)
 }
 
-func TestHelperProcess_ConfigurerInvokeError(t *testing.T) {
+func TestHelperProcess_DeployerInvokeError(t *testing.T) {
 	if os.Getenv("GO_WANT_HELPER_PROCESS") != "1" {
 		return
 	}

@@ -44,7 +44,7 @@ type Logger interface {
 	FunctionLogs(ctx context.Context, function *buildv1alpha1.Function, since time.Duration, out io.Writer) error
 	CoreDeployerLogs(ctx context.Context, deployer *corev1alpha1.Deployer, since time.Duration, out io.Writer) error
 	StreamingProcessorLogs(ctx context.Context, processor *streamv1alpha1.Processor, since time.Duration, out io.Writer) error
-	KnativeConfigurerLogs(ctx context.Context, configurer *knativev1alpha1.Configurer, since time.Duration, out io.Writer) error
+	KnativeDeployerLogs(ctx context.Context, deployer *knativev1alpha1.Deployer, since time.Duration, out io.Writer) error
 }
 
 func NewDefault(k8s k8s.Client) Logger {
@@ -93,13 +93,13 @@ func (c *logger) StreamingProcessorLogs(ctx context.Context, processor *streamv1
 	return c.stream(ctx, processor.Namespace, selector, containers, since, out)
 }
 
-func (c *logger) KnativeConfigurerLogs(ctx context.Context, configurer *knativev1alpha1.Configurer, since time.Duration, out io.Writer) error {
-	selector, err := labels.Parse(fmt.Sprintf("%s=%s", knative.ConfigurerLabelKey, configurer.Name))
+func (c *logger) KnativeDeployerLogs(ctx context.Context, deployer *knativev1alpha1.Deployer, since time.Duration, out io.Writer) error {
+	selector, err := labels.Parse(fmt.Sprintf("%s=%s", knative.DeployerLabelKey, deployer.Name))
 	if err != nil {
 		panic(err)
 	}
 	containers := []string{"user-container"}
-	return c.stream(ctx, configurer.Namespace, selector, containers, since, out)
+	return c.stream(ctx, deployer.Namespace, selector, containers, since, out)
 }
 
 func (c *logger) stream(ctx context.Context, namespace string, selector labels.Selector, containers []string, since time.Duration, out io.Writer) error {

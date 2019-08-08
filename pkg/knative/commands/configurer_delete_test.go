@@ -27,18 +27,18 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-func TestConfigurerDeleteOptions(t *testing.T) {
+func TestDeployerDeleteOptions(t *testing.T) {
 	table := rifftesting.OptionsTable{
 		{
 			Name: "invalid delete",
-			Options: &commands.ConfigurerDeleteOptions{
+			Options: &commands.DeployerDeleteOptions{
 				DeleteOptions: rifftesting.InvalidDeleteOptions,
 			},
 			ExpectFieldError: rifftesting.InvalidDeleteOptionsFieldError,
 		},
 		{
 			Name: "valid delete",
-			Options: &commands.ConfigurerDeleteOptions{
+			Options: &commands.DeployerDeleteOptions{
 				DeleteOptions: rifftesting.ValidDeleteOptions,
 			},
 			ShouldValidate: true,
@@ -48,9 +48,9 @@ func TestConfigurerDeleteOptions(t *testing.T) {
 	table.Run(t)
 }
 
-func TestConfigurerDeleteCommand(t *testing.T) {
-	configurerName := "test-configurer"
-	configurerOtherName := "test-other-configurer"
+func TestDeployerDeleteCommand(t *testing.T) {
+	deployerName := "test-deployer"
+	deployerOtherName := "test-other-deployer"
 	defaultNamespace := "default"
 
 	table := rifftesting.CommandTable{
@@ -60,134 +60,134 @@ func TestConfigurerDeleteCommand(t *testing.T) {
 			ShouldError: true,
 		},
 		{
-			Name: "delete all configurers",
+			Name: "delete all deployers",
 			Args: []string{cli.AllFlagName},
 			GivenObjects: []runtime.Object{
-				&knativev1alpha1.Configurer{
+				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      configurerName,
+						Name:      deployerName,
 						Namespace: defaultNamespace,
 					},
 				},
 			},
 			ExpectDeleteCollections: []rifftesting.DeleteCollectionRef{{
 				Group:     "knative.projectriff.io",
-				Resource:  "configurers",
+				Resource:  "deployers",
 				Namespace: defaultNamespace,
 			}},
 			ExpectOutput: `
-Deleted configurers in namespace "default"
+Deleted deployers in namespace "default"
 `,
 		},
 		{
-			Name: "delete all configurers error",
+			Name: "delete all deployers error",
 			Args: []string{cli.AllFlagName},
 			GivenObjects: []runtime.Object{
-				&knativev1alpha1.Configurer{
+				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      configurerName,
+						Name:      deployerName,
 						Namespace: defaultNamespace,
 					},
 				},
 			},
 			WithReactors: []rifftesting.ReactionFunc{
-				rifftesting.InduceFailure("delete-collection", "configurers"),
+				rifftesting.InduceFailure("delete-collection", "deployers"),
 			},
 			ExpectDeleteCollections: []rifftesting.DeleteCollectionRef{{
 				Group:     "knative.projectriff.io",
-				Resource:  "configurers",
+				Resource:  "deployers",
 				Namespace: defaultNamespace,
 			}},
 			ShouldError: true,
 		},
 		{
-			Name: "delete configurer",
-			Args: []string{configurerName},
+			Name: "delete deployer",
+			Args: []string{deployerName},
 			GivenObjects: []runtime.Object{
-				&knativev1alpha1.Configurer{
+				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      configurerName,
+						Name:      deployerName,
 						Namespace: defaultNamespace,
 					},
 				},
 			},
 			ExpectDeletes: []rifftesting.DeleteRef{{
 				Group:     "knative.projectriff.io",
-				Resource:  "configurers",
+				Resource:  "deployers",
 				Namespace: defaultNamespace,
-				Name:      configurerName,
+				Name:      deployerName,
 			}},
 			ExpectOutput: `
-Deleted configurer "test-configurer"
+Deleted deployer "test-deployer"
 `,
 		},
 		{
-			Name: "delete configurers",
-			Args: []string{configurerName, configurerOtherName},
+			Name: "delete deployers",
+			Args: []string{deployerName, deployerOtherName},
 			GivenObjects: []runtime.Object{
-				&knativev1alpha1.Configurer{
+				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      configurerName,
+						Name:      deployerName,
 						Namespace: defaultNamespace,
 					},
 				},
-				&knativev1alpha1.Configurer{
+				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      configurerOtherName,
+						Name:      deployerOtherName,
 						Namespace: defaultNamespace,
 					},
 				},
 			},
 			ExpectDeletes: []rifftesting.DeleteRef{{
 				Group:     "knative.projectriff.io",
-				Resource:  "configurers",
+				Resource:  "deployers",
 				Namespace: defaultNamespace,
-				Name:      configurerName,
+				Name:      deployerName,
 			}, {
 				Group:     "knative.projectriff.io",
-				Resource:  "configurers",
+				Resource:  "deployers",
 				Namespace: defaultNamespace,
-				Name:      configurerOtherName,
+				Name:      deployerOtherName,
 			}},
 			ExpectOutput: `
-Deleted configurer "test-configurer"
-Deleted configurer "test-other-configurer"
+Deleted deployer "test-deployer"
+Deleted deployer "test-other-deployer"
 `,
 		},
 		{
-			Name: "configurer does not exist",
-			Args: []string{configurerName},
+			Name: "deployer does not exist",
+			Args: []string{deployerName},
 			ExpectDeletes: []rifftesting.DeleteRef{{
 				Group:     "knative.projectriff.io",
-				Resource:  "configurers",
+				Resource:  "deployers",
 				Namespace: defaultNamespace,
-				Name:      configurerName,
+				Name:      deployerName,
 			}},
 			ShouldError: true,
 		},
 		{
 			Name: "delete error",
-			Args: []string{configurerName},
+			Args: []string{deployerName},
 			GivenObjects: []runtime.Object{
-				&knativev1alpha1.Configurer{
+				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      configurerName,
+						Name:      deployerName,
 						Namespace: defaultNamespace,
 					},
 				},
 			},
 			WithReactors: []rifftesting.ReactionFunc{
-				rifftesting.InduceFailure("delete", "configurers"),
+				rifftesting.InduceFailure("delete", "deployers"),
 			},
 			ExpectDeletes: []rifftesting.DeleteRef{{
 				Group:     "knative.projectriff.io",
-				Resource:  "configurers",
+				Resource:  "deployers",
 				Namespace: defaultNamespace,
-				Name:      configurerName,
+				Name:      deployerName,
 			}},
 			ShouldError: true,
 		},
 	}
 
-	table.Run(t, commands.NewConfigurerDeleteCommand)
+	table.Run(t, commands.NewDeployerDeleteCommand)
 }
