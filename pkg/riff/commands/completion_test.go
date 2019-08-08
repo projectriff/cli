@@ -91,7 +91,7 @@ func TestCompletionCommand(t *testing.T) {
 			Args: []string{cli.ShellFlagName, "zsh"},
 			Verify: func(t *testing.T, output string, err error) {
 				for _, str := range []string{
-					"#compdef completion",
+					"#compdef _completion completion",
 				} {
 					if !strings.Contains(output, str) {
 						t.Errorf("expected completion output to contain %q\n", str)

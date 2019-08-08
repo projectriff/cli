@@ -27,10 +27,7 @@ require (
 require (
 	contrib.go.opencensus.io/exporter/stackdriver v0.10.2 // indirect
 	github.com/Azure/go-autorest v0.0.0-20190226174127-bca49d5b51a5 // indirect
-	github.com/cpuguy83/go-md2man v1.0.10 // indirect
 	github.com/evanphx/json-patch v4.2.0+incompatible // indirect
-	github.com/golang/groupcache v0.0.0-20190129154638-5b532d6fd5ef // indirect
-	github.com/google/btree v1.0.0 // indirect
 	github.com/google/gofuzz v1.0.0 // indirect
 	github.com/google/uuid v1.1.1 // indirect
 	github.com/googleapis/gnostic v0.2.0 // indirect
@@ -46,9 +43,6 @@ require (
 	github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742 // indirect
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
-	go.uber.org/atomic v1.4.0 // indirect
-	go.uber.org/multierr v1.1.0 // indirect
-	go.uber.org/zap v1.10.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20190502190224-411b2483e503 // indirect
 )
