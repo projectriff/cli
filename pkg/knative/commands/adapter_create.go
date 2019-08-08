@@ -222,8 +222,8 @@ the image for an existing resource.
 	cmd.Flags().StringVar(&opts.FunctionRef, cli.StripDash(cli.FunctionRefFlagName), "", "`name` of function to deploy")
 	cmd.Flags().StringVar(&opts.ConfigurationRef, cli.StripDash(cli.ConfigurationRefFlagName), "", "`name` of Knative configuration to update")
 	cmd.Flags().StringVar(&opts.ServiceRef, cli.StripDash(cli.ServiceRefFlagName), "", "`name` of Knative service to update")
-	cmd.Flags().BoolVar(&opts.Tail, cli.StripDash(cli.TailFlagName), false, "watch handler logs")
-	cmd.Flags().StringVar(&opts.WaitTimeout, cli.StripDash(cli.WaitTimeoutFlagName), "10m", "`duration` to wait for the handler to become ready when watching logs")
+	cmd.Flags().BoolVar(&opts.Tail, cli.StripDash(cli.TailFlagName), false, "watch adapter logs")
+	cmd.Flags().StringVar(&opts.WaitTimeout, cli.StripDash(cli.WaitTimeoutFlagName), "10m", "`duration` to wait for the adapter to become ready when watching logs")
 	cmd.Flags().BoolVar(&opts.DryRun, cli.StripDash(cli.DryRunFlagName), false, "print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr")
 
 	return cmd

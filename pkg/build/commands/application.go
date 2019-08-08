@@ -37,7 +37,7 @@ container.
 
 The application resource is only responsible for converting source code into a
 container. The application container image may then be deployed on the core or
-knative runtime as a handler.
+knative runtime.
 `),
 		Aliases: []string{"applications", "app", "apps"},
 	}

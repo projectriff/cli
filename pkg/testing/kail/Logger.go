@@ -31,13 +31,13 @@ func (_m *Logger) ApplicationLogs(ctx context.Context, application *v1alpha1.App
 	return r0
 }
 
-// CoreHandlerLogs provides a mock function with given fields: ctx, handler, since, out
-func (_m *Logger) CoreHandlerLogs(ctx context.Context, handler *corev1alpha1.Handler, since time.Duration, out io.Writer) error {
-	ret := _m.Called(ctx, handler, since, out)
+// CoreDeployerLogs provides a mock function with given fields: ctx, deployer, since, out
+func (_m *Logger) CoreDeployerLogs(ctx context.Context, deployer *corev1alpha1.Deployer, since time.Duration, out io.Writer) error {
+	ret := _m.Called(ctx, deployer, since, out)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *corev1alpha1.Handler, time.Duration, io.Writer) error); ok {
-		r0 = rf(ctx, handler, since, out)
+	if rf, ok := ret.Get(0).(func(context.Context, *corev1alpha1.Deployer, time.Duration, io.Writer) error); ok {
+		r0 = rf(ctx, deployer, since, out)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -59,13 +59,13 @@ func (_m *Logger) FunctionLogs(ctx context.Context, function *v1alpha1.Function,
 	return r0
 }
 
-// KnativeHandlerLogs provides a mock function with given fields: ctx, handler, since, out
-func (_m *Logger) KnativeHandlerLogs(ctx context.Context, handler *knativev1alpha1.Handler, since time.Duration, out io.Writer) error {
-	ret := _m.Called(ctx, handler, since, out)
+// KnativeConfigurerLogs provides a mock function with given fields: ctx, configurer, since, out
+func (_m *Logger) KnativeConfigurerLogs(ctx context.Context, configurer *knativev1alpha1.Configurer, since time.Duration, out io.Writer) error {
+	ret := _m.Called(ctx, configurer, since, out)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *knativev1alpha1.Handler, time.Duration, io.Writer) error); ok {
-		r0 = rf(ctx, handler, since, out)
+	if rf, ok := ret.Get(0).(func(context.Context, *knativev1alpha1.Configurer, time.Duration, io.Writer) error); ok {
+		r0 = rf(ctx, configurer, since, out)
 	} else {
 		r0 = ret.Error(0)
 	}

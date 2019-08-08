@@ -35,8 +35,8 @@ riff knative adapter create my-adapter --application-ref my-app --service-ref my
   -h, --help                     help for create
   -n, --namespace name           kubernetes namespace (defaulted from kube config)
       --service-ref name         name of Knative service to update
-      --tail                     watch handler logs
-      --wait-timeout duration    duration to wait for the handler to become ready when watching logs (default "10m")
+      --tail                     watch adapter logs
+      --wait-timeout duration    duration to wait for the adapter to become ready when watching logs (default "10m")
 ```
 
 ### Options inherited from parent commands

@@ -30,5 +30,5 @@ Ingress and autoscalers are not provided.
 ### SEE ALSO
 
 * [riff](riff.md)	 - riff is for functions
-* [riff core handler](riff_core_handler.md)	 - handlers deploy a workload
+* [riff core deployer](riff_core_deployer.md)	 - deployers deploy a workload
 

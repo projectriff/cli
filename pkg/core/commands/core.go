@@ -36,7 +36,7 @@ Ingress and autoscalers are not provided.
 `),
 	}
 
-	cmd.AddCommand(NewHandlerCommand(ctx, c))
+	cmd.AddCommand(NewDeployerCommand(ctx, c))
 
 	return cmd
 }

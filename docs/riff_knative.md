@@ -29,5 +29,5 @@ a workload. Knative provides both a zero-to-n autoscaler and managed ingress.
 
 * [riff](riff.md)	 - riff is for functions
 * [riff knative adapter](riff_knative_adapter.md)	 - adapters push built images to Knative
-* [riff knative handler](riff_knative_handler.md)	 - handlers map HTTP requests to a workload
+* [riff knative configurer](riff_knative_configurer.md)	 - configurers map HTTP requests to a workload
 
