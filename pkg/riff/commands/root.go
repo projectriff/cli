@@ -48,30 +48,38 @@ func NewRootCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 	cmd.PersistentFlags().BoolVar(&color.NoColor, cli.StripDash(cli.NoColorFlagName), color.NoColor, "disable color output in terminals")
 
 	// add runtimes
-	if c.Runtimes["core"] {
-		cmd.AddCommand(corecommands.NewCoreCommand(ctx, c))
-		cmd.Long = strings.TrimSpace(cmd.Long + `
-
+	runtimes := []struct {
+		name    string
+		command *cobra.Command
+		doc     string
+	}{{
+		name:    cli.CoreRuntime,
+		command: corecommands.NewCoreCommand(ctx, c),
+		doc: strings.TrimSpace(`
 The core runtime uses core Kubernetes resources like Deployment and Service to
 expose the workload over HTTP.
-`)
-	}
-
-	if c.Runtimes["streaming"] {
-		cmd.AddCommand(streamingcommands.NewStreamingCommand(ctx, c))
-		cmd.Long = strings.TrimSpace(cmd.Long + `
-
+`),
+	}, {
+		name:    cli.StreamingRuntime,
+		command: streamingcommands.NewStreamingCommand(ctx, c),
+		doc: strings.TrimSpace(`
 The streaming runtime maps one or more input and output streams to a function.
-`)
-	}
-
-	if c.Runtimes["knative"] {
-		cmd.AddCommand(knativecommands.NewKnativeCommand(ctx, c))
-		cmd.Long = strings.TrimSpace(cmd.Long + `
-
+`),
+	}, {
+		name:    cli.KnativeRuntime,
+		command: knativecommands.NewKnativeCommand(ctx, c),
+		doc: strings.TrimSpace(`
 The Knative runtime uses Knative Serving to expose the workload over HTTP with
 zero-to-n autoscaling and managed ingress.
-`)
+`),
+	}}
+	for _, runtime := range runtimes {
+		if c.Runtimes[runtime.name] {
+			cmd.Long = cmd.Long + "\n\n" + runtime.doc
+		} else {
+			runtime.command.Hidden = true
+		}
+		cmd.AddCommand(runtime.command)
 	}
 
 	// add root-only commands
