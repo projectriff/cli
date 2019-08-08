@@ -47,6 +47,9 @@ func TestNewDefaultConfig_CompiledEnv(t *testing.T) {
 		Version:  "unknown",
 		GitSha:   "unknown sha",
 		GitDirty: false,
+		Runtimes: map[string]bool{
+			"core": true,
+		},
 	}
 	if diff := cmp.Diff(expected, actual); diff != "" {
 		t.Errorf("Unexpected env (-expected, +actual): %s", diff)
