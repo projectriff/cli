@@ -12,7 +12,7 @@ readonly slug=${version}-${git_timestamp}-${git_sha:0:16}
 # fetch FATS scripts
 fats_dir=`dirname "${BASH_SOURCE[0]}"`/fats
 fats_repo="projectriff/fats"
-fats_refspec=51ae526ebc50b542f51c2f3fd0068898013e02b7 # master as of 2019-08-01
+fats_refspec=4d76fb0d29c92bc5cf560c3d94042e1e46355048 # master as of 2019-08-08
 source `dirname "${BASH_SOURCE[0]}"`/fats-fetch.sh $fats_dir $fats_refspec $fats_repo
 source $fats_dir/.util.sh
 
