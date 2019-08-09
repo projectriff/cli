@@ -74,9 +74,7 @@ func NewFunctionDeleteCommand(ctx context.Context, c *cli.Config) *cobra.Command
 Delete one or more functions by name or all functions within a namespace.
 
 Deleting a function prevents new builds while preserving built images in the
-registry. Handlers and processors that reference this function will continue to
-use the last built image. A new function created with the same name will
-automatically be discovered by the handler or processor.
+registry.
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s function delete my-function", c.Name),
