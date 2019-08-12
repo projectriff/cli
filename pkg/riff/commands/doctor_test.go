@@ -66,7 +66,6 @@ func TestDoctorCommand(t *testing.T) {
 			WithReactors: []rifftesting.ReactionFunc{
 				passAccessReview(),
 			},
-			ShouldError: false,
 			ExpectOutput: `
 NAMESPACE     STATUS
 riff-system   missing
@@ -171,7 +170,6 @@ deployers.knative.projectriff.io      allowed   allowed
 				denyAccessReviewOn("*", "patch"),
 				passAccessReview(),
 			},
-			ShouldError: false,
 			ExpectOutput: `
 NAMESPACE     STATUS
 riff-system   ok
@@ -223,7 +221,6 @@ deployers.knative.projectriff.io      allowed   denied
 				denyAccessReviewOn("*", "watch"),
 				passAccessReview(),
 			},
-			ShouldError: false,
 			ExpectOutput: `
 NAMESPACE     STATUS
 riff-system   ok
@@ -359,7 +356,6 @@ deployers.knative.projectriff.io      mixed   allowed
 			WithReactors: []rifftesting.ReactionFunc{
 				unknownAccessReviewOn("*", "*"),
 			},
-			ShouldError: false,
 			ExpectOutput: `
 NAMESPACE     STATUS
 riff-system   ok
