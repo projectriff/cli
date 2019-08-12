@@ -66,13 +66,10 @@ func TestDoctorCommand(t *testing.T) {
 			WithReactors: []rifftesting.ReactionFunc{
 				passAccessReview(),
 			},
-			ShouldError: true,
+			ShouldError: false,
 			ExpectOutput: `
-NAMESPACE         STATUS
-istio-system      missing
-knative-build     missing
-knative-serving   missing
-riff-system       missing
+NAMESPACE     STATUS
+riff-system   missing
 
 RESOURCE                              READ      WRITE
 configmaps                            allowed   allowed
@@ -87,17 +84,12 @@ processors.streaming.projectriff.io   missing   missing
 streams.streaming.projectriff.io      missing   missing
 adapters.knative.projectriff.io       missing   missing
 deployers.knative.projectriff.io      missing   missing
-
-Installation is not OK
 `,
 		},
 		{
 			Name: "installed",
 			Args: []string{},
 			GivenObjects: []runtime.Object{
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "istio-system"}},
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-build"}},
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "containers.build.projectriff.io"}},
@@ -126,11 +118,8 @@ Installation is not OK
 				passAccessReview(),
 			},
 			ExpectOutput: `
-NAMESPACE         STATUS
-istio-system      ok
-knative-build     ok
-knative-serving   ok
-riff-system       ok
+NAMESPACE     STATUS
+riff-system   ok
 
 RESOURCE                              READ      WRITE
 configmaps                            allowed   allowed
@@ -145,17 +134,12 @@ processors.streaming.projectriff.io   allowed   allowed
 streams.streaming.projectriff.io      allowed   allowed
 adapters.knative.projectriff.io       allowed   allowed
 deployers.knative.projectriff.io      allowed   allowed
-
-Installation is OK
 `,
 		},
 		{
 			Name: "read-only access",
 			Args: []string{},
 			GivenObjects: []runtime.Object{
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "istio-system"}},
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-build"}},
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "containers.build.projectriff.io"}},
@@ -187,13 +171,10 @@ Installation is OK
 				denyAccessReviewOn("*", "patch"),
 				passAccessReview(),
 			},
-			ShouldError: true,
+			ShouldError: false,
 			ExpectOutput: `
-NAMESPACE         STATUS
-istio-system      ok
-knative-build     ok
-knative-serving   ok
-riff-system       ok
+NAMESPACE     STATUS
+riff-system   ok
 
 RESOURCE                              READ      WRITE
 configmaps                            allowed   denied
@@ -208,17 +189,12 @@ processors.streaming.projectriff.io   allowed   denied
 streams.streaming.projectriff.io      allowed   denied
 adapters.knative.projectriff.io       allowed   denied
 deployers.knative.projectriff.io      allowed   denied
-
-Installation is not OK
 `,
 		},
 		{
 			Name: "no-watch access",
 			Args: []string{},
 			GivenObjects: []runtime.Object{
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "istio-system"}},
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-build"}},
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "containers.build.projectriff.io"}},
@@ -247,13 +223,10 @@ Installation is not OK
 				denyAccessReviewOn("*", "watch"),
 				passAccessReview(),
 			},
-			ShouldError: true,
+			ShouldError: false,
 			ExpectOutput: `
-NAMESPACE         STATUS
-istio-system      ok
-knative-build     ok
-knative-serving   ok
-riff-system       ok
+NAMESPACE     STATUS
+riff-system   ok
 
 RESOURCE                              READ    WRITE
 configmaps                            mixed   allowed
@@ -268,17 +241,12 @@ processors.streaming.projectriff.io   mixed   allowed
 streams.streaming.projectriff.io      mixed   allowed
 adapters.knative.projectriff.io       mixed   allowed
 deployers.knative.projectriff.io      mixed   allowed
-
-Installation is not OK
 `,
 		},
 		{
 			Name: "error listing namespaces",
 			Args: []string{},
 			GivenObjects: []runtime.Object{
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "istio-system"}},
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-build"}},
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "containers.build.projectriff.io"}},
@@ -298,9 +266,6 @@ Installation is not OK
 			Name: "error getting crd",
 			Args: []string{},
 			GivenObjects: []runtime.Object{
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "istio-system"}},
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-build"}},
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "containers.build.projectriff.io"}},
@@ -327,9 +292,6 @@ Installation is not OK
 			Name: "error creating selfsubjectaccessreview",
 			Args: []string{},
 			GivenObjects: []runtime.Object{
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "istio-system"}},
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-build"}},
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "containers.build.projectriff.io"}},
@@ -350,9 +312,6 @@ Installation is not OK
 			Name: "error evaluating selfsubjectaccessreview",
 			Args: []string{},
 			GivenObjects: []runtime.Object{
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "istio-system"}},
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-build"}},
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "containers.build.projectriff.io"}},
@@ -373,9 +332,6 @@ Installation is not OK
 			Name: "error evaluating selfsubjectaccessreview",
 			Args: []string{},
 			GivenObjects: []runtime.Object{
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "istio-system"}},
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-build"}},
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "knative-serving"}},
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "containers.build.projectriff.io"}},
@@ -403,13 +359,10 @@ Installation is not OK
 			WithReactors: []rifftesting.ReactionFunc{
 				unknownAccessReviewOn("*", "*"),
 			},
-			ShouldError: true,
+			ShouldError: false,
 			ExpectOutput: `
-NAMESPACE         STATUS
-istio-system      ok
-knative-build     ok
-knative-serving   ok
-riff-system       ok
+NAMESPACE     STATUS
+riff-system   ok
 
 RESOURCE                              READ      WRITE
 configmaps                            unknown   unknown
@@ -424,8 +377,6 @@ processors.streaming.projectriff.io   unknown   unknown
 streams.streaming.projectriff.io      unknown   unknown
 adapters.knative.projectriff.io       unknown   unknown
 deployers.knative.projectriff.io      unknown   unknown
-
-Installation is not OK
 `,
 		},
 	}
