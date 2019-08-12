@@ -50,13 +50,10 @@ func (opts *DoctorOptions) Validate(ctx context.Context) *cli.FieldError {
 }
 
 func (opts *DoctorOptions) Exec(ctx context.Context, c *cli.Config) error {
-	requiredNamespaces := []string{
-		"istio-system",
-		"knative-build",
-		"knative-serving",
+	riffNamespaces := []string{
 		"riff-system",
 	}
-	namespacesOk, err := opts.checkNamespaces(c, requiredNamespaces)
+	err := opts.checkNamespaces(c, riffNamespaces)
 	if err != nil {
 		return err
 	}
@@ -77,19 +74,11 @@ func (opts *DoctorOptions) Exec(ctx context.Context, c *cli.Config) error {
 		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "knative.projectriff.io", Resource: "adapters"}, Verbs: verbs},
 		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "knative.projectriff.io", Resource: "deployers"}, Verbs: verbs},
 	}
-	accessOk, err := opts.checkAccess(c, accessChecks)
+	err = opts.checkAccess(c, accessChecks)
 	if err != nil {
 		return err
 	}
 
-	if !namespacesOk || !accessOk {
-		c.Printf("\n")
-		c.Errorf("Installation is not OK\n")
-		return cli.SilenceError(fmt.Errorf("installation is not OK"))
-	}
-
-	c.Printf("\n")
-	c.Successf("Installation is OK\n")
 	return nil
 }
 
@@ -118,10 +107,10 @@ The doctor is not a tool for monitoring the health of the cluster.
 	return cmd
 }
 
-func (*DoctorOptions) checkNamespaces(c *cli.Config, requiredNamespaces []string) (bool, error) {
+func (*DoctorOptions) checkNamespaces(c *cli.Config, requiredNamespaces []string) error {
 	namespaces, err := c.Core().Namespaces().List(metav1.ListOptions{})
 	if err != nil {
-		return false, err
+		return err
 	}
 
 	foundNamespaces := sets.NewString()
@@ -130,25 +119,23 @@ func (*DoctorOptions) checkNamespaces(c *cli.Config, requiredNamespaces []string
 	}
 	printer := printers.GetNewTabWriter(c.Stdout)
 	defer printer.Flush()
-	ok := true
 	fmt.Fprintf(printer, "NAMESPACE\tSTATUS\n")
 	for _, namespace := range requiredNamespaces {
 		var status string
 		if foundNamespaces.Has(namespace) {
 			status = cli.Ssuccessf("ok")
 		} else {
-			ok = false
 			status = cli.Serrorf("missing")
 		}
 		fmt.Fprintf(printer, "%s\t%s\n", namespace, status)
 	}
-	return ok, nil
+	return nil
 }
 
-func (*DoctorOptions) checkAccess(c *cli.Config, accessChecks doctorAccessChecks) (bool, error) {
+func (*DoctorOptions) checkAccess(c *cli.Config, accessChecks doctorAccessChecks) error {
 	err := accessChecks.ResolveStatus(c)
 	if err != nil {
-		return false, err
+		return err
 	}
 	c.Printf("\n")
 	printer := printers.GetNewTabWriter(c.Stdout)
@@ -164,7 +151,7 @@ func (*DoctorOptions) checkAccess(c *cli.Config, accessChecks doctorAccessChecks
 		}
 		fmt.Fprintf(printer, "%s\t%s\t%s\n", resource, check.ReadStatus.String(), check.WriteStatus.String())
 	}
-	return accessChecks.IsHealthy(), nil
+	return nil
 }
 
 type doctorAccessCheck struct {
