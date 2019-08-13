@@ -12,7 +12,7 @@ readonly slug=${version}-${git_timestamp}-${git_sha:0:16}
 # fetch FATS scripts
 fats_dir=`dirname "${BASH_SOURCE[0]}"`/fats
 fats_repo="projectriff/fats"
-fats_refspec=4d76fb0d29c92bc5cf560c3d94042e1e46355048 # master as of 2019-08-08
+fats_refspec=dbf50d113cd280e99470852714ed00b6d09215fe # master as of 2019-08-13
 source `dirname "${BASH_SOURCE[0]}"`/fats-fetch.sh $fats_dir $fats_refspec $fats_repo
 source $fats_dir/.util.sh
 
@@ -42,8 +42,8 @@ helm init --wait --service-account tiller
 helm repo add projectriff https://projectriff.storage.googleapis.com/charts/releases
 helm repo update
 
-helm install projectriff/istio --name istio --namespace istio-system --devel --wait --set istio.enabled=true --set gateways.istio-ingressgateway.type=${K8S_SERVICE_TYPE}
-helm install projectriff/riff --name riff --devel
+helm install projectriff/istio --name istio --namespace istio-system --devel --wait --set gateways.istio-ingressgateway.type=${K8S_SERVICE_TYPE}
+helm install projectriff/riff --name riff --devel --set knative.enabled=true
 
 # health checks
 echo "Checking for ready ingress"
@@ -63,8 +63,9 @@ for test in command; do
   create_args="--git-repo https://github.com/${fats_repo}.git --git-revision ${fats_refspec} --sub-path functions/uppercase/${test}"
   input_data=riff
   expected_data=RIFF
+  runtime=core
 
-  run_function $path $function_name $image "${create_args}" $input_data $expected_data
+  run_function $path $function_name $image "${create_args}" $input_data $expected_data $runtime
 done
 
 if [ "$machine" != "MinGw" ]; then
@@ -75,7 +76,8 @@ if [ "$machine" != "MinGw" ]; then
     create_args="--local-path ."
     input_data=riff
     expected_data=RIFF
+    runtime=knative
 
-    run_function $path $function_name $image "${create_args}" $input_data $expected_data
+    run_function $path $function_name $image "${create_args}" $input_data $expected_data $runtime
   done
 fi
