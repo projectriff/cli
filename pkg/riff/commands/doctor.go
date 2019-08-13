@@ -112,16 +112,13 @@ func (*DoctorOptions) checkNamespaces(c *cli.Config, requiredNamespaces []string
 	defer printer.Flush()
 	fmt.Fprintf(printer, "NAMESPACE\tSTATUS\n")
 	for _, namespace := range requiredNamespaces {
-		var status string
+		status := cli.Ssuccessf("ok")
 		_, err := c.Core().Namespaces().Get(namespace, metav1.GetOptions{})
 		if err != nil {
-			if errors.IsNotFound(err) {
-				status = cli.Serrorf("missing")
-			} else {
+			if !errors.IsNotFound(err) {
 				return err
 			}
-		} else {
-			status = cli.Ssuccessf("ok")
+			status = cli.Serrorf("missing")
 		}
 		fmt.Fprintf(printer, "%s\t%s\n", namespace, status)
 	}
