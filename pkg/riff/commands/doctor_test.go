@@ -241,7 +241,7 @@ deployers.knative.projectriff.io      mixed   allowed
 `,
 		},
 		{
-			Name: "error listing namespaces",
+			Name: "error getting namespace",
 			Args: []string{},
 			GivenObjects: []runtime.Object{
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
@@ -255,7 +255,7 @@ deployers.knative.projectriff.io      mixed   allowed
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.knative.projectriff.io"}},
 			},
 			WithReactors: []rifftesting.ReactionFunc{
-				rifftesting.InduceFailure("list", "namespaces"),
+				rifftesting.InduceFailure("get", "namespaces"),
 			},
 			ShouldError: true,
 		},

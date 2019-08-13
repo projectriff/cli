@@ -27,7 +27,6 @@ import (
 	authv1 "k8s.io/api/authorization/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/util/sets"
 )
 
 type DoctorOptions struct {
@@ -108,23 +107,17 @@ The doctor is not a tool for monitoring the health of the cluster.
 }
 
 func (*DoctorOptions) checkNamespaces(c *cli.Config, requiredNamespaces []string) error {
-	namespaces, err := c.Core().Namespaces().List(metav1.ListOptions{})
-	if err != nil {
-		return err
-	}
 
-	foundNamespaces := sets.NewString()
-	for _, namespace := range namespaces.Items {
-		foundNamespaces.Insert(namespace.Name)
-	}
 	printer := printers.GetNewTabWriter(c.Stdout)
 	defer printer.Flush()
 	fmt.Fprintf(printer, "NAMESPACE\tSTATUS\n")
 	for _, namespace := range requiredNamespaces {
-		var status string
-		if foundNamespaces.Has(namespace) {
-			status = cli.Ssuccessf("ok")
-		} else {
+		status := cli.Ssuccessf("ok")
+		_, err := c.Core().Namespaces().Get(namespace, metav1.GetOptions{})
+		if err != nil {
+			if !errors.IsNotFound(err) {
+				return err
+			}
 			status = cli.Serrorf("missing")
 		}
 		fmt.Fprintf(printer, "%s\t%s\n", namespace, status)
