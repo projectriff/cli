@@ -49,7 +49,6 @@ The hostname to access the deployer is available in the deployer listing.
 	cmd.AddCommand(NewDeployerDeleteCommand(ctx, c))
 	cmd.AddCommand(NewDeployerStatusCommand(ctx, c))
 	cmd.AddCommand(NewDeployerTailCommand(ctx, c))
-	cmd.AddCommand(NewDeployerInvokeCommand(ctx, c))
 
 	return cmd
 }
