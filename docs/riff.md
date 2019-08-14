@@ -34,6 +34,7 @@ zero-to-n autoscaling and managed ingress.
   -h, --help               help for riff
       --kube-config file   kubectl config file (default is $HOME/.kube/config)
       --no-color           disable color output in terminals
+      --version            display CLI version
 ```
 
 ### SEE ALSO
