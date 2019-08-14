@@ -35,12 +35,15 @@ func NewRootCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 	cmd := NewRiffCommand(ctx, c)
 
 	cmd.Use = c.Name
+	cmd.DisableAutoGenTag = true
+
+	// set version
 	if !c.GitDirty {
 		cmd.Version = fmt.Sprintf("%s (%s)", c.Version, c.GitSha)
 	} else {
 		cmd.Version = fmt.Sprintf("%s (%s, with local modifications)", c.Version, c.GitSha)
 	}
-	cmd.DisableAutoGenTag = true
+	cmd.Flags().Bool("version", false, "display CLI version")
 
 	// add root persistent flags
 	cmd.PersistentFlags().StringVar(&c.ViperConfigFile, cli.StripDash(cli.ConfigFlagName), "", fmt.Sprintf("config `file` (default is $HOME/.%s.yaml)", c.Name))
