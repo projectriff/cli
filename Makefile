@@ -37,7 +37,7 @@ coverage: ## Run the tests with coverage and race detection
 
 .PHONY: check-goimports
 check-goimports: ## Checks if goimports is installed
-	@which goimports > /dev/null || (echo goimports not found: issue \"GO111MODULE=off go get golang.org/x/tools/cmd/goimports\" && false)
+	@which goimports > /dev/null || (echo goimports not found: issue \"GO111MODULE=off go get -u golang.org/x/tools/cmd/goimports\" && false)
 
 .PHONY: goimports
 goimports: check-goimports ## Runs goimports on the project
@@ -76,6 +76,7 @@ check-mockery:
 gen-mocks: check-mockery clean-mocks ## Generate mocks
 	mockery -output ./pkg/testing/pack -outpkg pack -dir ./pkg/pack -name Client
 	mockery -output ./pkg/testing/kail -outpkg kail -dir ./pkg/kail -name Logger
+	make goimports
 
 .PHONY: clean-mocks
 clean-mocks: ## Delete mocks
