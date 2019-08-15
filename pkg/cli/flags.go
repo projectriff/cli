@@ -46,7 +46,6 @@ const (
 	ImageFlagName                 = "--image"
 	InputFlagName                 = "--input"
 	InvokerFlagName               = "--invoker"
-	JSONFlagName                  = "--json"
 	KubeConfigFlagName            = "--kube-config"
 	LocalPathFlagName             = "--local-path"
 	NamespaceFlagName             = "--namespace"
@@ -61,7 +60,6 @@ const (
 	SinceFlagName                 = "--since"
 	SubPathFlagName               = "--sub-path"
 	TailFlagName                  = "--tail"
-	TextFlagName                  = "--text"
 	WaitTimeoutFlagName           = "--wait-timeout"
 )
 
