@@ -96,7 +96,7 @@ func (opts *DeployerCreateOptions) Validate(ctx context.Context) *cli.FieldError
 	}
 
 	errs = errs.Also(validation.EnvVars(opts.Env, cli.EnvFlagName))
-	errs = errs.Also(validation.EnvVarFroms(opts.EnvFrom, cli.EnvFromFlagName))
+	errs = errs.Also(validation.EnvVarFroms(opts.EnvFrom, cli.EnvValueFromFlagName))
 
 	if opts.Tail {
 		if opts.WaitTimeout == "" {
@@ -210,7 +210,7 @@ build produces new images, the image will roll out automatically. Image based
 deployers must be updated manually to roll out new images.
 
 The runtime environment can be configured by ` + cli.EnvFlagName + ` for static key-value pairs
-and ` + cli.EnvFromFlagName + ` to map values from a ConfigMap or Secret.
+and ` + cli.EnvValueFromFlagName + ` to map values from a ConfigMap or Secret.
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s knative deployer create my-app-deployer %s my-app", c.Name, cli.ApplicationRefFlagName),
@@ -232,7 +232,7 @@ and ` + cli.EnvFromFlagName + ` to map values from a ConfigMap or Secret.
 	cmd.Flags().StringVar(&opts.ContainerRef, cli.StripDash(cli.ContainerRefFlagName), "", "`name` of container to deploy")
 	cmd.Flags().StringVar(&opts.FunctionRef, cli.StripDash(cli.FunctionRefFlagName), "", "`name` of function to deploy")
 	cmd.Flags().StringArrayVar(&opts.Env, cli.StripDash(cli.EnvFlagName), []string{}, fmt.Sprintf("environment `variable` defined as a key value pair separated by an equals sign, example %q (may be set multiple times)", fmt.Sprintf("%s MY_VAR=my-value", cli.EnvFlagName)))
-	cmd.Flags().StringArrayVar(&opts.EnvFrom, cli.StripDash(cli.EnvFromFlagName), []string{}, fmt.Sprintf("environment `variable` from a config map or secret, example %q, %q (may be set multiple times)", fmt.Sprintf("%s MY_SECRET_VALUE=secretKeyRef:my-secret-name:key-in-secret", cli.EnvFromFlagName), fmt.Sprintf("%s MY_CONFIG_MAP_VALUE=configMapKeyRef:my-config-map-name:key-in-config-map", cli.EnvFromFlagName)))
+	cmd.Flags().StringArrayVar(&opts.EnvFrom, cli.StripDash(cli.EnvValueFromFlagName), []string{}, fmt.Sprintf("environment `variable` from a config map or secret, example %q, %q (may be set multiple times)", fmt.Sprintf("%s MY_SECRET_VALUE=secretKeyRef:my-secret-name:key-in-secret", cli.EnvValueFromFlagName), fmt.Sprintf("%s MY_CONFIG_MAP_VALUE=configMapKeyRef:my-config-map-name:key-in-config-map", cli.EnvValueFromFlagName)))
 	cmd.Flags().BoolVar(&opts.Tail, cli.StripDash(cli.TailFlagName), false, "watch deployer logs")
 	cmd.Flags().StringVar(&opts.WaitTimeout, cli.StripDash(cli.WaitTimeoutFlagName), "10m", "`duration` to wait for the deployer to become ready when watching logs")
 	cmd.Flags().BoolVar(&opts.DryRun, cli.StripDash(cli.DryRunFlagName), false, "print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr")

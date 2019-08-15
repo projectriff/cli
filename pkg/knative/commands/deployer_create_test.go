@@ -131,7 +131,7 @@ func TestDeployerCreateOptions(t *testing.T) {
 				Image:           "example.com/repo:tag",
 				EnvFrom:         []string{"VAR1=someOtherKeyRef:name:key"},
 			},
-			ExpectFieldError: cli.ErrInvalidArrayValue("VAR1=someOtherKeyRef:name:key", cli.EnvFromFlagName, 0),
+			ExpectFieldError: cli.ErrInvalidArrayValue("VAR1=someOtherKeyRef:name:key", cli.EnvValueFromFlagName, 0),
 		},
 		{
 			Name: "with tail",
@@ -314,8 +314,8 @@ Created deployer "my-deployer"
 `,
 		},
 		{
-			Name: "create from image with env and env-from",
-			Args: []string{deployerName, cli.ImageFlagName, image, cli.EnvFlagName, envVar, cli.EnvFlagName, envVarOther, cli.EnvFromFlagName, envVarFromConfigMap, cli.EnvFromFlagName, envVarFromSecret},
+			Name: "create from image with env and env-value-from",
+			Args: []string{deployerName, cli.ImageFlagName, image, cli.EnvFlagName, envVar, cli.EnvFlagName, envVarOther, cli.EnvValueFromFlagName, envVarFromConfigMap, cli.EnvValueFromFlagName, envVarFromSecret},
 			ExpectCreates: []runtime.Object{
 				&knativev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
