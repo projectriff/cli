@@ -190,6 +190,7 @@ func TestCredentialApplyCommand(t *testing.T) {
 						Labels:    map[string]string{credentialLabel: "docker-hub"},
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": "https://index.docker.io/v1/",
+							"build.pivotal.io/docker":    "https://index.docker.io/v1/",
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -217,6 +218,7 @@ Apply credentials "test-credential"
 							"build.knative.dev/docker-1": "https://us.gcr.io",
 							"build.knative.dev/docker-2": "https://eu.gcr.io",
 							"build.knative.dev/docker-3": "https://asia.gcr.io",
+							"build.pivotal.io/docker":    "https://gcr.io",
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -252,6 +254,7 @@ Apply credentials "test-credential"
 						Labels:    map[string]string{credentialLabel: "basic-auth"},
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": registryURL,
+							"build.pivotal.io/docker":    registryURL,
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -276,7 +279,8 @@ Apply credentials "test-credential"
 						Namespace: defaultNamespace,
 						Labels:    map[string]string{credentialLabel: "docker-hub"},
 						Annotations: map[string]string{
-							"build.knative.dev/docker-0": "https://index.dockerhub.io/projectriff",
+							"build.knative.dev/docker-0": "https://index.docker.io/v1/",
+							"build.pivotal.io/docker":    "https://index.docker.io/v1/",
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -294,6 +298,7 @@ Apply credentials "test-credential"
 						Labels:    map[string]string{credentialLabel: "basic-auth"},
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": registryURL,
+							"build.pivotal.io/docker":    registryURL,
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -318,7 +323,8 @@ Apply credentials "test-credential"
 						Namespace: defaultNamespace,
 						Labels:    map[string]string{credentialLabel: "docker-hub"},
 						Annotations: map[string]string{
-							"build.knative.dev/docker-0": "https://index.dockerhub.io/projectriff",
+							"build.knative.dev/docker-0": "https://index.docker.io/v1/",
+							"build.pivotal.io/docker":    "https://index.docker.io/v1/",
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -348,6 +354,7 @@ Apply credentials "test-credential"
 						Labels:    map[string]string{credentialLabel: "basic-auth"},
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": registryURL,
+							"build.pivotal.io/docker":    registryURL,
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -370,7 +377,8 @@ Apply credentials "test-credential"
 						Namespace: defaultNamespace,
 						Labels:    map[string]string{credentialLabel: "docker-hub"},
 						Annotations: map[string]string{
-							"build.knative.dev/docker-0": "https://index.dockerhub.io/projectriff",
+							"build.knative.dev/docker-0": "https://index.docker.io/v1/",
+							"build.pivotal.io/docker":    "https://index.docker.io/v1/",
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -391,6 +399,7 @@ Apply credentials "test-credential"
 						Labels:    map[string]string{credentialLabel: "basic-auth"},
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": registryURL,
+							"build.pivotal.io/docker":    registryURL,
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -429,6 +438,7 @@ Apply credentials "test-credential"
 						Labels:    map[string]string{credentialLabel: "docker-hub"},
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": "https://index.docker.io/v1/",
+							"build.pivotal.io/docker":    "https://index.docker.io/v1/",
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -466,6 +476,7 @@ Set default image prefix to "docker.io/projectriff"
 							"build.knative.dev/docker-1": "https://us.gcr.io",
 							"build.knative.dev/docker-2": "https://eu.gcr.io",
 							"build.knative.dev/docker-3": "https://asia.gcr.io",
+							"build.pivotal.io/docker":    "https://gcr.io",
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -501,6 +512,7 @@ Set default image prefix to "gcr.io/my-gcp-project"
 						Labels:    map[string]string{credentialLabel: "basic-auth"},
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": registryURL,
+							"build.pivotal.io/docker":    registryURL,
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -554,6 +566,7 @@ Set default image prefix to "example.com"
 						Labels:    map[string]string{credentialLabel: "docker-hub"},
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": "https://index.docker.io/v1/",
+							"build.pivotal.io/docker":    "https://index.docker.io/v1/",
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -595,6 +608,7 @@ Set default image prefix to "docker.io/projectriff"
 						Labels:    map[string]string{credentialLabel: "docker-hub"},
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": "https://index.docker.io/v1/",
+							"build.pivotal.io/docker":    "https://index.docker.io/v1/",
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -621,6 +635,7 @@ Set default image prefix to "docker.io/projectriff"
 						Labels:    map[string]string{credentialLabel: "docker-hub"},
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": "https://index.docker.io/v1/",
+							"build.pivotal.io/docker":    "https://index.docker.io/v1/",
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -668,6 +683,7 @@ Set default image prefix to "docker.io/projectriff"
 						Labels:    map[string]string{credentialLabel: "docker-hub"},
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": "https://index.docker.io/v1/",
+							"build.pivotal.io/docker":    "https://index.docker.io/v1/",
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -702,6 +718,7 @@ kind: Secret
 metadata:
   annotations:
     build.knative.dev/docker-0: https://index.docker.io/v1/
+    build.pivotal.io/docker: https://index.docker.io/v1/
   creationTimestamp: null
   labels:
     build.projectriff.io/credential: docker-hub
@@ -753,6 +770,7 @@ kind: Secret
 metadata:
   annotations:
     build.knative.dev/docker-0: https://index.docker.io/v1/
+    build.pivotal.io/docker: https://index.docker.io/v1/
   creationTimestamp: null
   labels:
     build.projectriff.io/credential: docker-hub
