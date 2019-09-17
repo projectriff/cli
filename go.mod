@@ -10,7 +10,6 @@ require (
 	github.com/fatih/color v1.7.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/go-cmp v0.3.0
-	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51
 	github.com/knative/pkg v0.0.0-20190624141606-d82505e6c5b4
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/projectriff/system v0.0.0-20190809014550-2ab4df7b13f0
