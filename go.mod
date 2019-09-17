@@ -1,6 +1,6 @@
 module github.com/projectriff/cli
 
-go 1.12
+go 1.13
 
 require (
 	github.com/acarl005/stripansi v0.0.0-20180116102854-5a71ef0e047d
@@ -25,7 +25,7 @@ require (
 
 require (
 	contrib.go.opencensus.io/exporter/stackdriver v0.10.2 // indirect
-	github.com/Azure/go-autorest v0.0.0-20190226174127-bca49d5b51a5 // indirect
+	github.com/Azure/go-autorest v0.0.0-20180719213627-bca49d5b51a5 // indirect
 	github.com/evanphx/json-patch v4.2.0+incompatible // indirect
 	github.com/google/gofuzz v1.0.0 // indirect
 	github.com/google/uuid v1.1.1 // indirect
