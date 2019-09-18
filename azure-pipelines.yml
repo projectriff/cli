@@ -27,7 +27,9 @@ jobs:
     - bash: make build coverage verify-docs
       workingDirectory: '$(modulePath)'
       displayName: 'Run unit test'
-    - bash: bash <(curl -s https://codecov.io/bash)
+    - bash: |
+        curl -s https://codecov.io/bash > codecov.sh
+        . codecov.sh
       workingDirectory: '$(modulePath)'
       displayName: 'Report coverage'
 
