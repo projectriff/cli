@@ -81,10 +81,13 @@ No credentials found.
 			GivenObjects: []runtime.Object{
 				&corev1.Secret{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:        credentialName,
-						Namespace:   defaultNamespace,
-						Labels:      map[string]string{credentialLabel: "docker-hub"},
-						Annotations: map[string]string{"build.knative.dev/docker-0": "https://index.docker.io/v1/"},
+						Name:      credentialName,
+						Namespace: defaultNamespace,
+						Labels:    map[string]string{credentialLabel: "docker-hub"},
+						Annotations: map[string]string{
+							"build.knative.dev/docker-0": "https://index.docker.io/v1/",
+							"build.pivotal.io/docker":    "https://index.docker.io/v1/",
+						},
 					},
 				},
 			},
@@ -99,10 +102,13 @@ test-credential   docker-hub   https://index.docker.io/v1/   <unknown>
 			GivenObjects: []runtime.Object{
 				&corev1.Secret{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:        credentialName,
-						Namespace:   defaultNamespace,
-						Labels:      map[string]string{credentialLabel: "docker-hub"},
-						Annotations: map[string]string{"build.knative.dev/docker-0": "https://index.docker.io/v1/"},
+						Name:      credentialName,
+						Namespace: defaultNamespace,
+						Labels:    map[string]string{credentialLabel: "docker-hub"},
+						Annotations: map[string]string{
+							"build.knative.dev/docker-0": "https://index.docker.io/v1/",
+							"build.pivotal.io/docker":    "https://index.docker.io/v1/",
+						},
 					},
 				},
 			},
@@ -116,26 +122,35 @@ No credentials found.
 			GivenObjects: []runtime.Object{
 				&corev1.Secret{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:        "registry",
-						Namespace:   defaultNamespace,
-						Labels:      map[string]string{credentialLabel: "basic-auth"},
-						Annotations: map[string]string{"build.knative.dev/docker-0": "https://registry.example.com/"},
+						Name:      "registry",
+						Namespace: defaultNamespace,
+						Labels:    map[string]string{credentialLabel: "basic-auth"},
+						Annotations: map[string]string{
+							"build.knative.dev/docker-0": "https://registry.example.com/",
+							"build.pivotal.io/docker":    "https://registry.example.com/",
+						},
 					},
 				},
 				&corev1.Secret{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:        "docker-hub",
-						Namespace:   defaultNamespace,
-						Labels:      map[string]string{credentialLabel: "docker-hub"},
-						Annotations: map[string]string{"build.knative.dev/docker-0": "https://index.docker.io/v1/"},
+						Name:      "docker-hub",
+						Namespace: defaultNamespace,
+						Labels:    map[string]string{credentialLabel: "docker-hub"},
+						Annotations: map[string]string{
+							"build.knative.dev/docker-0": "https://index.docker.io/v1/",
+							"build.pivotal.io/docker":    "https://index.docker.io/v1/",
+						},
 					},
 				},
 				&corev1.Secret{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:        "gcr",
-						Namespace:   defaultNamespace,
-						Labels:      map[string]string{credentialLabel: "gcr"},
-						Annotations: map[string]string{"build.knative.dev/docker-0": "https://gcr.io"},
+						Name:      "gcr",
+						Namespace: defaultNamespace,
+						Labels:    map[string]string{credentialLabel: "gcr"},
+						Annotations: map[string]string{
+							"build.knative.dev/docker-0": "https://gcr.io",
+							"build.pivotal.io/docker":    "https://gcr.io",
+						},
 					},
 				},
 			},
@@ -152,18 +167,24 @@ registry     basic-auth   https://registry.example.com/   <unknown>
 			GivenObjects: []runtime.Object{
 				&corev1.Secret{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:        credentialName,
-						Namespace:   defaultNamespace,
-						Labels:      map[string]string{credentialLabel: "docker-hub"},
-						Annotations: map[string]string{"build.knative.dev/docker-0": "https://index.docker.io/v1/"},
+						Name:      credentialName,
+						Namespace: defaultNamespace,
+						Labels:    map[string]string{credentialLabel: "docker-hub"},
+						Annotations: map[string]string{
+							"build.knative.dev/docker-0": "https://index.docker.io/v1/",
+							"build.pivotal.io/docker":    "https://index.docker.io/v1/",
+						},
 					},
 				},
 				&corev1.Secret{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:        credentialOtherName,
-						Namespace:   otherNamespace,
-						Labels:      map[string]string{credentialLabel: "docker-hub"},
-						Annotations: map[string]string{"build.knative.dev/docker-0": "https://index.docker.io/v1/"},
+						Name:      credentialOtherName,
+						Namespace: otherNamespace,
+						Labels:    map[string]string{credentialLabel: "docker-hub"},
+						Annotations: map[string]string{
+							"build.knative.dev/docker-0": "https://index.docker.io/v1/",
+							"build.pivotal.io/docker":    "https://index.docker.io/v1/",
+						},
 					},
 				},
 			},

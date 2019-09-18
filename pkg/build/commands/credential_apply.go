@@ -215,6 +215,7 @@ func makeCredential(opts *CredentialApplyOptions) (*corev1.Secret, string, error
 		}
 		secret.Annotations = map[string]string{
 			"build.knative.dev/docker-0": "https://index.docker.io/v1/",
+			"build.pivotal.io/docker":    "https://index.docker.io/v1/",
 		}
 		secret.Type = corev1.SecretTypeBasicAuth
 		secret.StringData = map[string]string{
@@ -236,6 +237,7 @@ func makeCredential(opts *CredentialApplyOptions) (*corev1.Secret, string, error
 			"build.knative.dev/docker-1": "https://us.gcr.io",
 			"build.knative.dev/docker-2": "https://eu.gcr.io",
 			"build.knative.dev/docker-3": "https://asia.gcr.io",
+			"build.pivotal.io/docker":    "https://gcr.io",
 		}
 		secret.Type = corev1.SecretTypeBasicAuth
 		secret.StringData = map[string]string{
@@ -255,6 +257,7 @@ func makeCredential(opts *CredentialApplyOptions) (*corev1.Secret, string, error
 		}
 		secret.Annotations = map[string]string{
 			"build.knative.dev/docker-0": opts.Registry,
+			"build.pivotal.io/docker":    opts.Registry,
 		}
 		secret.Type = corev1.SecretTypeBasicAuth
 		secret.StringData = map[string]string{
