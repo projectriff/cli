@@ -79,6 +79,10 @@ jobs:
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Check out code
+        uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
       - name: 'Setup env'
         run: |
           if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
@@ -166,6 +170,10 @@ jobs:
       )
     runs-on: ubuntu-latest
     steps:
+    - name: Check out code
+      uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
     - name: 'Publish riff release artifacts'
       run: .github/workflows/publish.sh ${{ github.ref }}
       env:
