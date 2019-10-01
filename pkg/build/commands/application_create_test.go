@@ -730,6 +730,7 @@ Created application "my-application"
 			ExpectOutput: `
 Created application "my-application"
 ...log output...
+Application "my-application" is ready
 `,
 		},
 		{

@@ -331,6 +331,7 @@ Created processor "my-processor"
 			ExpectOutput: `
 Created processor "my-processor"
 ...log output...
+Processor "my-processor" is ready
 `,
 		},
 		{

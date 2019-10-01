@@ -463,6 +463,7 @@ Created deployer "my-deployer"
 			ExpectOutput: `
 Created deployer "my-deployer"
 ...log output...
+Deployer "my-deployer" is ready
 `,
 		},
 		{

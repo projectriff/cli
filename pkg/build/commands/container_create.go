@@ -109,6 +109,7 @@ func (opts *ContainerCreateOptions) Exec(ctx context.Context, c *cli.Config) err
 		if err != nil {
 			return err
 		}
+		c.Successf("Container %q is ready\n", container.Name)
 	}
 	return nil
 }

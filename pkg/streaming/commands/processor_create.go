@@ -120,6 +120,7 @@ func (opts *ProcessorCreateOptions) Exec(ctx context.Context, c *cli.Config) err
 		if err != nil {
 			return err
 		}
+		c.Successf("Processor %q is ready\n", processor.Name)
 	}
 	return nil
 }

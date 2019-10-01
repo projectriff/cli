@@ -214,6 +214,7 @@ func (opts *FunctionCreateOptions) Exec(ctx context.Context, c *cli.Config) erro
 		if err != nil {
 			return err
 		}
+		c.Successf("Function %q is ready\n", function.Name)
 	}
 	return nil
 }

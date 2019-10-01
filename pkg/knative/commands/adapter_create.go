@@ -184,6 +184,7 @@ func (opts *AdapterCreateOptions) Exec(ctx context.Context, c *cli.Config) error
 		if err != nil {
 			return err
 		}
+		c.Successf("Adapter %q is ready\n", adapter.Name)
 	}
 	return nil
 }

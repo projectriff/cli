@@ -188,6 +188,7 @@ func (opts *DeployerCreateOptions) Exec(ctx context.Context, c *cli.Config) erro
 		if err != nil {
 			return err
 		}
+		c.Successf("Deployer %q is ready\n", deployer.Name)
 	}
 	return nil
 }
