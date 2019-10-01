@@ -198,6 +198,7 @@ func (opts *ApplicationCreateOptions) Exec(ctx context.Context, c *cli.Config) e
 		if err != nil {
 			return err
 		}
+		c.Successf("Application %q is ready\n", application.Name)
 	}
 	return nil
 }

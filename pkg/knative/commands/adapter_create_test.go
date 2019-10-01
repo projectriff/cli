@@ -407,6 +407,7 @@ Created adapter "my-adapter"
 			ExpectOutput: `
 Created adapter "my-adapter"
 ...log output...
+Adapter "my-adapter" is ready
 `,
 		},
 		{

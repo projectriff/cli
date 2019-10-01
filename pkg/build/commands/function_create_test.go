@@ -766,6 +766,7 @@ Created function "my-function"
 			ExpectOutput: `
 Created function "my-function"
 ...log output...
+Function "my-function" is ready
 `,
 		},
 		{

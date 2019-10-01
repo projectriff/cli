@@ -243,6 +243,7 @@ Created container "my-container"
 			ExpectOutput: `
 Created container "my-container"
 ...log output...
+Container "my-container" is ready
 `,
 		},
 		{
