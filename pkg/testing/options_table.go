@@ -42,8 +42,8 @@ type OptionsTableRecord struct {
 
 	// outputs
 
-	// ExpectFieldError is the error that should be returned from the validation.
-	ExpectFieldError *cli.FieldError
+	// ExpectFieldErrors are the errors that should be returned from the validator.
+	ExpectFieldErrors cli.FieldErrors
 
 	// ShouldValidate is true if the options are valid
 	ShouldValidate bool
@@ -76,19 +76,16 @@ func (otr OptionsTableRecord) Run(t *testing.T) {
 		}
 
 		errs := otr.Options.Validate(context.Background())
-		if errs == nil {
-			errs = cli.EmptyFieldError
-		}
 
-		if otr.ExpectFieldError != nil {
+		if otr.ExpectFieldErrors != nil {
 			actual := errs
-			expected := otr.ExpectFieldError
+			expected := otr.ExpectFieldErrors
 			if diff := DiffFieldErrors(expected, actual); diff != "" {
 				t.Errorf("Unexpected errors (-expected, +actual): %s", diff)
 			}
 		}
 
-		if expected, actual := otr.ShouldValidate, errs.Error() == ""; expected != actual {
+		if expected, actual := otr.ShouldValidate, len(errs) == 0; expected != actual {
 			if expected {
 				t.Errorf("expected options to validate, actual %q", errs)
 			} else {
@@ -96,8 +93,8 @@ func (otr OptionsTableRecord) Run(t *testing.T) {
 			}
 		}
 
-		if otr.ShouldValidate == false && otr.ExpectFieldError == nil {
-			t.Error("one of ShouldValidate=true or ExpectFieldError is required")
+		if otr.ShouldValidate == false && len(otr.ExpectFieldErrors) == 0 {
+			t.Error("one of ShouldValidate=true or ExpectFieldErrors is required")
 		}
 	})
 }

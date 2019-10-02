@@ -23,6 +23,7 @@ import (
 	"time"
 
 	"github.com/projectriff/cli/pkg/cli"
+	"github.com/projectriff/cli/pkg/cli/options"
 	"github.com/projectriff/cli/pkg/cli/printers"
 	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 	"github.com/spf13/cobra"
@@ -32,7 +33,7 @@ import (
 )
 
 type ProcessorListOptions struct {
-	cli.ListOptions
+	options.ListOptions
 }
 
 var (
@@ -40,8 +41,8 @@ var (
 	_ cli.Executable  = (*ProcessorListOptions)(nil)
 )
 
-func (opts *ProcessorListOptions) Validate(ctx context.Context) *cli.FieldError {
-	errs := cli.EmptyFieldError
+func (opts *ProcessorListOptions) Validate(ctx context.Context) cli.FieldErrors {
+	errs := cli.EmptyFieldErrors
 
 	errs = errs.Also(opts.ListOptions.Validate(ctx))
 

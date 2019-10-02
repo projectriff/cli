@@ -23,6 +23,7 @@ import (
 	"time"
 
 	"github.com/projectriff/cli/pkg/cli"
+	"github.com/projectriff/cli/pkg/cli/options"
 	"github.com/projectriff/cli/pkg/k8s"
 	"github.com/projectriff/cli/pkg/parsers"
 	"github.com/projectriff/cli/pkg/race"
@@ -34,7 +35,7 @@ import (
 )
 
 type DeployerCreateOptions struct {
-	cli.ResourceOptions
+	options.ResourceOptions
 
 	Image          string
 	ApplicationRef string
@@ -56,10 +57,10 @@ var (
 	_ cli.DryRunable  = (*DeployerCreateOptions)(nil)
 )
 
-func (opts *DeployerCreateOptions) Validate(ctx context.Context) *cli.FieldError {
-	errs := cli.EmptyFieldError
+func (opts *DeployerCreateOptions) Validate(ctx context.Context) cli.FieldErrors {
+	errs := cli.EmptyFieldErrors
 
-	errs = errs.Also(opts.ResourceOptions.Validate((ctx)))
+	errs = errs.Also(opts.ResourceOptions.Validate(ctx))
 
 	// application-ref, build-ref and image are mutually exclusive
 	used := []string{}

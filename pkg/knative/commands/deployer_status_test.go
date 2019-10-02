@@ -37,7 +37,7 @@ func TestDeployerStatusOptions(t *testing.T) {
 			Options: &commands.DeployerStatusOptions{
 				ResourceOptions: rifftesting.InvalidResourceOptions,
 			},
-			ExpectFieldError: rifftesting.InvalidResourceOptionsFieldError,
+			ExpectFieldErrors: rifftesting.InvalidResourceOptionsFieldError,
 		},
 		{
 			Name: "valid resource",

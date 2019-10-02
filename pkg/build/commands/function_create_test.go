@@ -46,7 +46,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 			Options: &commands.FunctionCreateOptions{
 				ResourceOptions: rifftesting.InvalidResourceOptions,
 			},
-			ExpectFieldError: rifftesting.InvalidResourceOptionsFieldError.Also(
+			ExpectFieldErrors: rifftesting.InvalidResourceOptionsFieldError.Also(
 				cli.ErrMissingField(cli.ImageFlagName),
 				cli.ErrMissingOneOf(cli.GitRepoFlagName, cli.LocalPathFlagName),
 			),
@@ -76,7 +76,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 			},
-			ExpectFieldError: cli.ErrMissingOneOf(cli.GitRepoFlagName, cli.LocalPathFlagName),
+			ExpectFieldErrors: cli.ErrMissingOneOf(cli.GitRepoFlagName, cli.LocalPathFlagName),
 		},
 		{
 			Name: "multiple sources",
@@ -87,7 +87,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 				GitRevision:     "master",
 				LocalPath:       ".",
 			},
-			ExpectFieldError: cli.ErrMultipleOneOf(cli.GitRepoFlagName, cli.LocalPathFlagName),
+			ExpectFieldErrors: cli.ErrMultipleOneOf(cli.GitRepoFlagName, cli.LocalPathFlagName),
 		},
 		{
 			Name: "git source with cache",
@@ -108,7 +108,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 				LocalPath:       ".",
 				CacheSize:       "8Gi",
 			},
-			ExpectFieldError: cli.ErrDisallowedFields(cli.CacheSizeFlagName),
+			ExpectFieldErrors: cli.ErrDisallowedFields(cli.CacheSizeFlagName),
 		},
 		{
 			Name: "invalid cache",
@@ -119,7 +119,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 				GitRevision:     "master",
 				CacheSize:       "X",
 			},
-			ExpectFieldError: cli.ErrInvalidValue("X", cli.CacheSizeFlagName),
+			ExpectFieldErrors: cli.ErrInvalidValue("X", cli.CacheSizeFlagName),
 		},
 		{
 			Name: "with git subpath",
@@ -140,7 +140,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 				LocalPath:       ".",
 				SubPath:         "some/directory",
 			},
-			ExpectFieldError: cli.ErrDisallowedFields(cli.SubPathFlagName),
+			ExpectFieldErrors: cli.ErrDisallowedFields(cli.SubPathFlagName),
 		},
 		{
 			Name: "missing git revision",
@@ -150,7 +150,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 				GitRepo:         "https://example.com/repo.git",
 				GitRevision:     "",
 			},
-			ExpectFieldError: cli.ErrMissingField(cli.GitRevisionFlagName),
+			ExpectFieldErrors: cli.ErrMissingField(cli.GitRevisionFlagName),
 		},
 		{
 			Name: "git source, tail",
@@ -173,7 +173,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 				GitRevision:     "master",
 				Tail:            true,
 			},
-			ExpectFieldError: cli.ErrMissingField(cli.WaitTimeoutFlagName),
+			ExpectFieldErrors: cli.ErrMissingField(cli.WaitTimeoutFlagName),
 		},
 		{
 			Name: "git source, tail invalid timeout",
@@ -185,7 +185,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 				Tail:            true,
 				WaitTimeout:     "d",
 			},
-			ExpectFieldError: cli.ErrInvalidValue("d", cli.WaitTimeoutFlagName),
+			ExpectFieldErrors: cli.ErrInvalidValue("d", cli.WaitTimeoutFlagName),
 		},
 		{
 			Name: "dry run",
@@ -209,7 +209,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 				WaitTimeout:     "10m",
 				DryRun:          true,
 			},
-			ExpectFieldError: cli.ErrMultipleOneOf(cli.DryRunFlagName, cli.TailFlagName),
+			ExpectFieldErrors: cli.ErrMultipleOneOf(cli.DryRunFlagName, cli.TailFlagName),
 		},
 	}
 
@@ -218,7 +218,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 			opts, _ := tr.Options.(*commands.FunctionCreateOptions)
 			if opts.LocalPath != "" {
 				tr.ShouldValidate = false
-				tr.ExpectFieldError = tr.ExpectFieldError.Also(
+				tr.ExpectFieldErrors = tr.ExpectFieldErrors.Also(
 					cli.ErrInvalidValue(fmt.Sprintf("%s is not available on Windows", cli.LocalPathFlagName), cli.LocalPathFlagName),
 				)
 			}

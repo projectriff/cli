@@ -23,6 +23,7 @@ import (
 	"time"
 
 	"github.com/projectriff/cli/pkg/cli"
+	"github.com/projectriff/cli/pkg/cli/options"
 	"github.com/projectriff/cli/pkg/cli/printers"
 	"github.com/projectriff/system/pkg/apis/build"
 	"github.com/spf13/cobra"
@@ -33,7 +34,7 @@ import (
 )
 
 type CredentialListOptions struct {
-	cli.ListOptions
+	options.ListOptions
 }
 
 var (
@@ -41,8 +42,8 @@ var (
 	_ cli.Executable  = (*CredentialListOptions)(nil)
 )
 
-func (opts *CredentialListOptions) Validate(ctx context.Context) *cli.FieldError {
-	errs := cli.EmptyFieldError
+func (opts *CredentialListOptions) Validate(ctx context.Context) cli.FieldErrors {
+	errs := cli.EmptyFieldErrors
 
 	errs = errs.Also(opts.ListOptions.Validate(ctx))
 

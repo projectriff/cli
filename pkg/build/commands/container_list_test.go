@@ -36,7 +36,7 @@ func TestContainerListOptions(t *testing.T) {
 			Options: &commands.ContainerListOptions{
 				ListOptions: rifftesting.InvalidListOptions,
 			},
-			ExpectFieldError: rifftesting.InvalidListOptionsFieldError,
+			ExpectFieldErrors: rifftesting.InvalidListOptionsFieldError,
 		},
 		{
 			Name: "valid list",

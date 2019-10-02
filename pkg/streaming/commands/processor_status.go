@@ -22,6 +22,7 @@ import (
 	"strings"
 
 	"github.com/projectriff/cli/pkg/cli"
+	"github.com/projectriff/cli/pkg/cli/options"
 	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 	"github.com/spf13/cobra"
 	apierrs "k8s.io/apimachinery/pkg/api/errors"
@@ -29,7 +30,7 @@ import (
 )
 
 type ProcessorStatusOptions struct {
-	cli.ResourceOptions
+	options.ResourceOptions
 }
 
 var (
@@ -37,8 +38,8 @@ var (
 	_ cli.Executable  = (*ProcessorStatusOptions)(nil)
 )
 
-func (opts *ProcessorStatusOptions) Validate(ctx context.Context) *cli.FieldError {
-	errs := cli.EmptyFieldError
+func (opts *ProcessorStatusOptions) Validate(ctx context.Context) cli.FieldErrors {
+	errs := cli.EmptyFieldErrors
 
 	errs = errs.Also(opts.ResourceOptions.Validate(ctx))
 

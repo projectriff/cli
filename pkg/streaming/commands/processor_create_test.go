@@ -40,7 +40,7 @@ func TestProcessorCreateOptions(t *testing.T) {
 			Options: &commands.ProcessorCreateOptions{
 				ResourceOptions: rifftesting.InvalidResourceOptions,
 			},
-			ExpectFieldError: rifftesting.InvalidResourceOptionsFieldError.Also(
+			ExpectFieldErrors: rifftesting.InvalidResourceOptionsFieldError.Also(
 				cli.ErrMissingField(cli.FunctionRefFlagName),
 				cli.ErrMissingField(cli.InputFlagName),
 			),
@@ -83,7 +83,7 @@ func TestProcessorCreateOptions(t *testing.T) {
 				Inputs:          []string{"input"},
 				Tail:            true,
 			},
-			ExpectFieldError: cli.ErrMissingField(cli.WaitTimeoutFlagName),
+			ExpectFieldErrors: cli.ErrMissingField(cli.WaitTimeoutFlagName),
 		},
 		{
 			Name: "with tail, invalid timeout",
@@ -94,7 +94,7 @@ func TestProcessorCreateOptions(t *testing.T) {
 				Tail:            true,
 				WaitTimeout:     "d",
 			},
-			ExpectFieldError: cli.ErrInvalidValue("d", cli.WaitTimeoutFlagName),
+			ExpectFieldErrors: cli.ErrInvalidValue("d", cli.WaitTimeoutFlagName),
 		},
 		{
 			Name: "dry run",
@@ -116,7 +116,7 @@ func TestProcessorCreateOptions(t *testing.T) {
 				WaitTimeout:     "10m",
 				DryRun:          true,
 			},
-			ExpectFieldError: cli.ErrMultipleOneOf(cli.DryRunFlagName, cli.TailFlagName),
+			ExpectFieldErrors: cli.ErrMultipleOneOf(cli.DryRunFlagName, cli.TailFlagName),
 		},
 	}
 

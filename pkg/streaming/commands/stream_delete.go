@@ -22,12 +22,13 @@ import (
 	"strings"
 
 	"github.com/projectriff/cli/pkg/cli"
+	"github.com/projectriff/cli/pkg/cli/options"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 type StreamDeleteOptions struct {
-	cli.DeleteOptions
+	options.DeleteOptions
 }
 
 var (
@@ -35,8 +36,8 @@ var (
 	_ cli.Executable  = (*StreamDeleteOptions)(nil)
 )
 
-func (opts *StreamDeleteOptions) Validate(ctx context.Context) *cli.FieldError {
-	errs := cli.EmptyFieldError
+func (opts *StreamDeleteOptions) Validate(ctx context.Context) cli.FieldErrors {
+	errs := cli.EmptyFieldErrors
 
 	errs = errs.Also(opts.DeleteOptions.Validate(ctx))
 

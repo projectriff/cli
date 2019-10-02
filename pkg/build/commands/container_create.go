@@ -23,6 +23,7 @@ import (
 	"time"
 
 	"github.com/projectriff/cli/pkg/cli"
+	"github.com/projectriff/cli/pkg/cli/options"
 	"github.com/projectriff/cli/pkg/k8s"
 	"github.com/projectriff/cli/pkg/race"
 	buildv1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
@@ -31,7 +32,7 @@ import (
 )
 
 type ContainerCreateOptions struct {
-	cli.ResourceOptions
+	options.ResourceOptions
 
 	Image string
 
@@ -47,8 +48,8 @@ var (
 	_ cli.DryRunable  = (*ContainerCreateOptions)(nil)
 )
 
-func (opts *ContainerCreateOptions) Validate(ctx context.Context) *cli.FieldError {
-	errs := cli.EmptyFieldError
+func (opts *ContainerCreateOptions) Validate(ctx context.Context) cli.FieldErrors {
+	errs := cli.EmptyFieldErrors
 
 	errs = errs.Also(opts.ResourceOptions.Validate(ctx))
 

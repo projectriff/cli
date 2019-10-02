@@ -3,34 +3,34 @@ package validation_test
 import (
 	"testing"
 
+	"github.com/projectriff/cli/pkg/cli"
+	rifftesting "github.com/projectriff/cli/pkg/testing"
 	"github.com/projectriff/cli/pkg/validation"
 )
 
 func TestValidMimeType(t *testing.T) {
-	err := validation.MimeType("text/csv", "some-field")
+	expected := cli.EmptyFieldErrors
+	actual := validation.MimeType("text/csv", "some-field")
 
-	actualErrorMessage := err.Error()
-	if actualErrorMessage != "" {
-		t.Fatalf("Expected no error, got %q", actualErrorMessage)
+	if diff := rifftesting.DiffFieldErrors(expected, actual); diff != "" {
+		t.Errorf("(-expected, +actual): %s", diff)
 	}
 }
 
 func TestInvalidMimeTypeWithMissingSlash(t *testing.T) {
-	expectedErrorMessage := "invalid value: invalid: some-field"
-	err := validation.MimeType("invalid", "some-field")
+	expected := cli.ErrInvalidValue("invalid", "some-field")
+	actual := validation.MimeType("invalid", "some-field")
 
-	actualErrorMessage := err.Error()
-	if actualErrorMessage != expectedErrorMessage {
-		t.Fatalf("Expected %q as error message, got %q", expectedErrorMessage, actualErrorMessage)
+	if diff := rifftesting.DiffFieldErrors(expected, actual); diff != "" {
+		t.Errorf("(-expected, +actual): %s", diff)
 	}
 }
 
 func TestInvalidMimeTypeWithSingleTrailingSlash(t *testing.T) {
-	expectedErrorMessage := "invalid value: invalid/: some-field"
-	err := validation.MimeType("invalid/", "some-field")
+	expected := cli.ErrInvalidValue("invalid/", "some-field")
+	actual := validation.MimeType("invalid/", "some-field")
 
-	actualErrorMessage := err.Error()
-	if actualErrorMessage != expectedErrorMessage {
-		t.Fatalf("Expected %q as error message, got %q", expectedErrorMessage, actualErrorMessage)
+	if diff := rifftesting.DiffFieldErrors(expected, actual); diff != "" {
+		t.Errorf("(-expected, +actual): %s", diff)
 	}
 }

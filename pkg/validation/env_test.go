@@ -27,11 +27,11 @@ import (
 func TestEnvVar(t *testing.T) {
 	tests := []struct {
 		name     string
-		expected *cli.FieldError
+		expected cli.FieldErrors
 		value    string
 	}{{
 		name:     "valid",
-		expected: cli.EmptyFieldError,
+		expected: cli.EmptyFieldErrors,
 		value:    "MY_VAR=my-value",
 	}, {
 		name:     "empty",
@@ -57,15 +57,15 @@ func TestEnvVar(t *testing.T) {
 func TestEnvVars(t *testing.T) {
 	tests := []struct {
 		name     string
-		expected *cli.FieldError
+		expected cli.FieldErrors
 		values   []string
 	}{{
 		name:     "valid, empty",
-		expected: cli.EmptyFieldError,
+		expected: cli.EmptyFieldErrors,
 		values:   []string{},
 	}, {
 		name:     "valid, not empty",
-		expected: cli.EmptyFieldError,
+		expected: cli.EmptyFieldErrors,
 		values:   []string{"MY_VAR=my-value"},
 	}, {
 		name:     "invalid",
@@ -73,7 +73,7 @@ func TestEnvVars(t *testing.T) {
 		values:   []string{""},
 	}, {
 		name: "multiple invalid",
-		expected: cli.EmptyFieldError.Also(
+		expected: cli.EmptyFieldErrors.Also(
 			cli.ErrInvalidValue("", cli.CurrentField).ViaFieldIndex(rifftesting.TestField, 0),
 			cli.ErrInvalidValue("", cli.CurrentField).ViaFieldIndex(rifftesting.TestField, 1),
 		),
@@ -94,15 +94,15 @@ func TestEnvVars(t *testing.T) {
 func TestEnvVarFrom(t *testing.T) {
 	tests := []struct {
 		name     string
-		expected *cli.FieldError
+		expected cli.FieldErrors
 		value    string
 	}{{
 		name:     "valid configmap",
-		expected: cli.EmptyFieldError,
+		expected: cli.EmptyFieldErrors,
 		value:    "MY_VAR=configMapKeyRef:my-configmap:my-key",
 	}, {
 		name:     "valid secret",
-		expected: cli.EmptyFieldError,
+		expected: cli.EmptyFieldErrors,
 		value:    "MY_VAR=secretKeyRef:my-secret:my-key",
 	}, {
 		name:     "empty",
@@ -140,15 +140,15 @@ func TestEnvVarFrom(t *testing.T) {
 func TestEnvVarFroms(t *testing.T) {
 	tests := []struct {
 		name     string
-		expected *cli.FieldError
+		expected cli.FieldErrors
 		values   []string
 	}{{
 		name:     "valid, empty",
-		expected: cli.EmptyFieldError,
+		expected: cli.EmptyFieldErrors,
 		values:   []string{},
 	}, {
 		name:     "valid, not empty",
-		expected: cli.EmptyFieldError,
+		expected: cli.EmptyFieldErrors,
 		values:   []string{"MY_VAR=configMapKeyRef:my-configmap:my-key"},
 	}, {
 		name:     "invalid",
@@ -156,7 +156,7 @@ func TestEnvVarFroms(t *testing.T) {
 		values:   []string{""},
 	}, {
 		name: "multiple invalid",
-		expected: cli.EmptyFieldError.Also(
+		expected: cli.EmptyFieldErrors.Also(
 			cli.ErrInvalidValue("", cli.CurrentField).ViaFieldIndex(rifftesting.TestField, 0),
 			cli.ErrInvalidValue("", cli.CurrentField).ViaFieldIndex(rifftesting.TestField, 1),
 		),

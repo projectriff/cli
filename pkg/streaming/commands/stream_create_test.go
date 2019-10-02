@@ -34,7 +34,7 @@ func TestStreamCreateOptions(t *testing.T) {
 			Options: &commands.StreamCreateOptions{
 				ResourceOptions: rifftesting.InvalidResourceOptions,
 			},
-			ExpectFieldError: rifftesting.InvalidResourceOptionsFieldError.Also(
+			ExpectFieldErrors: rifftesting.InvalidResourceOptionsFieldError.Also(
 				cli.ErrMissingField(cli.ProviderFlagName),
 			),
 		},
@@ -51,7 +51,7 @@ func TestStreamCreateOptions(t *testing.T) {
 			Options: &commands.StreamCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 			},
-			ExpectFieldError: cli.ErrMissingField(cli.ProviderFlagName),
+			ExpectFieldErrors: cli.ErrMissingField(cli.ProviderFlagName),
 		},
 		{
 			Name: "with valid content type",
@@ -69,7 +69,7 @@ func TestStreamCreateOptions(t *testing.T) {
 				Provider:        "test-provider",
 				ContentType:     "invalid-content-type",
 			},
-			ExpectFieldError: cli.ErrInvalidValue("invalid-content-type", cli.ContentTypeFlagName),
+			ExpectFieldErrors: cli.ErrInvalidValue("invalid-content-type", cli.ContentTypeFlagName),
 		},
 		{
 			Name: "dry run",

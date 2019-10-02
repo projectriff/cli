@@ -38,7 +38,7 @@ func TestDeployerListOptions(t *testing.T) {
 			Options: &commands.DeployerListOptions{
 				ListOptions: rifftesting.InvalidListOptions,
 			},
-			ExpectFieldError: rifftesting.InvalidListOptionsFieldError,
+			ExpectFieldErrors: rifftesting.InvalidListOptionsFieldError,
 		},
 		{
 			Name: "valid list",

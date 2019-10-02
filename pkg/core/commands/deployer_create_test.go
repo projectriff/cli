@@ -41,7 +41,7 @@ func TestDeployerCreateOptions(t *testing.T) {
 			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.InvalidResourceOptions,
 			},
-			ExpectFieldError: rifftesting.InvalidResourceOptionsFieldError.Also(
+			ExpectFieldErrors: rifftesting.InvalidResourceOptionsFieldError.Also(
 				cli.ErrMissingOneOf(cli.ApplicationRefFlagName, cli.ContainerRefFlagName, cli.FunctionRefFlagName, cli.ImageFlagName),
 			),
 		},
@@ -86,7 +86,7 @@ func TestDeployerCreateOptions(t *testing.T) {
 				FunctionRef:     "my-function",
 				Image:           "example.com/repo:tag",
 			},
-			ExpectFieldError: cli.ErrMultipleOneOf(cli.ApplicationRefFlagName, cli.ContainerRefFlagName, cli.FunctionRefFlagName, cli.ImageFlagName),
+			ExpectFieldErrors: cli.ErrMultipleOneOf(cli.ApplicationRefFlagName, cli.ContainerRefFlagName, cli.FunctionRefFlagName, cli.ImageFlagName),
 		},
 		{
 			Name: "with env",
@@ -104,7 +104,7 @@ func TestDeployerCreateOptions(t *testing.T) {
 				Image:           "example.com/repo:tag",
 				Env:             []string{"=foo"},
 			},
-			ExpectFieldError: cli.ErrInvalidArrayValue("=foo", cli.EnvFlagName, 0),
+			ExpectFieldErrors: cli.ErrInvalidArrayValue("=foo", cli.EnvFlagName, 0),
 		},
 		{
 			Name: "with envfrom secret",
@@ -131,7 +131,7 @@ func TestDeployerCreateOptions(t *testing.T) {
 				Image:           "example.com/repo:tag",
 				EnvFrom:         []string{"VAR1=someOtherKeyRef:name:key"},
 			},
-			ExpectFieldError: cli.ErrInvalidArrayValue("VAR1=someOtherKeyRef:name:key", cli.EnvFromFlagName, 0),
+			ExpectFieldErrors: cli.ErrInvalidArrayValue("VAR1=someOtherKeyRef:name:key", cli.EnvFromFlagName, 0),
 		},
 		{
 			Name: "with tail",
@@ -150,7 +150,7 @@ func TestDeployerCreateOptions(t *testing.T) {
 				Image:           "example.com/repo:tag",
 				Tail:            true,
 			},
-			ExpectFieldError: cli.ErrMissingField(cli.WaitTimeoutFlagName),
+			ExpectFieldErrors: cli.ErrMissingField(cli.WaitTimeoutFlagName),
 		},
 		{
 			Name: "with tail, invalid timeout",
@@ -160,7 +160,7 @@ func TestDeployerCreateOptions(t *testing.T) {
 				Tail:            true,
 				WaitTimeout:     "d",
 			},
-			ExpectFieldError: cli.ErrInvalidValue("d", cli.WaitTimeoutFlagName),
+			ExpectFieldErrors: cli.ErrInvalidValue("d", cli.WaitTimeoutFlagName),
 		},
 		{
 			Name: "dry run",
@@ -180,7 +180,7 @@ func TestDeployerCreateOptions(t *testing.T) {
 				WaitTimeout:     "10m",
 				DryRun:          true,
 			},
-			ExpectFieldError: cli.ErrMultipleOneOf(cli.DryRunFlagName, cli.TailFlagName),
+			ExpectFieldErrors: cli.ErrMultipleOneOf(cli.DryRunFlagName, cli.TailFlagName),
 		},
 	}
 

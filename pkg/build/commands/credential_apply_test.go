@@ -36,14 +36,14 @@ func TestCredentialApplyOptions(t *testing.T) {
 			Options: &commands.CredentialApplyOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 			},
-			ExpectFieldError: cli.ErrMissingOneOf(cli.DockerHubFlagName, cli.GcrFlagName, cli.RegistryFlagName),
+			ExpectFieldErrors: cli.ErrMissingOneOf(cli.DockerHubFlagName, cli.GcrFlagName, cli.RegistryFlagName),
 		},
 		{
 			Name: "invalid namespaced resource",
 			Options: &commands.CredentialApplyOptions{
 				ResourceOptions: rifftesting.InvalidResourceOptions,
 			},
-			ExpectFieldError: rifftesting.InvalidResourceOptionsFieldError.Also(
+			ExpectFieldErrors: rifftesting.InvalidResourceOptionsFieldError.Also(
 				cli.ErrMissingOneOf(cli.DockerHubFlagName, cli.GcrFlagName, cli.RegistryFlagName),
 			),
 		},
@@ -62,7 +62,7 @@ func TestCredentialApplyOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				DockerHubId:     "projectriff",
 			},
-			ExpectFieldError: cli.ErrMissingField("<docker-hub-password>"),
+			ExpectFieldErrors: cli.ErrMissingField("<docker-hub-password>"),
 		},
 		{
 			Name: "gcr",
@@ -89,7 +89,7 @@ func TestCredentialApplyOptions(t *testing.T) {
 				Registry:         "example.com",
 				RegistryPassword: []byte("1password"),
 			},
-			ExpectFieldError: cli.ErrMissingField(cli.RegistryUserFlagName),
+			ExpectFieldErrors: cli.ErrMissingField(cli.RegistryUserFlagName),
 		},
 		{
 			Name: "registry missing password",
@@ -112,7 +112,7 @@ func TestCredentialApplyOptions(t *testing.T) {
 				RegistryUser:      "projectriff",
 				RegistryPassword:  []byte("1password"),
 			},
-			ExpectFieldError: rifftesting.InvalidResourceOptionsFieldError.Also(
+			ExpectFieldErrors: rifftesting.InvalidResourceOptionsFieldError.Also(
 				cli.ErrMultipleOneOf(cli.DockerHubFlagName, cli.GcrFlagName, cli.RegistryFlagName),
 			),
 		},
@@ -144,7 +144,7 @@ func TestCredentialApplyOptions(t *testing.T) {
 				RegistryPassword:      []byte("1password"),
 				SetDefaultImagePrefix: true,
 			},
-			ExpectFieldError: cli.ErrInvalidValue(fmt.Sprintf("cannot be used with %s, without %s", cli.RegistryFlagName, cli.DefaultImagePrefixFlagName), cli.SetDefaultImagePrefixFlagName),
+			ExpectFieldErrors: cli.ErrInvalidValue(fmt.Sprintf("cannot be used with %s, without %s", cli.RegistryFlagName, cli.DefaultImagePrefixFlagName), cli.SetDefaultImagePrefixFlagName),
 		},
 		{
 			Name: "dry run",

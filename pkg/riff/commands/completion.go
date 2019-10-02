@@ -34,8 +34,8 @@ var (
 	_ cli.Executable  = (*CompletionOptions)(nil)
 )
 
-func (opts *CompletionOptions) Validate(ctx context.Context) *cli.FieldError {
-	errs := cli.EmptyFieldError
+func (opts *CompletionOptions) Validate(ctx context.Context) cli.FieldErrors {
+	errs := cli.EmptyFieldErrors
 
 	if opts.Shell == "" {
 		errs = errs.Also(cli.ErrMissingField(cli.ShellFlagName))

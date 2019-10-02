@@ -19,12 +19,8 @@ package cli
 import (
 	"context"
 
-	"github.com/knative/pkg/apis"
-	"github.com/projectriff/cli/pkg/validation"
 	"github.com/spf13/cobra"
 )
-
-var EmptyFieldError *FieldError
 
 // ValidateOptions bridges a cobra RunE function to the Validatable interface.  All flags and
 // arguments must already be bound, with explicit or default values, to the options struct being
@@ -33,13 +29,13 @@ var EmptyFieldError *FieldError
 // ```
 // cmd := &cobra.Command{
 // 	   ...
-// 	   PreRunE: cli.ValidateOptions(c, opts),
+// 	   PreRunE: cli.ValidateOptions(opts),
 // }
 // ```
-func ValidateOptions(ctx context.Context, opts apis.Validatable) func(cmd *cobra.Command, args []string) error {
+func ValidateOptions(ctx context.Context, opts Validatable) func(cmd *cobra.Command, args []string) error {
 	return func(cmd *cobra.Command, args []string) error {
-		if err := opts.Validate(ctx); err.Error() != "" {
-			return err
+		if err := opts.Validate(ctx); len(err) != 0 {
+			return err.ToAggregate()
 		}
 		cmd.SilenceUsage = true
 		return nil
@@ -70,68 +66,4 @@ func ExecOptions(ctx context.Context, c *Config, opts Executable) func(cmd *cobr
 		}
 		return opts.Exec(ctx, c)
 	}
-}
-
-type ListOptions struct {
-	Namespace     string
-	AllNamespaces bool
-}
-
-func (opts *ListOptions) Validate(ctx context.Context) *FieldError {
-	errs := &FieldError{}
-
-	if opts.Namespace == "" && !opts.AllNamespaces {
-		errs = errs.Also(ErrMissingOneOf(NamespaceFlagName, AllNamespacesFlagName))
-	}
-	if opts.Namespace != "" && opts.AllNamespaces {
-		errs = errs.Also(ErrMultipleOneOf(NamespaceFlagName, AllNamespacesFlagName))
-	}
-
-	return errs
-}
-
-type ResourceOptions struct {
-	Namespace string
-	Name      string
-}
-
-func (opts *ResourceOptions) Validate(ctx context.Context) *FieldError {
-	errs := &FieldError{}
-
-	if opts.Namespace == "" {
-		errs = errs.Also(ErrMissingField(NamespaceFlagName))
-	}
-
-	if opts.Name == "" {
-		errs = errs.Also(ErrMissingField(opts.Name, NameArgumentName))
-	} else {
-		errs = errs.Also(validation.K8sName(opts.Name, NameArgumentName))
-	}
-
-	return errs
-}
-
-type DeleteOptions struct {
-	Namespace string
-	Names     []string
-	All       bool
-}
-
-func (opts *DeleteOptions) Validate(ctx context.Context) *FieldError {
-	errs := &FieldError{}
-
-	if opts.Namespace == "" {
-		errs = errs.Also(ErrMissingField(NamespaceFlagName))
-	}
-
-	if opts.All && len(opts.Names) != 0 {
-		errs = errs.Also(ErrMultipleOneOf(AllFlagName, NamesArgumentName))
-	}
-	if !opts.All && len(opts.Names) == 0 {
-		errs = errs.Also(ErrMissingOneOf(AllFlagName, NamesArgumentName))
-	}
-
-	errs = errs.Also(validation.K8sNames(opts.Names, NamesArgumentName))
-
-	return errs
 }

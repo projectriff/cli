@@ -37,7 +37,7 @@ func TestContainerStatusOptions(t *testing.T) {
 			Options: &commands.ContainerStatusOptions{
 				ResourceOptions: rifftesting.InvalidResourceOptions,
 			},
-			ExpectFieldError: rifftesting.InvalidResourceOptionsFieldError,
+			ExpectFieldErrors: rifftesting.InvalidResourceOptionsFieldError,
 		},
 		{
 			Name: "valid resource",

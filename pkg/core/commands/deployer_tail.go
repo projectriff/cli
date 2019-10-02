@@ -23,12 +23,13 @@ import (
 	"time"
 
 	"github.com/projectriff/cli/pkg/cli"
+	"github.com/projectriff/cli/pkg/cli/options"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 type DeployerTailOptions struct {
-	cli.ResourceOptions
+	options.ResourceOptions
 
 	Since string
 }
@@ -38,8 +39,8 @@ var (
 	_ cli.Executable  = (*DeployerTailOptions)(nil)
 )
 
-func (opts *DeployerTailOptions) Validate(ctx context.Context) *cli.FieldError {
-	errs := cli.EmptyFieldError
+func (opts *DeployerTailOptions) Validate(ctx context.Context) cli.FieldErrors {
+	errs := cli.EmptyFieldErrors
 
 	errs = errs.Also(opts.ResourceOptions.Validate(ctx))
 

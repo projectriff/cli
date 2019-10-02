@@ -23,6 +23,7 @@ import (
 	"time"
 
 	"github.com/projectriff/cli/pkg/cli"
+	"github.com/projectriff/cli/pkg/cli/options"
 	"github.com/projectriff/cli/pkg/k8s"
 	"github.com/projectriff/cli/pkg/race"
 	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
@@ -31,7 +32,7 @@ import (
 )
 
 type ProcessorCreateOptions struct {
-	cli.ResourceOptions
+	options.ResourceOptions
 
 	FunctionRef string
 	Inputs      []string
@@ -49,10 +50,10 @@ var (
 	_ cli.DryRunable  = (*ProcessorCreateOptions)(nil)
 )
 
-func (opts *ProcessorCreateOptions) Validate(ctx context.Context) *cli.FieldError {
-	errs := cli.EmptyFieldError
+func (opts *ProcessorCreateOptions) Validate(ctx context.Context) cli.FieldErrors {
+	errs := cli.EmptyFieldErrors
 
-	errs = errs.Also(opts.ResourceOptions.Validate((ctx)))
+	errs = errs.Also(opts.ResourceOptions.Validate(ctx))
 
 	if opts.FunctionRef == "" {
 		errs = errs.Also(cli.ErrMissingField(cli.FunctionRefFlagName))

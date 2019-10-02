@@ -41,7 +41,7 @@ func TestDocsOptions(t *testing.T) {
 			Options: &commands.DocsOptions{
 				Directory: "",
 			},
-			ExpectFieldError: cli.ErrMissingField(cli.DirectoryFlagName),
+			ExpectFieldErrors: cli.ErrMissingField(cli.DirectoryFlagName),
 		},
 	}
 

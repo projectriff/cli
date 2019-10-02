@@ -38,8 +38,8 @@ var (
 	_ cli.Executable  = (*DoctorOptions)(nil)
 )
 
-func (opts *DoctorOptions) Validate(ctx context.Context) *cli.FieldError {
-	errs := cli.EmptyFieldError
+func (opts *DoctorOptions) Validate(ctx context.Context) cli.FieldErrors {
+	errs := cli.EmptyFieldErrors
 
 	if opts.Namespace == "" {
 		errs = errs.Also(cli.ErrMissingField(cli.NamespaceFlagName))

@@ -3,15 +3,15 @@ package validation
 import (
 	"strings"
 
-	"github.com/knative/pkg/apis"
+	"github.com/projectriff/cli/pkg/cli"
 )
 
-func MimeType(mimeType, field string) *apis.FieldError {
-	errs := &apis.FieldError{}
+func MimeType(mimeType, field string) cli.FieldErrors {
+	errs := cli.EmptyFieldErrors
 
 	index := strings.Index(mimeType, "/")
 	if index == -1 || index == len(mimeType)-1 {
-		errs = errs.Also(apis.ErrInvalidValue(mimeType, field))
+		errs = errs.Also(cli.ErrInvalidValue(mimeType, field))
 	}
 
 	return errs

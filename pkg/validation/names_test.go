@@ -27,11 +27,11 @@ import (
 func TestK8sName(t *testing.T) {
 	tests := []struct {
 		name     string
-		expected *cli.FieldError
+		expected cli.FieldErrors
 		value    string
 	}{{
 		name:     "valid",
-		expected: cli.EmptyFieldError,
+		expected: cli.EmptyFieldErrors,
 		value:    "my-resource",
 	}, {
 		name:     "empty",
@@ -57,15 +57,15 @@ func TestK8sName(t *testing.T) {
 func TestK8sNames(t *testing.T) {
 	tests := []struct {
 		name     string
-		expected *cli.FieldError
+		expected cli.FieldErrors
 		values   []string
 	}{{
 		name:     "valid, empty",
-		expected: cli.EmptyFieldError,
+		expected: cli.EmptyFieldErrors,
 		values:   []string{},
 	}, {
 		name:     "valid, not empty",
-		expected: cli.EmptyFieldError,
+		expected: cli.EmptyFieldErrors,
 		values:   []string{"my-resource"},
 	}, {
 		name:     "invalid",
@@ -77,7 +77,7 @@ func TestK8sNames(t *testing.T) {
 		values:   []string{"/"},
 	}, {
 		name: "multiple invalid",
-		expected: cli.EmptyFieldError.Also(
+		expected: cli.EmptyFieldErrors.Also(
 			cli.ErrInvalidValue("", cli.CurrentField).ViaFieldIndex(rifftesting.TestField, 0),
 			cli.ErrInvalidValue("", cli.CurrentField).ViaFieldIndex(rifftesting.TestField, 1),
 		),
