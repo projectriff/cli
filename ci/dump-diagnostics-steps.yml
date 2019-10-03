@@ -1,6 +1,6 @@
 steps:
 
-  - bash: ./diagnostics.sh
+  - bash: ./ci/diagnostics.sh
     condition: failed()
     displayName: 'Dump Diagnostics'
 
