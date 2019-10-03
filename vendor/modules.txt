@@ -181,7 +181,7 @@ github.com/pelletier/go-toml
 github.com/pkg/errors
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
-# github.com/projectriff/system v0.0.0-20190809014550-2ab4df7b13f0 => github.com/scothis/system v0.0.0-20191003181358-5c7abecee6d4
+# github.com/projectriff/system v0.0.0-20191003202856-6643ca21d1a3
 github.com/projectriff/system/pkg/apis
 github.com/projectriff/system/pkg/apis/build/v1alpha1
 github.com/projectriff/system/pkg/apis/core/v1alpha1

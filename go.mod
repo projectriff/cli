@@ -11,7 +11,7 @@ require (
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/go-cmp v0.3.1
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/projectriff/system v0.0.0-20190809014550-2ab4df7b13f0
+	github.com/projectriff/system v0.0.0-20191003202856-6643ca21d1a3
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.4.0
 	github.com/stretchr/testify v1.3.0
@@ -30,5 +30,3 @@ replace (
 	k8s.io/apimachinery => k8s.io/apimachinery v0.0.0-20190404173353-6a84e37a896d
 	k8s.io/client-go => k8s.io/client-go v11.0.1-0.20190409021438-1a26190bd76a+incompatible
 )
-
-replace github.com/projectriff/system => github.com/scothis/system v0.0.0-20191003181358-5c7abecee6d4
