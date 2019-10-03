@@ -61,8 +61,8 @@ jobs:
     matrix:
       linux:
         imageName: ubuntu-16.04
-        qualifier: minikube
-        cluster: minikube
+        qualifier: kind
+        cluster: kind
         registry: dockerhub
       windows:
         imageName: windows-2019
