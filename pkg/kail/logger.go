@@ -27,14 +27,10 @@ import (
 	logutil "github.com/boz/go-logutil"
 	"github.com/boz/kail"
 	"github.com/projectriff/cli/pkg/k8s"
-	"github.com/projectriff/system/pkg/apis/build"
 	buildv1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
-	"github.com/projectriff/system/pkg/apis/core"
 	corev1alpha1 "github.com/projectriff/system/pkg/apis/core/v1alpha1"
-	"github.com/projectriff/system/pkg/apis/knative"
 	knativev1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
-	"github.com/projectriff/system/pkg/apis/streaming"
-	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
+	streamingv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
 )
@@ -43,7 +39,7 @@ type Logger interface {
 	ApplicationLogs(ctx context.Context, application *buildv1alpha1.Application, since time.Duration, out io.Writer) error
 	FunctionLogs(ctx context.Context, function *buildv1alpha1.Function, since time.Duration, out io.Writer) error
 	CoreDeployerLogs(ctx context.Context, deployer *corev1alpha1.Deployer, since time.Duration, out io.Writer) error
-	StreamingProcessorLogs(ctx context.Context, processor *streamv1alpha1.Processor, since time.Duration, out io.Writer) error
+	StreamingProcessorLogs(ctx context.Context, processor *streamingv1alpha1.Processor, since time.Duration, out io.Writer) error
 	KnativeDeployerLogs(ctx context.Context, deployer *knativev1alpha1.Deployer, since time.Duration, out io.Writer) error
 }
 
@@ -58,7 +54,7 @@ type logger struct {
 }
 
 func (c *logger) ApplicationLogs(ctx context.Context, application *buildv1alpha1.Application, since time.Duration, out io.Writer) error {
-	selector, err := labels.Parse(fmt.Sprintf("%s=%s", build.ApplicationLabelKey, application.Name))
+	selector, err := labels.Parse(fmt.Sprintf("%s=%s", buildv1alpha1.ApplicationLabelKey, application.Name))
 	if err != nil {
 		panic(err)
 	}
@@ -67,7 +63,7 @@ func (c *logger) ApplicationLogs(ctx context.Context, application *buildv1alpha1
 }
 
 func (c *logger) FunctionLogs(ctx context.Context, function *buildv1alpha1.Function, since time.Duration, out io.Writer) error {
-	selector, err := labels.Parse(fmt.Sprintf("%s=%s", build.FunctionLabelKey, function.Name))
+	selector, err := labels.Parse(fmt.Sprintf("%s=%s", buildv1alpha1.FunctionLabelKey, function.Name))
 	if err != nil {
 		panic(err)
 	}
@@ -76,7 +72,7 @@ func (c *logger) FunctionLogs(ctx context.Context, function *buildv1alpha1.Funct
 }
 
 func (c *logger) CoreDeployerLogs(ctx context.Context, deployer *corev1alpha1.Deployer, since time.Duration, out io.Writer) error {
-	selector, err := labels.Parse(fmt.Sprintf("%s=%s", core.DeployerLabelKey, deployer.Name))
+	selector, err := labels.Parse(fmt.Sprintf("%s=%s", corev1alpha1.DeployerLabelKey, deployer.Name))
 	if err != nil {
 		panic(err)
 	}
@@ -84,8 +80,8 @@ func (c *logger) CoreDeployerLogs(ctx context.Context, deployer *corev1alpha1.De
 	return c.stream(ctx, deployer.Namespace, selector, containers, since, out)
 }
 
-func (c *logger) StreamingProcessorLogs(ctx context.Context, processor *streamv1alpha1.Processor, since time.Duration, out io.Writer) error {
-	selector, err := labels.Parse(fmt.Sprintf("%s=%s", streaming.ProcessorLabelKey, processor.Name))
+func (c *logger) StreamingProcessorLogs(ctx context.Context, processor *streamingv1alpha1.Processor, since time.Duration, out io.Writer) error {
+	selector, err := labels.Parse(fmt.Sprintf("%s=%s", streamingv1alpha1.ProcessorLabelKey, processor.Name))
 	if err != nil {
 		panic(err)
 	}
@@ -94,7 +90,7 @@ func (c *logger) StreamingProcessorLogs(ctx context.Context, processor *streamv1
 }
 
 func (c *logger) KnativeDeployerLogs(ctx context.Context, deployer *knativev1alpha1.Deployer, since time.Duration, out io.Writer) error {
-	selector, err := labels.Parse(fmt.Sprintf("%s=%s", knative.DeployerLabelKey, deployer.Name))
+	selector, err := labels.Parse(fmt.Sprintf("%s=%s", knativev1alpha1.DeployerLabelKey, deployer.Name))
 	if err != nil {
 		panic(err)
 	}

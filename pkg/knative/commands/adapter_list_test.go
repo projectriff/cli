@@ -20,10 +20,10 @@ import (
 	"context"
 	"testing"
 
-	duckv1beta1 "github.com/knative/pkg/apis/duck/v1beta1"
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/knative/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
+	"github.com/projectriff/system/pkg/apis"
 	knativev1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -144,11 +144,11 @@ other-namespace   test-other-adapter   <unknown>    <unknown>   <unknown>     <u
 					},
 					Spec: knativev1alpha1.AdapterSpec{
 						Build:  knativev1alpha1.Build{ApplicationRef: applicationName},
-						Target: knativev1alpha1.Target{ServiceRef: serviceName},
+						Target: knativev1alpha1.AdapterTarget{ServiceRef: serviceName},
 					},
 					Status: knativev1alpha1.AdapterStatus{
-						Status: duckv1beta1.Status{
-							Conditions: duckv1beta1.Conditions{
+						Status: apis.Status{
+							Conditions: apis.Conditions{
 								{Type: knativev1alpha1.AdapterConditionReady, Status: "True"},
 							},
 						},
@@ -161,11 +161,11 @@ other-namespace   test-other-adapter   <unknown>    <unknown>   <unknown>     <u
 					},
 					Spec: knativev1alpha1.AdapterSpec{
 						Build:  knativev1alpha1.Build{FunctionRef: functionName},
-						Target: knativev1alpha1.Target{ServiceRef: serviceName},
+						Target: knativev1alpha1.AdapterTarget{ServiceRef: serviceName},
 					},
 					Status: knativev1alpha1.AdapterStatus{
-						Status: duckv1beta1.Status{
-							Conditions: duckv1beta1.Conditions{
+						Status: apis.Status{
+							Conditions: apis.Conditions{
 								{Type: knativev1alpha1.AdapterConditionReady, Status: "True"},
 							},
 						},
@@ -178,11 +178,11 @@ other-namespace   test-other-adapter   <unknown>    <unknown>   <unknown>     <u
 					},
 					Spec: knativev1alpha1.AdapterSpec{
 						Build:  knativev1alpha1.Build{ContainerRef: containerName},
-						Target: knativev1alpha1.Target{ConfigurationRef: configurationName},
+						Target: knativev1alpha1.AdapterTarget{ConfigurationRef: configurationName},
 					},
 					Status: knativev1alpha1.AdapterStatus{
-						Status: duckv1beta1.Status{
-							Conditions: duckv1beta1.Conditions{
+						Status: apis.Status{
+							Conditions: apis.Conditions{
 								{Type: knativev1alpha1.AdapterConditionReady, Status: "True"},
 							},
 						},

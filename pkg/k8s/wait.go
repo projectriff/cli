@@ -35,7 +35,7 @@ import (
 var ErrWaitTimeout = wait.ErrWaitTimeout
 
 type object interface {
-	apis.Object
+	apis.Resource
 	metav1.Object
 	runtime.Object
 }

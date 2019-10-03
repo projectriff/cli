@@ -195,7 +195,7 @@ func TestAdapterCreateCommand(t *testing.T) {
 						Build: knativev1alpha1.Build{
 							ApplicationRef: applicationRef,
 						},
-						Target: knativev1alpha1.Target{
+						Target: knativev1alpha1.AdapterTarget{
 							ServiceRef: serviceRef,
 						},
 					},
@@ -218,7 +218,7 @@ Created adapter "my-adapter"
 						Build: knativev1alpha1.Build{
 							ContainerRef: containerRef,
 						},
-						Target: knativev1alpha1.Target{
+						Target: knativev1alpha1.AdapterTarget{
 							ServiceRef: serviceRef,
 						},
 					},
@@ -241,7 +241,7 @@ Created adapter "my-adapter"
 						Build: knativev1alpha1.Build{
 							FunctionRef: functionRef,
 						},
-						Target: knativev1alpha1.Target{
+						Target: knativev1alpha1.AdapterTarget{
 							ServiceRef: serviceRef,
 						},
 					},
@@ -264,7 +264,7 @@ Created adapter "my-adapter"
 						Build: knativev1alpha1.Build{
 							FunctionRef: functionRef,
 						},
-						Target: knativev1alpha1.Target{
+						Target: knativev1alpha1.AdapterTarget{
 							ConfigurationRef: configurationRef,
 						},
 					},
@@ -287,7 +287,7 @@ Created adapter "my-adapter"
 						Build: knativev1alpha1.Build{
 							FunctionRef: functionRef,
 						},
-						Target: knativev1alpha1.Target{
+						Target: knativev1alpha1.AdapterTarget{
 							ServiceRef: serviceRef,
 						},
 					},
@@ -339,7 +339,7 @@ Created adapter "my-adapter"
 						Build: knativev1alpha1.Build{
 							FunctionRef: functionRef,
 						},
-						Target: knativev1alpha1.Target{
+						Target: knativev1alpha1.AdapterTarget{
 							ServiceRef: serviceRef,
 						},
 					},
@@ -363,7 +363,7 @@ Created adapter "my-adapter"
 						Build: knativev1alpha1.Build{
 							FunctionRef: functionRef,
 						},
-						Target: knativev1alpha1.Target{
+						Target: knativev1alpha1.AdapterTarget{
 							ServiceRef: serviceRef,
 						},
 					},
@@ -398,7 +398,7 @@ Created adapter "my-adapter"
 						Build: knativev1alpha1.Build{
 							FunctionRef: functionRef,
 						},
-						Target: knativev1alpha1.Target{
+						Target: knativev1alpha1.AdapterTarget{
 							ServiceRef: serviceRef,
 						},
 					},
@@ -436,7 +436,7 @@ Adapter "my-adapter" is ready
 						Build: knativev1alpha1.Build{
 							FunctionRef: functionRef,
 						},
-						Target: knativev1alpha1.Target{
+						Target: knativev1alpha1.AdapterTarget{
 							ServiceRef: serviceRef,
 						},
 					},
@@ -481,7 +481,7 @@ To view status run: riff knative adapter list --namespace default
 						Build: knativev1alpha1.Build{
 							FunctionRef: functionRef,
 						},
-						Target: knativev1alpha1.Target{
+						Target: knativev1alpha1.AdapterTarget{
 							ServiceRef: serviceRef,
 						},
 					},

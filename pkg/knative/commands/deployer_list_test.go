@@ -20,11 +20,10 @@ import (
 	"context"
 	"testing"
 
-	"github.com/knative/pkg/apis"
-	duckv1beta1 "github.com/knative/pkg/apis/duck/v1beta1"
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/knative/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
+	"github.com/projectriff/system/pkg/apis"
 	knativev1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -147,14 +146,12 @@ other-namespace   test-other-deployer   <unknown>   <unknown>   <empty>   <unkno
 						},
 					},
 					Status: knativev1alpha1.DeployerStatus{
-						Status: duckv1beta1.Status{
-							Conditions: duckv1beta1.Conditions{
+						Status: apis.Status{
+							Conditions: apis.Conditions{
 								{Type: knativev1alpha1.DeployerConditionReady, Status: "True"},
 							},
 						},
-						URL: &apis.URL{
-							Host: "img.default.example.com",
-						},
+						URL: "img.default.example.com",
 					},
 				},
 				&knativev1alpha1.Deployer{
@@ -166,14 +163,12 @@ other-namespace   test-other-deployer   <unknown>   <unknown>   <empty>   <unkno
 						Build: &knativev1alpha1.Build{ApplicationRef: "petclinic"},
 					},
 					Status: knativev1alpha1.DeployerStatus{
-						Status: duckv1beta1.Status{
-							Conditions: duckv1beta1.Conditions{
+						Status: apis.Status{
+							Conditions: apis.Conditions{
 								{Type: knativev1alpha1.DeployerConditionReady, Status: "True"},
 							},
 						},
-						URL: &apis.URL{
-							Host: "app.default.example.com",
-						},
+						URL: "app.default.example.com",
 					},
 				},
 				&knativev1alpha1.Deployer{
@@ -185,14 +180,12 @@ other-namespace   test-other-deployer   <unknown>   <unknown>   <empty>   <unkno
 						Build: &knativev1alpha1.Build{FunctionRef: "square"},
 					},
 					Status: knativev1alpha1.DeployerStatus{
-						Status: duckv1beta1.Status{
-							Conditions: duckv1beta1.Conditions{
+						Status: apis.Status{
+							Conditions: apis.Conditions{
 								{Type: knativev1alpha1.DeployerConditionReady, Status: "True"},
 							},
 						},
-						URL: &apis.URL{
-							Host: "func.default.example.com",
-						},
+						URL: "func.default.example.com",
 					},
 				},
 				&knativev1alpha1.Deployer{
@@ -204,14 +197,12 @@ other-namespace   test-other-deployer   <unknown>   <unknown>   <empty>   <unkno
 						Build: &knativev1alpha1.Build{ContainerRef: "busybox"},
 					},
 					Status: knativev1alpha1.DeployerStatus{
-						Status: duckv1beta1.Status{
-							Conditions: duckv1beta1.Conditions{
+						Status: apis.Status{
+							Conditions: apis.Conditions{
 								{Type: knativev1alpha1.DeployerConditionReady, Status: "True"},
 							},
 						},
-						URL: &apis.URL{
-							Host: "container.default.example.com",
-						},
+						URL: "container.default.example.com",
 					},
 				},
 			},

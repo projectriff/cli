@@ -23,7 +23,7 @@ import (
 	"github.com/projectriff/cli/pkg/build/commands"
 	"github.com/projectriff/cli/pkg/cli"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
-	"github.com/projectriff/system/pkg/apis/build"
+	buildv1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -164,7 +164,7 @@ func TestCredentialApplyOptions(t *testing.T) {
 func TestCredentialApplyCommand(t *testing.T) {
 	credentialName := "test-credential"
 	defaultNamespace := "default"
-	credentialLabel := build.CredentialLabelKey
+	credentialLabel := buildv1alpha1.CredentialLabelKey
 	dockerHubId := "projectriff"
 	dockerHubPassword := "docker-password"
 	registryHost := "example.com"

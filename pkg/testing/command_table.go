@@ -28,12 +28,11 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"github.com/knative/pkg/apis"
-	"github.com/knative/pkg/kmeta"
-	kntesting "github.com/knative/pkg/reconciler/testing"
 	"github.com/projectriff/cli/pkg/cli"
+	"github.com/projectriff/system/pkg/apis"
 	"github.com/spf13/cobra"
 	"k8s.io/apimachinery/pkg/api/resource"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	clientgotesting "k8s.io/client-go/testing"
 )
@@ -214,10 +213,10 @@ func (ctr CommandTableRecord) Run(t *testing.T, cmdFactory func(context.Context,
 
 		// Validate all objects that implement Validatable
 		client.PrependReactor("create", "*", func(action clientgotesting.Action) (handled bool, ret runtime.Object, err error) {
-			return kntesting.ValidateCreates(context.Background(), action)
+			return ValidateCreates(context.Background(), action)
 		})
 		client.PrependReactor("update", "*", func(action clientgotesting.Action) (handled bool, ret runtime.Object, err error) {
-			return kntesting.ValidateUpdates(context.Background(), action)
+			return ValidateUpdates(context.Background(), action)
 		})
 
 		for i := range ctr.WithReactors {
@@ -366,10 +365,10 @@ func (ctr CommandTableRecord) Run(t *testing.T, cmdFactory func(context.Context,
 }
 
 func objKey(o runtime.Object) string {
-	on := o.(kmeta.Accessor)
+	on := o.(metav1.ObjectMetaAccessor)
 	// namespace + name is not unique, and the tests don't populate k8s kind
 	// information, so use GoLang's type name as part of the key.
-	return path.Join(reflect.TypeOf(o).String(), on.GetNamespace(), on.GetName())
+	return path.Join(reflect.TypeOf(o).String(), on.GetObjectMeta().GetNamespace(), on.GetObjectMeta().GetName())
 }
 
 var (

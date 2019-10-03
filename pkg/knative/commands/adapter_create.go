@@ -149,12 +149,12 @@ func (opts *AdapterCreateOptions) Exec(ctx context.Context, c *cli.Config) error
 	}
 
 	if opts.ConfigurationRef != "" {
-		adapter.Spec.Target = knativev1alpha1.Target{
+		adapter.Spec.Target = knativev1alpha1.AdapterTarget{
 			ConfigurationRef: opts.ConfigurationRef,
 		}
 	}
 	if opts.ServiceRef != "" {
-		adapter.Spec.Target = knativev1alpha1.Target{
+		adapter.Spec.Target = knativev1alpha1.AdapterTarget{
 			ServiceRef: opts.ServiceRef,
 		}
 	}

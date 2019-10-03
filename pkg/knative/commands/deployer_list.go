@@ -118,10 +118,7 @@ func (opts *DeployerListOptions) print(deployer *knativev1alpha1.Deployer, _ pri
 		Object: runtime.RawExtension{Object: deployer},
 	}
 	refType, refValue := opts.formatRef(deployer)
-	host := ""
-	if deployer.Status.URL != nil {
-		host = deployer.Status.URL.Host
-	}
+	host := deployer.Status.URL
 	row.Cells = append(row.Cells,
 		deployer.Name,
 		refType,

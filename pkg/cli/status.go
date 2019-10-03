@@ -18,10 +18,10 @@ package cli
 
 import (
 	"github.com/ghodss/yaml"
-	knapis "github.com/knative/pkg/apis"
+	"github.com/projectriff/system/pkg/apis"
 )
 
-func PrintResourceStatus(c *Config, name string, condition *knapis.Condition) {
+func PrintResourceStatus(c *Config, name string, condition *apis.Condition) {
 	c.Printf("# %s: %s\n", name, FormatConditionStatus(condition))
 	if condition != nil {
 		s, _ := yaml.Marshal(condition)

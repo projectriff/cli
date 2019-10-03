@@ -1,31 +1,31 @@
 /*
- * Copyright 2019 The original author or authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+Copyright 2019 the original author or authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 
 package v1alpha1
 
 import (
-	knapis "github.com/knative/pkg/apis"
+	"github.com/projectriff/system/pkg/apis"
 )
 
 const (
-	StreamConditionReady                                  = knapis.ConditionReady
-	StreamConditionResourceAvailable knapis.ConditionType = "ResourceAvailable"
+	StreamConditionReady                                = apis.ConditionReady
+	StreamConditionResourceAvailable apis.ConditionType = "ResourceAvailable"
 )
 
-var streamCondSet = knapis.NewLivingConditionSet(
+var streamCondSet = apis.NewLivingConditionSet(
 	StreamConditionResourceAvailable,
 )
 
@@ -37,11 +37,11 @@ func (ss *StreamStatus) IsReady() bool {
 	return streamCondSet.Manage(ss).IsHappy()
 }
 
-func (*StreamStatus) GetReadyConditionType() knapis.ConditionType {
+func (*StreamStatus) GetReadyConditionType() apis.ConditionType {
 	return StreamConditionReady
 }
 
-func (ss *StreamStatus) GetCondition(t knapis.ConditionType) *knapis.Condition {
+func (ss *StreamStatus) GetCondition(t apis.ConditionType) *apis.Condition {
 	return streamCondSet.Manage(ss).GetCondition(t)
 }
 

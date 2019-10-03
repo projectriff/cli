@@ -19,7 +19,7 @@ package cli
 import (
 	"time"
 
-	knapis "github.com/knative/pkg/apis"
+	"github.com/projectriff/system/pkg/apis"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/duration"
 )
@@ -38,7 +38,7 @@ func FormatEmptyString(str string) string {
 	return str
 }
 
-func FormatConditionStatus(cond *knapis.Condition) string {
+func FormatConditionStatus(cond *apis.Condition) string {
 	if cond == nil || cond.Status == "" {
 		return Swarnf("<unknown>")
 	}

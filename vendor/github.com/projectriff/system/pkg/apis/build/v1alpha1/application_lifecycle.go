@@ -1,39 +1,38 @@
 /*
- * Copyright 2019 The original author or authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+Copyright 2019 the original author or authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 
 package v1alpha1
 
 import (
 	"fmt"
 
-	buildv1alpha1 "github.com/knative/build/pkg/apis/build/v1alpha1"
-	knapis "github.com/knative/pkg/apis"
 	corev1 "k8s.io/api/core/v1"
+
+	"github.com/projectriff/system/pkg/apis"
+	kpackbuildv1alpha1 "github.com/projectriff/system/pkg/apis/thirdparty/kpack/build/v1alpha1"
 )
 
 const (
-	ApplicationConditionReady                                = knapis.ConditionReady
-	ApplicationConditionBuildCacheReady knapis.ConditionType = "BuildCacheReady"
-	ApplicationConditionBuildSucceeded  knapis.ConditionType = "BuildSucceeded"
-	ApplicationConditionImageResolved   knapis.ConditionType = "ImageResolved"
+	ApplicationConditionReady                              = apis.ConditionReady
+	ApplicationConditionKpackImageReady apis.ConditionType = "KpackImageReady"
+	ApplicationConditionImageResolved   apis.ConditionType = "ImageResolved"
 )
 
-var applicationCondSet = knapis.NewLivingConditionSet(
-	ApplicationConditionBuildCacheReady,
-	ApplicationConditionBuildSucceeded,
+var applicationCondSet = apis.NewLivingConditionSet(
+	ApplicationConditionKpackImageReady,
 	ApplicationConditionImageResolved,
 )
 
@@ -45,11 +44,11 @@ func (as *ApplicationStatus) IsReady() bool {
 	return applicationCondSet.Manage(as).IsHappy()
 }
 
-func (*ApplicationStatus) GetReadyConditionType() knapis.ConditionType {
+func (*ApplicationStatus) GetReadyConditionType() apis.ConditionType {
 	return ApplicationConditionReady
 }
 
-func (as *ApplicationStatus) GetCondition(t knapis.ConditionType) *knapis.Condition {
+func (as *ApplicationStatus) GetCondition(t apis.ConditionType) *apis.Condition {
 	return applicationCondSet.Manage(as).GetCondition(t)
 }
 
@@ -57,24 +56,14 @@ func (as *ApplicationStatus) InitializeConditions() {
 	applicationCondSet.Manage(as).InitializeConditions()
 }
 
-func (as *ApplicationStatus) MarkBuildCacheNotOwned(name string) {
-	applicationCondSet.Manage(as).MarkFalse(ApplicationConditionBuildCacheReady, "NotOwned",
-		fmt.Sprintf("There is an existing PersistentVolumeClaim %q that we do not own.", name))
-}
-
-func (as *ApplicationStatus) MarkBuildCacheNotUsed() {
-	as.BuildCacheName = ""
-	applicationCondSet.Manage(as).MarkTrue(ApplicationConditionBuildCacheReady)
-}
-
-func (as *ApplicationStatus) MarkBuildNotOwned(name string) {
-	applicationCondSet.Manage(as).MarkFalse(ApplicationConditionBuildSucceeded, "NotOwned",
-		fmt.Sprintf("There is an existing Build %q that we do not own.", name))
+func (as *ApplicationStatus) MarkKpackImageNotOwned() {
+	applicationCondSet.Manage(as).MarkFalse(ApplicationConditionKpackImageReady, "NotOwned",
+		fmt.Sprintf("There is an existing kpack Image %q that we do not own.", as.KpackImageName))
 }
 
 func (as *ApplicationStatus) MarkBuildNotUsed() {
-	as.BuildName = ""
-	applicationCondSet.Manage(as).MarkTrue(ApplicationConditionBuildSucceeded)
+	as.KpackImageName = ""
+	applicationCondSet.Manage(as).MarkTrue(ApplicationConditionKpackImageReady)
 }
 
 func (as *ApplicationStatus) MarkImageDefaultPrefixMissing(message string) {
@@ -85,39 +74,21 @@ func (as *ApplicationStatus) MarkImageInvalid(message string) {
 	applicationCondSet.Manage(as).MarkFalse(ApplicationConditionImageResolved, "ImageInvalid", message)
 }
 
-func (as *ApplicationStatus) MarkImageMissing(message string) {
-	applicationCondSet.Manage(as).MarkFalse(ApplicationConditionImageResolved, "ImageMissing", message)
-}
-
 func (as *ApplicationStatus) MarkImageResolved() {
 	applicationCondSet.Manage(as).MarkTrue(ApplicationConditionImageResolved)
 }
 
-func (as *ApplicationStatus) PropagateBuildCacheStatus(pvcs *corev1.PersistentVolumeClaimStatus) {
-	switch pvcs.Phase {
-	case corev1.ClaimPending:
-		// used for PersistentVolumeClaims that are not yet bound
-		applicationCondSet.Manage(as).MarkUnknown(ApplicationConditionBuildCacheReady, string(pvcs.Phase), "volume claim is not yet bound")
-	case corev1.ClaimBound:
-		// used for PersistentVolumeClaims that are bound
-		applicationCondSet.Manage(as).MarkTrue(ApplicationConditionBuildCacheReady)
-	case corev1.ClaimLost:
-		// used for PersistentVolumeClaims that lost their underlying PersistentVolume
-		applicationCondSet.Manage(as).MarkFalse(ApplicationConditionBuildCacheReady, string(pvcs.Phase), "volume claim lost its underlying volume")
-	}
-}
-
-func (as *ApplicationStatus) PropagateBuildStatus(bs *buildv1alpha1.BuildStatus) {
-	sc := bs.GetCondition(buildv1alpha1.BuildSucceeded)
+func (as *ApplicationStatus) PropagateKpackImageStatus(is *kpackbuildv1alpha1.ImageStatus) {
+	sc := is.GetCondition(apis.ConditionReady)
 	if sc == nil {
 		return
 	}
 	switch {
 	case sc.Status == corev1.ConditionUnknown:
-		applicationCondSet.Manage(as).MarkUnknown(ApplicationConditionBuildSucceeded, sc.Reason, sc.Message)
+		applicationCondSet.Manage(as).MarkUnknown(ApplicationConditionKpackImageReady, sc.Reason, sc.Message)
 	case sc.Status == corev1.ConditionTrue:
-		applicationCondSet.Manage(as).MarkTrue(ApplicationConditionBuildSucceeded)
+		applicationCondSet.Manage(as).MarkTrue(ApplicationConditionKpackImageReady)
 	case sc.Status == corev1.ConditionFalse:
-		applicationCondSet.Manage(as).MarkFalse(ApplicationConditionBuildSucceeded, sc.Reason, sc.Message)
+		applicationCondSet.Manage(as).MarkFalse(ApplicationConditionKpackImageReady, sc.Reason, sc.Message)
 	}
 }

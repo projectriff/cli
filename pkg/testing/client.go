@@ -17,7 +17,6 @@
 package testing
 
 import (
-	kntesting "github.com/knative/pkg/reconciler/testing"
 	projectriffclientset "github.com/projectriff/system/pkg/client/clientset/versioned/fake"
 	buildv1alpha1clientset "github.com/projectriff/system/pkg/client/clientset/versioned/typed/build/v1alpha1"
 	corev1alpha1clientset "github.com/projectriff/system/pkg/client/clientset/versioned/typed/core/v1alpha1"
@@ -38,7 +37,7 @@ type FakeClient struct {
 	FakeKubeClientset          *kubernetes.Clientset
 	FakeRiffClientset          *projectriffclientset.Clientset
 	FakeAPIExtensionsClientset *apiextensionsv1beta1clientset.Clientset
-	ActionRecorderList         kntesting.ActionRecorderList
+	ActionRecorderList         ActionRecorderList
 }
 
 func (c *FakeClient) DefaultNamespace() string {
@@ -91,7 +90,7 @@ func NewClient(objects ...runtime.Object) *FakeClient {
 	apiExtensionsClientset := apiextensionsv1beta1clientset.NewSimpleClientset(lister.GetAPIExtensionsObjects()...)
 	riffClientset := projectriffclientset.NewSimpleClientset(lister.GetProjectriffObjects()...)
 
-	actionRecorderList := kntesting.ActionRecorderList{kubeClientset, apiExtensionsClientset, riffClientset}
+	actionRecorderList := ActionRecorderList{kubeClientset, apiExtensionsClientset, riffClientset}
 
 	return &FakeClient{
 		Namespace:                  "default",

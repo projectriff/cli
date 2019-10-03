@@ -20,10 +20,10 @@ import (
 	"context"
 	"testing"
 
-	duckv1beta1 "github.com/knative/pkg/apis/duck/v1beta1"
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/core/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
+	"github.com/projectriff/system/pkg/apis"
 	corev1alpha1 "github.com/projectriff/system/pkg/apis/core/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -146,8 +146,8 @@ other-namespace   test-other-deployer   <unknown>   <unknown>   <empty>   <unkno
 						},
 					},
 					Status: corev1alpha1.DeployerStatus{
-						Status: duckv1beta1.Status{
-							Conditions: duckv1beta1.Conditions{
+						Status: apis.Status{
+							Conditions: apis.Conditions{
 								{Type: corev1alpha1.DeployerConditionReady, Status: "True"},
 							},
 						},
@@ -164,8 +164,8 @@ other-namespace   test-other-deployer   <unknown>   <unknown>   <empty>   <unkno
 						Build: &corev1alpha1.Build{ApplicationRef: "petclinic"},
 					},
 					Status: corev1alpha1.DeployerStatus{
-						Status: duckv1beta1.Status{
-							Conditions: duckv1beta1.Conditions{
+						Status: apis.Status{
+							Conditions: apis.Conditions{
 								{Type: corev1alpha1.DeployerConditionReady, Status: "True"},
 							},
 						},
@@ -182,8 +182,8 @@ other-namespace   test-other-deployer   <unknown>   <unknown>   <empty>   <unkno
 						Build: &corev1alpha1.Build{FunctionRef: "square"},
 					},
 					Status: corev1alpha1.DeployerStatus{
-						Status: duckv1beta1.Status{
-							Conditions: duckv1beta1.Conditions{
+						Status: apis.Status{
+							Conditions: apis.Conditions{
 								{Type: corev1alpha1.DeployerConditionReady, Status: "True"},
 							},
 						},
@@ -200,8 +200,8 @@ other-namespace   test-other-deployer   <unknown>   <unknown>   <empty>   <unkno
 						Build: &corev1alpha1.Build{ContainerRef: "busybox"},
 					},
 					Status: corev1alpha1.DeployerStatus{
-						Status: duckv1beta1.Status{
-							Conditions: duckv1beta1.Conditions{
+						Status: apis.Status{
+							Conditions: apis.Conditions{
 								{Type: corev1alpha1.DeployerConditionReady, Status: "True"},
 							},
 						},

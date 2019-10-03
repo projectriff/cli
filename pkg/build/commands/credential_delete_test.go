@@ -22,7 +22,7 @@ import (
 	"github.com/projectriff/cli/pkg/build/commands"
 	"github.com/projectriff/cli/pkg/cli"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
-	"github.com/projectriff/system/pkg/apis/build"
+	buildv1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -53,7 +53,7 @@ func TestCredentialDeleteCommand(t *testing.T) {
 	credentialName := "test-credential"
 	credentialOtherName := "test-other-credential"
 	defaultNamespace := "default"
-	credentialLabel := build.CredentialLabelKey
+	credentialLabel := buildv1alpha1.CredentialLabelKey
 
 	table := rifftesting.CommandTable{
 		{

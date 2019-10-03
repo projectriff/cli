@@ -17,7 +17,6 @@
 package validation
 
 import (
-	"github.com/knative/pkg/apis"
 	"github.com/projectriff/cli/pkg/cli"
 	"k8s.io/apimachinery/pkg/api/validation"
 )
@@ -38,9 +37,9 @@ func K8sNames(names []string, field string) cli.FieldErrors {
 
 	for i, name := range names {
 		if name == "" {
-			errs = errs.Also(cli.ErrInvalidValue(name, apis.CurrentField).ViaFieldIndex(field, i))
+			errs = errs.Also(cli.ErrInvalidValue(name, cli.CurrentField).ViaFieldIndex(field, i))
 		} else {
-			errs = errs.Also(K8sName(name, apis.CurrentField).ViaFieldIndex(field, i))
+			errs = errs.Also(K8sName(name, cli.CurrentField).ViaFieldIndex(field, i))
 		}
 	}
 
