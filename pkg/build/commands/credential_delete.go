@@ -23,7 +23,7 @@ import (
 
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/cli/options"
-	"github.com/projectriff/system/pkg/apis/build"
+	buildv1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -50,7 +50,7 @@ func (opts *CredentialDeleteOptions) Exec(ctx context.Context, c *cli.Config) er
 
 	if opts.All {
 		err := client.DeleteCollection(nil, metav1.ListOptions{
-			LabelSelector: build.CredentialLabelKey,
+			LabelSelector: buildv1alpha1.CredentialLabelKey,
 		})
 		if err != nil {
 			return err

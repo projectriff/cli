@@ -23,8 +23,8 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
-	knapis "github.com/knative/pkg/apis"
 	"github.com/projectriff/cli/pkg/cli"
+	"github.com/projectriff/system/pkg/apis"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -32,7 +32,7 @@ import (
 func TestPrintResourceStatus(t *testing.T) {
 	tests := []struct {
 		name      string
-		condition *knapis.Condition
+		condition *apis.Condition
 		output    string
 	}{{
 		name: "nil",
@@ -41,7 +41,7 @@ func TestPrintResourceStatus(t *testing.T) {
 `,
 	}, {
 		name:      "empty",
-		condition: &knapis.Condition{},
+		condition: &apis.Condition{},
 		output: `
 # test: <unknown>
 ---
@@ -51,12 +51,12 @@ type: ""
 `,
 	}, {
 		name: "unknown",
-		condition: &knapis.Condition{
-			Type:    knapis.ConditionReady,
+		condition: &apis.Condition{
+			Type:    apis.ConditionReady,
 			Status:  corev1.ConditionUnknown,
 			Reason:  "HangOn",
 			Message: "a hopefully informative message about what's in flight",
-			LastTransitionTime: knapis.VolatileTime{
+			LastTransitionTime: apis.VolatileTime{
 				Inner: metav1.Time{
 					Time: time.Date(2019, 6, 29, 01, 44, 05, 0, time.UTC),
 				},
@@ -73,10 +73,10 @@ type: Ready
 `,
 	}, {
 		name: "ready",
-		condition: &knapis.Condition{
-			Type:   knapis.ConditionReady,
+		condition: &apis.Condition{
+			Type:   apis.ConditionReady,
 			Status: corev1.ConditionTrue,
-			LastTransitionTime: knapis.VolatileTime{
+			LastTransitionTime: apis.VolatileTime{
 				Inner: metav1.Time{
 					Time: time.Date(2019, 6, 29, 01, 44, 05, 0, time.UTC),
 				},
@@ -91,12 +91,12 @@ type: Ready
 `,
 	}, {
 		name: "failure",
-		condition: &knapis.Condition{
-			Type:    knapis.ConditionReady,
+		condition: &apis.Condition{
+			Type:    apis.ConditionReady,
 			Status:  corev1.ConditionFalse,
 			Reason:  "OopsieDoodle",
 			Message: "a hopefully informative message about what went wrong",
-			LastTransitionTime: knapis.VolatileTime{
+			LastTransitionTime: apis.VolatileTime{
 				Inner: metav1.Time{
 					Time: time.Date(2019, 6, 29, 01, 44, 05, 0, time.UTC),
 				},

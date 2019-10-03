@@ -20,10 +20,10 @@ import (
 	"context"
 	"testing"
 
-	duckv1beta1 "github.com/knative/pkg/apis/duck/v1beta1"
 	"github.com/projectriff/cli/pkg/build/commands"
 	"github.com/projectriff/cli/pkg/cli"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
+	"github.com/projectriff/system/pkg/apis"
 	buildv1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -141,8 +141,8 @@ other-namespace   test-other-container   <empty>        <unknown>   <unknown>
 						Image: "projectriff/petclinic",
 					},
 					Status: buildv1alpha1.ContainerStatus{
-						Status: duckv1beta1.Status{
-							Conditions: duckv1beta1.Conditions{
+						Status: apis.Status{
+							Conditions: apis.Conditions{
 								{Type: buildv1alpha1.ContainerConditionReady, Status: "True"},
 							},
 						},

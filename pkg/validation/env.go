@@ -19,7 +19,6 @@ package validation
 import (
 	"strings"
 
-	"github.com/knative/pkg/apis"
 	"github.com/projectriff/cli/pkg/cli"
 )
 
@@ -37,7 +36,7 @@ func EnvVars(envs []string, field string) cli.FieldErrors {
 	errs := cli.FieldErrors{}
 
 	for i, env := range envs {
-		errs = errs.Also(EnvVar(env, apis.CurrentField).ViaFieldIndex(field, i))
+		errs = errs.Also(EnvVar(env, cli.CurrentField).ViaFieldIndex(field, i))
 	}
 
 	return errs
@@ -67,7 +66,7 @@ func EnvVarFroms(envs []string, field string) cli.FieldErrors {
 	errs := cli.FieldErrors{}
 
 	for i, env := range envs {
-		errs = errs.Also(EnvVarFrom(env, apis.CurrentField).ViaFieldIndex(field, i))
+		errs = errs.Also(EnvVarFrom(env, cli.CurrentField).ViaFieldIndex(field, i))
 	}
 
 	return errs

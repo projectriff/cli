@@ -20,10 +20,9 @@ import (
 	"testing"
 	"time"
 
-	knapis "github.com/knative/pkg/apis"
-	duckv1beta1 "github.com/knative/pkg/apis/duck/v1beta1"
 	"github.com/projectriff/cli/pkg/build/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
+	"github.com/projectriff/system/pkg/apis"
 	buildv1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -71,14 +70,14 @@ func TestContainerStatusCommand(t *testing.T) {
 						Namespace: defaultNamespace,
 					},
 					Status: buildv1alpha1.ContainerStatus{
-						Status: duckv1beta1.Status{
-							Conditions: duckv1beta1.Conditions{
+						Status: apis.Status{
+							Conditions: apis.Conditions{
 								{
-									Type:    knapis.ConditionReady,
+									Type:    apis.ConditionReady,
 									Status:  corev1.ConditionFalse,
 									Reason:  "OopsieDoodle",
 									Message: "a hopefully informative message about what went wrong",
-									LastTransitionTime: knapis.VolatileTime{
+									LastTransitionTime: apis.VolatileTime{
 										Inner: metav1.Time{
 											Time: time.Date(2019, 6, 29, 01, 44, 05, 0, time.UTC),
 										},
@@ -117,14 +116,14 @@ Container "default/my-container" not found
 						Namespace: defaultNamespace,
 					},
 					Status: buildv1alpha1.ContainerStatus{
-						Status: duckv1beta1.Status{
-							Conditions: duckv1beta1.Conditions{
+						Status: apis.Status{
+							Conditions: apis.Conditions{
 								{
-									Type:    knapis.ConditionReady,
+									Type:    apis.ConditionReady,
 									Status:  corev1.ConditionFalse,
 									Reason:  "OopsieDoodle",
 									Message: "a hopefully informative message about what went wrong",
-									LastTransitionTime: knapis.VolatileTime{
+									LastTransitionTime: apis.VolatileTime{
 										Inner: metav1.Time{
 											Time: time.Date(2019, 6, 29, 01, 44, 05, 0, time.UTC),
 										},

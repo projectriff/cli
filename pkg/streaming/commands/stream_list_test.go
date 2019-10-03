@@ -20,10 +20,10 @@ import (
 	"context"
 	"testing"
 
-	duckv1beta1 "github.com/knative/pkg/apis/duck/v1beta1"
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/streaming/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
+	"github.com/projectriff/system/pkg/apis"
 	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -142,8 +142,8 @@ other-namespace   test-other-stream   <empty>   <empty>   <empty>    <empty>    
 						ContentType: "text/csv",
 					},
 					Status: streamv1alpha1.StreamStatus{
-						Status: duckv1beta1.Status{
-							Conditions: duckv1beta1.Conditions{
+						Status: apis.Status{
+							Conditions: apis.Conditions{
 								{Type: streamv1alpha1.StreamConditionReady, Status: "True"},
 							},
 						},

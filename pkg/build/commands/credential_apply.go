@@ -25,7 +25,7 @@ import (
 
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/cli/options"
-	"github.com/projectriff/system/pkg/apis/build"
+	buildv1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
 	"github.com/spf13/cobra"
 	corev1 "k8s.io/api/core/v1"
 	apierrs "k8s.io/apimachinery/pkg/api/errors"
@@ -212,7 +212,7 @@ func makeCredential(opts *CredentialApplyOptions) (*corev1.Secret, string, error
 	switch {
 	case opts.DockerHubId != "":
 		secret.Labels = map[string]string{
-			build.CredentialLabelKey: "docker-hub",
+			buildv1alpha1.CredentialLabelKey: "docker-hub",
 		}
 		secret.Annotations = map[string]string{
 			"build.knative.dev/docker-0": "https://index.docker.io/v1/",
@@ -231,7 +231,7 @@ func makeCredential(opts *CredentialApplyOptions) (*corev1.Secret, string, error
 			return nil, "", err
 		}
 		secret.Labels = map[string]string{
-			build.CredentialLabelKey: "gcr",
+			buildv1alpha1.CredentialLabelKey: "gcr",
 		}
 		secret.Annotations = map[string]string{
 			"build.knative.dev/docker-0": "https://gcr.io",
@@ -254,7 +254,7 @@ func makeCredential(opts *CredentialApplyOptions) (*corev1.Secret, string, error
 
 	case opts.RegistryUser != "":
 		secret.Labels = map[string]string{
-			build.CredentialLabelKey: "basic-auth",
+			buildv1alpha1.CredentialLabelKey: "basic-auth",
 		}
 		secret.Annotations = map[string]string{
 			"build.knative.dev/docker-0": opts.Registry,
@@ -338,13 +338,13 @@ func applyCredential(ctx context.Context, c *cli.Config, opts *CredentialApplyOp
 	}
 
 	// ensure we are not mutating a non-riff secret
-	if _, ok := existing.Labels[build.CredentialLabelKey]; !ok {
+	if _, ok := existing.Labels[buildv1alpha1.CredentialLabelKey]; !ok {
 		return fmt.Errorf("credential %q exists, but is not owned by riff", opts.Name)
 	}
 
 	// update existing secret
 	existing = existing.DeepCopy()
-	existing.Labels[build.CredentialLabelKey] = desiredSecret.Labels[build.CredentialLabelKey]
+	existing.Labels[buildv1alpha1.CredentialLabelKey] = desiredSecret.Labels[buildv1alpha1.CredentialLabelKey]
 	existing.Annotations = desiredSecret.Annotations
 	existing.Type = desiredSecret.Type
 	existing.StringData = desiredSecret.StringData

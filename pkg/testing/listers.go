@@ -17,7 +17,6 @@
 package testing
 
 import (
-	kntesting "github.com/knative/pkg/reconciler/testing"
 	fakeprojectriffclientset "github.com/projectriff/system/pkg/client/clientset/versioned/fake"
 	fakeapiextensionsclientset "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/fake"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -32,7 +31,7 @@ var clientSetSchemes = []func(*runtime.Scheme) error{
 }
 
 type Listers struct {
-	sorter kntesting.ObjectSorter
+	sorter ObjectSorter
 }
 
 func NewListers(objs []runtime.Object) Listers {
@@ -43,7 +42,7 @@ func NewListers(objs []runtime.Object) Listers {
 	}
 
 	ls := Listers{
-		sorter: kntesting.NewObjectSorter(scheme),
+		sorter: NewObjectSorter(scheme),
 	}
 
 	ls.sorter.AddObjects(objs...)

@@ -25,7 +25,7 @@ import (
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/cli/options"
 	"github.com/projectriff/cli/pkg/cli/printers"
-	"github.com/projectriff/system/pkg/apis/build"
+	buildv1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
 	"github.com/spf13/cobra"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -52,7 +52,7 @@ func (opts *CredentialListOptions) Validate(ctx context.Context) cli.FieldErrors
 
 func (opts *CredentialListOptions) Exec(ctx context.Context, c *cli.Config) error {
 	secrets, err := c.Core().Secrets(opts.Namespace).List(metav1.ListOptions{
-		LabelSelector: build.CredentialLabelKey,
+		LabelSelector: buildv1alpha1.CredentialLabelKey,
 	})
 	if err != nil {
 		return err
@@ -118,7 +118,7 @@ func (opts *CredentialListOptions) print(credential *corev1.Secret, _ printers.P
 	}
 	row.Cells = append(row.Cells,
 		credential.Name,
-		credential.Labels[build.CredentialLabelKey],
+		credential.Labels[buildv1alpha1.CredentialLabelKey],
 		credential.Annotations["build.pivotal.io/docker"],
 		cli.FormatTimestampSince(credential.CreationTimestamp, now),
 	)
