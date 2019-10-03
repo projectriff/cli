@@ -49,7 +49,7 @@ func TestValidateOptions(t *testing.T) {
 	}, {
 		name: "valid, empty error",
 		opts: &StubValidateOptions{
-			validationErr: cli.EmptyFieldErrors,
+			validationErr: cli.FieldErrors{},
 		},
 		usageSilenced: true,
 	}, {

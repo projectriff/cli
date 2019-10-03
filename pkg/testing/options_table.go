@@ -20,6 +20,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/projectriff/cli/pkg/cli"
 )
 
@@ -80,7 +81,7 @@ func (otr OptionsTableRecord) Run(t *testing.T) {
 		if otr.ExpectFieldErrors != nil {
 			actual := errs
 			expected := otr.ExpectFieldErrors
-			if diff := DiffFieldErrors(expected, actual); diff != "" {
+			if diff := cmp.Diff(expected, actual); diff != "" {
 				t.Errorf("Unexpected errors (-expected, +actual): %s", diff)
 			}
 		}

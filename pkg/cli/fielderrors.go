@@ -24,9 +24,9 @@ import (
 	"k8s.io/apimachinery/pkg/util/validation/field"
 )
 
-type FieldErrors field.ErrorList
+const CurrentField = ""
 
-var EmptyFieldErrors = FieldErrors{}
+type FieldErrors field.ErrorList
 
 func (e FieldErrors) Also(errs ...FieldErrors) FieldErrors {
 	aggregate := e
@@ -95,8 +95,6 @@ func (e FieldErrors) ToAggregate() error {
 type Validatable = interface {
 	Validate(context.Context) FieldErrors
 }
-
-var CurrentField = ""
 
 func ErrDisallowedFields(name string) FieldErrors {
 	return FieldErrors{

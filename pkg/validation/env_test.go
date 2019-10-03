@@ -19,6 +19,7 @@ package validation_test
 import (
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/projectriff/cli/pkg/cli"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 	"github.com/projectriff/cli/pkg/validation"
@@ -31,7 +32,7 @@ func TestEnvVar(t *testing.T) {
 		value    string
 	}{{
 		name:     "valid",
-		expected: cli.EmptyFieldErrors,
+		expected: cli.FieldErrors{},
 		value:    "MY_VAR=my-value",
 	}, {
 		name:     "empty",
@@ -47,7 +48,7 @@ func TestEnvVar(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			expected := test.expected
 			actual := validation.EnvVar(test.value, rifftesting.TestField)
-			if diff := rifftesting.DiffFieldErrors(expected, actual); diff != "" {
+			if diff := cmp.Diff(expected, actual); diff != "" {
 				t.Errorf("%s() = (-expected, +actual): %s", test.name, diff)
 			}
 		})
@@ -61,11 +62,11 @@ func TestEnvVars(t *testing.T) {
 		values   []string
 	}{{
 		name:     "valid, empty",
-		expected: cli.EmptyFieldErrors,
+		expected: cli.FieldErrors{},
 		values:   []string{},
 	}, {
 		name:     "valid, not empty",
-		expected: cli.EmptyFieldErrors,
+		expected: cli.FieldErrors{},
 		values:   []string{"MY_VAR=my-value"},
 	}, {
 		name:     "invalid",
@@ -73,7 +74,7 @@ func TestEnvVars(t *testing.T) {
 		values:   []string{""},
 	}, {
 		name: "multiple invalid",
-		expected: cli.EmptyFieldErrors.Also(
+		expected: cli.FieldErrors{}.Also(
 			cli.ErrInvalidValue("", cli.CurrentField).ViaFieldIndex(rifftesting.TestField, 0),
 			cli.ErrInvalidValue("", cli.CurrentField).ViaFieldIndex(rifftesting.TestField, 1),
 		),
@@ -84,7 +85,7 @@ func TestEnvVars(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			expected := test.expected
 			actual := validation.EnvVars(test.values, rifftesting.TestField)
-			if diff := rifftesting.DiffFieldErrors(expected, actual); diff != "" {
+			if diff := cmp.Diff(expected, actual); diff != "" {
 				t.Errorf("%s() = (-expected, +actual): %s", test.name, diff)
 			}
 		})
@@ -98,11 +99,11 @@ func TestEnvVarFrom(t *testing.T) {
 		value    string
 	}{{
 		name:     "valid configmap",
-		expected: cli.EmptyFieldErrors,
+		expected: cli.FieldErrors{},
 		value:    "MY_VAR=configMapKeyRef:my-configmap:my-key",
 	}, {
 		name:     "valid secret",
-		expected: cli.EmptyFieldErrors,
+		expected: cli.FieldErrors{},
 		value:    "MY_VAR=secretKeyRef:my-secret:my-key",
 	}, {
 		name:     "empty",
@@ -130,7 +131,7 @@ func TestEnvVarFrom(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			expected := test.expected
 			actual := validation.EnvVarFrom(test.value, rifftesting.TestField)
-			if diff := rifftesting.DiffFieldErrors(expected, actual); diff != "" {
+			if diff := cmp.Diff(expected, actual); diff != "" {
 				t.Errorf("%s() = (-expected, +actual): %s", test.name, diff)
 			}
 		})
@@ -144,11 +145,11 @@ func TestEnvVarFroms(t *testing.T) {
 		values   []string
 	}{{
 		name:     "valid, empty",
-		expected: cli.EmptyFieldErrors,
+		expected: cli.FieldErrors{},
 		values:   []string{},
 	}, {
 		name:     "valid, not empty",
-		expected: cli.EmptyFieldErrors,
+		expected: cli.FieldErrors{},
 		values:   []string{"MY_VAR=configMapKeyRef:my-configmap:my-key"},
 	}, {
 		name:     "invalid",
@@ -156,7 +157,7 @@ func TestEnvVarFroms(t *testing.T) {
 		values:   []string{""},
 	}, {
 		name: "multiple invalid",
-		expected: cli.EmptyFieldErrors.Also(
+		expected: cli.FieldErrors{}.Also(
 			cli.ErrInvalidValue("", cli.CurrentField).ViaFieldIndex(rifftesting.TestField, 0),
 			cli.ErrInvalidValue("", cli.CurrentField).ViaFieldIndex(rifftesting.TestField, 1),
 		),
@@ -167,7 +168,7 @@ func TestEnvVarFroms(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			expected := test.expected
 			actual := validation.EnvVarFroms(test.values, rifftesting.TestField)
-			if diff := rifftesting.DiffFieldErrors(expected, actual); diff != "" {
+			if diff := cmp.Diff(expected, actual); diff != "" {
 				t.Errorf("%s() = (-expected, +actual): %s", test.name, diff)
 			}
 		})

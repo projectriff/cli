@@ -24,7 +24,7 @@ import (
 )
 
 func EnvVar(env, field string) cli.FieldErrors {
-	errs := cli.EmptyFieldErrors
+	errs := cli.FieldErrors{}
 
 	if strings.HasPrefix(env, "=") || !strings.Contains(env, "=") {
 		errs = errs.Also(cli.ErrInvalidValue(env, field))
@@ -34,7 +34,7 @@ func EnvVar(env, field string) cli.FieldErrors {
 }
 
 func EnvVars(envs []string, field string) cli.FieldErrors {
-	errs := cli.EmptyFieldErrors
+	errs := cli.FieldErrors{}
 
 	for i, env := range envs {
 		errs = errs.Also(EnvVar(env, apis.CurrentField).ViaFieldIndex(field, i))
@@ -44,7 +44,7 @@ func EnvVars(envs []string, field string) cli.FieldErrors {
 }
 
 func EnvVarFrom(env, field string) cli.FieldErrors {
-	errs := cli.EmptyFieldErrors
+	errs := cli.FieldErrors{}
 
 	parts := strings.SplitN(env, "=", 2)
 	if len(parts) != 2 || parts[0] == "" {
@@ -64,7 +64,7 @@ func EnvVarFrom(env, field string) cli.FieldErrors {
 }
 
 func EnvVarFroms(envs []string, field string) cli.FieldErrors {
-	errs := cli.EmptyFieldErrors
+	errs := cli.FieldErrors{}
 
 	for i, env := range envs {
 		errs = errs.Also(EnvVarFrom(env, apis.CurrentField).ViaFieldIndex(field, i))

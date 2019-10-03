@@ -29,7 +29,7 @@ type ListOptions struct {
 }
 
 func (opts *ListOptions) Validate(ctx context.Context) cli.FieldErrors {
-	errs := cli.EmptyFieldErrors
+	errs := cli.FieldErrors{}
 
 	if opts.Namespace == "" && !opts.AllNamespaces {
 		errs = errs.Also(cli.ErrMissingOneOf(cli.NamespaceFlagName, cli.AllNamespacesFlagName))
@@ -47,7 +47,7 @@ type ResourceOptions struct {
 }
 
 func (opts *ResourceOptions) Validate(ctx context.Context) cli.FieldErrors {
-	errs := cli.EmptyFieldErrors
+	errs := cli.FieldErrors{}
 
 	if opts.Namespace == "" {
 		errs = errs.Also(cli.ErrMissingField(cli.NamespaceFlagName))
@@ -69,7 +69,7 @@ type DeleteOptions struct {
 }
 
 func (opts *DeleteOptions) Validate(ctx context.Context) cli.FieldErrors {
-	errs := cli.EmptyFieldErrors
+	errs := cli.FieldErrors{}
 
 	if opts.Namespace == "" {
 		errs = errs.Also(cli.ErrMissingField(cli.NamespaceFlagName))

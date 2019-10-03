@@ -7,7 +7,7 @@ import (
 )
 
 func MimeType(mimeType, field string) cli.FieldErrors {
-	errs := cli.EmptyFieldErrors
+	errs := cli.FieldErrors{}
 
 	index := strings.Index(mimeType, "/")
 	if index == -1 || index == len(mimeType)-1 {

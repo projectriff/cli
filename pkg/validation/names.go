@@ -23,7 +23,7 @@ import (
 )
 
 func K8sName(name, field string) cli.FieldErrors {
-	errs := cli.EmptyFieldErrors
+	errs := cli.FieldErrors{}
 
 	if out := validation.NameIsDNSLabel(name, false); len(out) != 0 {
 		// TODO capture info about why the name is invalid
@@ -34,7 +34,7 @@ func K8sName(name, field string) cli.FieldErrors {
 }
 
 func K8sNames(names []string, field string) cli.FieldErrors {
-	errs := cli.EmptyFieldErrors
+	errs := cli.FieldErrors{}
 
 	for i, name := range names {
 		if name == "" {

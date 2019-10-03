@@ -35,7 +35,7 @@ var (
 )
 
 func (opts *CompletionOptions) Validate(ctx context.Context) cli.FieldErrors {
-	errs := cli.EmptyFieldErrors
+	errs := cli.FieldErrors{}
 
 	if opts.Shell == "" {
 		errs = errs.Also(cli.ErrMissingField(cli.ShellFlagName))

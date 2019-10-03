@@ -63,7 +63,7 @@ func TestResourceOptions(t *testing.T) {
 		{
 			Name:    "default",
 			Options: &options.ResourceOptions{},
-			ExpectFieldErrors: cli.EmptyFieldErrors.Also(
+			ExpectFieldErrors: cli.FieldErrors{}.Also(
 				cli.ErrMissingField(cli.NamespaceFlagName),
 				cli.ErrMissingField(cli.NameArgumentName),
 			),

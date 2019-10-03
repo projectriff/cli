@@ -42,7 +42,7 @@ var (
 )
 
 func (opts *StreamListOptions) Validate(ctx context.Context) cli.FieldErrors {
-	errs := cli.EmptyFieldErrors
+	errs := cli.FieldErrors{}
 
 	errs = errs.Also(opts.ListOptions.Validate(ctx))
 

@@ -17,7 +17,6 @@
 package testing
 
 import (
-	"github.com/google/go-cmp/cmp"
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/cli/options"
 )
@@ -38,7 +37,7 @@ var (
 		Name:      "push-credentials",
 	}
 	InvalidResourceOptions           = options.ResourceOptions{}
-	InvalidResourceOptionsFieldError = cli.EmptyFieldErrors.Also(
+	InvalidResourceOptionsFieldError = cli.FieldErrors{}.Also(
 		cli.ErrMissingField(cli.NamespaceFlagName),
 		cli.ErrMissingField(cli.NameArgumentName),
 	)
@@ -54,8 +53,3 @@ var (
 	}
 	InvalidDeleteOptionsFieldError = cli.ErrMissingOneOf(cli.AllFlagName, cli.NamesArgumentName)
 )
-
-func DiffFieldErrors(expected, actual cli.FieldErrors) string {
-	// TODO remove this unless it adds value
-	return cmp.Diff(expected, actual)
-}

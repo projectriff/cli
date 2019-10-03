@@ -39,7 +39,7 @@ var (
 )
 
 func (opts *DoctorOptions) Validate(ctx context.Context) cli.FieldErrors {
-	errs := cli.EmptyFieldErrors
+	errs := cli.FieldErrors{}
 
 	if opts.Namespace == "" {
 		errs = errs.Also(cli.ErrMissingField(cli.NamespaceFlagName))
