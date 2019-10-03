@@ -23,16 +23,15 @@ import (
 	"testing"
 
 	"github.com/projectriff/cli/pkg/cli"
-	rifftesting "github.com/projectriff/cli/pkg/testing"
 	"github.com/spf13/cobra"
 )
 
 type StubValidateOptions struct {
 	called        bool
-	validationErr *cli.FieldError
+	validationErr cli.FieldErrors
 }
 
-func (o *StubValidateOptions) Validate(ctx context.Context) *cli.FieldError {
+func (o *StubValidateOptions) Validate(ctx context.Context) cli.FieldErrors {
 	o.called = true
 	return o.validationErr
 }
@@ -50,7 +49,7 @@ func TestValidateOptions(t *testing.T) {
 	}, {
 		name: "valid, empty error",
 		opts: &StubValidateOptions{
-			validationErr: cli.EmptyFieldError,
+			validationErr: cli.FieldErrors{},
 		},
 		usageSilenced: true,
 	}, {
@@ -58,7 +57,7 @@ func TestValidateOptions(t *testing.T) {
 		opts: &StubValidateOptions{
 			validationErr: cli.ErrMissingField("field-name"),
 		},
-		expectedErr:   cli.ErrMissingField("field-name"),
+		expectedErr:   cli.ErrMissingField("field-name").ToAggregate(),
 		usageSilenced: false,
 	}}
 
@@ -159,137 +158,4 @@ func TestExecOptions(t *testing.T) {
 			}
 		})
 	}
-}
-
-func TestListOptions(t *testing.T) {
-	table := rifftesting.OptionsTable{
-		{
-			Name: "default",
-			Options: &cli.ListOptions{
-				Namespace: "default",
-			},
-			ShouldValidate: true,
-		},
-		{
-			Name: "all namespaces",
-			Options: &cli.ListOptions{
-				AllNamespaces: true,
-			},
-			ShouldValidate: true,
-		},
-		{
-			Name:             "neither",
-			Options:          &cli.ListOptions{},
-			ExpectFieldError: cli.ErrMissingOneOf(cli.NamespaceFlagName, cli.AllNamespacesFlagName),
-		},
-		{
-			Name: "both",
-			Options: &cli.ListOptions{
-				Namespace:     "default",
-				AllNamespaces: true,
-			},
-			ExpectFieldError: cli.ErrMultipleOneOf(cli.NamespaceFlagName, cli.AllNamespacesFlagName),
-		},
-	}
-
-	table.Run(t)
-}
-
-func TestResourceOptions(t *testing.T) {
-	table := rifftesting.OptionsTable{
-		{
-			Name:    "default",
-			Options: &cli.ResourceOptions{},
-			ExpectFieldError: cli.EmptyFieldError.Also(
-				cli.ErrMissingField(cli.NamespaceFlagName),
-				cli.ErrMissingField(cli.NameArgumentName),
-			),
-		},
-		{
-			Name: "has both",
-			Options: &cli.ResourceOptions{
-				Namespace: "default",
-				Name:      "push-credentials",
-			},
-			ShouldValidate: true,
-		},
-		{
-			Name: "missing namespace",
-			Options: &cli.ResourceOptions{
-				Name: "push-credentials",
-			},
-			ExpectFieldError: cli.ErrMissingField(cli.NamespaceFlagName),
-		},
-		{
-			Name: "missing name",
-			Options: &cli.ResourceOptions{
-				Namespace: "default",
-			},
-			ExpectFieldError: cli.ErrMissingField(cli.NameArgumentName),
-		},
-	}
-
-	table.Run(t)
-}
-
-func TestDeleteOptions(t *testing.T) {
-	table := rifftesting.OptionsTable{
-		{
-			Name: "default",
-			Options: &cli.DeleteOptions{
-				Namespace: "default",
-			},
-			ExpectFieldError: cli.ErrMissingOneOf(cli.AllFlagName, cli.NamesArgumentName),
-		},
-		{
-			Name: "single name",
-			Options: &cli.DeleteOptions{
-				Namespace: "default",
-				Names:     []string{"my-function"},
-			},
-			ShouldValidate: true,
-		},
-		{
-			Name: "multiple names",
-			Options: &cli.DeleteOptions{
-				Namespace: "default",
-				Names:     []string{"my-function", "my-other-function"},
-			},
-			ShouldValidate: true,
-		},
-		{
-			Name: "invalid name",
-			Options: &cli.DeleteOptions{
-				Namespace: "default",
-				Names:     []string{"my.function"},
-			},
-			ExpectFieldError: cli.ErrInvalidValue("my.function", cli.CurrentField).ViaFieldIndex(cli.NamesArgumentName, 0),
-		},
-		{
-			Name: "all",
-			Options: &cli.DeleteOptions{
-				Namespace: "default",
-				All:       true,
-			},
-			ShouldValidate: true,
-		},
-		{
-			Name: "all with name",
-			Options: &cli.DeleteOptions{
-				Namespace: "default",
-				Names:     []string{"my-function"},
-				All:       true,
-			},
-			ExpectFieldError: cli.ErrMultipleOneOf(cli.AllFlagName, cli.NamesArgumentName),
-		},
-		{
-			Name: "missing namespace",
-			Options: &cli.DeleteOptions{
-				Names: []string{"my-function"},
-			},
-			ExpectFieldError: cli.ErrMissingField(cli.NamespaceFlagName),
-		},
-	}
-
-	table.Run(t)
 }

@@ -25,6 +25,7 @@ import (
 
 	"github.com/buildpack/pack"
 	"github.com/projectriff/cli/pkg/cli"
+	"github.com/projectriff/cli/pkg/cli/options"
 	"github.com/projectriff/cli/pkg/k8s"
 	"github.com/projectriff/cli/pkg/race"
 	buildv1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
@@ -34,7 +35,7 @@ import (
 )
 
 type FunctionCreateOptions struct {
-	cli.ResourceOptions
+	options.ResourceOptions
 
 	Image     string
 	CacheSize string
@@ -60,8 +61,8 @@ var (
 	_ cli.DryRunable  = (*FunctionCreateOptions)(nil)
 )
 
-func (opts *FunctionCreateOptions) Validate(ctx context.Context) *cli.FieldError {
-	errs := cli.EmptyFieldError
+func (opts *FunctionCreateOptions) Validate(ctx context.Context) cli.FieldErrors {
+	errs := cli.FieldErrors{}
 
 	errs = errs.Also(opts.ResourceOptions.Validate(ctx))
 

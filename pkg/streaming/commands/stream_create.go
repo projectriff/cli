@@ -22,6 +22,7 @@ import (
 	"strings"
 
 	"github.com/projectriff/cli/pkg/cli"
+	"github.com/projectriff/cli/pkg/cli/options"
 	"github.com/projectriff/cli/pkg/validation"
 	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 	"github.com/spf13/cobra"
@@ -29,7 +30,7 @@ import (
 )
 
 type StreamCreateOptions struct {
-	cli.ResourceOptions
+	options.ResourceOptions
 
 	Provider    string
 	ContentType string
@@ -43,8 +44,8 @@ var (
 	_ cli.DryRunable  = (*StreamCreateOptions)(nil)
 )
 
-func (opts *StreamCreateOptions) Validate(ctx context.Context) *cli.FieldError {
-	errs := cli.EmptyFieldError
+func (opts *StreamCreateOptions) Validate(ctx context.Context) cli.FieldErrors {
+	errs := cli.FieldErrors{}
 
 	errs = errs.Also(opts.ResourceOptions.Validate(ctx))
 

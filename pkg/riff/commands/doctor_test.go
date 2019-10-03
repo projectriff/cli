@@ -41,9 +41,9 @@ func TestDoctorOptions(t *testing.T) {
 			ShouldValidate: true,
 		},
 		{
-			Name:             "invalid",
-			Options:          &commands.DoctorOptions{},
-			ExpectFieldError: cli.ErrMissingField(cli.NamespaceFlagName),
+			Name:              "invalid",
+			Options:           &commands.DoctorOptions{},
+			ExpectFieldErrors: cli.ErrMissingField(cli.NamespaceFlagName),
 		},
 	}
 

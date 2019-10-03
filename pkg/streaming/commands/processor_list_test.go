@@ -36,7 +36,7 @@ func TestProcessorListOptions(t *testing.T) {
 			Options: &commands.ProcessorListOptions{
 				ListOptions: rifftesting.InvalidListOptions,
 			},
-			ExpectFieldError: rifftesting.InvalidListOptionsFieldError,
+			ExpectFieldErrors: rifftesting.InvalidListOptionsFieldError,
 		},
 		{
 			Name: "valid list",

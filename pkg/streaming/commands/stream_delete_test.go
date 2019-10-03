@@ -34,7 +34,7 @@ func TestStreamDeleteOptions(t *testing.T) {
 			Options: &commands.StreamDeleteOptions{
 				DeleteOptions: rifftesting.InvalidDeleteOptions,
 			},
-			ExpectFieldError: rifftesting.InvalidDeleteOptionsFieldError,
+			ExpectFieldErrors: rifftesting.InvalidDeleteOptionsFieldError,
 		},
 		{
 			Name: "valid delete",

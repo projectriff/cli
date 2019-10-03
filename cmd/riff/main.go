@@ -26,6 +26,7 @@ import (
 
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/riff/commands"
+	utilerrors "k8s.io/apimachinery/pkg/util/errors"
 )
 
 func main() {
@@ -39,9 +40,16 @@ func main() {
 		// typically the command has already been logged with more detail
 		if !cli.IsSilent(err) {
 			c.Errorf("Error executing command:\n")
-			// errors can be multiple lines, indent each line
-			for _, line := range strings.Split(err.Error(), "\n") {
-				c.Errorf("  %s\n", line)
+
+			if aggregate, ok := err.(utilerrors.Aggregate); ok {
+				for _, err := range aggregate.Errors() {
+					c.Errorf("  %s\n", err.Error())
+				}
+			} else {
+				// errors can be multiple lines, indent each line
+				for _, line := range strings.Split(err.Error(), "\n") {
+					c.Errorf("  %s\n", line)
+				}
 			}
 		}
 		os.Exit(1)

@@ -37,7 +37,7 @@ func TestContainerCreateOptions(t *testing.T) {
 			Options: &commands.ContainerCreateOptions{
 				ResourceOptions: rifftesting.InvalidResourceOptions,
 			},
-			ExpectFieldError: rifftesting.InvalidResourceOptionsFieldError.Also(
+			ExpectFieldErrors: rifftesting.InvalidResourceOptionsFieldError.Also(
 				cli.ErrMissingField(cli.ImageFlagName),
 			),
 		},
@@ -66,7 +66,7 @@ func TestContainerCreateOptions(t *testing.T) {
 				Image:           "example.com/repo:tag",
 				Tail:            true,
 			},
-			ExpectFieldError: cli.ErrMissingField(cli.WaitTimeoutFlagName),
+			ExpectFieldErrors: cli.ErrMissingField(cli.WaitTimeoutFlagName),
 		},
 		{
 			Name: "tail invalid timeout",
@@ -76,7 +76,7 @@ func TestContainerCreateOptions(t *testing.T) {
 				Tail:            true,
 				WaitTimeout:     "d",
 			},
-			ExpectFieldError: cli.ErrInvalidValue("d", cli.WaitTimeoutFlagName),
+			ExpectFieldErrors: cli.ErrInvalidValue("d", cli.WaitTimeoutFlagName),
 		},
 		{
 			Name: "dry run",
@@ -96,7 +96,7 @@ func TestContainerCreateOptions(t *testing.T) {
 				WaitTimeout:     "10m",
 				DryRun:          true,
 			},
-			ExpectFieldError: cli.ErrMultipleOneOf(cli.DryRunFlagName, cli.TailFlagName),
+			ExpectFieldErrors: cli.ErrMultipleOneOf(cli.DryRunFlagName, cli.TailFlagName),
 		},
 	}
 

@@ -51,7 +51,7 @@ func TestAllNamespacesFlag(t *testing.T) {
 	}, {
 		name: "explicit namespace and all namespaces",
 		args: []string{cli.NamespaceFlagName, "default", cli.AllNamespacesFlagName},
-		err:  cli.ErrMultipleOneOf(cli.NamespaceFlagName, cli.AllNamespacesFlagName),
+		err:  cli.ErrMultipleOneOf(cli.NamespaceFlagName, cli.AllNamespacesFlagName).ToAggregate(),
 	}, {
 		name: "prior PreRunE",
 		args: []string{},

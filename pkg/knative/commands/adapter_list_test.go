@@ -36,7 +36,7 @@ func TestAdapterListOptions(t *testing.T) {
 			Options: &commands.AdapterListOptions{
 				ListOptions: rifftesting.InvalidListOptions,
 			},
-			ExpectFieldError: rifftesting.InvalidListOptionsFieldError,
+			ExpectFieldErrors: rifftesting.InvalidListOptionsFieldError,
 		},
 		{
 			Name: "valid list",

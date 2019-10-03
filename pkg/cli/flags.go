@@ -70,7 +70,7 @@ func AllNamespacesFlag(cmd *cobra.Command, c *Config, namespace *string, allName
 			if cmd.Flag(StripDash(NamespaceFlagName)).Changed {
 				// forbid --namespace alongside --all-namespaces
 				// Check here since we need the Flag to know if the namespace came from a flag
-				return ErrMultipleOneOf(NamespaceFlagName, AllNamespacesFlagName)
+				return ErrMultipleOneOf(NamespaceFlagName, AllNamespacesFlagName).ToAggregate()
 			}
 			*namespace = ""
 		}

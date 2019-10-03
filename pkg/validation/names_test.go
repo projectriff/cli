@@ -19,6 +19,7 @@ package validation_test
 import (
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/projectriff/cli/pkg/cli"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 	"github.com/projectriff/cli/pkg/validation"
@@ -27,11 +28,11 @@ import (
 func TestK8sName(t *testing.T) {
 	tests := []struct {
 		name     string
-		expected *cli.FieldError
+		expected cli.FieldErrors
 		value    string
 	}{{
 		name:     "valid",
-		expected: cli.EmptyFieldError,
+		expected: cli.FieldErrors{},
 		value:    "my-resource",
 	}, {
 		name:     "empty",
@@ -47,7 +48,7 @@ func TestK8sName(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			expected := test.expected
 			actual := validation.K8sName(test.value, rifftesting.TestField)
-			if diff := rifftesting.DiffFieldErrors(expected, actual); diff != "" {
+			if diff := cmp.Diff(expected, actual); diff != "" {
 				t.Errorf("%s() = (-expected, +actual): %s", test.name, diff)
 			}
 		})
@@ -57,15 +58,15 @@ func TestK8sName(t *testing.T) {
 func TestK8sNames(t *testing.T) {
 	tests := []struct {
 		name     string
-		expected *cli.FieldError
+		expected cli.FieldErrors
 		values   []string
 	}{{
 		name:     "valid, empty",
-		expected: cli.EmptyFieldError,
+		expected: cli.FieldErrors{},
 		values:   []string{},
 	}, {
 		name:     "valid, not empty",
-		expected: cli.EmptyFieldError,
+		expected: cli.FieldErrors{},
 		values:   []string{"my-resource"},
 	}, {
 		name:     "invalid",
@@ -77,7 +78,7 @@ func TestK8sNames(t *testing.T) {
 		values:   []string{"/"},
 	}, {
 		name: "multiple invalid",
-		expected: cli.EmptyFieldError.Also(
+		expected: cli.FieldErrors{}.Also(
 			cli.ErrInvalidValue("", cli.CurrentField).ViaFieldIndex(rifftesting.TestField, 0),
 			cli.ErrInvalidValue("", cli.CurrentField).ViaFieldIndex(rifftesting.TestField, 1),
 		),
@@ -88,7 +89,7 @@ func TestK8sNames(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			expected := test.expected
 			actual := validation.K8sNames(test.values, rifftesting.TestField)
-			if diff := rifftesting.DiffFieldErrors(expected, actual); diff != "" {
+			if diff := cmp.Diff(expected, actual); diff != "" {
 				t.Errorf("%s() = (-expected, +actual): %s", test.name, diff)
 			}
 		})

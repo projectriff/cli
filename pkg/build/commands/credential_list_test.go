@@ -43,7 +43,7 @@ func TestCredentialListOptions(t *testing.T) {
 			Options: &commands.CredentialListOptions{
 				ListOptions: rifftesting.InvalidListOptions,
 			},
-			ExpectFieldError: rifftesting.InvalidListOptionsFieldError,
+			ExpectFieldErrors: rifftesting.InvalidListOptionsFieldError,
 		},
 	}
 

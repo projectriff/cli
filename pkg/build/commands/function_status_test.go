@@ -37,7 +37,7 @@ func TestFunctionStatusOptions(t *testing.T) {
 			Options: &commands.FunctionStatusOptions{
 				ResourceOptions: rifftesting.InvalidResourceOptions,
 			},
-			ExpectFieldError: rifftesting.InvalidResourceOptionsFieldError,
+			ExpectFieldErrors: rifftesting.InvalidResourceOptionsFieldError,
 		},
 		{
 			Name: "valid resource",

@@ -20,20 +20,21 @@ import (
 	"strings"
 
 	"github.com/knative/pkg/apis"
+	"github.com/projectriff/cli/pkg/cli"
 )
 
-func EnvVar(env, field string) *apis.FieldError {
-	errs := &apis.FieldError{}
+func EnvVar(env, field string) cli.FieldErrors {
+	errs := cli.FieldErrors{}
 
 	if strings.HasPrefix(env, "=") || !strings.Contains(env, "=") {
-		errs = errs.Also(apis.ErrInvalidValue(env, field))
+		errs = errs.Also(cli.ErrInvalidValue(env, field))
 	}
 
 	return errs
 }
 
-func EnvVars(envs []string, field string) *apis.FieldError {
-	errs := &apis.FieldError{}
+func EnvVars(envs []string, field string) cli.FieldErrors {
+	errs := cli.FieldErrors{}
 
 	for i, env := range envs {
 		errs = errs.Also(EnvVar(env, apis.CurrentField).ViaFieldIndex(field, i))
@@ -42,28 +43,28 @@ func EnvVars(envs []string, field string) *apis.FieldError {
 	return errs
 }
 
-func EnvVarFrom(env, field string) *apis.FieldError {
-	errs := &apis.FieldError{}
+func EnvVarFrom(env, field string) cli.FieldErrors {
+	errs := cli.FieldErrors{}
 
 	parts := strings.SplitN(env, "=", 2)
 	if len(parts) != 2 || parts[0] == "" {
-		errs = errs.Also(apis.ErrInvalidValue(env, field))
+		errs = errs.Also(cli.ErrInvalidValue(env, field))
 	} else {
 		value := strings.SplitN(parts[1], ":", 3)
 		if len(value) != 3 {
-			errs = errs.Also(apis.ErrInvalidValue(env, field))
+			errs = errs.Also(cli.ErrInvalidValue(env, field))
 		} else if value[0] != "configMapKeyRef" && value[0] != "secretKeyRef" {
-			errs = errs.Also(apis.ErrInvalidValue(env, field))
+			errs = errs.Also(cli.ErrInvalidValue(env, field))
 		} else if value[1] == "" {
-			errs = errs.Also(apis.ErrInvalidValue(env, field))
+			errs = errs.Also(cli.ErrInvalidValue(env, field))
 		}
 	}
 
 	return errs
 }
 
-func EnvVarFroms(envs []string, field string) *apis.FieldError {
-	errs := &apis.FieldError{}
+func EnvVarFroms(envs []string, field string) cli.FieldErrors {
+	errs := cli.FieldErrors{}
 
 	for i, env := range envs {
 		errs = errs.Also(EnvVarFrom(env, apis.CurrentField).ViaFieldIndex(field, i))

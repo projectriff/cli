@@ -23,6 +23,7 @@ import (
 	"time"
 
 	"github.com/projectriff/cli/pkg/cli"
+	"github.com/projectriff/cli/pkg/cli/options"
 	"github.com/projectriff/cli/pkg/k8s"
 	"github.com/projectriff/cli/pkg/race"
 	knativev1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
@@ -31,7 +32,7 @@ import (
 )
 
 type AdapterCreateOptions struct {
-	cli.ResourceOptions
+	options.ResourceOptions
 
 	ApplicationRef string
 	ContainerRef   string
@@ -52,10 +53,10 @@ var (
 	_ cli.DryRunable  = (*AdapterCreateOptions)(nil)
 )
 
-func (opts *AdapterCreateOptions) Validate(ctx context.Context) *cli.FieldError {
-	errs := cli.EmptyFieldError
+func (opts *AdapterCreateOptions) Validate(ctx context.Context) cli.FieldErrors {
+	errs := cli.FieldErrors{}
 
-	errs = errs.Also(opts.ResourceOptions.Validate((ctx)))
+	errs = errs.Also(opts.ResourceOptions.Validate(ctx))
 
 	// application-ref, build-ref and container-ref are mutually exclusive
 	used := []string{}

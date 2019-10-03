@@ -42,7 +42,7 @@ func TestCredentialDeleteOptions(t *testing.T) {
 			Options: &commands.CredentialDeleteOptions{
 				DeleteOptions: rifftesting.InvalidDeleteOptions,
 			},
-			ExpectFieldError: rifftesting.InvalidDeleteOptionsFieldError,
+			ExpectFieldErrors: rifftesting.InvalidDeleteOptionsFieldError,
 		},
 	}
 

@@ -24,6 +24,7 @@ import (
 	"strings"
 
 	"github.com/projectriff/cli/pkg/cli"
+	"github.com/projectriff/cli/pkg/cli/options"
 	"github.com/projectriff/system/pkg/apis/build"
 	"github.com/spf13/cobra"
 	corev1 "k8s.io/api/core/v1"
@@ -32,7 +33,7 @@ import (
 )
 
 type CredentialApplyOptions struct {
-	cli.ResourceOptions
+	options.ResourceOptions
 
 	DockerHubId       string
 	DockerHubPassword []byte
@@ -55,8 +56,8 @@ var (
 	_ cli.DryRunable  = (*CredentialApplyOptions)(nil)
 )
 
-func (opts *CredentialApplyOptions) Validate(ctx context.Context) *cli.FieldError {
-	errs := cli.EmptyFieldError
+func (opts *CredentialApplyOptions) Validate(ctx context.Context) cli.FieldErrors {
+	errs := cli.FieldErrors{}
 
 	errs = errs.Also(opts.ResourceOptions.Validate(ctx))
 

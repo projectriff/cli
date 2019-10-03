@@ -22,13 +22,14 @@ import (
 	"strings"
 
 	"github.com/projectriff/cli/pkg/cli"
+	"github.com/projectriff/cli/pkg/cli/options"
 	"github.com/projectriff/system/pkg/apis/build"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 type CredentialDeleteOptions struct {
-	cli.DeleteOptions
+	options.DeleteOptions
 }
 
 var (
@@ -36,8 +37,8 @@ var (
 	_ cli.Executable  = (*CredentialDeleteOptions)(nil)
 )
 
-func (opts *CredentialDeleteOptions) Validate(ctx context.Context) *cli.FieldError {
-	errs := cli.EmptyFieldError
+func (opts *CredentialDeleteOptions) Validate(ctx context.Context) cli.FieldErrors {
+	errs := cli.FieldErrors{}
 
 	errs = errs.Also(opts.DeleteOptions.Validate(ctx))
 

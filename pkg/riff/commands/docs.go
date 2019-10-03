@@ -37,8 +37,8 @@ var (
 	_ cli.Validatable = (*DocsOptions)(nil)
 )
 
-func (opts *DocsOptions) Validate(ctx context.Context) *cli.FieldError {
-	errs := cli.EmptyFieldError
+func (opts *DocsOptions) Validate(ctx context.Context) cli.FieldErrors {
+	errs := cli.FieldErrors{}
 
 	if opts.Directory == "" {
 		errs = errs.Also(cli.ErrMissingField(cli.DirectoryFlagName))

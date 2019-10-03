@@ -37,7 +37,7 @@ func TestAdapterCreateOptions(t *testing.T) {
 			Options: &commands.AdapterCreateOptions{
 				ResourceOptions: rifftesting.InvalidResourceOptions,
 			},
-			ExpectFieldError: rifftesting.InvalidResourceOptionsFieldError.Also(
+			ExpectFieldErrors: rifftesting.InvalidResourceOptionsFieldError.Also(
 				cli.ErrMissingOneOf(cli.ApplicationRefFlagName, cli.ContainerRefFlagName, cli.FunctionRefFlagName),
 				cli.ErrMissingOneOf(cli.ConfigurationRefFlagName, cli.ServiceRefFlagName),
 			),
@@ -78,7 +78,7 @@ func TestAdapterCreateOptions(t *testing.T) {
 				FunctionRef:     "my-function",
 				ServiceRef:      "my-service",
 			},
-			ExpectFieldError: cli.ErrMultipleOneOf(cli.ApplicationRefFlagName, cli.ContainerRefFlagName, cli.FunctionRefFlagName),
+			ExpectFieldErrors: cli.ErrMultipleOneOf(cli.ApplicationRefFlagName, cli.ContainerRefFlagName, cli.FunctionRefFlagName),
 		},
 		{
 			Name: "from service",
@@ -106,7 +106,7 @@ func TestAdapterCreateOptions(t *testing.T) {
 				ConfigurationRef: "my-configuration",
 				ServiceRef:       "my-service",
 			},
-			ExpectFieldError: cli.ErrMultipleOneOf(cli.ConfigurationRefFlagName, cli.ServiceRefFlagName),
+			ExpectFieldErrors: cli.ErrMultipleOneOf(cli.ConfigurationRefFlagName, cli.ServiceRefFlagName),
 		},
 		{
 			Name: "with tail",
@@ -127,7 +127,7 @@ func TestAdapterCreateOptions(t *testing.T) {
 				ServiceRef:      "my-service",
 				Tail:            true,
 			},
-			ExpectFieldError: cli.ErrMissingField(cli.WaitTimeoutFlagName),
+			ExpectFieldErrors: cli.ErrMissingField(cli.WaitTimeoutFlagName),
 		},
 		{
 			Name: "with tail, invalid timeout",
@@ -138,7 +138,7 @@ func TestAdapterCreateOptions(t *testing.T) {
 				Tail:            true,
 				WaitTimeout:     "d",
 			},
-			ExpectFieldError: cli.ErrInvalidValue("d", cli.WaitTimeoutFlagName),
+			ExpectFieldErrors: cli.ErrInvalidValue("d", cli.WaitTimeoutFlagName),
 		},
 		{
 			Name: "dry run",
@@ -160,7 +160,7 @@ func TestAdapterCreateOptions(t *testing.T) {
 				WaitTimeout:     "10m",
 				DryRun:          true,
 			},
-			ExpectFieldError: cli.ErrMultipleOneOf(cli.DryRunFlagName, cli.TailFlagName),
+			ExpectFieldErrors: cli.ErrMultipleOneOf(cli.DryRunFlagName, cli.TailFlagName),
 		},
 	}
 

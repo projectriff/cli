@@ -39,7 +39,7 @@ func TestApplicationTailOptions(t *testing.T) {
 			Options: &commands.ApplicationTailOptions{
 				ResourceOptions: rifftesting.InvalidResourceOptions,
 			},
-			ExpectFieldError: rifftesting.InvalidResourceOptionsFieldError,
+			ExpectFieldErrors: rifftesting.InvalidResourceOptionsFieldError,
 		},
 		{
 			Name: "valid resource",
@@ -62,7 +62,7 @@ func TestApplicationTailOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Since:           "1",
 			},
-			ExpectFieldError: cli.ErrInvalidValue("1", cli.SinceFlagName),
+			ExpectFieldErrors: cli.ErrInvalidValue("1", cli.SinceFlagName),
 		},
 	}
 

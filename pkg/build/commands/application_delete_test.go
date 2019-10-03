@@ -34,7 +34,7 @@ func TestApplicationDeleteOptions(t *testing.T) {
 			Options: &commands.ApplicationDeleteOptions{
 				DeleteOptions: rifftesting.InvalidDeleteOptions,
 			},
-			ExpectFieldError: rifftesting.InvalidDeleteOptionsFieldError,
+			ExpectFieldErrors: rifftesting.InvalidDeleteOptionsFieldError,
 		},
 		{
 			Name: "valid delete",
