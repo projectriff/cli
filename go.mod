@@ -22,6 +22,12 @@ require (
 	k8s.io/client-go v11.0.1-0.20190409021438-1a26190bd76a+incompatible
 )
 
+require (
+	github.com/Azure/go-autorest/autorest v0.9.1 // indirect
+	github.com/Azure/go-autorest/autorest/adal v0.6.0 // indirect
+	github.com/gophercloud/gophercloud v0.4.0 // indirect
+)
+
 replace (
 	// force specific versions, go wants to revert normal dependencies
 	// equivelent of kubernetes-1.14.3 tag for each repo
