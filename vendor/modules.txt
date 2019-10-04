@@ -48,19 +48,20 @@ github.com/buildpack/imgutil
 github.com/buildpack/lifecycle/cmd
 github.com/buildpack/lifecycle/image/auth
 github.com/buildpack/lifecycle/metadata
-# github.com/buildpack/pack v0.3.0
+# github.com/buildpack/pack v0.4.1
 github.com/buildpack/pack
+github.com/buildpack/pack/api
 github.com/buildpack/pack/app
+github.com/buildpack/pack/blob
 github.com/buildpack/pack/build
 github.com/buildpack/pack/builder
-github.com/buildpack/pack/buildpack
 github.com/buildpack/pack/cache
+github.com/buildpack/pack/cmd
 github.com/buildpack/pack/config
-github.com/buildpack/pack/container
 github.com/buildpack/pack/image
 github.com/buildpack/pack/internal/archive
+github.com/buildpack/pack/internal/container
 github.com/buildpack/pack/internal/paths
-github.com/buildpack/pack/lifecycle
 github.com/buildpack/pack/logging
 github.com/buildpack/pack/style
 # github.com/cpuguy83/go-md2man v1.0.10
@@ -91,7 +92,9 @@ github.com/docker/docker/api/types/versions
 github.com/docker/docker/api/types/volume
 github.com/docker/docker/client
 github.com/docker/docker/errdefs
+github.com/docker/docker/pkg/ioutils
 github.com/docker/docker/pkg/jsonmessage
+github.com/docker/docker/pkg/longpath
 github.com/docker/docker/pkg/stdcopy
 github.com/docker/docker/pkg/term
 github.com/docker/docker/pkg/term/windows
