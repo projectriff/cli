@@ -4,14 +4,15 @@ import (
 	"archive/tar"
 	"archive/zip"
 	"bytes"
-	"compress/gzip"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
+	"path"
 	"path/filepath"
 	"time"
 
+	"github.com/docker/docker/pkg/ioutils"
 	"github.com/pkg/errors"
 )
 
@@ -30,19 +31,56 @@ func ReadZipAsTar(srcPath, basePath string, uid, gid int, mode int64) io.ReadClo
 }
 
 func readAsTar(src, basePath string, uid, gid int, mode int64, writeFn func(tw *tar.Writer, srcDir, basePath string, uid, gid int, mode int64) error) io.ReadCloser {
-	r, w := io.Pipe()
+	var (
+		errChan = make(chan error)
+		r, w    = io.Pipe()
+	)
+
 	go func() {
-		var err error
+		tw := tar.NewWriter(w)
 		defer func() {
-			w.CloseWithError(err)
+			if r := recover(); r != nil {
+				tw.Close()
+				w.CloseWithError(errors.Errorf("panic: %v", r))
+			}
 		}()
 
-		tw := tar.NewWriter(w)
-		defer tw.Close()
+		err := writeFn(tw, src, basePath, uid, gid, mode)
 
-		err = writeFn(tw, src, basePath, uid, gid, mode)
+		closeErr := tw.Close()
+		closeErr = aggregateError(closeErr, w.CloseWithError(err))
+
+		errChan <- closeErr
 	}()
-	return r
+
+	return ioutils.NewReadCloserWrapper(r, func() error {
+		var compErr error
+
+		// closing the reader ensures that if anything attempts
+		// further reading it doesn't block waiting for content
+		if err := r.Close(); err != nil {
+			compErr = aggregateError(compErr, err)
+		}
+
+		// wait until everything closes properly specially contents inside `writeFn`
+		if err := <-errChan; err != nil {
+			compErr = aggregateError(compErr, err)
+		}
+
+		return compErr
+	})
+}
+
+func aggregateError(base, addition error) error {
+	if addition == nil {
+		return base
+	}
+
+	if base == nil {
+		return addition
+	}
+
+	return errors.Wrap(addition, base.Error())
 }
 
 func CreateSingleFileTarReader(path, txt string) (io.Reader, error) {
@@ -75,6 +113,11 @@ func CreateSingleFileTar(tarFile, path, txt string) error {
 	defer fh.Close()
 
 	tw := tar.NewWriter(fh)
+	defer tw.Close()
+	return AddFileToTar(tw, path, txt)
+}
+
+func AddFileToTar(tw *tar.Writer, path string, txt string) error {
 	if err := tw.WriteHeader(&tar.Header{
 		Name: path,
 		Size: int64(len(txt)),
@@ -82,40 +125,16 @@ func CreateSingleFileTar(tarFile, path, txt string) error {
 	}); err != nil {
 		return err
 	}
-
 	if _, err := tw.Write([]byte(txt)); err != nil {
 		return err
 	}
-
-	return tw.Close()
+	return nil
 }
 
-func ReadTarEntry(tarPath string, entryPath ...string) (*tar.Header, []byte, error) {
-	var (
-		tarFile    *os.File
-		gzipReader *gzip.Reader
-		fhFinal    io.Reader
-		err        error
-	)
+var ErrEntryNotExist = errors.New("not exist")
 
-	tarFile, err = os.Open(tarPath)
-	fhFinal = tarFile
-	if err != nil {
-		return nil, nil, errors.Wrapf(err, "failed to open tar '%s'", tarPath)
-	}
-	defer tarFile.Close()
-
-	if filepath.Ext(tarPath) == ".tgz" {
-		gzipReader, err = gzip.NewReader(tarFile)
-		fhFinal = gzipReader
-		if err != nil {
-			return nil, nil, errors.Wrap(err, "failed to create gzip reader")
-		}
-
-		defer gzipReader.Close()
-	}
-
-	tr := tar.NewReader(fhFinal)
+func ReadTarEntry(rc io.Reader, entryPath string) (*tar.Header, []byte, error) {
+	tr := tar.NewReader(rc)
 	for {
 		header, err := tr.Next()
 		if err == io.EOF {
@@ -125,7 +144,7 @@ func ReadTarEntry(tarPath string, entryPath ...string) (*tar.Header, []byte, err
 			return nil, nil, errors.Wrap(err, "failed to get next tar entry")
 		}
 
-		if contains(entryPath, header.Name) {
+		if path.Clean(header.Name) == entryPath {
 			buf, err := ioutil.ReadAll(tr)
 			if err != nil {
 				return nil, nil, errors.Wrapf(err, "failed to read contents of '%s'", entryPath)
@@ -135,16 +154,7 @@ func ReadTarEntry(tarPath string, entryPath ...string) (*tar.Header, []byte, err
 		}
 	}
 
-	return nil, nil, fmt.Errorf("could not find entry path '%s' in tar", entryPath)
-}
-
-func contains(slice []string, element string) bool {
-	for _, a := range slice {
-		if a == element {
-			return true
-		}
-	}
-	return false
+	return nil, nil, errors.Wrapf(ErrEntryNotExist, "could not find entry path '%s'", entryPath)
 }
 
 func WriteDirToTar(tw *tar.Writer, srcDir, basePath string, uid, gid int, mode int64) error {

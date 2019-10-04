@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
+	"net/url"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -14,10 +15,12 @@ import (
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/pkg/errors"
 
+	"github.com/buildpack/pack/api"
 	"github.com/buildpack/pack/build"
 	"github.com/buildpack/pack/builder"
-	"github.com/buildpack/pack/buildpack"
+	"github.com/buildpack/pack/cmd"
 	"github.com/buildpack/pack/internal/archive"
+	"github.com/buildpack/pack/internal/paths"
 	"github.com/buildpack/pack/style"
 )
 
@@ -68,27 +71,51 @@ func (c *Client) Build(ctx context.Context, opts BuildOptions) error {
 		return errors.Wrapf(err, "failed to fetch builder image '%s'", builderRef.Name())
 	}
 
-	builderImage, err := c.processBuilderImage(rawBuilderImage)
+	bldr, err := c.processBuilderImage(rawBuilderImage)
 	if err != nil {
 		return errors.Wrapf(err, "invalid builder '%s'", opts.Builder)
 	}
 
-	runImage := c.resolveRunImage(opts.RunImage, imageRef.Context().RegistryStr(), builderImage.GetStackInfo(), opts.AdditionalMirrors)
+	runImage := c.resolveRunImage(opts.RunImage, imageRef.Context().RegistryStr(), bldr.GetStackInfo(), opts.AdditionalMirrors)
 
-	if _, err := c.validateRunImage(ctx, runImage, opts.NoPull, opts.Publish, builderImage.StackID); err != nil {
+	if _, err := c.validateRunImage(ctx, runImage, opts.NoPull, opts.Publish, bldr.StackID); err != nil {
 		return errors.Wrapf(err, "invalid run-image '%s'", runImage)
 	}
 
-	extraBuildpacks, group, err := c.processBuildpacks(opts.Buildpacks)
+	fetchedBps, group, err := c.processBuildpacks(ctx, opts.Buildpacks)
 	if err != nil {
 		return errors.Wrap(err, "invalid buildpack")
 	}
 
-	ephemeralBuilder, err := c.createEphemeralBuilder(rawBuilderImage, opts.Env, group, extraBuildpacks)
+	ephemeralBuilder, err := c.createEphemeralBuilder(rawBuilderImage, opts.Env, group, fetchedBps)
 	if err != nil {
 		return err
 	}
 	defer c.docker.ImageRemove(context.Background(), ephemeralBuilder.Name(), types.ImageRemoveOptions{Force: true})
+
+	descriptor := ephemeralBuilder.GetLifecycleDescriptor()
+	lifecycleVersion := descriptor.Info.Version
+	if lifecycleVersion == nil {
+		c.logger.Warnf("lifecycle version unknown, assuming %s", style.Symbol(builder.AssumedLifecycleVersion))
+		lifecycleVersion = builder.VersionMustParse(builder.AssumedLifecycleVersion)
+	} else {
+		c.logger.Debugf("Executing lifecycle version %s", style.Symbol(lifecycleVersion.String()))
+	}
+
+	lcPlatformAPIVersion := api.MustParse(builder.AssumedPlatformAPIVersion)
+	if descriptor.API.PlatformVersion != nil {
+		lcPlatformAPIVersion = descriptor.API.PlatformVersion
+	}
+
+	if !api.MustParse(build.PlatformAPIVersion).SupportsVersion(lcPlatformAPIVersion) {
+		return errors.Errorf(
+			"pack %s (Platform API version %s) is incompatible with builder %s (Platform API version %s)",
+			cmd.Version,
+			build.PlatformAPIVersion,
+			style.Symbol(opts.Builder),
+			lcPlatformAPIVersion,
+		)
+	}
 
 	return c.lifecycle.Execute(ctx, build.LifecycleOptions{
 		AppPath:    appPath,
@@ -208,54 +235,101 @@ func (c *Client) processProxyConfig(config *ProxyConfig) ProxyConfig {
 	}
 }
 
-func (c *Client) processBuildpacks(buildpacks []string) ([]buildpack.Buildpack, builder.GroupMetadata, error) {
-	group := builder.GroupMetadata{Buildpacks: []builder.GroupBuildpack{}}
-	var bps []buildpack.Buildpack
+func (c *Client) processBuildpacks(ctx context.Context, buildpacks []string) ([]builder.Buildpack, builder.OrderEntry, error) {
+	group := builder.OrderEntry{Group: []builder.BuildpackRef{}}
+	var bps []builder.Buildpack
 	for _, bp := range buildpacks {
-		if isBuildpackId(bp) {
+		if isBuildpackID(bp) {
 			id, version := c.parseBuildpack(bp)
-			group.Buildpacks = append(group.Buildpacks, builder.GroupBuildpack{ID: id, Version: version})
+			group.Group = append(group.Group, builder.BuildpackRef{
+				BuildpackInfo: builder.BuildpackInfo{
+					ID:      id,
+					Version: version,
+				},
+			})
 		} else {
-			if runtime.GOOS == "windows" && filepath.Ext(bp) != ".tgz" {
-				return nil, builder.GroupMetadata{}, fmt.Errorf("buildpack %s: Windows only supports .tgz-based buildpacks", style.Symbol(bp))
-			}
-			c.logger.Debugf("fetching buildpack from %s", style.Symbol(bp))
-			fetchedBP, err := c.buildpackFetcher.FetchBuildpack(bp)
+			err := ensureBPSupport(bp)
 			if err != nil {
-				return nil, builder.GroupMetadata{}, errors.Wrapf(err, "failed to fetch buildpack from URI '%s'", bp)
+				return nil, builder.OrderEntry{}, err
 			}
+
+			c.logger.Debugf("fetching buildpack from %s", style.Symbol(bp))
+
+			blob, err := c.downloader.Download(ctx, bp)
+			if err != nil {
+				return nil, builder.OrderEntry{}, errors.Wrapf(err, "downloading buildpack from %s", style.Symbol(bp))
+			}
+
+			fetchedBP, err := builder.NewBuildpack(blob)
+			if err != nil {
+				return nil, builder.OrderEntry{}, errors.Wrapf(err, "creating buildpack from %s", style.Symbol(bp))
+			}
+
 			bps = append(bps, fetchedBP)
-			group.Buildpacks = append(group.Buildpacks, builder.GroupBuildpack{ID: fetchedBP.ID, Version: fetchedBP.Version})
+
+			group.Group = append(group.Group, builder.BuildpackRef{
+				BuildpackInfo: fetchedBP.Descriptor().Info,
+			})
 		}
 	}
 	return bps, group, nil
 }
 
-func isBuildpackId(path string) bool {
-	if _, err := os.Stat(filepath.Join(path, "buildpack.toml")); err == nil {
-		return false
+func isBuildpackID(bp string) bool {
+	if !paths.IsURI(bp) {
+		if _, err := os.Stat(bp); err != nil {
+			return true
+		}
 	}
+	return false
+}
 
-	hasScheme := schemeRegexp.MatchString(path)
-	if !hasScheme {
-		if _, err := os.Stat(path); err == nil {
-			return false
+func ensureBPSupport(bpPath string) (err error) {
+	p := bpPath
+	if paths.IsURI(bpPath) {
+		var u *url.URL
+		u, err = url.Parse(bpPath)
+		if err != nil {
+			return err
+		}
+
+		if u.Scheme == "file" {
+			p, err = paths.UriToFilePath(bpPath)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
-	return true
+	if runtime.GOOS == "windows" && !paths.IsURI(p) {
+		isDir, err := paths.IsDir(p)
+		if err != nil {
+			return err
+		}
+
+		if isDir {
+			return fmt.Errorf("buildpack %s: directory-based buildpacks are not currently supported on Windows", style.Symbol(bpPath))
+		}
+	}
+
+	return nil
 }
 
 func (c *Client) parseBuildpack(bp string) (string, string) {
 	parts := strings.Split(bp, "@")
 	if len(parts) == 2 {
+		if parts[1] == "latest" {
+			c.logger.Warn("@latest syntax is deprecated, will not work in future releases")
+			return parts[0], ""
+		}
+
 		return parts[0], parts[1]
 	}
-	c.logger.Debugf("No version for %s buildpack provided, will use %s", style.Symbol(parts[0]), style.Symbol(parts[0]+"@latest"))
-	return parts[0], "latest"
+
+	return parts[0], ""
 }
 
-func (c *Client) createEphemeralBuilder(rawBuilderImage imgutil.Image, env map[string]string, group builder.GroupMetadata, buildpacks []buildpack.Buildpack) (*builder.Builder, error) {
+func (c *Client) createEphemeralBuilder(rawBuilderImage imgutil.Image, env map[string]string, group builder.OrderEntry, buildpacks []builder.Buildpack) (*builder.Builder, error) {
 	origBuilderName := rawBuilderImage.Name()
 	bldr, err := builder.New(rawBuilderImage, fmt.Sprintf("pack.local/builder/%x:latest", randString(10)))
 	if err != nil {
@@ -263,16 +337,13 @@ func (c *Client) createEphemeralBuilder(rawBuilderImage imgutil.Image, env map[s
 	}
 	bldr.SetEnv(env)
 	for _, bp := range buildpacks {
-		c.logger.Debugf("adding buildpack %s version %s to builder", style.Symbol(bp.ID), style.Symbol(bp.Version))
-		if err := bldr.AddBuildpack(bp); err != nil {
-			return nil, errors.Wrapf(err, "failed to add buildpack %s version %s to builder", style.Symbol(bp.ID), style.Symbol(bp.Version))
-		}
+		bpInfo := bp.Descriptor().Info
+		c.logger.Debugf("adding buildpack %s version %s to builder", style.Symbol(bpInfo.ID), style.Symbol(bpInfo.Version))
+		bldr.AddBuildpack(bp)
 	}
-	if len(group.Buildpacks) > 0 {
+	if len(group.Group) > 0 {
 		c.logger.Debug("setting custom order")
-		if err := bldr.SetOrder([]builder.GroupMetadata{group}); err != nil {
-			return nil, errors.Wrap(err, "failed to set custom buildpack order")
-		}
+		bldr.SetOrder([]builder.OrderEntry{group})
 	}
 	if err := bldr.Save(); err != nil {
 		return nil, err

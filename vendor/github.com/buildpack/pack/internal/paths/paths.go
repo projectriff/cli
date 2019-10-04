@@ -2,10 +2,27 @@ package paths
 
 import (
 	"net/url"
+	"os"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"strings"
 )
+
+var schemeRegexp = regexp.MustCompile(`^.+://.*`)
+
+func IsURI(ref string) bool {
+	return schemeRegexp.MatchString(ref)
+}
+
+func IsDir(path string) (bool, error) {
+	fileInfo, err := os.Stat(path)
+	if err != nil {
+		return false, err
+	}
+
+	return fileInfo.IsDir(), nil
+}
 
 func FilePathToUri(path string) (string, error) {
 	var err error
