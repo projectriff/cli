@@ -8,7 +8,7 @@ LDFLAGS_VERSION = -X github.com/projectriff/cli/pkg/cli.cli_name=riff \
 				  -X github.com/projectriff/cli/pkg/cli.cli_version=$(VERSION) \
 				  -X github.com/projectriff/cli/pkg/cli.cli_gitsha=$(GITSHA) \
 				  -X github.com/projectriff/cli/pkg/cli.cli_gitdirty=$(GITDIRTY) \
-				  -X github.com/projectriff/cli/pkg/cli.cli_runtimes=core,knative
+				  -X github.com/projectriff/cli/pkg/cli.cli_runtimes=core,knative,streaming
 
 .PHONY: all
 all: build test verify-goimports docs ## Build, test, verify source formatting and regenerate docs

@@ -23,83 +23,75 @@ import (
 
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/cli/options"
-	"github.com/projectriff/cli/pkg/validation"
 	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-type StreamCreateOptions struct {
+type KafkaProviderCreateOptions struct {
 	options.ResourceOptions
 
-	Provider    string
-	ContentType string
+	BootstrapServers string
 
 	DryRun bool
 }
 
 var (
-	_ cli.Validatable = (*StreamCreateOptions)(nil)
-	_ cli.Executable  = (*StreamCreateOptions)(nil)
-	_ cli.DryRunable  = (*StreamCreateOptions)(nil)
+	_ cli.Validatable = (*KafkaProviderCreateOptions)(nil)
+	_ cli.Executable  = (*KafkaProviderCreateOptions)(nil)
+	_ cli.DryRunable  = (*KafkaProviderCreateOptions)(nil)
 )
 
-func (opts *StreamCreateOptions) Validate(ctx context.Context) cli.FieldErrors {
+func (opts *KafkaProviderCreateOptions) Validate(ctx context.Context) cli.FieldErrors {
 	errs := cli.FieldErrors{}
 
 	errs = errs.Also(opts.ResourceOptions.Validate(ctx))
 
-	if opts.Provider == "" {
-		errs = errs.Also(cli.ErrMissingField(cli.ProviderFlagName))
-	}
-
-	contentType := opts.ContentType
-	if contentType != "" {
-		errs = errs.Also(validation.MimeType(contentType, cli.ContentTypeFlagName))
+	if opts.BootstrapServers == "" {
+		errs = errs.Also(cli.ErrMissingField(cli.BootstrapServersFlagName))
 	}
 
 	return errs
 }
 
-func (opts *StreamCreateOptions) Exec(ctx context.Context, c *cli.Config) error {
-	stream := &streamv1alpha1.Stream{
+func (opts *KafkaProviderCreateOptions) Exec(ctx context.Context, c *cli.Config) error {
+	provider := &streamv1alpha1.KafkaProvider{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: opts.Namespace,
 			Name:      opts.Name,
 		},
-		Spec: streamv1alpha1.StreamSpec{
-			Provider:    opts.Provider,
-			ContentType: opts.ContentType,
+		Spec: streamv1alpha1.KafkaProviderSpec{
+			BootstrapServers: opts.BootstrapServers,
 		},
 	}
 
 	if opts.DryRun {
-		cli.DryRunResource(ctx, stream, stream.GetGroupVersionKind())
+		cli.DryRunResource(ctx, provider, provider.GetGroupVersionKind())
 	} else {
 		var err error
-		stream, err = c.StreamingRuntime().Streams(opts.Namespace).Create(stream)
+		provider, err = c.StreamingRuntime().KafkaProviders(opts.Namespace).Create(provider)
 		if err != nil {
 			return err
 		}
 	}
-	c.Successf("Created stream %q\n", stream.Name)
+	c.Successf("Created kafka provider %q\n", provider.Name)
 	return nil
 }
 
-func (opts *StreamCreateOptions) IsDryRun() bool {
+func (opts *KafkaProviderCreateOptions) IsDryRun() bool {
 	return opts.DryRun
 }
 
-func NewStreamCreateCommand(ctx context.Context, c *cli.Config) *cobra.Command {
-	opts := &StreamCreateOptions{}
+func NewKafkaProviderCreateCommand(ctx context.Context, c *cli.Config) *cobra.Command {
+	opts := &KafkaProviderCreateOptions{}
 
 	cmd := &cobra.Command{
 		Use:   "create",
-		Short: "create a stream of messages",
+		Short: "create a kafka provider of messages",
 		Long: strings.TrimSpace(`
 <todo>
 `),
-		Example: fmt.Sprintf("%s streaming stream create %s my-provider", c.Name, cli.ProviderFlagName),
+		Example: fmt.Sprintf("%s streaming kafka-provider create my-kafka-provider %s kafka.local:9022", c.Name, cli.BootstrapServersFlagName),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),
 	}
@@ -109,8 +101,7 @@ func NewStreamCreateCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 	)
 
 	cli.NamespaceFlag(cmd, c, &opts.Namespace)
-	cmd.Flags().StringVar(&opts.Provider, cli.StripDash(cli.ProviderFlagName), "", "`name` of stream provider")
-	cmd.Flags().StringVar(&opts.ContentType, cli.StripDash(cli.ContentTypeFlagName), "", "`MIME type` for message payloads accepted by the stream")
+	cmd.Flags().StringVar(&opts.BootstrapServers, cli.StripDash(cli.BootstrapServersFlagName), "", "`address` of the kafka broker")
 	cmd.Flags().BoolVar(&opts.DryRun, cli.StripDash(cli.DryRunFlagName), false, "print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr")
 
 	return cmd
