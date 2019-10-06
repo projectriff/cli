@@ -16,18 +16,6 @@ fats_refspec=26b7e2251a78ed452d5cf99e02b41658e9aafa77 # master as of 2019-10-01
 source `dirname "${BASH_SOURCE[0]}"`/fats-fetch.sh $fats_dir $fats_refspec $fats_repo
 source $fats_dir/.util.sh
 
-if [ $(kubectl get nodes -oname | wc -l) = "1" ]; then
-  echo "Elimiate pod resource requests"
-  kubectl create namespace cert-manager
-  kubectl label namespace cert-manager certmanager.k8s.io/disable-validation=true
-  fats_retry kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v0.10.1/cert-manager.yaml
-  wait_pod_selector_ready app.kubernetes.io/name=cert-manager cert-manager
-  wait_pod_selector_ready app.kubernetes.io/name=cainjector cert-manager
-  wait_pod_selector_ready app.kubernetes.io/name=webhook cert-manager
-  fats_retry kubectl apply -f https://storage.googleapis.com/projectriff/no-resource-requests-webhook/no-resource-requests-webhook.yaml
-  wait_pod_selector_ready app=webhook no-resource-requests
-fi
-
 # install riff-cli
 echo "Installing riff"
 if [ "$machine" == "MinGw" ]; then
@@ -42,6 +30,18 @@ fi
 
 # start FATS
 source $fats_dir/start.sh
+
+if [ $(kubectl get nodes -oname | wc -l) = "1" ]; then
+  echo "Elimiate pod resource requests"
+  kubectl create namespace cert-manager
+  kubectl label namespace cert-manager certmanager.k8s.io/disable-validation=true
+  fats_retry kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v0.10.1/cert-manager.yaml
+  wait_pod_selector_ready app.kubernetes.io/name=cert-manager cert-manager
+  wait_pod_selector_ready app.kubernetes.io/name=cainjector cert-manager
+  wait_pod_selector_ready app.kubernetes.io/name=webhook cert-manager
+  fats_retry kubectl apply -f https://storage.googleapis.com/projectriff/no-resource-requests-webhook/no-resource-requests-webhook.yaml
+  wait_pod_selector_ready app=webhook no-resource-requests
+fi
 
 # install riff system
 echo "Installing riff system"
