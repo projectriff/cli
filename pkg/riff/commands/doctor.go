@@ -70,6 +70,7 @@ func (opts *DoctorOptions) Exec(ctx context.Context, c *cli.Config) error {
 		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "core.projectriff.io", Resource: "deployers"}, Verbs: verbs},
 		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "streaming.projectriff.io", Resource: "processors"}, Verbs: verbs},
 		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "streaming.projectriff.io", Resource: "streams"}, Verbs: verbs},
+		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "streaming.projectriff.io", Resource: "kafkaproviders"}, Verbs: verbs},
 		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "knative.projectriff.io", Resource: "adapters"}, Verbs: verbs},
 		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "knative.projectriff.io", Resource: "deployers"}, Verbs: verbs},
 	}
