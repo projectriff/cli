@@ -42,7 +42,7 @@ func TestKafkaProviderCreateOptions(t *testing.T) {
 			Name: "valid provider",
 			Options: &commands.KafkaProviderCreateOptions{
 				ResourceOptions:  rifftesting.ValidResourceOptions,
-				BootstrapServers: "localhost:9022",
+				BootstrapServers: "localhost:9092",
 			},
 			ShouldValidate: true,
 		},
@@ -50,7 +50,7 @@ func TestKafkaProviderCreateOptions(t *testing.T) {
 			Name: "dry run",
 			Options: &commands.KafkaProviderCreateOptions{
 				ResourceOptions:  rifftesting.ValidResourceOptions,
-				BootstrapServers: "localhost:9022",
+				BootstrapServers: "localhost:9092",
 				DryRun:           true,
 			},
 			ShouldValidate: true,
@@ -63,7 +63,7 @@ func TestKafkaProviderCreateOptions(t *testing.T) {
 func TestKafkaProviderCreateCommand(t *testing.T) {
 	defaultNamespace := "default"
 	kafkaProviderName := "my-kafka-provider"
-	bootstrapServers := "localhost:9022"
+	bootstrapServers := "localhost:9092"
 
 	table := rifftesting.CommandTable{
 		{
@@ -101,7 +101,7 @@ metadata:
   name: my-kafka-provider
   namespace: default
 spec:
-  bootstrapServers: localhost:9022
+  bootstrapServers: localhost:9092
 status:
   liiklusDeploymentName: ""
   liiklusServiceName: ""

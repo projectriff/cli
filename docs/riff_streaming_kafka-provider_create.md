@@ -17,7 +17,7 @@ riff streaming kafka-provider create <name> [flags]
 ### Examples
 
 ```
-riff streaming kafka-provider create my-kafka-provider --bootstrap-servers kafka.local:9022
+riff streaming kafka-provider create my-kafka-provider --bootstrap-servers kafka.local:9092
 ```
 
 ### Options

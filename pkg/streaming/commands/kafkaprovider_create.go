@@ -91,7 +91,7 @@ func NewKafkaProviderCreateCommand(ctx context.Context, c *cli.Config) *cobra.Co
 		Long: strings.TrimSpace(`
 <todo>
 `),
-		Example: fmt.Sprintf("%s streaming kafka-provider create my-kafka-provider %s kafka.local:9022", c.Name, cli.BootstrapServersFlagName),
+		Example: fmt.Sprintf("%s streaming kafka-provider create my-kafka-provider %s kafka.local:9092", c.Name, cli.BootstrapServersFlagName),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),
 	}
