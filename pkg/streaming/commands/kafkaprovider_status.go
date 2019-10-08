@@ -29,16 +29,16 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-type ProcessorStatusOptions struct {
+type KafkaProviderStatusOptions struct {
 	options.ResourceOptions
 }
 
 var (
-	_ cli.Validatable = (*ProcessorStatusOptions)(nil)
-	_ cli.Executable  = (*ProcessorStatusOptions)(nil)
+	_ cli.Validatable = (*KafkaProviderStatusOptions)(nil)
+	_ cli.Executable  = (*KafkaProviderStatusOptions)(nil)
 )
 
-func (opts *ProcessorStatusOptions) Validate(ctx context.Context) cli.FieldErrors {
+func (opts *KafkaProviderStatusOptions) Validate(ctx context.Context) cli.FieldErrors {
 	errs := cli.FieldErrors{}
 
 	errs = errs.Also(opts.ResourceOptions.Validate(ctx))
@@ -46,38 +46,38 @@ func (opts *ProcessorStatusOptions) Validate(ctx context.Context) cli.FieldError
 	return errs
 }
 
-func (opts *ProcessorStatusOptions) Exec(ctx context.Context, c *cli.Config) error {
-	processor, err := c.StreamingRuntime().Processors(opts.Namespace).Get(opts.Name, metav1.GetOptions{})
+func (opts *KafkaProviderStatusOptions) Exec(ctx context.Context, c *cli.Config) error {
+	provider, err := c.StreamingRuntime().KafkaProviders(opts.Namespace).Get(opts.Name, metav1.GetOptions{})
 	if err != nil {
 		if !apierrs.IsNotFound(err) {
 			return err
 		}
-		c.Errorf("Processor %q not found\n", fmt.Sprintf("%s/%s", opts.Namespace, opts.Name))
+		c.Errorf("Kafka provider %q not found\n", fmt.Sprintf("%s/%s", opts.Namespace, opts.Name))
 		return cli.SilenceError(err)
 	}
 
-	ready := processor.Status.GetCondition(streamv1alpha1.ProcessorConditionReady)
-	cli.PrintResourceStatus(c, processor.Name, ready)
+	ready := provider.Status.GetCondition(streamv1alpha1.KafkaProviderConditionReady)
+	cli.PrintResourceStatus(c, provider.Name, ready)
 
 	return nil
 }
 
-func NewProcessorStatusCommand(ctx context.Context, c *cli.Config) *cobra.Command {
-	opts := &ProcessorStatusOptions{}
+func NewKafkaProviderStatusCommand(ctx context.Context, c *cli.Config) *cobra.Command {
+	opts := &KafkaProviderStatusOptions{}
 
 	cmd := &cobra.Command{
 		Use:   "status",
-		Short: "show processor status",
+		Short: "show kafka provider status",
 		Long: strings.TrimSpace(`
-Display status details for a processor.
+Display status details for a kafka provider.
 
 The Ready condition is shown which should include a reason code and a
 descriptive message when the status is not "True". The status for the condition
 may be: "True", "False" or "Unknown". An "Unknown" status is common while the
-processor roll out is processed.
+kafka provider roll out is being processed.
 `),
 		Example: strings.Join([]string{
-			fmt.Sprintf("%s streaming processor status my-processor", c.Name),
+			fmt.Sprintf("%s streamming kafka-provider status my-kafka-provider", c.Name),
 		}, "\n"),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),

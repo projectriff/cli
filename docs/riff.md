@@ -24,6 +24,8 @@ alternate execution models and capabilities.
 The core runtime uses core Kubernetes resources like Deployment and Service to
 expose the workload over HTTP.
 
+The streaming runtime maps one or more input and output streams to a function.
+
 The Knative runtime uses Knative Serving to expose the workload over HTTP with
 zero-to-n autoscaling and managed ingress.
 
@@ -47,4 +49,5 @@ zero-to-n autoscaling and managed ingress.
 * [riff doctor](riff_doctor.md)	 - check riff's requirements are installed
 * [riff function](riff_function.md)	 - functions built from source using function buildpacks
 * [riff knative](riff_knative.md)	 - Knative runtime for riff workloads
+* [riff streaming](riff_streaming.md)	 - (experimental) streaming runtime for riff functions
 

@@ -78,8 +78,8 @@ The processor will stop processing messages from the input streams and writing
 to the output streams. The streams and messages in each stream are preserved.
 `),
 		Example: strings.Join([]string{
-			fmt.Sprintf("%s processor delete my-processor", c.Name),
-			fmt.Sprintf("%s processor delete %s ", c.Name, cli.AllFlagName),
+			fmt.Sprintf("%s streaming processor delete my-processor", c.Name),
+			fmt.Sprintf("%s streaming processor delete %s ", c.Name, cli.AllFlagName),
 		}, "\n"),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),

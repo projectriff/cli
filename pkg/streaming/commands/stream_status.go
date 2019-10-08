@@ -77,7 +77,7 @@ may be: "True", "False" or "Unknown". An "Unknown" status is common while the
 stream roll out is being processed.
 `),
 		Example: strings.Join([]string{
-			fmt.Sprintf("%s stream status my-stream", c.Name),
+			fmt.Sprintf("%s streaming stream status my-stream", c.Name),
 		}, "\n"),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),

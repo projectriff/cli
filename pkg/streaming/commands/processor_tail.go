@@ -80,8 +80,8 @@ As new processor pods are started, the logs are displayed. To show historical
 logs use ` + cli.SinceFlagName + `.
 `),
 		Example: strings.Join([]string{
-			fmt.Sprintf("%s processor tail my-processor", c.Name),
-			fmt.Sprintf("%s processor tail my-processor %s 1h", c.Name, cli.SinceFlagName),
+			fmt.Sprintf("%s streaming processor tail my-processor", c.Name),
+			fmt.Sprintf("%s streaming processor tail my-processor %s 1h", c.Name, cli.SinceFlagName),
 		}, "\n"),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),

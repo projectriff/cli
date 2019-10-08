@@ -81,6 +81,7 @@ func (opts *DoctorOptions) Exec(ctx context.Context, c *cli.Config) error {
 		accessChecks = append(accessChecks,
 			&doctorAccessCheck{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "streaming.projectriff.io", Resource: "processors"}, Verbs: verbs},
 			&doctorAccessCheck{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "streaming.projectriff.io", Resource: "streams"}, Verbs: verbs},
+			&doctorAccessCheck{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "streaming.projectriff.io", Resource: "kafkaproviders"}, Verbs: verbs},
 		)
 	}
 	if c.Runtimes[cli.KnativeRuntime] {

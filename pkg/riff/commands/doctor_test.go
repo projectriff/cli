@@ -73,20 +73,21 @@ NAMESPACE     STATUS
 default       missing
 riff-system   missing
 
-RESOURCE                              NAMESPACE     NAME       READ      WRITE
-configmaps                            riff-system   builders   allowed   n/a
-configmaps                            default       *          allowed   allowed
-secrets                               default       *          allowed   allowed
-pods                                  default       *          allowed   n/a
-pods/log                              default       *          allowed   n/a
-applications.build.projectriff.io     default       *          missing   missing
-containers.build.projectriff.io       default       *          missing   missing
-functions.build.projectriff.io        default       *          missing   missing
-deployers.core.projectriff.io         default       *          missing   missing
-processors.streaming.projectriff.io   default       *          missing   missing
-streams.streaming.projectriff.io      default       *          missing   missing
-adapters.knative.projectriff.io       default       *          missing   missing
-deployers.knative.projectriff.io      default       *          missing   missing
+RESOURCE                                  NAMESPACE     NAME       READ      WRITE
+configmaps                                riff-system   builders   allowed   n/a
+configmaps                                default       *          allowed   allowed
+secrets                                   default       *          allowed   allowed
+pods                                      default       *          allowed   n/a
+pods/log                                  default       *          allowed   n/a
+applications.build.projectriff.io         default       *          missing   missing
+containers.build.projectriff.io           default       *          missing   missing
+functions.build.projectriff.io            default       *          missing   missing
+deployers.core.projectriff.io             default       *          missing   missing
+processors.streaming.projectriff.io       default       *          missing   missing
+streams.streaming.projectriff.io          default       *          missing   missing
+kafkaproviders.streaming.projectriff.io   default       *          missing   missing
+adapters.knative.projectriff.io           default       *          missing   missing
+deployers.knative.projectriff.io          default       *          missing   missing
 `,
 		},
 		{
@@ -102,6 +103,7 @@ deployers.knative.projectriff.io      default       *          missing   missing
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.core.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "kafkaproviders.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "adapters.knative.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.knative.projectriff.io"}},
 			},
@@ -117,6 +119,7 @@ deployers.knative.projectriff.io      default       *          missing   missing
 				selfSubjectAccessReviewRequests("default", "", "core.projectriff.io", "deployers", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "", "streaming.projectriff.io", "processors", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "", "streaming.projectriff.io", "streams", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "", "streaming.projectriff.io", "kafkaproviders", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "", "knative.projectriff.io", "adapters", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "", "knative.projectriff.io", "deployers", "", verbs...),
 			),
@@ -128,20 +131,21 @@ NAMESPACE     STATUS
 default       ok
 riff-system   ok
 
-RESOURCE                              NAMESPACE     NAME       READ      WRITE
-configmaps                            riff-system   builders   allowed   n/a
-configmaps                            default       *          allowed   allowed
-secrets                               default       *          allowed   allowed
-pods                                  default       *          allowed   n/a
-pods/log                              default       *          allowed   n/a
-applications.build.projectriff.io     default       *          allowed   allowed
-containers.build.projectriff.io       default       *          allowed   allowed
-functions.build.projectriff.io        default       *          allowed   allowed
-deployers.core.projectriff.io         default       *          allowed   allowed
-processors.streaming.projectriff.io   default       *          allowed   allowed
-streams.streaming.projectriff.io      default       *          allowed   allowed
-adapters.knative.projectriff.io       default       *          allowed   allowed
-deployers.knative.projectriff.io      default       *          allowed   allowed
+RESOURCE                                  NAMESPACE     NAME       READ      WRITE
+configmaps                                riff-system   builders   allowed   n/a
+configmaps                                default       *          allowed   allowed
+secrets                                   default       *          allowed   allowed
+pods                                      default       *          allowed   n/a
+pods/log                                  default       *          allowed   n/a
+applications.build.projectriff.io         default       *          allowed   allowed
+containers.build.projectriff.io           default       *          allowed   allowed
+functions.build.projectriff.io            default       *          allowed   allowed
+deployers.core.projectriff.io             default       *          allowed   allowed
+processors.streaming.projectriff.io       default       *          allowed   allowed
+streams.streaming.projectriff.io          default       *          allowed   allowed
+kafkaproviders.streaming.projectriff.io   default       *          allowed   allowed
+adapters.knative.projectriff.io           default       *          allowed   allowed
+deployers.knative.projectriff.io          default       *          allowed   allowed
 `,
 		},
 		{
@@ -157,6 +161,7 @@ deployers.knative.projectriff.io      default       *          allowed   allowed
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.core.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "kafkaproviders.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "adapters.knative.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.knative.projectriff.io"}},
 			},
@@ -172,6 +177,7 @@ deployers.knative.projectriff.io      default       *          allowed   allowed
 				selfSubjectAccessReviewRequests("my-namespace", "", "core.projectriff.io", "deployers", "", verbs...),
 				selfSubjectAccessReviewRequests("my-namespace", "", "streaming.projectriff.io", "processors", "", verbs...),
 				selfSubjectAccessReviewRequests("my-namespace", "", "streaming.projectriff.io", "streams", "", verbs...),
+				selfSubjectAccessReviewRequests("my-namespace", "", "streaming.projectriff.io", "kafkaproviders", "", verbs...),
 				selfSubjectAccessReviewRequests("my-namespace", "", "knative.projectriff.io", "adapters", "", verbs...),
 				selfSubjectAccessReviewRequests("my-namespace", "", "knative.projectriff.io", "deployers", "", verbs...),
 			),
@@ -183,20 +189,21 @@ NAMESPACE      STATUS
 my-namespace   ok
 riff-system    ok
 
-RESOURCE                              NAMESPACE      NAME       READ      WRITE
-configmaps                            riff-system    builders   allowed   n/a
-configmaps                            my-namespace   *          allowed   allowed
-secrets                               my-namespace   *          allowed   allowed
-pods                                  my-namespace   *          allowed   n/a
-pods/log                              my-namespace   *          allowed   n/a
-applications.build.projectriff.io     my-namespace   *          allowed   allowed
-containers.build.projectriff.io       my-namespace   *          allowed   allowed
-functions.build.projectriff.io        my-namespace   *          allowed   allowed
-deployers.core.projectriff.io         my-namespace   *          allowed   allowed
-processors.streaming.projectriff.io   my-namespace   *          allowed   allowed
-streams.streaming.projectriff.io      my-namespace   *          allowed   allowed
-adapters.knative.projectriff.io       my-namespace   *          allowed   allowed
-deployers.knative.projectriff.io      my-namespace   *          allowed   allowed
+RESOURCE                                  NAMESPACE      NAME       READ      WRITE
+configmaps                                riff-system    builders   allowed   n/a
+configmaps                                my-namespace   *          allowed   allowed
+secrets                                   my-namespace   *          allowed   allowed
+pods                                      my-namespace   *          allowed   n/a
+pods/log                                  my-namespace   *          allowed   n/a
+applications.build.projectriff.io         my-namespace   *          allowed   allowed
+containers.build.projectriff.io           my-namespace   *          allowed   allowed
+functions.build.projectriff.io            my-namespace   *          allowed   allowed
+deployers.core.projectriff.io             my-namespace   *          allowed   allowed
+processors.streaming.projectriff.io       my-namespace   *          allowed   allowed
+streams.streaming.projectriff.io          my-namespace   *          allowed   allowed
+kafkaproviders.streaming.projectriff.io   my-namespace   *          allowed   allowed
+adapters.knative.projectriff.io           my-namespace   *          allowed   allowed
+deployers.knative.projectriff.io          my-namespace   *          allowed   allowed
 `,
 		},
 		{
@@ -294,6 +301,7 @@ deployers.core.projectriff.io       default       *          allowed   allowed
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "kafkaproviders.streaming.projectriff.io"}},
 			},
 			ExpectCreates: merge(
 				selfSubjectAccessReviewRequests("riff-system", "builders", "core", "configmaps", "", readVerbs...),
@@ -306,6 +314,7 @@ deployers.core.projectriff.io       default       *          allowed   allowed
 				selfSubjectAccessReviewRequests("default", "", "build.projectriff.io", "functions", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "", "streaming.projectriff.io", "processors", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "", "streaming.projectriff.io", "streams", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "", "streaming.projectriff.io", "kafkaproviders", "", verbs...),
 			),
 			WithReactors: []rifftesting.ReactionFunc{
 				passAccessReview(),
@@ -315,17 +324,18 @@ NAMESPACE     STATUS
 default       ok
 riff-system   ok
 
-RESOURCE                              NAMESPACE     NAME       READ      WRITE
-configmaps                            riff-system   builders   allowed   n/a
-configmaps                            default       *          allowed   allowed
-secrets                               default       *          allowed   allowed
-pods                                  default       *          allowed   n/a
-pods/log                              default       *          allowed   n/a
-applications.build.projectriff.io     default       *          allowed   allowed
-containers.build.projectriff.io       default       *          allowed   allowed
-functions.build.projectriff.io        default       *          allowed   allowed
-processors.streaming.projectriff.io   default       *          allowed   allowed
-streams.streaming.projectriff.io      default       *          allowed   allowed
+RESOURCE                                  NAMESPACE     NAME       READ      WRITE
+configmaps                                riff-system   builders   allowed   n/a
+configmaps                                default       *          allowed   allowed
+secrets                                   default       *          allowed   allowed
+pods                                      default       *          allowed   n/a
+pods/log                                  default       *          allowed   n/a
+applications.build.projectriff.io         default       *          allowed   allowed
+containers.build.projectriff.io           default       *          allowed   allowed
+functions.build.projectriff.io            default       *          allowed   allowed
+processors.streaming.projectriff.io       default       *          allowed   allowed
+streams.streaming.projectriff.io          default       *          allowed   allowed
+kafkaproviders.streaming.projectriff.io   default       *          allowed   allowed
 `,
 		},
 		{
@@ -387,6 +397,7 @@ deployers.knative.projectriff.io    default       *          allowed   allowed
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.core.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "kafkaproviders.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "adapters.knative.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.knative.projectriff.io"}},
 			},
@@ -402,6 +413,7 @@ deployers.knative.projectriff.io    default       *          allowed   allowed
 				selfSubjectAccessReviewRequests("default", "", "core.projectriff.io", "deployers", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "", "streaming.projectriff.io", "processors", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "", "streaming.projectriff.io", "streams", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "", "streaming.projectriff.io", "kafkaproviders", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "", "knative.projectriff.io", "adapters", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "", "knative.projectriff.io", "deployers", "", verbs...),
 			),
@@ -417,20 +429,21 @@ NAMESPACE     STATUS
 default       ok
 riff-system   ok
 
-RESOURCE                              NAMESPACE     NAME       READ      WRITE
-configmaps                            riff-system   builders   allowed   n/a
-configmaps                            default       *          allowed   denied
-secrets                               default       *          allowed   denied
-pods                                  default       *          allowed   n/a
-pods/log                              default       *          allowed   n/a
-applications.build.projectriff.io     default       *          allowed   denied
-containers.build.projectriff.io       default       *          allowed   denied
-functions.build.projectriff.io        default       *          allowed   denied
-deployers.core.projectriff.io         default       *          allowed   denied
-processors.streaming.projectriff.io   default       *          allowed   denied
-streams.streaming.projectriff.io      default       *          allowed   denied
-adapters.knative.projectriff.io       default       *          allowed   denied
-deployers.knative.projectriff.io      default       *          allowed   denied
+RESOURCE                                  NAMESPACE     NAME       READ      WRITE
+configmaps                                riff-system   builders   allowed   n/a
+configmaps                                default       *          allowed   denied
+secrets                                   default       *          allowed   denied
+pods                                      default       *          allowed   n/a
+pods/log                                  default       *          allowed   n/a
+applications.build.projectriff.io         default       *          allowed   denied
+containers.build.projectriff.io           default       *          allowed   denied
+functions.build.projectriff.io            default       *          allowed   denied
+deployers.core.projectriff.io             default       *          allowed   denied
+processors.streaming.projectriff.io       default       *          allowed   denied
+streams.streaming.projectriff.io          default       *          allowed   denied
+kafkaproviders.streaming.projectriff.io   default       *          allowed   denied
+adapters.knative.projectriff.io           default       *          allowed   denied
+deployers.knative.projectriff.io          default       *          allowed   denied
 `,
 		},
 		{
@@ -446,6 +459,7 @@ deployers.knative.projectriff.io      default       *          allowed   denied
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.core.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "kafkaproviders.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "adapters.knative.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.knative.projectriff.io"}},
 			},
@@ -461,6 +475,7 @@ deployers.knative.projectriff.io      default       *          allowed   denied
 				selfSubjectAccessReviewRequests("default", "", "core.projectriff.io", "deployers", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "", "streaming.projectriff.io", "processors", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "", "streaming.projectriff.io", "streams", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "", "streaming.projectriff.io", "kafkaproviders", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "", "knative.projectriff.io", "adapters", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "", "knative.projectriff.io", "deployers", "", verbs...),
 			),
@@ -473,20 +488,21 @@ NAMESPACE     STATUS
 default       ok
 riff-system   ok
 
-RESOURCE                              NAMESPACE     NAME       READ    WRITE
-configmaps                            riff-system   builders   mixed   n/a
-configmaps                            default       *          mixed   allowed
-secrets                               default       *          mixed   allowed
-pods                                  default       *          mixed   n/a
-pods/log                              default       *          mixed   n/a
-applications.build.projectriff.io     default       *          mixed   allowed
-containers.build.projectriff.io       default       *          mixed   allowed
-functions.build.projectriff.io        default       *          mixed   allowed
-deployers.core.projectriff.io         default       *          mixed   allowed
-processors.streaming.projectriff.io   default       *          mixed   allowed
-streams.streaming.projectriff.io      default       *          mixed   allowed
-adapters.knative.projectriff.io       default       *          mixed   allowed
-deployers.knative.projectriff.io      default       *          mixed   allowed
+RESOURCE                                  NAMESPACE     NAME       READ    WRITE
+configmaps                                riff-system   builders   mixed   n/a
+configmaps                                default       *          mixed   allowed
+secrets                                   default       *          mixed   allowed
+pods                                      default       *          mixed   n/a
+pods/log                                  default       *          mixed   n/a
+applications.build.projectriff.io         default       *          mixed   allowed
+containers.build.projectriff.io           default       *          mixed   allowed
+functions.build.projectriff.io            default       *          mixed   allowed
+deployers.core.projectriff.io             default       *          mixed   allowed
+processors.streaming.projectriff.io       default       *          mixed   allowed
+streams.streaming.projectriff.io          default       *          mixed   allowed
+kafkaproviders.streaming.projectriff.io   default       *          mixed   allowed
+adapters.knative.projectriff.io           default       *          mixed   allowed
+deployers.knative.projectriff.io          default       *          mixed   allowed
 `,
 		},
 		{
@@ -502,6 +518,7 @@ deployers.knative.projectriff.io      default       *          mixed   allowed
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.core.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "kafkaproviders.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "adapters.knative.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.knative.projectriff.io"}},
 			},
@@ -523,6 +540,7 @@ deployers.knative.projectriff.io      default       *          mixed   allowed
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.core.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "kafkaproviders.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "adapters.knative.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.knative.projectriff.io"}},
 			},
@@ -552,6 +570,7 @@ deployers.knative.projectriff.io      default       *          mixed   allowed
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.core.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "kafkaproviders.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "adapters.knative.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.knative.projectriff.io"}},
 			},
@@ -574,6 +593,7 @@ deployers.knative.projectriff.io      default       *          mixed   allowed
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.core.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "kafkaproviders.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "adapters.knative.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.knative.projectriff.io"}},
 			},
@@ -596,6 +616,7 @@ deployers.knative.projectriff.io      default       *          mixed   allowed
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.core.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "kafkaproviders.streaming.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "adapters.knative.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.knative.projectriff.io"}},
 			},
@@ -611,6 +632,7 @@ deployers.knative.projectriff.io      default       *          mixed   allowed
 				selfSubjectAccessReviewRequests("default", "", "core.projectriff.io", "deployers", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "", "streaming.projectriff.io", "processors", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "", "streaming.projectriff.io", "streams", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "", "streaming.projectriff.io", "kafkaproviders", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "", "knative.projectriff.io", "adapters", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "", "knative.projectriff.io", "deployers", "", verbs...),
 			),
@@ -622,20 +644,21 @@ NAMESPACE     STATUS
 default       ok
 riff-system   ok
 
-RESOURCE                              NAMESPACE     NAME       READ      WRITE
-configmaps                            riff-system   builders   unknown   n/a
-configmaps                            default       *          unknown   unknown
-secrets                               default       *          unknown   unknown
-pods                                  default       *          unknown   n/a
-pods/log                              default       *          unknown   n/a
-applications.build.projectriff.io     default       *          unknown   unknown
-containers.build.projectriff.io       default       *          unknown   unknown
-functions.build.projectriff.io        default       *          unknown   unknown
-deployers.core.projectriff.io         default       *          unknown   unknown
-processors.streaming.projectriff.io   default       *          unknown   unknown
-streams.streaming.projectriff.io      default       *          unknown   unknown
-adapters.knative.projectriff.io       default       *          unknown   unknown
-deployers.knative.projectriff.io      default       *          unknown   unknown
+RESOURCE                                  NAMESPACE     NAME       READ      WRITE
+configmaps                                riff-system   builders   unknown   n/a
+configmaps                                default       *          unknown   unknown
+secrets                                   default       *          unknown   unknown
+pods                                      default       *          unknown   n/a
+pods/log                                  default       *          unknown   n/a
+applications.build.projectriff.io         default       *          unknown   unknown
+containers.build.projectriff.io           default       *          unknown   unknown
+functions.build.projectriff.io            default       *          unknown   unknown
+deployers.core.projectriff.io             default       *          unknown   unknown
+processors.streaming.projectriff.io       default       *          unknown   unknown
+streams.streaming.projectriff.io          default       *          unknown   unknown
+kafkaproviders.streaming.projectriff.io   default       *          unknown   unknown
+adapters.knative.projectriff.io           default       *          unknown   unknown
+deployers.knative.projectriff.io          default       *          unknown   unknown
 `,
 		},
 	}

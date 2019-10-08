@@ -27,6 +27,7 @@ const (
 	AllNamespacesFlagName         = "--all-namespaces"
 	ApplicationRefFlagName        = "--application-ref"
 	ArtifactFlagName              = "--artifact"
+	BootstrapServersFlagName      = "--bootstrap-servers"
 	CacheSizeFlagName             = "--cache-size"
 	ConfigFlagName                = "--config"
 	ConfigurationRefFlagName      = "--configuration-ref"
