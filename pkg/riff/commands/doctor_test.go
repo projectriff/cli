@@ -57,7 +57,7 @@ func TestDoctorCommand(t *testing.T) {
 		{
 			Name:     "not installed",
 			Args:     []string{},
-			Runtimes: &cli.AllRuntimes,
+			Runtimes: &[]string{},
 			ExpectCreates: merge(
 				selfSubjectAccessReviewRequests("riff-system", "builders", "core", "configmaps", "", readVerbs...),
 				selfSubjectAccessReviewRequests("default", "", "core", "configmaps", "", verbs...),
@@ -73,25 +73,99 @@ NAMESPACE     STATUS
 default       missing
 riff-system   missing
 
-RESOURCE                                  NAMESPACE     NAME       READ      WRITE
-configmaps                                riff-system   builders   allowed   n/a
-configmaps                                default       *          allowed   allowed
-secrets                                   default       *          allowed   allowed
-pods                                      default       *          allowed   n/a
-pods/log                                  default       *          allowed   n/a
-applications.build.projectriff.io         default       *          missing   missing
-containers.build.projectriff.io           default       *          missing   missing
-functions.build.projectriff.io            default       *          missing   missing
-deployers.core.projectriff.io             default       *          missing   missing
-processors.streaming.projectriff.io       default       *          missing   missing
-streams.streaming.projectriff.io          default       *          missing   missing
-kafkaproviders.streaming.projectriff.io   default       *          missing   missing
-adapters.knative.projectriff.io           default       *          missing   missing
-deployers.knative.projectriff.io          default       *          missing   missing
+RESOURCE                            NAMESPACE     NAME       READ      WRITE
+configmaps                          riff-system   builders   allowed   n/a
+configmaps                          default       *          allowed   allowed
+secrets                             default       *          allowed   allowed
+pods                                default       *          allowed   n/a
+pods/log                            default       *          allowed   n/a
+applications.build.projectriff.io   default       *          missing   missing
+containers.build.projectriff.io     default       *          missing   missing
+functions.build.projectriff.io      default       *          missing   missing
 `,
 		},
 		{
 			Name:     "installed",
+			Args:     []string{},
+			Runtimes: &[]string{},
+			GivenObjects: []runtime.Object{
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "default"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "containers.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
+			},
+			ExpectCreates: merge(
+				selfSubjectAccessReviewRequests("riff-system", "builders", "core", "configmaps", "", readVerbs...),
+				selfSubjectAccessReviewRequests("default", "", "core", "configmaps", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "", "core", "secrets", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "", "core", "pods", "", readVerbs...),
+				selfSubjectAccessReviewRequests("default", "", "core", "pods", "log", readVerbs...),
+				selfSubjectAccessReviewRequests("default", "", "build.projectriff.io", "applications", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "", "build.projectriff.io", "containers", "", verbs...),
+				selfSubjectAccessReviewRequests("default", "", "build.projectriff.io", "functions", "", verbs...),
+			),
+			WithReactors: []rifftesting.ReactionFunc{
+				passAccessReview(),
+			},
+			ExpectOutput: `
+NAMESPACE     STATUS
+default       ok
+riff-system   ok
+
+RESOURCE                            NAMESPACE     NAME       READ      WRITE
+configmaps                          riff-system   builders   allowed   n/a
+configmaps                          default       *          allowed   allowed
+secrets                             default       *          allowed   allowed
+pods                                default       *          allowed   n/a
+pods/log                            default       *          allowed   n/a
+applications.build.projectriff.io   default       *          allowed   allowed
+containers.build.projectriff.io     default       *          allowed   allowed
+functions.build.projectriff.io      default       *          allowed   allowed
+`,
+		},
+		{
+			Name:     "custom namespace",
+			Args:     []string{cli.NamespaceFlagName, "my-namespace"},
+			Runtimes: &[]string{},
+			GivenObjects: []runtime.Object{
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "my-namespace"}},
+				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "containers.build.projectriff.io"}},
+				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
+			},
+			ExpectCreates: merge(
+				selfSubjectAccessReviewRequests("riff-system", "builders", "core", "configmaps", "", readVerbs...),
+				selfSubjectAccessReviewRequests("my-namespace", "", "core", "configmaps", "", verbs...),
+				selfSubjectAccessReviewRequests("my-namespace", "", "core", "secrets", "", verbs...),
+				selfSubjectAccessReviewRequests("my-namespace", "", "core", "pods", "", readVerbs...),
+				selfSubjectAccessReviewRequests("my-namespace", "", "core", "pods", "log", readVerbs...),
+				selfSubjectAccessReviewRequests("my-namespace", "", "build.projectriff.io", "applications", "", verbs...),
+				selfSubjectAccessReviewRequests("my-namespace", "", "build.projectriff.io", "containers", "", verbs...),
+				selfSubjectAccessReviewRequests("my-namespace", "", "build.projectriff.io", "functions", "", verbs...),
+			),
+			WithReactors: []rifftesting.ReactionFunc{
+				passAccessReview(),
+			},
+			ExpectOutput: `
+NAMESPACE      STATUS
+my-namespace   ok
+riff-system    ok
+
+RESOURCE                            NAMESPACE      NAME       READ      WRITE
+configmaps                          riff-system    builders   allowed   n/a
+configmaps                          my-namespace   *          allowed   allowed
+secrets                             my-namespace   *          allowed   allowed
+pods                                my-namespace   *          allowed   n/a
+pods/log                            my-namespace   *          allowed   n/a
+applications.build.projectriff.io   my-namespace   *          allowed   allowed
+containers.build.projectriff.io     my-namespace   *          allowed   allowed
+functions.build.projectriff.io      my-namespace   *          allowed   allowed
+`,
+		},
+		{
+			Name:     "all runtimes",
 			Args:     []string{},
 			Runtimes: &cli.AllRuntimes,
 			GivenObjects: []runtime.Object{
@@ -146,104 +220,6 @@ streams.streaming.projectriff.io          default       *          allowed   all
 kafkaproviders.streaming.projectriff.io   default       *          allowed   allowed
 adapters.knative.projectriff.io           default       *          allowed   allowed
 deployers.knative.projectriff.io          default       *          allowed   allowed
-`,
-		},
-		{
-			Name:     "custom namespace",
-			Args:     []string{cli.NamespaceFlagName, "my-namespace"},
-			Runtimes: &cli.AllRuntimes,
-			GivenObjects: []runtime.Object{
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "my-namespace"}},
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "containers.build.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.core.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "kafkaproviders.streaming.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "adapters.knative.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.knative.projectriff.io"}},
-			},
-			ExpectCreates: merge(
-				selfSubjectAccessReviewRequests("riff-system", "builders", "core", "configmaps", "", readVerbs...),
-				selfSubjectAccessReviewRequests("my-namespace", "", "core", "configmaps", "", verbs...),
-				selfSubjectAccessReviewRequests("my-namespace", "", "core", "secrets", "", verbs...),
-				selfSubjectAccessReviewRequests("my-namespace", "", "core", "pods", "", readVerbs...),
-				selfSubjectAccessReviewRequests("my-namespace", "", "core", "pods", "log", readVerbs...),
-				selfSubjectAccessReviewRequests("my-namespace", "", "build.projectriff.io", "applications", "", verbs...),
-				selfSubjectAccessReviewRequests("my-namespace", "", "build.projectriff.io", "containers", "", verbs...),
-				selfSubjectAccessReviewRequests("my-namespace", "", "build.projectriff.io", "functions", "", verbs...),
-				selfSubjectAccessReviewRequests("my-namespace", "", "core.projectriff.io", "deployers", "", verbs...),
-				selfSubjectAccessReviewRequests("my-namespace", "", "streaming.projectriff.io", "processors", "", verbs...),
-				selfSubjectAccessReviewRequests("my-namespace", "", "streaming.projectriff.io", "streams", "", verbs...),
-				selfSubjectAccessReviewRequests("my-namespace", "", "streaming.projectriff.io", "kafkaproviders", "", verbs...),
-				selfSubjectAccessReviewRequests("my-namespace", "", "knative.projectriff.io", "adapters", "", verbs...),
-				selfSubjectAccessReviewRequests("my-namespace", "", "knative.projectriff.io", "deployers", "", verbs...),
-			),
-			WithReactors: []rifftesting.ReactionFunc{
-				passAccessReview(),
-			},
-			ExpectOutput: `
-NAMESPACE      STATUS
-my-namespace   ok
-riff-system    ok
-
-RESOURCE                                  NAMESPACE      NAME       READ      WRITE
-configmaps                                riff-system    builders   allowed   n/a
-configmaps                                my-namespace   *          allowed   allowed
-secrets                                   my-namespace   *          allowed   allowed
-pods                                      my-namespace   *          allowed   n/a
-pods/log                                  my-namespace   *          allowed   n/a
-applications.build.projectriff.io         my-namespace   *          allowed   allowed
-containers.build.projectriff.io           my-namespace   *          allowed   allowed
-functions.build.projectriff.io            my-namespace   *          allowed   allowed
-deployers.core.projectriff.io             my-namespace   *          allowed   allowed
-processors.streaming.projectriff.io       my-namespace   *          allowed   allowed
-streams.streaming.projectriff.io          my-namespace   *          allowed   allowed
-kafkaproviders.streaming.projectriff.io   my-namespace   *          allowed   allowed
-adapters.knative.projectriff.io           my-namespace   *          allowed   allowed
-deployers.knative.projectriff.io          my-namespace   *          allowed   allowed
-`,
-		},
-		{
-			Name:     "no runtimes",
-			Args:     []string{},
-			Runtimes: &[]string{},
-			GivenObjects: []runtime.Object{
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "default"}},
-				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "containers.build.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
-			},
-			ExpectCreates: merge(
-				selfSubjectAccessReviewRequests("riff-system", "builders", "core", "configmaps", "", readVerbs...),
-				selfSubjectAccessReviewRequests("default", "", "core", "configmaps", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "", "core", "secrets", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "", "core", "pods", "", readVerbs...),
-				selfSubjectAccessReviewRequests("default", "", "core", "pods", "log", readVerbs...),
-				selfSubjectAccessReviewRequests("default", "", "build.projectriff.io", "applications", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "", "build.projectriff.io", "containers", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "", "build.projectriff.io", "functions", "", verbs...),
-			),
-			WithReactors: []rifftesting.ReactionFunc{
-				passAccessReview(),
-			},
-			ExpectOutput: `
-NAMESPACE     STATUS
-default       ok
-riff-system   ok
-
-RESOURCE                            NAMESPACE     NAME       READ      WRITE
-configmaps                          riff-system   builders   allowed   n/a
-configmaps                          default       *          allowed   allowed
-secrets                             default       *          allowed   allowed
-pods                                default       *          allowed   n/a
-pods/log                            default       *          allowed   n/a
-applications.build.projectriff.io   default       *          allowed   allowed
-containers.build.projectriff.io     default       *          allowed   allowed
-functions.build.projectriff.io      default       *          allowed   allowed
 `,
 		},
 		{
@@ -387,19 +363,13 @@ deployers.knative.projectriff.io    default       *          allowed   allowed
 		{
 			Name:     "read-only access",
 			Args:     []string{},
-			Runtimes: &cli.AllRuntimes,
+			Runtimes: &[]string{},
 			GivenObjects: []runtime.Object{
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "default"}},
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "containers.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.core.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "kafkaproviders.streaming.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "adapters.knative.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.knative.projectriff.io"}},
 			},
 			ExpectCreates: merge(
 				selfSubjectAccessReviewRequests("riff-system", "builders", "core", "configmaps", "", readVerbs...),
@@ -410,12 +380,6 @@ deployers.knative.projectriff.io    default       *          allowed   allowed
 				selfSubjectAccessReviewRequests("default", "", "build.projectriff.io", "applications", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "", "build.projectriff.io", "containers", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "", "build.projectriff.io", "functions", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "", "core.projectriff.io", "deployers", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "", "streaming.projectriff.io", "processors", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "", "streaming.projectriff.io", "streams", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "", "streaming.projectriff.io", "kafkaproviders", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "", "knative.projectriff.io", "adapters", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "", "knative.projectriff.io", "deployers", "", verbs...),
 			),
 			WithReactors: []rifftesting.ReactionFunc{
 				denyAccessReviewOn("*", "create"),
@@ -429,39 +393,27 @@ NAMESPACE     STATUS
 default       ok
 riff-system   ok
 
-RESOURCE                                  NAMESPACE     NAME       READ      WRITE
-configmaps                                riff-system   builders   allowed   n/a
-configmaps                                default       *          allowed   denied
-secrets                                   default       *          allowed   denied
-pods                                      default       *          allowed   n/a
-pods/log                                  default       *          allowed   n/a
-applications.build.projectriff.io         default       *          allowed   denied
-containers.build.projectriff.io           default       *          allowed   denied
-functions.build.projectriff.io            default       *          allowed   denied
-deployers.core.projectriff.io             default       *          allowed   denied
-processors.streaming.projectriff.io       default       *          allowed   denied
-streams.streaming.projectriff.io          default       *          allowed   denied
-kafkaproviders.streaming.projectriff.io   default       *          allowed   denied
-adapters.knative.projectriff.io           default       *          allowed   denied
-deployers.knative.projectriff.io          default       *          allowed   denied
+RESOURCE                            NAMESPACE     NAME       READ      WRITE
+configmaps                          riff-system   builders   allowed   n/a
+configmaps                          default       *          allowed   denied
+secrets                             default       *          allowed   denied
+pods                                default       *          allowed   n/a
+pods/log                            default       *          allowed   n/a
+applications.build.projectriff.io   default       *          allowed   denied
+containers.build.projectriff.io     default       *          allowed   denied
+functions.build.projectriff.io      default       *          allowed   denied
 `,
 		},
 		{
 			Name:     "no-watch access",
 			Args:     []string{},
-			Runtimes: &cli.AllRuntimes,
+			Runtimes: &[]string{},
 			GivenObjects: []runtime.Object{
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "default"}},
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "containers.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.core.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "kafkaproviders.streaming.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "adapters.knative.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.knative.projectriff.io"}},
 			},
 			ExpectCreates: merge(
 				selfSubjectAccessReviewRequests("riff-system", "builders", "core", "configmaps", "", readVerbs...),
@@ -472,12 +424,6 @@ deployers.knative.projectriff.io          default       *          allowed   den
 				selfSubjectAccessReviewRequests("default", "", "build.projectriff.io", "applications", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "", "build.projectriff.io", "containers", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "", "build.projectriff.io", "functions", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "", "core.projectriff.io", "deployers", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "", "streaming.projectriff.io", "processors", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "", "streaming.projectriff.io", "streams", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "", "streaming.projectriff.io", "kafkaproviders", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "", "knative.projectriff.io", "adapters", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "", "knative.projectriff.io", "deployers", "", verbs...),
 			),
 			WithReactors: []rifftesting.ReactionFunc{
 				denyAccessReviewOn("*", "watch"),
@@ -488,27 +434,21 @@ NAMESPACE     STATUS
 default       ok
 riff-system   ok
 
-RESOURCE                                  NAMESPACE     NAME       READ    WRITE
-configmaps                                riff-system   builders   mixed   n/a
-configmaps                                default       *          mixed   allowed
-secrets                                   default       *          mixed   allowed
-pods                                      default       *          mixed   n/a
-pods/log                                  default       *          mixed   n/a
-applications.build.projectriff.io         default       *          mixed   allowed
-containers.build.projectriff.io           default       *          mixed   allowed
-functions.build.projectriff.io            default       *          mixed   allowed
-deployers.core.projectriff.io             default       *          mixed   allowed
-processors.streaming.projectriff.io       default       *          mixed   allowed
-streams.streaming.projectriff.io          default       *          mixed   allowed
-kafkaproviders.streaming.projectriff.io   default       *          mixed   allowed
-adapters.knative.projectriff.io           default       *          mixed   allowed
-deployers.knative.projectriff.io          default       *          mixed   allowed
+RESOURCE                            NAMESPACE     NAME       READ    WRITE
+configmaps                          riff-system   builders   mixed   n/a
+configmaps                          default       *          mixed   allowed
+secrets                             default       *          mixed   allowed
+pods                                default       *          mixed   n/a
+pods/log                            default       *          mixed   n/a
+applications.build.projectriff.io   default       *          mixed   allowed
+containers.build.projectriff.io     default       *          mixed   allowed
+functions.build.projectriff.io      default       *          mixed   allowed
 `,
 		},
 		{
 			Name:     "error getting namespace",
 			Args:     []string{},
-			Runtimes: &cli.AllRuntimes,
+			Runtimes: &[]string{},
 			GivenObjects: []runtime.Object{
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "default"}},
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
@@ -530,7 +470,7 @@ deployers.knative.projectriff.io          default       *          mixed   allow
 		{
 			Name:     "error getting crd",
 			Args:     []string{},
-			Runtimes: &cli.AllRuntimes,
+			Runtimes: &[]string{},
 			GivenObjects: []runtime.Object{
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "default"}},
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
@@ -560,7 +500,7 @@ deployers.knative.projectriff.io          default       *          mixed   allow
 		{
 			Name:     "error creating selfsubjectaccessreview",
 			Args:     []string{},
-			Runtimes: &cli.AllRuntimes,
+			Runtimes: &[]string{},
 			GivenObjects: []runtime.Object{
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "default"}},
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
@@ -583,19 +523,13 @@ deployers.knative.projectriff.io          default       *          mixed   allow
 		{
 			Name:     "error evaluating selfsubjectaccessreview",
 			Args:     []string{},
-			Runtimes: &cli.AllRuntimes,
+			Runtimes: &[]string{},
 			GivenObjects: []runtime.Object{
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "default"}},
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "containers.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.core.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "kafkaproviders.streaming.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "adapters.knative.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.knative.projectriff.io"}},
 			},
 			ExpectCreates: selfSubjectAccessReviewRequests("riff-system", "builders", "core", "configmaps", "", "get"),
 			WithReactors: []rifftesting.ReactionFunc{
@@ -606,19 +540,13 @@ deployers.knative.projectriff.io          default       *          mixed   allow
 		{
 			Name:     "error evaluating selfsubjectaccessreview",
 			Args:     []string{},
-			Runtimes: &cli.AllRuntimes,
+			Runtimes: &[]string{},
 			GivenObjects: []runtime.Object{
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "default"}},
 				&corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "riff-system"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "applications.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "containers.build.projectriff.io"}},
 				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "functions.build.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.core.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "processors.streaming.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "streams.streaming.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "kafkaproviders.streaming.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "adapters.knative.projectriff.io"}},
-				&apiextensionsv1beta1.CustomResourceDefinition{ObjectMeta: metav1.ObjectMeta{Name: "deployers.knative.projectriff.io"}},
 			},
 			ExpectCreates: merge(
 				selfSubjectAccessReviewRequests("riff-system", "builders", "core", "configmaps", "", readVerbs...),
@@ -629,12 +557,6 @@ deployers.knative.projectriff.io          default       *          mixed   allow
 				selfSubjectAccessReviewRequests("default", "", "build.projectriff.io", "applications", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "", "build.projectriff.io", "containers", "", verbs...),
 				selfSubjectAccessReviewRequests("default", "", "build.projectriff.io", "functions", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "", "core.projectriff.io", "deployers", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "", "streaming.projectriff.io", "processors", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "", "streaming.projectriff.io", "streams", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "", "streaming.projectriff.io", "kafkaproviders", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "", "knative.projectriff.io", "adapters", "", verbs...),
-				selfSubjectAccessReviewRequests("default", "", "knative.projectriff.io", "deployers", "", verbs...),
 			),
 			WithReactors: []rifftesting.ReactionFunc{
 				unknownAccessReviewOn("*", "*"),
@@ -644,21 +566,15 @@ NAMESPACE     STATUS
 default       ok
 riff-system   ok
 
-RESOURCE                                  NAMESPACE     NAME       READ      WRITE
-configmaps                                riff-system   builders   unknown   n/a
-configmaps                                default       *          unknown   unknown
-secrets                                   default       *          unknown   unknown
-pods                                      default       *          unknown   n/a
-pods/log                                  default       *          unknown   n/a
-applications.build.projectriff.io         default       *          unknown   unknown
-containers.build.projectriff.io           default       *          unknown   unknown
-functions.build.projectriff.io            default       *          unknown   unknown
-deployers.core.projectriff.io             default       *          unknown   unknown
-processors.streaming.projectriff.io       default       *          unknown   unknown
-streams.streaming.projectriff.io          default       *          unknown   unknown
-kafkaproviders.streaming.projectriff.io   default       *          unknown   unknown
-adapters.knative.projectriff.io           default       *          unknown   unknown
-deployers.knative.projectriff.io          default       *          unknown   unknown
+RESOURCE                            NAMESPACE     NAME       READ      WRITE
+configmaps                          riff-system   builders   unknown   n/a
+configmaps                          default       *          unknown   unknown
+secrets                             default       *          unknown   unknown
+pods                                default       *          unknown   n/a
+pods/log                            default       *          unknown   n/a
+applications.build.projectriff.io   default       *          unknown   unknown
+containers.build.projectriff.io     default       *          unknown   unknown
+functions.build.projectriff.io      default       *          unknown   unknown
 `,
 		},
 	}
