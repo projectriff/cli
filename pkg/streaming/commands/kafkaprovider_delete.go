@@ -27,16 +27,16 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-type StreamDeleteOptions struct {
+type KafkaProviderDeleteOptions struct {
 	options.DeleteOptions
 }
 
 var (
-	_ cli.Validatable = (*StreamDeleteOptions)(nil)
-	_ cli.Executable  = (*StreamDeleteOptions)(nil)
+	_ cli.Validatable = (*KafkaProviderDeleteOptions)(nil)
+	_ cli.Executable  = (*KafkaProviderDeleteOptions)(nil)
 )
 
-func (opts *StreamDeleteOptions) Validate(ctx context.Context) cli.FieldErrors {
+func (opts *KafkaProviderDeleteOptions) Validate(ctx context.Context) cli.FieldErrors {
 	errs := cli.FieldErrors{}
 
 	errs = errs.Also(opts.DeleteOptions.Validate(ctx))
@@ -44,14 +44,14 @@ func (opts *StreamDeleteOptions) Validate(ctx context.Context) cli.FieldErrors {
 	return errs
 }
 
-func (opts *StreamDeleteOptions) Exec(ctx context.Context, c *cli.Config) error {
-	client := c.StreamingRuntime().Streams(opts.Namespace)
+func (opts *KafkaProviderDeleteOptions) Exec(ctx context.Context, c *cli.Config) error {
+	client := c.StreamingRuntime().KafkaProviders(opts.Namespace)
 
 	if opts.All {
 		if err := client.DeleteCollection(nil, metav1.ListOptions{}); err != nil {
 			return err
 		}
-		c.Successf("Deleted streams in namespace %q\n", opts.Namespace)
+		c.Successf("Deleted kafka providers in namespace %q\n", opts.Namespace)
 		return nil
 	}
 
@@ -59,28 +59,29 @@ func (opts *StreamDeleteOptions) Exec(ctx context.Context, c *cli.Config) error 
 		if err := client.Delete(name, nil); err != nil {
 			return err
 		}
-		c.Successf("Deleted stream %q\n", name)
+		c.Successf("Deleted kafka provider %q\n", name)
 	}
 
 	return nil
 }
 
-func NewStreamDeleteCommand(ctx context.Context, c *cli.Config) *cobra.Command {
-	opts := &StreamDeleteOptions{}
+func NewKafkaProviderDeleteCommand(ctx context.Context, c *cli.Config) *cobra.Command {
+	opts := &KafkaProviderDeleteOptions{}
 
 	cmd := &cobra.Command{
 		Use:   "delete",
-		Short: "delete stream(s)",
+		Short: "delete kafka provider(s)",
 		Long: strings.TrimSpace(`
-Delete one or more streams by name or all streams within a namespace.
+Delete one or more kafka providers by name or all kafka providers within a
+namespace.
 
-Deleting a stream will prevent processors from reading and writing messages on
-the stream. Existing messages in the stream may be preserved by the underlying
-messaging middleware, depending on the implementation.
+Deleting a kafka provider will disrupt all processors consuming streams managed
+by the provider. Existing messages in the stream may be preserved by the
+underlying kafka broker, depending on the implementation.
 `),
 		Example: strings.Join([]string{
-			fmt.Sprintf("%s streaming stream delete my-stream", c.Name),
-			fmt.Sprintf("%s streaming stream delete %s ", c.Name, cli.AllFlagName),
+			fmt.Sprintf("%s streaming kafka-provider delete my-kafka-provider", c.Name),
+			fmt.Sprintf("%s streaming kafka-provider delete %s ", c.Name, cli.AllFlagName),
 		}, "\n"),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),
@@ -91,7 +92,7 @@ messaging middleware, depending on the implementation.
 	)
 
 	cli.NamespaceFlag(cmd, c, &opts.Namespace)
-	cmd.Flags().BoolVar(&opts.All, cli.StripDash(cli.AllFlagName), false, "delete all streams within the namespace")
+	cmd.Flags().BoolVar(&opts.All, cli.StripDash(cli.AllFlagName), false, "delete all kafka providers within the namespace")
 
 	return cmd
 }

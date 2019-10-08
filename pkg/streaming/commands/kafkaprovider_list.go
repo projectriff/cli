@@ -32,16 +32,16 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-type ProcessorListOptions struct {
+type KafkaProviderListOptions struct {
 	options.ListOptions
 }
 
 var (
-	_ cli.Validatable = (*ProcessorListOptions)(nil)
-	_ cli.Executable  = (*ProcessorListOptions)(nil)
+	_ cli.Validatable = (*KafkaProviderListOptions)(nil)
+	_ cli.Executable  = (*KafkaProviderListOptions)(nil)
 )
 
-func (opts *ProcessorListOptions) Validate(ctx context.Context) cli.FieldErrors {
+func (opts *KafkaProviderListOptions) Validate(ctx context.Context) cli.FieldErrors {
 	errs := cli.FieldErrors{}
 
 	errs = errs.Also(opts.ListOptions.Validate(ctx))
@@ -49,14 +49,14 @@ func (opts *ProcessorListOptions) Validate(ctx context.Context) cli.FieldErrors 
 	return errs
 }
 
-func (opts *ProcessorListOptions) Exec(ctx context.Context, c *cli.Config) error {
-	processors, err := c.StreamingRuntime().Processors(opts.Namespace).List(metav1.ListOptions{})
+func (opts *KafkaProviderListOptions) Exec(ctx context.Context, c *cli.Config) error {
+	providers, err := c.StreamingRuntime().KafkaProviders(opts.Namespace).List(metav1.ListOptions{})
 	if err != nil {
 		return err
 	}
 
-	if len(processors.Items) == 0 {
-		c.Infof("No processors found.\n")
+	if len(providers.Items) == 0 {
+		c.Infof("No kafka providers found.\n")
 		return nil
 	}
 
@@ -68,28 +68,28 @@ func (opts *ProcessorListOptions) Exec(ctx context.Context, c *cli.Config) error
 		h.TableHandler(columns, opts.print)
 	})
 
-	processors = processors.DeepCopy()
-	cli.SortByNamespaceAndName(processors.Items)
+	providers = providers.DeepCopy()
+	cli.SortByNamespaceAndName(providers.Items)
 
-	return tablePrinter.PrintObj(processors, c.Stdout)
+	return tablePrinter.PrintObj(providers, c.Stdout)
 }
 
-func NewProcessorListCommand(ctx context.Context, c *cli.Config) *cobra.Command {
-	opts := &ProcessorListOptions{}
+func NewKafkaProviderListCommand(ctx context.Context, c *cli.Config) *cobra.Command {
+	opts := &KafkaProviderListOptions{}
 
 	cmd := &cobra.Command{
 		Use:   "list",
-		Short: "table listing of processors",
+		Short: "table listing of kafka providers",
 		Long: strings.TrimSpace(`
-List processors in a namespace or across all namespaces.
+List kafka providers in a namespace or across all namespaces.
 
-For detail regarding the status of a single processor, run:
+For detail regarding the status of a single kafka provider, run:
 
-    ` + c.Name + ` processor status <processor-name>
+    ` + c.Name + ` streaming kafka-provider status <kafka-provider-name>
 `),
 		Example: strings.Join([]string{
-			fmt.Sprintf("%s streaming processor list", c.Name),
-			fmt.Sprintf("%s streaming processor list %s", c.Name, cli.AllNamespacesFlagName),
+			fmt.Sprintf("%s streaming kafka-provider list", c.Name),
+			fmt.Sprintf("%s streaming kafka-provider list %s", c.Name, cli.AllNamespacesFlagName),
 		}, "\n"),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),
@@ -100,10 +100,10 @@ For detail regarding the status of a single processor, run:
 	return cmd
 }
 
-func (opts *ProcessorListOptions) printList(processors *streamv1alpha1.ProcessorList, printOpts printers.PrintOptions) ([]metav1beta1.TableRow, error) {
-	rows := make([]metav1beta1.TableRow, 0, len(processors.Items))
-	for i := range processors.Items {
-		r, err := opts.print(&processors.Items[i], printOpts)
+func (opts *KafkaProviderListOptions) printList(providers *streamv1alpha1.KafkaProviderList, printOpts printers.PrintOptions) ([]metav1beta1.TableRow, error) {
+	rows := make([]metav1beta1.TableRow, 0, len(providers.Items))
+	for i := range providers.Items {
+		r, err := opts.print(&providers.Items[i], printOpts)
 		if err != nil {
 			return nil, err
 		}
@@ -112,28 +112,26 @@ func (opts *ProcessorListOptions) printList(processors *streamv1alpha1.Processor
 	return rows, nil
 }
 
-func (opts *ProcessorListOptions) print(processor *streamv1alpha1.Processor, _ printers.PrintOptions) ([]metav1beta1.TableRow, error) {
+func (opts *KafkaProviderListOptions) print(provider *streamv1alpha1.KafkaProvider, _ printers.PrintOptions) ([]metav1beta1.TableRow, error) {
 	now := time.Now()
 	row := metav1beta1.TableRow{
-		Object: runtime.RawExtension{Object: processor},
+		Object: runtime.RawExtension{Object: provider},
 	}
 	row.Cells = append(row.Cells,
-		processor.Name,
-		cli.FormatEmptyString(processor.Spec.FunctionRef),
-		cli.FormatEmptyString(strings.Join(processor.Spec.Inputs, ",")),
-		cli.FormatEmptyString(strings.Join(processor.Spec.Outputs, ",")),
-		cli.FormatConditionStatus(processor.Status.GetCondition(streamv1alpha1.ProcessorConditionReady)),
-		cli.FormatTimestampSince(processor.CreationTimestamp, now),
+		provider.Name,
+		cli.FormatEmptyString(provider.Spec.BootstrapServers),
+		cli.FormatEmptyString(provider.Status.ProvisionerServiceName),
+		cli.FormatConditionStatus(provider.Status.GetCondition(streamv1alpha1.KafkaProviderConditionReady)),
+		cli.FormatTimestampSince(provider.CreationTimestamp, now),
 	)
 	return []metav1beta1.TableRow{row}, nil
 }
 
-func (opts *ProcessorListOptions) printColumns() []metav1beta1.TableColumnDefinition {
+func (opts *KafkaProviderListOptions) printColumns() []metav1beta1.TableColumnDefinition {
 	return []metav1beta1.TableColumnDefinition{
 		{Name: "Name", Type: "string"},
-		{Name: "Function", Type: "string"},
-		{Name: "Inputs", Type: "string"},
-		{Name: "Outputs", Type: "string"},
+		{Name: "Bootstrap Servers", Type: "string"},
+		{Name: "Provisioner", Type: "string"},
 		{Name: "Status", Type: "string"},
 		{Name: "Age", Type: "string"},
 	}

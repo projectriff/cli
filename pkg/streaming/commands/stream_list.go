@@ -85,11 +85,11 @@ List streams in a namespace or across all namespaces.
 
 For detail regarding the status of a single stream, run:
 
-    ` + c.Name + ` stream status <stream-name>
+    ` + c.Name + ` streaming stream status <stream-name>
 `),
 		Example: strings.Join([]string{
-			fmt.Sprintf("%s stream list", c.Name),
-			fmt.Sprintf("%s stream list %s", c.Name, cli.AllNamespacesFlagName),
+			fmt.Sprintf("%s streaming stream list", c.Name),
+			fmt.Sprintf("%s streaming stream list %s", c.Name, cli.AllNamespacesFlagName),
 		}, "\n"),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),
