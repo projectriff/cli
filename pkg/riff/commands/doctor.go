@@ -29,6 +29,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+const riffSystemNamespace = "riff-system"
+
 type DoctorOptions struct {
 	Namespace string
 }
@@ -50,7 +52,8 @@ func (opts *DoctorOptions) Validate(ctx context.Context) cli.FieldErrors {
 
 func (opts *DoctorOptions) Exec(ctx context.Context, c *cli.Config) error {
 	riffNamespaces := []string{
-		"riff-system",
+		opts.Namespace,
+		riffSystemNamespace,
 	}
 	err := opts.checkNamespaces(c, riffNamespaces)
 	if err != nil {
@@ -60,6 +63,7 @@ func (opts *DoctorOptions) Exec(ctx context.Context, c *cli.Config) error {
 	verbs := []string{"get", "list", "create", "update", "delete", "patch", "watch"}
 	readVerbs := []string{"get", "list", "watch"}
 	accessChecks := doctorAccessChecks{
+		{Attributes: &authv1.ResourceAttributes{Namespace: riffSystemNamespace, Group: "core", Resource: "configmaps", Name: "builders"}, Verbs: readVerbs},
 		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "core", Resource: "configmaps"}, Verbs: verbs},
 		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "core", Resource: "secrets"}, Verbs: verbs},
 		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "core", Resource: "pods"}, Verbs: readVerbs},
@@ -67,13 +71,26 @@ func (opts *DoctorOptions) Exec(ctx context.Context, c *cli.Config) error {
 		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "build.projectriff.io", Resource: "applications"}, Verbs: verbs},
 		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "build.projectriff.io", Resource: "containers"}, Verbs: verbs},
 		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "build.projectriff.io", Resource: "functions"}, Verbs: verbs},
-		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "core.projectriff.io", Resource: "deployers"}, Verbs: verbs},
-		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "streaming.projectriff.io", Resource: "processors"}, Verbs: verbs},
-		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "streaming.projectriff.io", Resource: "streams"}, Verbs: verbs},
-		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "streaming.projectriff.io", Resource: "kafkaproviders"}, Verbs: verbs},
-		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "knative.projectriff.io", Resource: "adapters"}, Verbs: verbs},
-		{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "knative.projectriff.io", Resource: "deployers"}, Verbs: verbs},
 	}
+	if c.Runtimes[cli.CoreRuntime] {
+		accessChecks = append(accessChecks,
+			&doctorAccessCheck{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "core.projectriff.io", Resource: "deployers"}, Verbs: verbs},
+		)
+	}
+	if c.Runtimes[cli.StreamingRuntime] {
+		accessChecks = append(accessChecks,
+			&doctorAccessCheck{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "streaming.projectriff.io", Resource: "processors"}, Verbs: verbs},
+			&doctorAccessCheck{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "streaming.projectriff.io", Resource: "streams"}, Verbs: verbs},
+			&doctorAccessCheck{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "streaming.projectriff.io", Resource: "kafkaproviders"}, Verbs: verbs},
+		)
+	}
+	if c.Runtimes[cli.KnativeRuntime] {
+		accessChecks = append(accessChecks,
+			&doctorAccessCheck{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "knative.projectriff.io", Resource: "adapters"}, Verbs: verbs},
+			&doctorAccessCheck{Attributes: &authv1.ResourceAttributes{Namespace: opts.Namespace, Group: "knative.projectriff.io", Resource: "deployers"}, Verbs: verbs},
+		)
+	}
+
 	err = opts.checkAccess(c, accessChecks)
 	if err != nil {
 		return err
@@ -108,7 +125,6 @@ The doctor is not a tool for monitoring the health of the cluster.
 }
 
 func (*DoctorOptions) checkNamespaces(c *cli.Config, requiredNamespaces []string) error {
-
 	printer := printers.GetNewTabWriter(c.Stdout)
 	defer printer.Flush()
 	fmt.Fprintf(printer, "NAMESPACE\tSTATUS\n")
@@ -134,7 +150,7 @@ func (*DoctorOptions) checkAccess(c *cli.Config, accessChecks doctorAccessChecks
 	c.Printf("\n")
 	printer := printers.GetNewTabWriter(c.Stdout)
 	defer printer.Flush()
-	fmt.Fprintf(printer, "RESOURCE\tREAD\tWRITE\n")
+	fmt.Fprintf(printer, "RESOURCE\tNAMESPACE\tNAME\tREAD\tWRITE\n")
 	for _, check := range accessChecks {
 		resource := check.Attributes.Resource
 		if check.Attributes.Group != "core" {
@@ -143,7 +159,11 @@ func (*DoctorOptions) checkAccess(c *cli.Config, accessChecks doctorAccessChecks
 		if check.Attributes.Subresource != "" {
 			resource = fmt.Sprintf("%s/%s", resource, check.Attributes.Subresource)
 		}
-		fmt.Fprintf(printer, "%s\t%s\t%s\n", resource, check.ReadStatus.String(), check.WriteStatus.String())
+		name := check.Attributes.Name
+		if name == "" {
+			name = "*"
+		}
+		fmt.Fprintf(printer, "%s\t%s\t%s\t%s\t%s\n", resource, check.Attributes.Namespace, name, check.ReadStatus.String(), check.WriteStatus.String())
 	}
 	return nil
 }

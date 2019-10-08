@@ -80,6 +80,10 @@ type CommandTableRecord struct {
 	// always be replaced with a FakeClient configured with the given objects and reactors to
 	// intercept all calls to the fake clientsets for comparison with the expected operations.
 	Config *cli.Config
+	// Runtimes are an optional array of runtime names to enabled on the config. If not set, the
+	// default runtime set is used.
+	Runtimes *[]string
+
 	// GivenObjects represents resources that would already exist within Kubernetes. These
 	// resources are passed directly to the fake clientsets.
 	GivenObjects []runtime.Object
@@ -190,6 +194,12 @@ func (ctr CommandTableRecord) Run(t *testing.T, cmdFactory func(context.Context,
 		c := ctr.Config
 		if c == nil {
 			c = cli.NewDefaultConfig()
+		}
+		if ctr.Runtimes != nil {
+			c.Runtimes = map[string]bool{}
+			for _, runtime := range *ctr.Runtimes {
+				c.Runtimes[runtime] = true
+			}
 		}
 		client := NewClient(ctr.GivenObjects...)
 		c.Client = client

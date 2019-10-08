@@ -21,3 +21,5 @@ const (
 	StreamingRuntime = "streaming"
 	KnativeRuntime   = "knative"
 )
+
+var AllRuntimes = []string{CoreRuntime, StreamingRuntime, KnativeRuntime}
