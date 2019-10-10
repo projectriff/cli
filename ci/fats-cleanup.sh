@@ -18,6 +18,6 @@ if [ -d "$fats_dir" ]; then
   kubectl delete customresourcedefinitions.apiextensions.k8s.io -l app.kubernetes.io/managed-by=Tiller,app.kubernetes.io/instance=istio
   kubectl delete namespace istio-system
 
-  source $fats_dir/macros/helm-cleanup.sh
+  source $fats_dir/macros/helm-reset.sh
   source $fats_dir/cleanup.sh
 fi
