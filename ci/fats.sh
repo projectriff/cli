@@ -12,7 +12,7 @@ readonly slug=${version}-${git_timestamp}-${git_sha:0:16}
 # fetch FATS scripts
 fats_dir=`dirname "${BASH_SOURCE[0]}"`/fats
 fats_repo="projectriff/fats"
-fats_refspec=e3ef4a298b1abaf0a2a00198db9ed4eba17949df # master as of 2019-10-07
+fats_refspec=d26fa5dfd47f5cb74ca44a4fa41db11ec0942f14 # master as of 2019-10-10
 source `dirname "${BASH_SOURCE[0]}"`/fats-fetch.sh $fats_dir $fats_refspec $fats_repo
 source $fats_dir/.util.sh
 
@@ -30,27 +30,12 @@ fi
 
 # start FATS
 source $fats_dir/start.sh
-
-if [ $(kubectl get nodes -oname | wc -l) = "1" ]; then
-  echo "Elimiate pod resource requests"
-  kubectl create namespace cert-manager
-  kubectl label namespace cert-manager certmanager.k8s.io/disable-validation=true
-  fats_retry kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v0.10.1/cert-manager.yaml
-  wait_pod_selector_ready app.kubernetes.io/name=cert-manager cert-manager
-  wait_pod_selector_ready app.kubernetes.io/name=cainjector cert-manager
-  wait_pod_selector_ready app.kubernetes.io/name=webhook cert-manager
-  fats_retry kubectl apply -f https://storage.googleapis.com/projectriff/no-resource-requests-webhook/no-resource-requests-webhook.yaml
-  wait_pod_selector_ready app=webhook no-resource-requests
-fi
+source $fats_dir/macros/no-resource-requests.sh
 
 # install riff system
 echo "Installing riff system"
 $fats_dir/install.sh helm
-
-kubectl create serviceaccount tiller -n kube-system
-kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount kube-system:tiller
-helm init --wait --service-account tiller
-
+source $fats_dir/macros/helm-init.sh
 helm repo add projectriff https://projectriff.storage.googleapis.com/charts/releases
 helm repo update
 
