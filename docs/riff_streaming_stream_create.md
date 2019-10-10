@@ -17,7 +17,7 @@ riff streaming stream create <name> [flags]
 ### Examples
 
 ```
-riff streaming stream create --provider my-provider
+riff streaming stream create my-stream --provider my-provider
 ```
 
 ### Options

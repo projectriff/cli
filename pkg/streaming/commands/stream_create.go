@@ -99,7 +99,7 @@ func NewStreamCreateCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 		Long: strings.TrimSpace(`
 <todo>
 `),
-		Example: fmt.Sprintf("%s streaming stream create %s my-provider", c.Name, cli.ProviderFlagName),
+		Example: fmt.Sprintf("%s streaming stream create my-stream %s my-provider", c.Name, cli.ProviderFlagName),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),
 	}
