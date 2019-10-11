@@ -48,6 +48,8 @@ const (
 	InputFlagName                 = "--input"
 	InvokerFlagName               = "--invoker"
 	KubeConfigFlagName            = "--kube-config"
+	LimitCPUFlagName              = "--limit-cpu"
+	LimitMemoryFlagName           = "--limit-memory"
 	LocalPathFlagName             = "--local-path"
 	NamespaceFlagName             = "--namespace"
 	NoColorFlagName               = "--no-color"
