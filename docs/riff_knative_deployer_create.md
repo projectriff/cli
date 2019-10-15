@@ -41,6 +41,8 @@ riff knative deployer create my-image-deployer --image registry.example.com/my-i
       --function-ref name       name of function to deploy
   -h, --help                    help for create
       --image image             container image to deploy
+      --limit-cpu cores         the maximum amount of cpu allowed, in CPU cores (500m = .5 cores)
+      --limit-memory bytes      the maximum amount of memory allowed, in bytes (500Mi = 500MiB = 500 * 1024 * 1024)
   -n, --namespace name          kubernetes namespace (defaulted from kube config)
       --tail                    watch deployer logs
       --wait-timeout duration   duration to wait for the deployer to become ready when watching logs (default "10m")

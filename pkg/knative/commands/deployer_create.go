@@ -31,6 +31,7 @@ import (
 	knativev1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
 	"github.com/spf13/cobra"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -44,6 +45,9 @@ type DeployerCreateOptions struct {
 
 	Env     []string
 	EnvFrom []string
+
+	LimitCPU    string
+	LimitMemory string
 
 	Tail        bool
 	WaitTimeout string
@@ -98,6 +102,13 @@ func (opts *DeployerCreateOptions) Validate(ctx context.Context) cli.FieldErrors
 
 	errs = errs.Also(validation.EnvVars(opts.Env, cli.EnvFlagName))
 	errs = errs.Also(validation.EnvVarFroms(opts.EnvFrom, cli.EnvFromFlagName))
+
+	if opts.LimitCPU != "" {
+		errs = errs.Also(validation.Quantity(opts.LimitCPU, cli.LimitCPUFlagName))
+	}
+	if opts.LimitMemory != "" {
+		errs = errs.Also(validation.Quantity(opts.LimitMemory, cli.LimitMemoryFlagName))
+	}
 
 	if opts.Tail {
 		if opts.WaitTimeout == "" {
@@ -157,6 +168,18 @@ func (opts *DeployerCreateOptions) Exec(ctx context.Context, c *cli.Config) erro
 			deployer.Spec.Template.Containers[0].Env = []corev1.EnvVar{}
 		}
 		deployer.Spec.Template.Containers[0].Env = append(deployer.Spec.Template.Containers[0].Env, parsers.EnvVarFrom(env))
+	}
+
+	if (opts.LimitCPU != "" || opts.LimitMemory != "") && deployer.Spec.Template.Containers[0].Resources.Limits == nil {
+		deployer.Spec.Template.Containers[0].Resources.Limits = corev1.ResourceList{}
+	}
+	if opts.LimitCPU != "" {
+		// parse errors are handled by the opt validation
+		deployer.Spec.Template.Containers[0].Resources.Limits[corev1.ResourceCPU] = resource.MustParse(opts.LimitCPU)
+	}
+	if opts.LimitMemory != "" {
+		// parse errors are handled by the opt validation
+		deployer.Spec.Template.Containers[0].Resources.Limits[corev1.ResourceMemory] = resource.MustParse(opts.LimitMemory)
 	}
 
 	if opts.DryRun {
@@ -235,6 +258,8 @@ and ` + cli.EnvFromFlagName + ` to map values from a ConfigMap or Secret.
 	cmd.Flags().StringVar(&opts.FunctionRef, cli.StripDash(cli.FunctionRefFlagName), "", "`name` of function to deploy")
 	cmd.Flags().StringArrayVar(&opts.Env, cli.StripDash(cli.EnvFlagName), []string{}, fmt.Sprintf("environment `variable` defined as a key value pair separated by an equals sign, example %q (may be set multiple times)", fmt.Sprintf("%s MY_VAR=my-value", cli.EnvFlagName)))
 	cmd.Flags().StringArrayVar(&opts.EnvFrom, cli.StripDash(cli.EnvFromFlagName), []string{}, fmt.Sprintf("environment `variable` from a config map or secret, example %q, %q (may be set multiple times)", fmt.Sprintf("%s MY_SECRET_VALUE=secretKeyRef:my-secret-name:key-in-secret", cli.EnvFromFlagName), fmt.Sprintf("%s MY_CONFIG_MAP_VALUE=configMapKeyRef:my-config-map-name:key-in-config-map", cli.EnvFromFlagName)))
+	cmd.Flags().StringVar(&opts.LimitCPU, cli.StripDash(cli.LimitCPUFlagName), "", "the maximum amount of cpu allowed, in CPU `cores` (500m = .5 cores)")
+	cmd.Flags().StringVar(&opts.LimitMemory, cli.StripDash(cli.LimitMemoryFlagName), "", "the maximum amount of memory allowed, in `bytes` (500Mi = 500MiB = 500 * 1024 * 1024)")
 	cmd.Flags().BoolVar(&opts.Tail, cli.StripDash(cli.TailFlagName), false, "watch deployer logs")
 	cmd.Flags().StringVar(&opts.WaitTimeout, cli.StripDash(cli.WaitTimeoutFlagName), "10m", "`duration` to wait for the deployer to become ready when watching logs")
 	cmd.Flags().BoolVar(&opts.DryRun, cli.StripDash(cli.DryRunFlagName), false, "print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr")

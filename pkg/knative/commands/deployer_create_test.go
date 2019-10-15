@@ -29,6 +29,7 @@ import (
 	knativev1alpha1 "github.com/projectriff/system/pkg/apis/knative/v1alpha1"
 	"github.com/stretchr/testify/mock"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	cachetesting "k8s.io/client-go/tools/cache/testing"
@@ -132,6 +133,29 @@ func TestDeployerCreateOptions(t *testing.T) {
 				EnvFrom:         []string{"VAR1=someOtherKeyRef:name:key"},
 			},
 			ExpectFieldErrors: cli.ErrInvalidArrayValue("VAR1=someOtherKeyRef:name:key", cli.EnvFromFlagName, 0),
+		},
+		{
+			Name: "with limits",
+			Options: &commands.DeployerCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Image:           "example.com/repo:tag",
+				LimitCPU:        "500m",
+				LimitMemory:     "512Mi",
+			},
+			ShouldValidate: true,
+		},
+		{
+			Name: "with invalid limits",
+			Options: &commands.DeployerCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Image:           "example.com/repo:tag",
+				LimitCPU:        "50%",
+				LimitMemory:     "NaN",
+			},
+			ExpectFieldErrors: cli.FieldErrors{}.Also(
+				cli.ErrInvalidValue("50%", cli.LimitCPUFlagName),
+				cli.ErrInvalidValue("NaN", cli.LimitMemoryFlagName),
+			),
 		},
 		{
 			Name: "with tail",
@@ -351,6 +375,36 @@ Created deployer "my-deployer"
 													Key: "my-key",
 												},
 											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			ExpectOutput: `
+Created deployer "my-deployer"
+`,
+		},
+		{
+			Name: "create with limits",
+			Args: []string{deployerName, cli.ImageFlagName, image, cli.LimitCPUFlagName, "100m", cli.LimitMemoryFlagName, "128Mi"},
+			ExpectCreates: []runtime.Object{
+				&knativev1alpha1.Deployer{
+					ObjectMeta: metav1.ObjectMeta{
+						Namespace: defaultNamespace,
+						Name:      deployerName,
+					},
+					Spec: knativev1alpha1.DeployerSpec{
+						Template: &corev1.PodSpec{
+							Containers: []corev1.Container{
+								{
+									Image: image,
+									Resources: corev1.ResourceRequirements{
+										Limits: corev1.ResourceList{
+											corev1.ResourceCPU:    resource.MustParse("100m"),
+											corev1.ResourceMemory: resource.MustParse("128Mi"),
 										},
 									},
 								},
