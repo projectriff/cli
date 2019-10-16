@@ -153,6 +153,55 @@ func TestApplicationCreateOptions(t *testing.T) {
 			ExpectFieldErrors: cli.ErrMissingField(cli.GitRevisionFlagName),
 		},
 		{
+			Name: "with env",
+			Options: &commands.ApplicationCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Image:           "example.com/repo:tag",
+				GitRepo:         "https://example.com/repo.git",
+				GitRevision:     "master",
+				Env:             []string{"VAR1=foo", "VAR2=bar"},
+			},
+			ShouldValidate: true,
+		},
+		{
+			Name: "with invalid env",
+			Options: &commands.ApplicationCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Image:           "example.com/repo:tag",
+				GitRepo:         "https://example.com/repo.git",
+				GitRevision:     "master",
+				Env:             []string{"=foo"},
+			},
+			ExpectFieldErrors: cli.ErrInvalidArrayValue("=foo", cli.EnvFlagName, 0),
+		},
+		{
+			Name: "with limits",
+			Options: &commands.ApplicationCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Image:           "example.com/repo:tag",
+				GitRepo:         "https://example.com/repo.git",
+				GitRevision:     "master",
+				LimitCPU:        "500m",
+				LimitMemory:     "512Mi",
+			},
+			ShouldValidate: true,
+		},
+		{
+			Name: "with invalid limits",
+			Options: &commands.ApplicationCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Image:           "example.com/repo:tag",
+				GitRepo:         "https://example.com/repo.git",
+				GitRevision:     "master",
+				LimitCPU:        "50%",
+				LimitMemory:     "NaN",
+			},
+			ExpectFieldErrors: cli.FieldErrors{}.Also(
+				cli.ErrInvalidValue("50%", cli.LimitCPUFlagName),
+				cli.ErrInvalidValue("NaN", cli.LimitMemoryFlagName),
+			),
+		},
+		{
 			Name: "git source, tail",
 			Options: &commands.ApplicationCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
@@ -261,7 +310,7 @@ func TestApplicationCreateCommand(t *testing.T) {
 					Spec: buildv1alpha1.ApplicationSpec{
 						Image: imageTag,
 						Source: &buildv1alpha1.Source{
-							Git: &buildv1alpha1.GitSource{
+							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
 								Revision: gitMaster,
 							},
@@ -285,11 +334,17 @@ metadata:
   name: my-application
   namespace: default
 spec:
+  build:
+    env: null
+    resources: {}
+  failedBuildHistoryLimit: null
   image: registry.example.com/repo:tag
+  imageTaggingStrategy: ""
   source:
     git:
       revision: master
       url: https://example.com/repo.git
+  successBuildHistoryLimit: null
 status: {}
 
 Created application "my-application"
@@ -307,7 +362,7 @@ Created application "my-application"
 					Spec: buildv1alpha1.ApplicationSpec{
 						Image: imageTag,
 						Source: &buildv1alpha1.Source{
-							Git: &buildv1alpha1.GitSource{
+							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
 								Revision: gitSha,
 							},
@@ -331,7 +386,7 @@ Created application "my-application"
 					Spec: buildv1alpha1.ApplicationSpec{
 						Image: imageTag,
 						Source: &buildv1alpha1.Source{
-							Git: &buildv1alpha1.GitSource{
+							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
 								Revision: gitMaster,
 							},
@@ -357,7 +412,69 @@ Created application "my-application"
 						Image:     imageTag,
 						CacheSize: &cacheSizeQuantity,
 						Source: &buildv1alpha1.Source{
-							Git: &buildv1alpha1.GitSource{
+							Git: &buildv1alpha1.Git{
+								URL:      gitRepo,
+								Revision: gitMaster,
+							},
+						},
+					},
+				},
+			},
+			ExpectOutput: `
+Created application "my-application"
+`,
+		},
+		{
+			Name: "git repo with env",
+			Args: []string{applicationName, cli.ImageFlagName, imageTag, cli.GitRepoFlagName, gitRepo, cli.EnvFlagName, "MY_VAR1=value1", cli.EnvFlagName, "MY_VAR2=value2"},
+			ExpectCreates: []runtime.Object{
+				&buildv1alpha1.Application{
+					ObjectMeta: metav1.ObjectMeta{
+						Namespace: defaultNamespace,
+						Name:      applicationName,
+					},
+					Spec: buildv1alpha1.ApplicationSpec{
+						Build: buildv1alpha1.ImageBuild{
+							Env: []corev1.EnvVar{
+								{Name: "MY_VAR1", Value: "value1"},
+								{Name: "MY_VAR2", Value: "value2"},
+							},
+						},
+						Image: imageTag,
+						Source: &buildv1alpha1.Source{
+							Git: &buildv1alpha1.Git{
+								URL:      gitRepo,
+								Revision: gitMaster,
+							},
+						},
+					},
+				},
+			},
+			ExpectOutput: `
+Created application "my-application"
+`,
+		},
+		{
+			Name: "git repo with limits",
+			Args: []string{applicationName, cli.ImageFlagName, imageTag, cli.GitRepoFlagName, gitRepo, cli.LimitCPUFlagName, "100m", cli.LimitMemoryFlagName, "128Mi"},
+			ExpectCreates: []runtime.Object{
+				&buildv1alpha1.Application{
+					ObjectMeta: metav1.ObjectMeta{
+						Namespace: defaultNamespace,
+						Name:      applicationName,
+					},
+					Spec: buildv1alpha1.ApplicationSpec{
+						Build: buildv1alpha1.ImageBuild{
+							Resources: corev1.ResourceRequirements{
+								Limits: corev1.ResourceList{
+									corev1.ResourceCPU:    resource.MustParse("100m"),
+									corev1.ResourceMemory: resource.MustParse("128Mi"),
+								},
+							},
+						},
+						Image: imageTag,
+						Source: &buildv1alpha1.Source{
+							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
 								Revision: gitMaster,
 							},
@@ -379,6 +496,7 @@ Created application "my-application"
 					Image:   imageTag,
 					AppPath: localPath,
 					Builder: "cloudfoundry/cnb:bionic",
+					Env:     map[string]string{},
 					Publish: true,
 				}).Return(nil).Run(func(args mock.Arguments) {
 					fmt.Fprintf(c.Stdout, "...build output...\n")
@@ -418,6 +536,64 @@ Created application "my-application"
 `,
 		},
 		{
+			Name: "local path with env",
+			Args: []string{applicationName, cli.ImageFlagName, imageTag, cli.LocalPathFlagName, localPath, cli.EnvFlagName, "MY_VAR1=value1", cli.EnvFlagName, "MY_VAR2=value2"},
+			Prepare: func(t *testing.T, ctx context.Context, c *cli.Config) (context.Context, error) {
+				packClient := &packtesting.Client{}
+				c.Pack = packClient
+				packClient.On("Build", mock.Anything, pack.BuildOptions{
+					Image:   imageTag,
+					AppPath: localPath,
+					Builder: "cloudfoundry/cnb:bionic",
+					Env: map[string]string{
+						"MY_VAR1": "value1",
+						"MY_VAR2": "value2",
+					},
+					Publish: true,
+				}).Return(nil).Run(func(args mock.Arguments) {
+					fmt.Fprintf(c.Stdout, "...build output...\n")
+				})
+				return ctx, nil
+			},
+			CleanUp: func(t *testing.T, ctx context.Context, c *cli.Config) error {
+				packClient := c.Pack.(*packtesting.Client)
+				packClient.AssertExpectations(t)
+				return nil
+			},
+			GivenObjects: []runtime.Object{
+				&corev1.ConfigMap{
+					ObjectMeta: metav1.ObjectMeta{
+						Namespace: "riff-system",
+						Name:      "builders",
+					},
+					Data: map[string]string{
+						"riff-application": "cloudfoundry/cnb:bionic",
+					},
+				},
+			},
+			ExpectCreates: []runtime.Object{
+				&buildv1alpha1.Application{
+					ObjectMeta: metav1.ObjectMeta{
+						Namespace: defaultNamespace,
+						Name:      applicationName,
+					},
+					Spec: buildv1alpha1.ApplicationSpec{
+						Build: buildv1alpha1.ImageBuild{
+							Env: []corev1.EnvVar{
+								{Name: "MY_VAR1", Value: "value1"},
+								{Name: "MY_VAR2", Value: "value2"},
+							},
+						},
+						Image: imageTag,
+					},
+				},
+			},
+			ExpectOutput: `
+...build output...
+Created application "my-application"
+`,
+		},
+		{
 			Name: "local path, dry run",
 			Args: []string{applicationName, cli.ImageFlagName, imageTag, cli.LocalPathFlagName, localPath, cli.DryRunFlagName},
 			Prepare: func(t *testing.T, ctx context.Context, c *cli.Config) (context.Context, error) {
@@ -427,6 +603,7 @@ Created application "my-application"
 					Image:   imageTag,
 					AppPath: localPath,
 					Builder: "cloudfoundry/cnb:bionic",
+					Env:     map[string]string{},
 					Publish: true,
 				}).Return(nil).Run(func(args mock.Arguments) {
 					fmt.Fprintf(c.Stdout, "...build output...\n")
@@ -459,7 +636,13 @@ metadata:
   name: my-application
   namespace: default
 spec:
+  build:
+    env: null
+    resources: {}
+  failedBuildHistoryLimit: null
   image: registry.example.com/repo:tag
+  imageTaggingStrategy: ""
+  successBuildHistoryLimit: null
 status: {}
 
 Created application "my-application"
@@ -508,6 +691,7 @@ Created application "my-application"
 					Image:   imageTag,
 					AppPath: localPath,
 					Builder: "cloudfoundry/cnb:bionic",
+					Env:     map[string]string{},
 					Publish: true,
 				}).Return(fmt.Errorf("pack error")).Run(func(args mock.Arguments) {
 					fmt.Fprintf(c.Stdout, "...build output...\n")
@@ -550,6 +734,7 @@ Created application "my-application"
 					Image:   fmt.Sprintf("%s/%s", registryHost, applicationName),
 					AppPath: localPath,
 					Builder: "cloudfoundry/cnb:bionic",
+					Env:     map[string]string{},
 					Publish: true,
 				}).Return(nil).Run(func(args mock.Arguments) {
 					fmt.Fprintf(c.Stdout, "...build output...\n")
@@ -638,7 +823,7 @@ Created application "my-application"
 					Spec: buildv1alpha1.ApplicationSpec{
 						Image: imageTag,
 						Source: &buildv1alpha1.Source{
-							Git: &buildv1alpha1.GitSource{
+							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
 								Revision: gitMaster,
 							},
@@ -663,7 +848,7 @@ Created application "my-application"
 					Spec: buildv1alpha1.ApplicationSpec{
 						Image: imageTag,
 						Source: &buildv1alpha1.Source{
-							Git: &buildv1alpha1.GitSource{
+							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
 								Revision: gitMaster,
 							},
@@ -690,7 +875,7 @@ Created application "my-application"
 					Spec: buildv1alpha1.ApplicationSpec{
 						Image: imageTag,
 						Source: &buildv1alpha1.Source{
-							Git: &buildv1alpha1.GitSource{
+							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
 								Revision: gitMaster,
 							},
@@ -719,7 +904,7 @@ Created application "my-application"
 					Spec: buildv1alpha1.ApplicationSpec{
 						Image: imageTag,
 						Source: &buildv1alpha1.Source{
-							Git: &buildv1alpha1.GitSource{
+							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
 								Revision: gitMaster,
 							},
@@ -750,7 +935,7 @@ Application "my-application" is ready
 					Spec: buildv1alpha1.ApplicationSpec{
 						Image: imageTag,
 						Source: &buildv1alpha1.Source{
-							Git: &buildv1alpha1.GitSource{
+							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
 								Revision: gitMaster,
 							},
@@ -782,7 +967,7 @@ Application "my-application" is ready
 					Spec: buildv1alpha1.ApplicationSpec{
 						Image: imageTag,
 						Source: &buildv1alpha1.Source{
-							Git: &buildv1alpha1.GitSource{
+							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
 								Revision: gitMaster,
 							},
@@ -821,7 +1006,7 @@ To continue watching logs run: riff application tail my-application --namespace 
 					Spec: buildv1alpha1.ApplicationSpec{
 						Image: imageTag,
 						Source: &buildv1alpha1.Source{
-							Git: &buildv1alpha1.GitSource{
+							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
 								Revision: gitMaster,
 							},
@@ -848,7 +1033,7 @@ To continue watching logs run: riff application tail my-application --namespace 
 					Spec: buildv1alpha1.ApplicationSpec{
 						Image: imageTag,
 						Source: &buildv1alpha1.Source{
-							Git: &buildv1alpha1.GitSource{
+							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
 								Revision: gitMaster,
 							},

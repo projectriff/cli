@@ -27,9 +27,12 @@ import (
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/cli/options"
 	"github.com/projectriff/cli/pkg/k8s"
+	"github.com/projectriff/cli/pkg/parsers"
 	"github.com/projectriff/cli/pkg/race"
+	"github.com/projectriff/cli/pkg/validation"
 	buildv1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
 	"github.com/spf13/cobra"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -48,6 +51,11 @@ type FunctionCreateOptions struct {
 	GitRepo     string
 	GitRevision string
 	SubPath     string
+
+	Env []string
+
+	LimitCPU    string
+	LimitMemory string
 
 	Tail        bool
 	WaitTimeout string
@@ -102,6 +110,15 @@ func (opts *FunctionCreateOptions) Validate(ctx context.Context) cli.FieldErrors
 
 	// nothing to do for artifact, handler, and invoker
 
+	errs = errs.Also(validation.EnvVars(opts.Env, cli.EnvFlagName))
+
+	if opts.LimitCPU != "" {
+		errs = errs.Also(validation.Quantity(opts.LimitCPU, cli.LimitCPUFlagName))
+	}
+	if opts.LimitMemory != "" {
+		errs = errs.Also(validation.Quantity(opts.LimitMemory, cli.LimitMemoryFlagName))
+	}
+
 	if opts.Tail {
 		if opts.WaitTimeout == "" {
 			errs = errs.Also(cli.ErrMissingField(cli.WaitTimeoutFlagName))
@@ -140,12 +157,31 @@ func (opts *FunctionCreateOptions) Exec(ctx context.Context, c *cli.Config) erro
 	}
 	if opts.GitRepo != "" {
 		function.Spec.Source = &buildv1alpha1.Source{
-			Git: &buildv1alpha1.GitSource{
+			Git: &buildv1alpha1.Git{
 				URL:      opts.GitRepo,
 				Revision: opts.GitRevision,
 			},
 			SubPath: opts.SubPath,
 		}
+	}
+
+	for _, env := range opts.Env {
+		if function.Spec.Build.Env == nil {
+			function.Spec.Build.Env = []corev1.EnvVar{}
+		}
+		function.Spec.Build.Env = append(function.Spec.Build.Env, parsers.EnvVar(env))
+	}
+
+	if (opts.LimitCPU != "" || opts.LimitMemory != "") && function.Spec.Build.Resources.Limits == nil {
+		function.Spec.Build.Resources.Limits = corev1.ResourceList{}
+	}
+	if opts.LimitCPU != "" {
+		// parse errors are handled by the opt validation
+		function.Spec.Build.Resources.Limits[corev1.ResourceCPU] = resource.MustParse(opts.LimitCPU)
+	}
+	if opts.LimitMemory != "" {
+		// parse errors are handled by the opt validation
+		function.Spec.Build.Resources.Limits[corev1.ResourceMemory] = resource.MustParse(opts.LimitMemory)
 	}
 
 	if opts.LocalPath != "" {
@@ -168,16 +204,20 @@ func (opts *FunctionCreateOptions) Exec(ctx context.Context, c *cli.Config) erro
 		if builder == "" {
 			return fmt.Errorf("unknown builder for %q", "riff-function")
 		}
+		env := map[string]string{
+			"RIFF":          "true",
+			"RIFF_ARTIFACT": opts.Artifact,
+			"RIFF_HANDLER":  opts.Handler,
+			"RIFF_OVERRIDE": opts.Invoker,
+		}
+		for _, envvar := range function.Spec.Build.Env {
+			env[envvar.Name] = envvar.Value
+		}
 		err = c.Pack.Build(ctx, pack.BuildOptions{
 			Image:   targetImage,
 			AppPath: opts.LocalPath,
 			Builder: builder,
-			Env: map[string]string{
-				"RIFF":          "true",
-				"RIFF_ARTIFACT": opts.Artifact,
-				"RIFF_HANDLER":  opts.Handler,
-				"RIFF_OVERRIDE": opts.Invoker,
-			},
+			Env:     env,
 			Publish: true,
 		})
 		if err != nil {
@@ -280,6 +320,9 @@ The riff.toml file takes the form:
 	cmd.Flags().StringVar(&opts.GitRepo, cli.StripDash(cli.GitRepoFlagName), "", "git `url` to remote source code")
 	cmd.Flags().StringVar(&opts.GitRevision, cli.StripDash(cli.GitRevisionFlagName), "master", "`refspec` within the git repo to checkout")
 	cmd.Flags().StringVar(&opts.SubPath, cli.StripDash(cli.SubPathFlagName), "", "path to `directory` within the git repo to checkout")
+	cmd.Flags().StringArrayVar(&opts.Env, cli.StripDash(cli.EnvFlagName), []string{}, fmt.Sprintf("environment `variable` defined as a key value pair separated by an equals sign, example %q (may be set multiple times)", fmt.Sprintf("%s MY_VAR=my-value", cli.EnvFlagName)))
+	cmd.Flags().StringVar(&opts.LimitCPU, cli.StripDash(cli.LimitCPUFlagName), "", "the maximum amount of cpu allowed, in CPU `cores` (500m = .5 cores)")
+	cmd.Flags().StringVar(&opts.LimitMemory, cli.StripDash(cli.LimitMemoryFlagName), "", "the maximum amount of memory allowed, in `bytes` (500Mi = 500MiB = 500 * 1024 * 1024)")
 	cmd.Flags().BoolVar(&opts.Tail, cli.StripDash(cli.TailFlagName), false, "watch build logs")
 	cmd.Flags().StringVar(&opts.WaitTimeout, cli.StripDash(cli.WaitTimeoutFlagName), "10m", "`duration` to wait for the function to become ready when watching logs")
 	cmd.Flags().BoolVar(&opts.DryRun, cli.StripDash(cli.DryRunFlagName), false, "print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr")
