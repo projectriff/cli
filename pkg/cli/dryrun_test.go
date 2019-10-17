@@ -41,12 +41,8 @@ metadata:
   creationTimestamp: null
 spec:
   build:
-    env: null
     resources: {}
-  failedBuildHistoryLimit: null
   image: ""
-  imageTaggingStrategy: ""
-  successBuildHistoryLimit: null
 status: {}
 `)
 	actual := strings.TrimSpace(stdout.String())

@@ -335,16 +335,12 @@ metadata:
   namespace: default
 spec:
   build:
-    env: null
     resources: {}
-  failedBuildHistoryLimit: null
   image: registry.example.com/repo:tag
-  imageTaggingStrategy: ""
   source:
     git:
       revision: master
       url: https://example.com/repo.git
-  successBuildHistoryLimit: null
 status: {}
 
 Created application "my-application"
@@ -637,12 +633,8 @@ metadata:
   namespace: default
 spec:
   build:
-    env: null
     resources: {}
-  failedBuildHistoryLimit: null
   image: registry.example.com/repo:tag
-  imageTaggingStrategy: ""
-  successBuildHistoryLimit: null
 status: {}
 
 Created application "my-application"

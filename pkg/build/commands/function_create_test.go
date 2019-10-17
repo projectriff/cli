@@ -338,16 +338,12 @@ metadata:
   namespace: default
 spec:
   build:
-    env: null
     resources: {}
-  failedBuildHistoryLimit: null
   image: registry.example.com/repo:tag
-  imageTaggingStrategy: ""
   source:
     git:
       revision: master
       url: https://example.com/repo.git
-  successBuildHistoryLimit: null
 status: {}
 
 Created function "my-function"
@@ -661,14 +657,10 @@ metadata:
 spec:
   artifact: test-artifact.js
   build:
-    env: null
     resources: {}
-  failedBuildHistoryLimit: null
   handler: functions.Handler
   image: registry.example.com/repo:tag
-  imageTaggingStrategy: ""
   invoker: java
-  successBuildHistoryLimit: null
 status: {}
 
 Created function "my-function"
