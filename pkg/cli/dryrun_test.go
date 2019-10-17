@@ -40,6 +40,8 @@ kind: Application
 metadata:
   creationTimestamp: null
 spec:
+  build:
+    resources: {}
   image: ""
 status: {}
 `)

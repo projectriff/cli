@@ -33,10 +33,13 @@ riff application create my-app --image registry.example.com/image --local-path .
 ```
       --cache-size size         size of persistent volume to cache resources between builds
       --dry-run                 print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr
+      --env variable            environment variable defined as a key value pair separated by an equals sign, example "--env MY_VAR=my-value" (may be set multiple times)
       --git-repo url            git url to remote source code
       --git-revision refspec    refspec within the git repo to checkout (default "master")
   -h, --help                    help for create
       --image repository        repository where the built images are pushed (default "_")
+      --limit-cpu cores         the maximum amount of cpu allowed, in CPU cores (500m = .5 cores)
+      --limit-memory bytes      the maximum amount of memory allowed, in bytes (500Mi = 500MiB = 500 * 1024 * 1024)
       --local-path directory    path to directory containing source code on the local machine
   -n, --namespace name          kubernetes namespace (defaulted from kube config)
       --sub-path directory      path to directory within the git repo to checkout

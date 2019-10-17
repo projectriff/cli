@@ -51,12 +51,15 @@ riff function create my-func --image registry.example.com/image --local-path ./m
       --artifact file           file containing the function within the build workspace (detected by default)
       --cache-size size         size of persistent volume to cache resources between builds
       --dry-run                 print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr
+      --env variable            environment variable defined as a key value pair separated by an equals sign, example "--env MY_VAR=my-value" (may be set multiple times)
       --git-repo url            git url to remote source code
       --git-revision refspec    refspec within the git repo to checkout (default "master")
       --handler name            name of the method or class to invoke, depends on the invoker (detected by default)
   -h, --help                    help for create
       --image repository        repository where the built images are pushed (default "_")
       --invoker name            language runtime invoker name (detected by default)
+      --limit-cpu cores         the maximum amount of cpu allowed, in CPU cores (500m = .5 cores)
+      --limit-memory bytes      the maximum amount of memory allowed, in bytes (500Mi = 500MiB = 500 * 1024 * 1024)
       --local-path directory    path to directory containing source code on the local machine
   -n, --namespace name          kubernetes namespace (defaulted from kube config)
       --sub-path directory      path to directory within the git repo to checkout
