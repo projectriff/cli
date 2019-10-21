@@ -36,7 +36,6 @@ func NewRootCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 
 	cmd.Use = c.Name
 	cmd.DisableAutoGenTag = true
-	cmd.BashCompletionFunction = bash_completion_func
 
 	// set version
 	if !c.GitDirty {
