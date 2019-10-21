@@ -1,41 +1,46 @@
 package commands
 
 const bash_completion_func = `
-__kubectl_get_namespaces()
+
+__riff_list_namespaces()
 {
     local template
     template="{{ range .items  }}{{ .metadata.name }} {{ end }}"
     local kubectl_out
+    # TODO decouple from kubectl
     if kubectl_out=$(kubectl get -o template --template="${template}" namespace 2>/dev/null); then
         COMPREPLY=( $( compgen -W "${kubectl_out}[*]" -- "$cur" ) )
     fi
 }
 
-__kubectl_get_knative_configurations()
+__riff_list_knative_configurations()
 {
     local template
     template="{{ range .items  }}{{ .metadata.name }} {{ end }}"
     local kubectl_out
+    # TODO decouple from kubectl
     if kubectl_out=$(kubectl get -o template --template="${template}" configurations.serving.knative.dev 2>/dev/null); then
         COMPREPLY=( $( compgen -W "${kubectl_out}[*]" -- "$cur" ) )
     fi
 }
 
-__kubectl_get_knative_services()
+__riff_list_knative_services()
 {
     local template
     template="{{ range .items  }}{{ .metadata.name }} {{ end }}"
     local kubectl_out
+    # TODO decouple from kubectl
     if kubectl_out=$(kubectl get -o template --template="${template}" services.serving.knative.dev 2>/dev/null); then
         COMPREPLY=( $( compgen -W "${kubectl_out}[*]" -- "$cur" ) )
     fi
 }
 
-__kubectl_get_streaming_provisioner_services()
+__riff_list_streaming_provisioner_services()
 {
     local template
     template="{{ range .items  }}{{ .metadata.name }} {{ end }}"
     local kubectl_out
+    # TODO decouple from kubectl
     if kubectl_out=$(kubectl get -o template --template="${template}" --selector streaming.projectriff.io/provisioner services 2>/dev/null); then
         COMPREPLY=( $( compgen -W "${kubectl_out}[*]" -- "$cur" ) )
     fi
