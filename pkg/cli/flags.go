@@ -47,7 +47,8 @@ const (
 	ImageFlagName                 = "--image"
 	InputFlagName                 = "--input"
 	InvokerFlagName               = "--invoker"
-	KubeConfigFlagName            = "--kube-config"
+	KubeConfigFlagName            = "--kubeconfig"
+	KubeConfigFlagNameDeprecated  = "--kube-config"
 	LimitCPUFlagName              = "--limit-cpu"
 	LimitMemoryFlagName           = "--limit-memory"
 	LocalPathFlagName             = "--local-path"
@@ -104,6 +105,7 @@ func NamespaceFlag(cmd *cobra.Command, c *Config, namespace *string) {
 	}
 
 	cmd.Flags().StringVarP(namespace, StripDash(NamespaceFlagName), "n", "", "kubernetes `name`space (defaulted from kube config)")
+	_ = cmd.MarkFlagCustom(StripDash(NamespaceFlagName), "__"+c.Name+"_list_namespaces")
 }
 
 func StripDash(flagName string) string {

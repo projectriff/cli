@@ -22,9 +22,9 @@ Ingress and autoscalers are not provided.
 ### Options inherited from parent commands
 
 ```
-      --config file        config file (default is $HOME/.riff.yaml)
-      --kube-config file   kubectl config file (default is $HOME/.kube/config)
-      --no-color           disable color output in terminals
+      --config file       config file (default is $HOME/.riff.yaml)
+      --kubeconfig file   kubectl config file (default is $HOME/.kube/config)
+      --no-color          disable color output in terminals
 ```
 
 ### SEE ALSO

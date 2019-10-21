@@ -191,6 +191,7 @@ default image prefix can be set.
 	cli.NamespaceFlag(cmd, c, &opts.Namespace)
 	cmd.Flags().StringVar(&opts.DockerHubId, cli.StripDash(cli.DockerHubFlagName), "", "Docker Hub `username`, the password must be provided via stdin")
 	cmd.Flags().StringVar(&opts.GcrTokenPath, cli.StripDash(cli.GcrFlagName), "", "path to Google Container Registry service account token `file`")
+	_ = cmd.MarkFlagFilename(cli.StripDash(cli.GcrFlagName), "json")
 	cmd.Flags().StringVar(&opts.Registry, cli.StripDash(cli.RegistryFlagName), "", "registry `url`")
 	cmd.Flags().StringVar(&opts.RegistryUser, cli.StripDash(cli.RegistryUserFlagName), "", "`username` for a registry, the password must be provided via stdin")
 	cmd.Flags().StringVar(&opts.DefaultImagePrefix, cli.StripDash(cli.DefaultImagePrefixFlagName), "", fmt.Sprintf("default `repository` prefix for built images, implies %s", cli.SetDefaultImagePrefixFlagName))
