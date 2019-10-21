@@ -110,6 +110,8 @@ func NewStreamCreateCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 
 	cli.NamespaceFlag(cmd, c, &opts.Namespace)
 	cmd.Flags().StringVar(&opts.Provider, cli.StripDash(cli.ProviderFlagName), "", "`name` of stream provider")
+	_ = cmd.MarkFlagRequired(cli.StripDash(cli.ProviderFlagName))
+	_ = cmd.MarkFlagCustom(cli.StripDash(cli.ProviderFlagName), "__kubectl_get_streaming_provisioner_services")
 	cmd.Flags().StringVar(&opts.ContentType, cli.StripDash(cli.ContentTypeFlagName), "", "`MIME type` for message payloads accepted by the stream")
 	cmd.Flags().BoolVar(&opts.DryRun, cli.StripDash(cli.DryRunFlagName), false, "print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr")
 

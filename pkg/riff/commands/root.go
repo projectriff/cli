@@ -48,6 +48,7 @@ func NewRootCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 
 	// add root persistent flags
 	cmd.PersistentFlags().StringVar(&c.ViperConfigFile, cli.StripDash(cli.ConfigFlagName), "", fmt.Sprintf("config `file` (default is $HOME/.%s.yaml)", c.Name))
+	_ = cmd.MarkFlagFilename(cli.StripDash(cli.ConfigFlagName), "yaml", "yml")
 	cmd.PersistentFlags().StringVar(&c.KubeConfigFile, cli.StripDash(cli.KubeConfigFlagName), "", "kubectl config `file` (default is $HOME/.kube/config)")
 	cmd.PersistentFlags().BoolVar(&color.NoColor, cli.StripDash(cli.NoColorFlagName), color.NoColor, "disable color output in terminals")
 

@@ -1,8 +1,64 @@
 package commands
 
 const bash_completion_func = `
+__kubectl_get_namespaces()
+{
+    local template
+    template="{{ range .items  }}{{ .metadata.name }} {{ end }}"
+    local kubectl_out
+    if kubectl_out=$(kubectl get -o template --template="${template}" namespace 2>/dev/null); then
+        COMPREPLY=( $( compgen -W "${kubectl_out}[*]" -- "$cur" ) )
+    fi
+}
+
+__kubectl_get_knative_configurations()
+{
+    local template
+    template="{{ range .items  }}{{ .metadata.name }} {{ end }}"
+    local kubectl_out
+    if kubectl_out=$(kubectl get -o template --template="${template}" configurations.serving.knative.dev 2>/dev/null); then
+        COMPREPLY=( $( compgen -W "${kubectl_out}[*]" -- "$cur" ) )
+    fi
+}
+
+__kubectl_get_knative_services()
+{
+    local template
+    template="{{ range .items  }}{{ .metadata.name }} {{ end }}"
+    local kubectl_out
+    if kubectl_out=$(kubectl get -o template --template="${template}" services.serving.knative.dev 2>/dev/null); then
+        COMPREPLY=( $( compgen -W "${kubectl_out}[*]" -- "$cur" ) )
+    fi
+}
+
+__kubectl_get_streaming_provisioner_services()
+{
+    local template
+    template="{{ range .items  }}{{ .metadata.name }} {{ end }}"
+    local kubectl_out
+    if kubectl_out=$(kubectl get -o template --template="${template}" --selector streaming.projectriff.io/provisioner services 2>/dev/null); then
+        COMPREPLY=( $( compgen -W "${kubectl_out}[*]" -- "$cur" ) )
+    fi
+}
+
+__riff_list_functions()
+{
+	__riff_list_resource 'function list'
+}
+
+__riff_list_containers()
+{
+	__riff_list_resource 'container list'
+}
+
+__riff_list_applications()
+{
+	__riff_list_resource 'application list'
+}
+
 __riff_list_resource()
 {
+	__riff_debug "listing $1"
     local riff_output out
     if riff_output=$(riff $1 2>/dev/null); then
         out=($(echo "${riff_output}" | awk 'NR>1 {print $1}'))
