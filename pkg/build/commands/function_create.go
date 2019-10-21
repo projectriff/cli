@@ -33,6 +33,7 @@ import (
 	buildv1alpha1 "github.com/projectriff/system/pkg/apis/build/v1alpha1"
 	"github.com/spf13/cobra"
 	corev1 "k8s.io/api/core/v1"
+	apierrs "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -189,6 +190,9 @@ func (opts *FunctionCreateOptions) Exec(ctx context.Context, c *cli.Config) erro
 		if strings.HasPrefix(opts.Image, "_") {
 			riffBuildConfig, err := c.Core().ConfigMaps(function.Namespace).Get("riff-build", metav1.GetOptions{})
 			if err != nil {
+				if apierrs.IsNotFound(err) {
+					return fmt.Errorf("default image prefix requires initialized credentails, run `%s help credentials`", c.Name)
+				}
 				return err
 			}
 			targetImage, err = buildv1alpha1.ResolveDefaultImage(function, riffBuildConfig.Data["default-image-prefix"])

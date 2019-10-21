@@ -775,8 +775,21 @@ Created application "my-application"
 `,
 		},
 		{
-			Name:        "local path, default image, bad default",
+			Name:        "local path, default image, missing default",
 			Args:        []string{applicationName, cli.LocalPathFlagName, localPath},
+			ShouldError: true,
+			Verify: func(t *testing.T, output string, err error) {
+				if expected, actual := "default image prefix requires initialized credentails, run `riff help credentials`", err.Error(); expected != actual {
+					t.Errorf("expected error %q, actual %q", expected, actual)
+				}
+			},
+		},
+		{
+			Name: "local path, default image, configmap load error",
+			Args: []string{applicationName, cli.LocalPathFlagName, localPath},
+			WithReactors: []rifftesting.ReactionFunc{
+				rifftesting.InduceFailure("get", "configmaps"),
+			},
 			ShouldError: true,
 		},
 		{
