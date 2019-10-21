@@ -153,7 +153,6 @@ func NewProcessorCreateCommand(ctx context.Context, c *cli.Config) *cobra.Comman
 
 	cli.NamespaceFlag(cmd, c, &opts.Namespace)
 	cmd.Flags().StringVar(&opts.FunctionRef, cli.StripDash(cli.FunctionRefFlagName), "", "`name` of function build to deploy")
-	_ = cmd.MarkFlagRequired(cli.StripDash(cli.FunctionRefFlagName))
 	_ = cmd.MarkFlagCustom(cli.StripDash(cli.FunctionRefFlagName), "__riff_list_functions")
 	cmd.Flags().StringArrayVar(&opts.Inputs, cli.StripDash(cli.InputFlagName), []string{}, "`name` of stream to read messages from (may be set multiple times)")
 	cmd.Flags().StringArrayVar(&opts.Outputs, cli.StripDash(cli.OutputFlagName), []string{}, "`name` of stream to write messages to (may be set multiple times)")
