@@ -32,11 +32,11 @@ zero-to-n autoscaling and managed ingress.
 ### Options
 
 ```
-      --config file        config file (default is $HOME/.riff.yaml)
-  -h, --help               help for riff
-      --kube-config file   kubectl config file (default is $HOME/.kube/config)
-      --no-color           disable color output in terminals
-      --version            display CLI version
+      --config file       config file (default is $HOME/.riff.yaml)
+  -h, --help              help for riff
+      --kubeconfig file   kubectl config file (default is $HOME/.kube/config)
+      --no-color          disable color output in terminals
+      --version           display CLI version
 ```
 
 ### SEE ALSO
