@@ -91,7 +91,7 @@ __` + c.Name + `_override_flags()
 __` + c.Name + `_list_namespaces()
 {
 	local template
-	template="{{ range .items  }}{{ .metadata.name }} {{ end }}"
+	template="{{ range .items }}{{ .metadata.name }} {{ end }}"
 	local kubectl_out
 	# TODO decouple from kubectl
 	if kubectl_out=$(kubectl get $(__` + c.Name + `_override_flags) -o template --template="${template}" namespace 2>/dev/null); then
@@ -102,7 +102,7 @@ __` + c.Name + `_list_namespaces()
 __` + c.Name + `_list_knative_configurations()
 {
 	local template
-	template="{{ range .items  }}{{ .metadata.name }} {{ end }}"
+	template="{{ range .items }}{{ .metadata.name }} {{ end }}"
 	local kubectl_out
 	# TODO decouple from kubectl
 	if kubectl_out=$(kubectl get $(__` + c.Name + `_override_flags) -o template --template="${template}" configurations.serving.knative.dev 2>/dev/null); then
@@ -113,7 +113,7 @@ __` + c.Name + `_list_knative_configurations()
 __` + c.Name + `_list_knative_services()
 {
 	local template
-	template="{{ range .items  }}{{ .metadata.name }} {{ end }}"
+	template="{{ range .items }}{{ .metadata.name }} {{ end }}"
 	local kubectl_out
 	# TODO decouple from kubectl
 	if kubectl_out=$(kubectl get $(__` + c.Name + `_override_flags) -o template --template="${template}" services.serving.knative.dev 2>/dev/null); then
@@ -124,7 +124,7 @@ __` + c.Name + `_list_knative_services()
 __` + c.Name + `_list_streaming_provisioner_services()
 {
 	local template
-	template="{{ range .items  }}{{ .metadata.name }} {{ end }}"
+	template="{{ range .items }}{{ .metadata.name }} {{ end }}"
 	local kubectl_out
 	# TODO decouple from kubectl
 	if kubectl_out=$(kubectl get $(__` + c.Name + `_override_flags) -o template --template="${template}" --selector streaming.projectriff.io/provisioner services 2>/dev/null); then
