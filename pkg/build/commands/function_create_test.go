@@ -814,8 +814,21 @@ Created function "my-function"
 `,
 		},
 		{
-			Name:        "local path, default image, bad default",
+			Name:        "local path, default image, missing default",
 			Args:        []string{functionName, cli.LocalPathFlagName, localPath, cli.ArtifactFlagName, artifact, cli.HandlerFlagName, handler, cli.InvokerFlagName, invoker},
+			ShouldError: true,
+			Verify: func(t *testing.T, output string, err error) {
+				if expected, actual := "default image prefix requires initialized credentails, run `riff help credentials`", err.Error(); expected != actual {
+					t.Errorf("expected error %q, actual %q", expected, actual)
+				}
+			},
+		},
+		{
+			Name: "local path, default image, configmap load error",
+			Args: []string{functionName, cli.LocalPathFlagName, localPath, cli.ArtifactFlagName, artifact, cli.HandlerFlagName, handler, cli.InvokerFlagName, invoker},
+			WithReactors: []rifftesting.ReactionFunc{
+				rifftesting.InduceFailure("get", "configmaps"),
+			},
 			ShouldError: true,
 		},
 		{
