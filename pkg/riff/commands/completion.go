@@ -95,7 +95,7 @@ __` + c.Name + `_list_namespaces()
 	local kubectl_out
 	# TODO decouple from kubectl
 	if kubectl_out=$(kubectl get $(__` + c.Name + `_override_flags) -o template --template="${template}" namespace 2>/dev/null); then
-		COMPREPLY=( $( compgen -W "${kubectl_out}[*]" -- "$cur" ) )
+		COMPREPLY=( $( compgen -W "${kubectl_out}" -- "$cur" ) )
 	fi
 }
 
@@ -106,7 +106,7 @@ __` + c.Name + `_list_knative_configurations()
 	local kubectl_out
 	# TODO decouple from kubectl
 	if kubectl_out=$(kubectl get $(__` + c.Name + `_override_flags) -o template --template="${template}" configurations.serving.knative.dev 2>/dev/null); then
-		COMPREPLY=( $( compgen -W "${kubectl_out}[*]" -- "$cur" ) )
+		COMPREPLY=( $( compgen -W "${kubectl_out}" -- "$cur" ) )
 	fi
 }
 
@@ -117,7 +117,7 @@ __` + c.Name + `_list_knative_services()
 	local kubectl_out
 	# TODO decouple from kubectl
 	if kubectl_out=$(kubectl get $(__` + c.Name + `_override_flags) -o template --template="${template}" services.serving.knative.dev 2>/dev/null); then
-		COMPREPLY=( $( compgen -W "${kubectl_out}[*]" -- "$cur" ) )
+		COMPREPLY=( $( compgen -W "${kubectl_out}" -- "$cur" ) )
 	fi
 }
 
@@ -128,7 +128,7 @@ __` + c.Name + `_list_streaming_provisioner_services()
 	local kubectl_out
 	# TODO decouple from kubectl
 	if kubectl_out=$(kubectl get $(__` + c.Name + `_override_flags) -o template --template="${template}" --selector streaming.projectriff.io/provisioner services 2>/dev/null); then
-		COMPREPLY=( $( compgen -W "${kubectl_out}[*]" -- "$cur" ) )
+		COMPREPLY=( $( compgen -W "${kubectl_out}" -- "$cur" ) )
 	fi
 }
 
@@ -171,7 +171,7 @@ __` + c.Name + `_custom_func() {
 			__` + c.Name + `_list_resource 'core deployer list'
 			return
 			;;
-		` + c.Name + `_crediential_delete)
+		` + c.Name + `_credential_delete)
 			__` + c.Name + `_list_resource 'credential list'
 			return
 			;;
