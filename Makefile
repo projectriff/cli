@@ -25,7 +25,7 @@ build: $(OUTPUT) ## Build riff
 
 .PHONY: test
 test: ## Run the tests
-	go test -mod=vendor ./...
+	go test ./...
 
 .PHONY: install
 install: build ## Copy build to GOPATH/bin
@@ -33,7 +33,7 @@ install: build ## Copy build to GOPATH/bin
 
 .PHONY: coverage
 coverage: ## Run the tests with coverage and race detection
-	go test -mod=vendor -v --race -coverprofile=coverage.txt -covermode=atomic ./...
+	go test -v --race -coverprofile=coverage.txt -covermode=atomic ./...
 
 .PHONY: check-goimports
 check-goimports: ## Checks if goimports is installed
@@ -48,13 +48,13 @@ verify-goimports: check-goimports ## Verifies if all source files are formatted 
 	@goimports -l pkg cmd | (! grep .) || (echo above files are not formatted correctly. please run \"make goimports\" && false)
 
 $(OUTPUT): $(GO_SOURCES) VERSION
-	go build -mod=vendor -o $(OUTPUT) -ldflags "$(LDFLAGS_VERSION)" ./cmd/riff
+	go build -o $(OUTPUT) -ldflags "$(LDFLAGS_VERSION)" ./cmd/riff
 
 .PHONY: release
 release: $(GO_SOURCES) VERSION ## Cross-compile riff for various operating systems
-	GOOS=darwin   GOARCH=amd64 go build -mod=vendor -ldflags "$(LDFLAGS_VERSION)" -o $(OUTPUT)     ./cmd/riff && tar -czf riff-darwin-amd64.tgz  $(OUTPUT)     && rm -f $(OUTPUT)
-	GOOS=linux    GOARCH=amd64 go build -mod=vendor -ldflags "$(LDFLAGS_VERSION)" -o $(OUTPUT)     ./cmd/riff && tar -czf riff-linux-amd64.tgz   $(OUTPUT)     && rm -f $(OUTPUT)
-	GOOS=windows  GOARCH=amd64 go build -mod=vendor -ldflags "$(LDFLAGS_VERSION)" -o $(OUTPUT).exe ./cmd/riff && zip -mq  riff-windows-amd64.zip $(OUTPUT).exe && rm -f $(OUTPUT).exe
+	GOOS=darwin   GOARCH=amd64 go build -ldflags "$(LDFLAGS_VERSION)" -o $(OUTPUT)     ./cmd/riff && tar -czf riff-darwin-amd64.tgz  $(OUTPUT)     && rm -f $(OUTPUT)
+	GOOS=linux    GOARCH=amd64 go build -ldflags "$(LDFLAGS_VERSION)" -o $(OUTPUT)     ./cmd/riff && tar -czf riff-linux-amd64.tgz   $(OUTPUT)     && rm -f $(OUTPUT)
+	GOOS=windows  GOARCH=amd64 go build -ldflags "$(LDFLAGS_VERSION)" -o $(OUTPUT).exe ./cmd/riff && zip -mq  riff-windows-amd64.zip $(OUTPUT).exe && rm -f $(OUTPUT).exe
 
 docs: $(OUTPUT) clean-docs ## Generate documentation
 	$(OUTPUT) docs
