@@ -18,6 +18,7 @@ package commands_test
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"github.com/projectriff/cli/pkg/cli"
@@ -449,7 +450,7 @@ To view status run: riff knative adapter list --namespace default
 `,
 			ShouldError: true,
 			Verify: func(t *testing.T, output string, err error) {
-				if actual := err; !cli.IsSilent(err) {
+				if actual := err; !errors.Is(err, cli.SilentError) {
 					t.Errorf("expected error to be silent, actual %#v", actual)
 				}
 			},

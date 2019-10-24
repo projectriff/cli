@@ -16,21 +16,25 @@
 
 package cli
 
-type SilentError struct {
-	Err error
+var SilentError = &silentError{}
+
+type silentError struct {
+	err error
 }
 
-func (e *SilentError) Error() string {
-	return e.Err.Error()
+func (e *silentError) Error() string {
+	return e.err.Error()
+}
+
+func (e *silentError) Unwrap() error {
+	return e.err
+}
+
+func (e *silentError) Is(err error) bool {
+	_, ok := err.(*silentError)
+	return ok
 }
 
 func SilenceError(err error) error {
-	return &SilentError{
-		Err: err,
-	}
-}
-
-func IsSilent(err error) bool {
-	_, ok := err.(*SilentError)
-	return ok
+	return &silentError{err: err}
 }
