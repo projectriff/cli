@@ -18,6 +18,7 @@ package commands_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"testing"
 
@@ -578,7 +579,7 @@ To continue watching logs run: riff core deployer tail my-deployer --namespace d
 `,
 			ShouldError: true,
 			Verify: func(t *testing.T, output string, err error) {
-				if actual := err; !cli.IsSilent(err) {
+				if actual := err; !errors.Is(err, cli.SilentError) {
 					t.Errorf("expected error to be silent, actual %#v", actual)
 				}
 			},
