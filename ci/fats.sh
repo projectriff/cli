@@ -12,7 +12,7 @@ readonly slug=${version}-${git_timestamp}-${git_sha:0:16}
 # fetch FATS scripts
 fats_dir=`dirname "${BASH_SOURCE[0]}"`/fats
 fats_repo="projectriff/fats"
-fats_refspec=d26fa5dfd47f5cb74ca44a4fa41db11ec0942f14 # master as of 2019-10-10
+fats_refspec=5ae597a5bdd1fec772217c4e7a816ce518ed3aa6 # master as of 2019-10-22
 source `dirname "${BASH_SOURCE[0]}"`/fats-fetch.sh $fats_dir $fats_refspec $fats_repo
 source $fats_dir/.util.sh
 
@@ -30,20 +30,24 @@ fi
 
 # start FATS
 source $fats_dir/start.sh
-source $fats_dir/macros/no-resource-requests.sh
 
-# install riff system
-echo "Installing riff system"
 $fats_dir/install.sh helm
 source $fats_dir/macros/helm-init.sh
 helm repo add projectriff https://projectriff.storage.googleapis.com/charts/releases
 helm repo update
 
+helm install projectriff/cert-manager --name cert-manager --devel --wait
+
+source $fats_dir/macros/no-resource-requests.sh
+
+# install riff system
+echo "Installing riff system"
 helm install projectriff/istio --name istio --namespace istio-system --devel --wait \
   --set gateways.istio-ingressgateway.type=${K8S_SERVICE_TYPE}
-helm install projectriff/riff --name riff --devel \
+helm install projectriff/riff --name riff --devel --wait \
   --set riff.runtimes.core.enabled=true \
-  --set riff.runtimes.knative.enabled=true
+  --set riff.runtimes.knative.enabled=true \
+  --set cert-manager.enabled=false
 
 # health checks
 echo "Checking for ready ingress"

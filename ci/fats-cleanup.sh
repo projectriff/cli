@@ -18,6 +18,9 @@ if [ -d "$fats_dir" ]; then
   kubectl delete customresourcedefinitions.apiextensions.k8s.io -l app.kubernetes.io/managed-by=Tiller,app.kubernetes.io/instance=istio
   kubectl delete namespace istio-system
 
+  helm delete --purge cert-manager
+  kubectl delete customresourcedefinitions.apiextensions.k8s.io -l app.kubernetes.io/managed-by=Tiller,app.kubernetes.io/instance=cert-manager
+
   source $fats_dir/macros/helm-reset.sh
   source $fats_dir/cleanup.sh
 fi
