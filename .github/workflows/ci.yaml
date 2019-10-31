@@ -9,7 +9,7 @@ on:
 
 jobs:
 
-  test:
+  unit:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
