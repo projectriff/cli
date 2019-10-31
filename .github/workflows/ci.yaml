@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches:
+    - '**'
+    - '!dependabot/**'
+  pull_request: {}
+
+jobs:
+
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+        - ubuntu-latest
+        - macOS-latest
+        - windows-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-go@v1
+      with:
+        go-version: '1.13'
+    - name: Install tools
+      run: |
+        go get golang.org/x/tools/cmd/goimports
+        echo "##[add-path]$(go env GOPATH)/bin"
+    - name: Run unit tests
+      run: make build coverage verify-docs verify-goimports
+    - name: Report coverage
+      run: bash <(curl -s https://codecov.io/bash)
+      env:
+        CODECOV_TOKEN: d09bee7e-6c5a-4316-a48f-266e08d0f70f
+

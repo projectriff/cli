@@ -93,7 +93,6 @@ jobs:
       DOCKER_USERNAME: '$(DockerUsername)'
       DOCKER_PASSWORD: '$(DockerPassword)'
       GCLOUD_CLIENT_SECRET: '$(GcloudClientSecret)'
-      TRAVIS_TEST_RESULT: '' # TODO remove this
     condition: always()
     displayName: 'Cleanup FATS'
   displayName: 'FATS'
