@@ -13,23 +13,29 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os:
-        - ubuntu-latest
-        - macOS-latest
-        - windows-latest
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+      fail-fast: false
     steps:
     - uses: actions/checkout@v1
     - uses: actions/setup-go@v1
       with:
         go-version: '1.13'
-    - name: Install tools
+    - name: Add GOPATH/bin to PATH
+      run: |
+        echo "##[set-env name=GOPATH;]$(go env GOPATH)"
+        echo "##[add-path]$(go env GOPATH)/bin"
+      shell: bash
+    - name: Verify code formatting
       run: |
         go get golang.org/x/tools/cmd/goimports
-        echo "##[add-path]$(go env GOPATH)/bin"
+        make verify-goimports
+      shell: bash
+      if: success() && runner.os != 'Windows'
     - name: Run unit tests
-      run: make build coverage verify-docs verify-goimports
+      run: make build coverage verify-docs
     - name: Report coverage
       run: bash <(curl -s https://codecov.io/bash)
+      shell: bash
       env:
         CODECOV_TOKEN: d09bee7e-6c5a-4316-a48f-266e08d0f70f
 
