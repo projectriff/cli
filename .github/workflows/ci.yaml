@@ -41,3 +41,85 @@ jobs:
       env:
         CODECOV_TOKEN: d09bee7e-6c5a-4316-a48f-266e08d0f70f
 
+  stage:
+    name: Stage
+    needs: unit
+    if: success() && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-go@v1
+      with:
+        go-version: '1.13'
+    - name: Stage riff release artifacts
+      run: ./ci/stage.sh
+      env:
+        GCLOUD_CLIENT_SECRET: ${{ secrets.GCLOUD_CLIENT_SECRET }}
+
+  fats:
+    name: FATS
+    needs: stage
+    if: success() && github.event_name == 'push'
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v1
+      - name: 'Setup env'
+        run: |
+          if [ "${{ matrix.os }}" = "ubuntu-latest" ]; then
+            qualifier=kind
+            cluster=kind
+            registry=dockerhub
+          elif [ "${{ matrix.os }}" = "windows-latest" ]; then
+            qualifier=windows
+            cluster=gke
+            registry=gcr
+          fi
+
+          job=$(date +%s) # TODO use something that is assigned by CI to guarantee uniqueness
+          echo "JOB_ID=${job}"
+
+          echo "##[set-env name=CLUSTER]${cluster}"
+          echo "##[set-env name=REGISTRY]${registry}"
+          echo "##[set-env name=CLUSTER_NAME]riff-${job}-${qualifier}"
+          echo "##[set-env name=NAMESPACE]riff-${job}-${qualifier}"
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          GCLOUD_CLIENT_SECRET: ${{ secrets.GCLOUD_CLIENT_SECRET }}
+      - name: Run FATS
+        run: ./ci/fats.sh
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          GCLOUD_CLIENT_SECRET: ${{ secrets.GCLOUD_CLIENT_SECRET }}
+      - name: 'Collect diagnostics'
+        run: ./ci/diagnostics.sh          
+        if: failure()
+      - name: Cleanup FATS
+        run: ./ci/fats-cleanup.sh
+        if: always()
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          GCLOUD_CLIENT_SECRET: ${{ secrets.GCLOUD_CLIENT_SECRET }}
+
+  publish:
+     name: Publish
+     needs: fats
+     if: |
+      github.event_name == 'push' && startsWith(github.repository, 'projectriff/') && (
+        github.ref == 'refs/heads/master' || (
+          startsWith(github.ref, 'refs/heads/v') && endsWith(github.ref, 'x')
+        )
+      )
+     runs-on: ubuntu-latest
+     steps:
+     - uses: actions/checkout@v1
+     - name: 'Publish riff release artifacts'
+       run: ./ci/publish.sh ${{ github.ref }}
+       env:
+         GCLOUD_CLIENT_SECRET: ${{ secrets.GCLOUD_CLIENT_SECRET }}
