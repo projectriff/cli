@@ -34,7 +34,9 @@ jobs:
     - name: Run unit tests
       run: make build coverage verify-docs
     - name: Report coverage
-      run: bash <(curl -s https://codecov.io/bash)
+      run: |
+        curl -s https://codecov.io/bash > codecov.sh
+        . codecov.sh
       shell: bash
       env:
         CODECOV_TOKEN: d09bee7e-6c5a-4316-a48f-266e08d0f70f
