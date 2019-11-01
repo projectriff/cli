@@ -45,8 +45,8 @@ echo "Installing riff system"
 helm install projectriff/istio --name istio --namespace istio-system --devel --wait \
   --set gateways.istio-ingressgateway.type=${K8S_SERVICE_TYPE}
 helm install projectriff/riff --name riff --devel --wait \
-  --set riff.runtimes.core.enabled=true \
-  --set riff.runtimes.knative.enabled=true \
+  --set tags.core-runtime=true \
+  --set tags.knative-runtime=true \
   --set cert-manager.enabled=false
 
 # health checks
