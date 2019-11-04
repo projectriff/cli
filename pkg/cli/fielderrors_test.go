@@ -132,7 +132,7 @@ func TestErrDisallowedFields(t *testing.T) {
 			Detail:   "",
 		},
 	}
-	actual := cli.ErrDisallowedFields(rifftesting.TestField)
+	actual := cli.ErrDisallowedFields(rifftesting.TestField, "")
 
 	if diff := cmp.Diff(expected, actual); diff != "" {
 		t.Errorf("(-expected, +actual): %s", diff)
