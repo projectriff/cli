@@ -15,8 +15,7 @@ jobs:
       matrix:
         os:
         - ubuntu-latest
-        # TODO enable macos
-        # - macos-latest
+        - macos-latest
         - windows-latest
       fail-fast: false
     runs-on: ${{ matrix.os }}
