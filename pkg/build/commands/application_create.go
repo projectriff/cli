@@ -97,11 +97,11 @@ func (opts *ApplicationCreateOptions) Validate(ctx context.Context) cli.FieldErr
 	if opts.LocalPath != "" {
 		if opts.SubPath != "" {
 			// sub-path cannot be used with local-path
-			errs = errs.Also(cli.ErrDisallowedFields(cli.SubPathFlagName))
+			errs = errs.Also(cli.ErrDisallowedFields(cli.SubPathFlagName, ""))
 		}
 		if opts.CacheSize != "" {
 			// cache-size cannot be used with local-path
-			errs = errs.Also(cli.ErrDisallowedFields(cli.CacheSizeFlagName))
+			errs = errs.Also(cli.ErrDisallowedFields(cli.CacheSizeFlagName, ""))
 		}
 	}
 

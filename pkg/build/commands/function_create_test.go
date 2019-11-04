@@ -109,7 +109,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 				LocalPath:       ".",
 				CacheSize:       "8Gi",
 			},
-			ExpectFieldErrors: cli.ErrDisallowedFields(cli.CacheSizeFlagName),
+			ExpectFieldErrors: cli.ErrDisallowedFields(cli.CacheSizeFlagName, ""),
 		},
 		{
 			Name: "invalid cache",
@@ -141,7 +141,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 				LocalPath:       ".",
 				SubPath:         "some/directory",
 			},
-			ExpectFieldErrors: cli.ErrDisallowedFields(cli.SubPathFlagName),
+			ExpectFieldErrors: cli.ErrDisallowedFields(cli.SubPathFlagName, ""),
 		},
 		{
 			Name: "missing git revision",
