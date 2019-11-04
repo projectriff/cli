@@ -22,3 +22,5 @@ require (
 	k8s.io/apimachinery v0.0.0-20190817020851-f2f3a405f61d
 	k8s.io/client-go v0.0.0-20190918200256-06eb1244587a
 )
+
+replace github.com/projectriff/system => github.com/ericbottard/system v0.0.0-20191104153253-b1d4155a7397
