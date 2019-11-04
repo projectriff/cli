@@ -16,7 +16,7 @@ require (
 	github.com/spf13/viper v1.5.0
 	github.com/stretchr/testify v1.4.0
 	golang.org/x/crypto v0.0.0-20190611184440-5c40567a22f8
-	// equivelent of kubernetes-1.15.4 tag for each k8s.io repo
+	// equivalent of kubernetes-1.15.4 tag for each k8s.io repo
 	k8s.io/api v0.0.0-20190918195907-bd6ac527cfd2
 	k8s.io/apiextensions-apiserver v0.0.0-20190918201827-3de75813f604
 	k8s.io/apimachinery v0.0.0-20190817020851-f2f3a405f61d
