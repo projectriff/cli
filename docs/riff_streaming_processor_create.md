@@ -27,9 +27,9 @@ riff streaming processor create my-processor --function-ref my-func --input my-i
       --dry-run                 print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr
       --function-ref name       name of function build to deploy
   -h, --help                    help for create
-      --input name              name of stream to read messages from (may be set multiple times)
+      --input name              name of stream to read messages from (or parameter:stream, may be set multiple times)
   -n, --namespace name          kubernetes namespace (defaulted from kube config)
-      --output name             name of stream to write messages to (may be set multiple times)
+      --output name             name of stream to write messages to (or parameter:stream, may be set multiple times)
       --tail                    watch processor logs
       --wait-timeout duration   duration to wait for the processor to become ready when watching logs (default "10m")
 ```
