@@ -22,12 +22,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v1
-    - uses: actions/cache@v1
-      with:
-        path: ~/go/pkg/mod
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-        restore-keys: |
-          ${{ runner.os }}-go-
     - uses: actions/setup-go@v1
       with:
         go-version: '1.13'
@@ -37,6 +31,12 @@ jobs:
         echo "##[set-env name=GOPATH;]$(go env GOPATH)"
         echo "##[add-path]$(go env GOPATH)/bin"
       shell: bash
+    - uses: actions/cache@v1
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
     - name: Verify code formatting
       run: |
         go get golang.org/x/tools/cmd/goimports
@@ -73,7 +73,7 @@ jobs:
     - uses: actions/cache@v1
       with:
         path: ~/go/pkg/mod
-        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        key: ${{ runner.os }}-go-${{ hashFiles('go.sum') }}
         restore-keys: |
           ${{ runner.os }}-go-
     - name: Stage riff release artifacts
