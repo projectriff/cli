@@ -66,6 +66,16 @@ func TestProcessorCreateOptions(t *testing.T) {
 			ShouldValidate: true,
 		},
 		{
+			Name: "with explicit input bindings and output bindings",
+			Options: &commands.ProcessorCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				FunctionRef:     "my-function",
+				Inputs:          []string{"inParam1:input1", "inParam2:input2"},
+				Outputs:         []string{"outParam1:output1", "outParam1:output2"},
+			},
+			ShouldValidate: true,
+		},
+		{
 			Name: "with tail",
 			Options: &commands.ProcessorCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
@@ -129,7 +139,11 @@ func TestProcessorCreateCommand(t *testing.T) {
 	processorName := "my-processor"
 	functionRef := "my-func"
 	inputName := "input"
+	inParameterName := "in"
+	inputNameBinding := fmt.Sprintf("%s:%s", inParameterName, inputName)
 	outputName := "output"
+	outParameterName := "out"
+	outputNameBinding := fmt.Sprintf("%s:%s", outParameterName, outputName)
 	inputNameOther := "otherinput"
 	outputNameOther := "otheroutput"
 
@@ -171,8 +185,11 @@ metadata:
   namespace: default
 spec:
   functionRef: my-func
+  inputNames:
+  - ""
   inputs:
   - input
+  outputNames: []
   outputs: []
 status: {}
 
@@ -211,6 +228,28 @@ Created processor "my-processor"
 						FunctionRef: functionRef,
 						Inputs:      []string{inputName, inputNameOther},
 						Outputs:     []string{outputName},
+					},
+				},
+			},
+			ExpectOutput: `
+Created processor "my-processor"
+`,
+		},
+		{
+			Name: "create with some explicit parameter bindings",
+			Args: []string{processorName, cli.FunctionRefFlagName, functionRef, cli.InputFlagName, inputNameBinding, cli.InputFlagName, inputNameOther, cli.OutputFlagName, outputNameOther, cli.OutputFlagName, outputNameBinding},
+			ExpectCreates: []runtime.Object{
+				&streamv1alpha1.Processor{
+					ObjectMeta: metav1.ObjectMeta{
+						Namespace: defaultNamespace,
+						Name:      processorName,
+					},
+					Spec: streamv1alpha1.ProcessorSpec{
+						FunctionRef: functionRef,
+						Inputs:      []string{inputName, inputNameOther},
+						InputNames:  []string{inParameterName, ""},
+						Outputs:     []string{outputNameOther, outputName},
+						OutputNames: []string{"", outParameterName},
 					},
 				},
 			},
@@ -300,7 +339,9 @@ Created processor "my-processor"
 					Spec: streamv1alpha1.ProcessorSpec{
 						FunctionRef: functionRef,
 						Inputs:      []string{inputName},
+						InputNames:  []string{""},
 						Outputs:     []string{},
+						OutputNames: []string{},
 					},
 				}, cli.TailSinceCreateDefault, mock.Anything).Return(nil).Run(func(args mock.Arguments) {
 					fmt.Fprintf(c.Stdout, "...log output...\n")
@@ -352,7 +393,9 @@ Processor "my-processor" is ready
 					Spec: streamv1alpha1.ProcessorSpec{
 						FunctionRef: functionRef,
 						Inputs:      []string{inputName},
+						InputNames:  []string{""},
 						Outputs:     []string{},
+						OutputNames: []string{},
 					},
 				}, cli.TailSinceCreateDefault, mock.Anything).Return(k8s.ErrWaitTimeout).Run(func(args mock.Arguments) {
 					ctx := args[0].(context.Context)
@@ -415,7 +458,9 @@ To continue watching logs run: riff processor tail my-processor --namespace defa
 					Spec: streamv1alpha1.ProcessorSpec{
 						FunctionRef: functionRef,
 						Inputs:      []string{inputName},
+						InputNames:  []string{""},
 						Outputs:     []string{},
+						OutputNames: []string{},
 					},
 				}, cli.TailSinceCreateDefault, mock.Anything).Return(fmt.Errorf("kail error"))
 				return ctx, nil

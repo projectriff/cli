@@ -79,6 +79,8 @@ func (opts *ProcessorCreateOptions) Validate(ctx context.Context) cli.FieldError
 }
 
 func (opts *ProcessorCreateOptions) Exec(ctx context.Context, c *cli.Config) error {
+	inputNames, inputs := parseParameterBindings(opts.Inputs)
+	outputNames, outputs := parseParameterBindings(opts.Outputs)
 	processor := &streamv1alpha1.Processor{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: opts.Namespace,
@@ -86,8 +88,10 @@ func (opts *ProcessorCreateOptions) Exec(ctx context.Context, c *cli.Config) err
 		},
 		Spec: streamv1alpha1.ProcessorSpec{
 			FunctionRef: opts.FunctionRef,
-			Inputs:      opts.Inputs,
-			Outputs:     opts.Outputs,
+			Inputs:      inputs,
+			InputNames:  inputNames,
+			Outputs:     outputs,
+			OutputNames: outputNames,
 		},
 	}
 
@@ -161,4 +165,28 @@ func NewProcessorCreateCommand(ctx context.Context, c *cli.Config) *cobra.Comman
 	cmd.Flags().BoolVar(&opts.DryRun, cli.StripDash(cli.DryRunFlagName), false, "print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr")
 
 	return cmd
+}
+
+// Parse parameter-stream name bindings, returns parameter and stream names
+//
+// Valid values are:
+//  - ${PARAM_NAME}:${STREAM_NAME}
+//  - ${STREAM_NAME}
+//
+// Default values are handled on the server side
+func parseParameterBindings(parameterBindings []string) ([]string, []string) {
+	separator := ":"
+	streamNames := make([]string, len(parameterBindings))
+	parameterNames := make([]string, len(parameterBindings))
+	for i, parameterBinding := range parameterBindings {
+		bindings := strings.SplitAfterN(parameterBinding, separator, 2)
+		if len(bindings) == 2 {
+			parameterName := bindings[0]
+			parameterNames[i] = parameterName[:len(parameterName)-len(separator)]
+			streamNames[i] = bindings[1]
+		} else {
+			streamNames[i] = bindings[0]
+		}
+	}
+	return parameterNames, streamNames
 }
