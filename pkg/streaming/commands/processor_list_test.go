@@ -86,8 +86,8 @@ No processors found.
 				},
 			},
 			ExpectOutput: `
-NAME             FUNCTION   INPUTS    OUTPUTS   STATUS      AGE
-test-processor   <empty>    <empty>   <empty>   <unknown>   <unknown>
+NAME             FUNCTION   INPUTS    INPUT NAMES   OUTPUTS   OUTPUT NAMES   STATUS      AGE
+test-processor   <empty>    <empty>   <empty>       <empty>   <empty>        <unknown>   <unknown>
 `,
 		},
 		{
@@ -123,9 +123,9 @@ No processors found.
 				},
 			},
 			ExpectOutput: `
-NAMESPACE         NAME                   FUNCTION   INPUTS    OUTPUTS   STATUS      AGE
-default           test-processor         <empty>    <empty>   <empty>   <unknown>   <unknown>
-other-namespace   test-other-processor   <empty>    <empty>   <empty>   <unknown>   <unknown>
+NAMESPACE         NAME                   FUNCTION   INPUTS    INPUT NAMES   OUTPUTS   OUTPUT NAMES   STATUS      AGE
+default           test-processor         <empty>    <empty>   <empty>       <empty>   <empty>        <unknown>   <unknown>
+other-namespace   test-other-processor   <empty>    <empty>   <empty>       <empty>   <empty>        <unknown>   <unknown>
 `,
 		},
 		{
@@ -140,7 +140,9 @@ other-namespace   test-other-processor   <empty>    <empty>   <empty>   <unknown
 					Spec: streamv1alpha1.ProcessorSpec{
 						FunctionRef: "square",
 						Inputs:      []string{"numbers", "morenumbers"},
+						InputNames:  []string{"n1", "n2"},
 						Outputs:     []string{"squares"},
+						OutputNames: []string{"s"},
 					},
 					Status: streamv1alpha1.ProcessorStatus{
 						Status: apis.Status{
@@ -152,8 +154,8 @@ other-namespace   test-other-processor   <empty>    <empty>   <empty>   <unknown
 				},
 			},
 			ExpectOutput: `
-NAME     FUNCTION   INPUTS                OUTPUTS   STATUS   AGE
-square   square     numbers,morenumbers   squares   Ready    <unknown>
+NAME     FUNCTION   INPUTS                INPUT NAMES   OUTPUTS   OUTPUT NAMES   STATUS   AGE
+square   square     numbers,morenumbers   n1,n2         squares   s              Ready    <unknown>
 `,
 		},
 		{
