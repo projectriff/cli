@@ -29,7 +29,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/projectriff/cli/pkg/cli"
-	"github.com/projectriff/system/pkg/apis"
 	"github.com/spf13/cobra"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -390,8 +389,8 @@ var (
 )
 
 func applyDefaults(o runtime.Object) {
-	if d, ok := o.(apis.Defaultable); ok {
-		d.SetDefaults(context.Background())
+	if d, ok := o.(defaultable); ok {
+		d.Default()
 	}
 }
 
@@ -436,4 +435,8 @@ func fakeExecCommand(helper string) func(context.Context, string, ...string) *ex
 		cmd.Env = []string{"GO_WANT_HELPER_PROCESS=1"}
 		return cmd
 	}
+}
+
+type defaultable interface {
+	Default()
 }
