@@ -139,7 +139,7 @@ func (opts *ProcessorListOptions) printColumns() []metav1beta1.TableColumnDefini
 	}
 }
 
-func prependParameterNames(streams []string, parameters []string) []string {
+func prependParameterNames(streams, parameters []string) []string {
 	result := make([]string, len(streams))
 	for i, streamName := range streams {
 		parameterName := parameters[i]
