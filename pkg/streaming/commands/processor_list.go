@@ -120,10 +120,8 @@ func (opts *ProcessorListOptions) print(processor *streamv1alpha1.Processor, _ p
 	row.Cells = append(row.Cells,
 		processor.Name,
 		cli.FormatEmptyString(processor.Spec.FunctionRef),
-		cli.FormatEmptyString(strings.Join(processor.Spec.Inputs, ",")),
-		cli.FormatEmptyString(strings.Join(processor.Spec.InputNames, ",")),
-		cli.FormatEmptyString(strings.Join(processor.Spec.Outputs, ",")),
-		cli.FormatEmptyString(strings.Join(processor.Spec.OutputNames, ",")),
+		cli.FormatEmptyString(strings.Join(prependParameterNames(processor.Spec.Inputs, processor.Spec.InputNames), ",")),
+		cli.FormatEmptyString(strings.Join(prependParameterNames(processor.Spec.Outputs, processor.Spec.OutputNames), ",")),
 		cli.FormatConditionStatus(processor.Status.GetCondition(streamv1alpha1.ProcessorConditionReady)),
 		cli.FormatTimestampSince(processor.CreationTimestamp, now),
 	)
@@ -135,10 +133,21 @@ func (opts *ProcessorListOptions) printColumns() []metav1beta1.TableColumnDefini
 		{Name: "Name", Type: "string"},
 		{Name: "Function", Type: "string"},
 		{Name: "Inputs", Type: "string"},
-		{Name: "Input names", Type: "string"},
 		{Name: "Outputs", Type: "string"},
-		{Name: "Output names", Type: "string"},
 		{Name: "Status", Type: "string"},
 		{Name: "Age", Type: "string"},
 	}
+}
+
+func prependParameterNames(streams []string, parameters []string) []string {
+	result := make([]string, len(streams))
+	for i, streamName := range streams {
+		parameterName := parameters[i]
+		if parameterName == "" {
+			result[i] = streamName
+		} else {
+			result[i] = fmt.Sprintf("%s:%s", parameterName, streamName)
+		}
+	}
+	return result
 }
