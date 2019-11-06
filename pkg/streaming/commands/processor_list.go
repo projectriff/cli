@@ -120,8 +120,8 @@ func (opts *ProcessorListOptions) print(processor *streamv1alpha1.Processor, _ p
 	row.Cells = append(row.Cells,
 		processor.Name,
 		cli.FormatEmptyString(processor.Spec.FunctionRef),
-		cli.FormatEmptyString(strings.Join(prependAliases(processor.Spec.Inputs), ",")),
-		cli.FormatEmptyString(strings.Join(prependAliases(processor.Spec.Outputs), ",")),
+		cli.FormatEmptyString(strings.Join(prependAliases(processor.Spec.Inputs), ", ")),
+		cli.FormatEmptyString(strings.Join(prependAliases(processor.Spec.Outputs), ", ")),
 		cli.FormatConditionStatus(processor.Status.GetCondition(streamv1alpha1.ProcessorConditionReady)),
 		cli.FormatTimestampSince(processor.CreationTimestamp, now),
 	)

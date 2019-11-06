@@ -204,7 +204,10 @@ Created processor "my-processor"
 					},
 					Spec: streamv1alpha1.ProcessorSpec{
 						FunctionRef: functionRef,
-						Inputs:      []streamv1alpha1.StreamBinding{{Stream: inputName}, {Stream: inputNameOther}},
+						Inputs: []streamv1alpha1.StreamBinding{
+							{Stream: inputName},
+							{Stream: inputNameOther},
+						},
 					},
 				},
 			},
@@ -223,8 +226,11 @@ Created processor "my-processor"
 					},
 					Spec: streamv1alpha1.ProcessorSpec{
 						FunctionRef: functionRef,
-						Inputs:      []streamv1alpha1.StreamBinding{{Stream: inputName}, {Stream: inputNameOther}},
-						Outputs:     []streamv1alpha1.StreamBinding{{Stream: outputName}},
+						Inputs: []streamv1alpha1.StreamBinding{
+							{Stream: inputName},
+							{Stream: inputNameOther},
+						},
+						Outputs: []streamv1alpha1.StreamBinding{{Stream: outputName}},
 					},
 				},
 			},
@@ -243,8 +249,14 @@ Created processor "my-processor"
 					},
 					Spec: streamv1alpha1.ProcessorSpec{
 						FunctionRef: functionRef,
-						Inputs:      []streamv1alpha1.StreamBinding{{Stream: inputName, Alias: inParameterName}, {Stream: inputNameOther}},
-						Outputs:     []streamv1alpha1.StreamBinding{{Stream: outputNameOther}, {Stream: outputName, Alias: outParameterName}},
+						Inputs: []streamv1alpha1.StreamBinding{
+							{Stream: inputName, Alias: inParameterName},
+							{Stream: inputNameOther},
+						},
+						Outputs: []streamv1alpha1.StreamBinding{
+							{Stream: outputNameOther},
+							{Stream: outputName, Alias: outParameterName},
+						},
 					},
 				},
 			},
@@ -263,8 +275,14 @@ Created processor "my-processor"
 					},
 					Spec: streamv1alpha1.ProcessorSpec{
 						FunctionRef: functionRef,
-						Inputs:      []streamv1alpha1.StreamBinding{{Stream: inputName}, {Stream: inputNameOther}},
-						Outputs:     []streamv1alpha1.StreamBinding{{Stream: outputName}, {Stream: outputNameOther}},
+						Inputs: []streamv1alpha1.StreamBinding{
+							{Stream: inputName},
+							{Stream: inputNameOther},
+						},
+						Outputs: []streamv1alpha1.StreamBinding{
+							{Stream: outputName},
+							{Stream: outputNameOther},
+						},
 					},
 				},
 			},

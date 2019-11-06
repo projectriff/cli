@@ -152,8 +152,8 @@ other-namespace   test-other-processor   <empty>    <empty>   <empty>   <unknown
 				},
 			},
 			ExpectOutput: `
-NAME     FUNCTION   INPUTS                      OUTPUTS     STATUS   AGE
-square   square     n1:numbers,n2:morenumbers   s:squares   Ready    <unknown>
+NAME     FUNCTION   INPUTS                       OUTPUTS     STATUS   AGE
+square   square     n1:numbers, n2:morenumbers   s:squares   Ready    <unknown>
 `,
 		},
 		{
