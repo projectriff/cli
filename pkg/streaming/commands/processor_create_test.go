@@ -164,7 +164,7 @@ func TestProcessorCreateCommand(t *testing.T) {
 					},
 					Spec: streamv1alpha1.ProcessorSpec{
 						FunctionRef: functionRef,
-						Inputs:      []string{inputName},
+						Inputs:      []streamv1alpha1.StreamBinding{{Stream: inputName}},
 					},
 				},
 			},
@@ -185,11 +185,8 @@ metadata:
   namespace: default
 spec:
   functionRef: my-func
-  inputNames:
-  - ""
   inputs:
-  - input
-  outputNames: []
+  - stream: input
   outputs: []
 status: {}
 
@@ -207,7 +204,7 @@ Created processor "my-processor"
 					},
 					Spec: streamv1alpha1.ProcessorSpec{
 						FunctionRef: functionRef,
-						Inputs:      []string{inputName, inputNameOther},
+						Inputs:      []streamv1alpha1.StreamBinding{{Stream: inputName}, {Stream: inputNameOther}},
 					},
 				},
 			},
@@ -226,8 +223,8 @@ Created processor "my-processor"
 					},
 					Spec: streamv1alpha1.ProcessorSpec{
 						FunctionRef: functionRef,
-						Inputs:      []string{inputName, inputNameOther},
-						Outputs:     []string{outputName},
+						Inputs:      []streamv1alpha1.StreamBinding{{Stream: inputName}, {Stream: inputNameOther}},
+						Outputs:     []streamv1alpha1.StreamBinding{{Stream: outputName}},
 					},
 				},
 			},
@@ -246,10 +243,8 @@ Created processor "my-processor"
 					},
 					Spec: streamv1alpha1.ProcessorSpec{
 						FunctionRef: functionRef,
-						Inputs:      []string{inputName, inputNameOther},
-						InputNames:  []string{inParameterName, ""},
-						Outputs:     []string{outputNameOther, outputName},
-						OutputNames: []string{"", outParameterName},
+						Inputs:      []streamv1alpha1.StreamBinding{{Stream: inputName, Alias: inParameterName}, {Stream: inputNameOther}},
+						Outputs:     []streamv1alpha1.StreamBinding{{Stream: outputNameOther}, {Stream: outputName, Alias: outParameterName}},
 					},
 				},
 			},
@@ -268,8 +263,8 @@ Created processor "my-processor"
 					},
 					Spec: streamv1alpha1.ProcessorSpec{
 						FunctionRef: functionRef,
-						Inputs:      []string{inputName, inputNameOther},
-						Outputs:     []string{outputName, outputNameOther},
+						Inputs:      []streamv1alpha1.StreamBinding{{Stream: inputName}, {Stream: inputNameOther}},
+						Outputs:     []streamv1alpha1.StreamBinding{{Stream: outputName}, {Stream: outputNameOther}},
 					},
 				},
 			},
@@ -296,7 +291,7 @@ Created processor "my-processor"
 					},
 					Spec: streamv1alpha1.ProcessorSpec{
 						FunctionRef: functionRef,
-						Inputs:      []string{inputName},
+						Inputs:      []streamv1alpha1.StreamBinding{{Stream: inputName}},
 					},
 				},
 			},
@@ -316,7 +311,7 @@ Created processor "my-processor"
 					},
 					Spec: streamv1alpha1.ProcessorSpec{
 						FunctionRef: functionRef,
-						Inputs:      []string{inputName},
+						Inputs:      []streamv1alpha1.StreamBinding{{Stream: inputName}},
 					},
 				},
 			},
@@ -338,10 +333,8 @@ Created processor "my-processor"
 					},
 					Spec: streamv1alpha1.ProcessorSpec{
 						FunctionRef: functionRef,
-						Inputs:      []string{inputName},
-						InputNames:  []string{""},
-						Outputs:     []string{},
-						OutputNames: []string{},
+						Inputs:      []streamv1alpha1.StreamBinding{{Stream: inputName}},
+						Outputs:     []streamv1alpha1.StreamBinding{},
 					},
 				}, cli.TailSinceCreateDefault, mock.Anything).Return(nil).Run(func(args mock.Arguments) {
 					fmt.Fprintf(c.Stdout, "...log output...\n")
@@ -365,8 +358,8 @@ Created processor "my-processor"
 					},
 					Spec: streamv1alpha1.ProcessorSpec{
 						FunctionRef: functionRef,
-						Inputs:      []string{inputName},
-						Outputs:     []string{},
+						Inputs:      []streamv1alpha1.StreamBinding{{Stream: inputName}},
+						Outputs:     []streamv1alpha1.StreamBinding{},
 					},
 				},
 			},
@@ -392,10 +385,8 @@ Processor "my-processor" is ready
 					},
 					Spec: streamv1alpha1.ProcessorSpec{
 						FunctionRef: functionRef,
-						Inputs:      []string{inputName},
-						InputNames:  []string{""},
-						Outputs:     []string{},
-						OutputNames: []string{},
+						Inputs:      []streamv1alpha1.StreamBinding{{Stream: inputName}},
+						Outputs:     []streamv1alpha1.StreamBinding{},
 					},
 				}, cli.TailSinceCreateDefault, mock.Anything).Return(k8s.ErrWaitTimeout).Run(func(args mock.Arguments) {
 					ctx := args[0].(context.Context)
@@ -422,8 +413,8 @@ Processor "my-processor" is ready
 					},
 					Spec: streamv1alpha1.ProcessorSpec{
 						FunctionRef: functionRef,
-						Inputs:      []string{inputName},
-						Outputs:     []string{},
+						Inputs:      []streamv1alpha1.StreamBinding{{Stream: inputName}},
+						Outputs:     []streamv1alpha1.StreamBinding{},
 					},
 				},
 			},
@@ -457,10 +448,8 @@ To continue watching logs run: riff processor tail my-processor --namespace defa
 					},
 					Spec: streamv1alpha1.ProcessorSpec{
 						FunctionRef: functionRef,
-						Inputs:      []string{inputName},
-						InputNames:  []string{""},
-						Outputs:     []string{},
-						OutputNames: []string{},
+						Inputs:      []streamv1alpha1.StreamBinding{{Stream: inputName}},
+						Outputs:     []streamv1alpha1.StreamBinding{},
 					},
 				}, cli.TailSinceCreateDefault, mock.Anything).Return(fmt.Errorf("kail error"))
 				return ctx, nil
@@ -482,8 +471,8 @@ To continue watching logs run: riff processor tail my-processor --namespace defa
 					},
 					Spec: streamv1alpha1.ProcessorSpec{
 						FunctionRef: functionRef,
-						Inputs:      []string{inputName},
-						Outputs:     []string{},
+						Inputs:      []streamv1alpha1.StreamBinding{{Stream: inputName}},
+						Outputs:     []streamv1alpha1.StreamBinding{},
 					},
 				},
 			},
