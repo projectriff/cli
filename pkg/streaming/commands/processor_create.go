@@ -165,7 +165,7 @@ func NewProcessorCreateCommand(ctx context.Context, c *cli.Config) *cobra.Comman
 	return cmd
 }
 
-// Parse stream bindings, returns potential alias and stream names.
+// Parse stream bindings, returns potential aliases and stream names.
 //
 // Valid values are:
 //  - ${ALIAS}:${STREAM_NAME}
