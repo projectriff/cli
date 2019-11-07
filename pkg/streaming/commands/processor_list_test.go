@@ -83,11 +83,12 @@ No processors found.
 						Name:      processorName,
 						Namespace: defaultNamespace,
 					},
+					Spec: streamv1alpha1.ProcessorSpec{Build: &streamv1alpha1.Build{FunctionRef: "fn"}},
 				},
 			},
 			ExpectOutput: `
 NAME             FUNCTION   INPUTS    OUTPUTS   STATUS      AGE
-test-processor   <empty>    <empty>   <empty>   <unknown>   <unknown>
+test-processor   fn         <empty>   <empty>   <unknown>   <unknown>
 `,
 		},
 		{
@@ -114,18 +115,20 @@ No processors found.
 						Name:      processorName,
 						Namespace: defaultNamespace,
 					},
+					Spec: streamv1alpha1.ProcessorSpec{Build: &streamv1alpha1.Build{FunctionRef: "fn"}},
 				},
 				&streamv1alpha1.Processor{
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      processorOtherName,
 						Namespace: otherNamespace,
 					},
+					Spec: streamv1alpha1.ProcessorSpec{Build: &streamv1alpha1.Build{FunctionRef: "fn"}},
 				},
 			},
 			ExpectOutput: `
 NAMESPACE         NAME                   FUNCTION   INPUTS    OUTPUTS   STATUS      AGE
-default           test-processor         <empty>    <empty>   <empty>   <unknown>   <unknown>
-other-namespace   test-other-processor   <empty>    <empty>   <empty>   <unknown>   <unknown>
+default           test-processor         fn         <empty>   <empty>   <unknown>   <unknown>
+other-namespace   test-other-processor   fn         <empty>   <empty>   <unknown>   <unknown>
 `,
 		},
 		{
@@ -138,9 +141,9 @@ other-namespace   test-other-processor   <empty>    <empty>   <empty>   <unknown
 						Namespace: defaultNamespace,
 					},
 					Spec: streamv1alpha1.ProcessorSpec{
-						FunctionRef: "square",
-						Inputs:      []streamv1alpha1.StreamBinding{{Stream: "numbers", Alias: "n1"}, {Stream: "morenumbers", Alias: "n2"}},
-						Outputs:     []streamv1alpha1.StreamBinding{{Stream: "squares", Alias: "s"}},
+						Build:   &streamv1alpha1.Build{FunctionRef: "square"},
+						Inputs:  []streamv1alpha1.StreamBinding{{Stream: "numbers", Alias: "n1"}, {Stream: "morenumbers", Alias: "n2"}},
+						Outputs: []streamv1alpha1.StreamBinding{{Stream: "squares", Alias: "s"}},
 					},
 					Status: streamv1alpha1.ProcessorStatus{
 						Status: apis.Status{
