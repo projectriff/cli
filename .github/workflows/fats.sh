@@ -65,7 +65,7 @@ for test in command; do
   echo "##[group]Run function $name"
 
   riff function create $name --image $image --namespace $NAMESPACE --tail \
-    --git-repo $(git remote get-url origin) --git-revision $(git rev-parse HEAD) --sub-path functions/uppercase/${test} &
+    --git-repo https://github.com/$fats_repo --git-revision $fats_refspec --sub-path functions/uppercase/${test} &
 
   riff core deployer create $name --function-ref $name --namespace $NAMESPACE --tail
   source $fats_dir/macros/invoke_core_deployer.sh $name "-H Content-Type:text/plain -H Accept:text/plain -d cli" CLI
