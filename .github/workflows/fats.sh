@@ -12,7 +12,7 @@ readonly slug=${version}-${git_timestamp}-${git_sha:0:16}
 # fetch FATS scripts
 fats_dir=`dirname "${BASH_SOURCE[0]}"`/fats
 fats_repo="projectriff/fats"
-fats_refspec=5ae597a5bdd1fec772217c4e7a816ce518ed3aa6 # master as of 2019-10-22
+fats_refspec=1728e95a256987f7ccc0dde2f66fa0298d1c122c # master as of 2019-11-07
 source `dirname "${BASH_SOURCE[0]}"`/fats-fetch.sh $fats_dir $fats_refspec $fats_repo
 source $fats_dir/.util.sh
 
@@ -58,30 +58,50 @@ kubectl create namespace $NAMESPACE
 fats_create_push_credentials $NAMESPACE
 
 # run test functions
-source $fats_dir/functions/helpers.sh
-
 for test in command; do
-  path=${fats_dir}/functions/uppercase/${test}
-  function_name=fats-cluster-uppercase-${test}
-  image=$(fats_image_repo ${function_name})
-  create_args="--git-repo https://github.com/${fats_repo}.git --git-revision ${fats_refspec} --sub-path functions/uppercase/${test}"
-  input_data=riff
-  expected_data=RIFF
-  runtime=core
+  name=fats-cluster-uppercase-${test}
+  image=$(fats_image_repo ${name})
 
-  run_function $path $function_name $image "${create_args}" $input_data $expected_data $runtime
+  echo "##[group]Run function $name"
+
+  riff function create $name --image $image --namespace $NAMESPACE --tail \
+    --git-repo https://github.com/$fats_repo --git-revision $fats_refspec --sub-path functions/uppercase/${test} &
+
+  riff core deployer create $name --function-ref $name --namespace $NAMESPACE --tail
+  source $fats_dir/macros/invoke_core_deployer.sh $name "-H Content-Type:text/plain -H Accept:text/plain -d cli" CLI
+  riff core deployer delete $name --namespace $NAMESPACE
+
+  riff knative deployer create $name --function-ref $name --namespace $NAMESPACE --tail
+  source $fats_dir/macros/invoke_knative_deployer.sh $name "-H Content-Type:text/plain -H Accept:text/plain -d cli" CLI
+  riff knative deployer delete $name --namespace $NAMESPACE
+
+  riff function delete $name --namespace $NAMESPACE
+  fats_delete_image $image
+
+  echo "##[endgroup]"
 done
 
 if [ "$machine" != "MinGw" ]; then
   for test in command; do
-    path=${fats_dir}/functions/uppercase/${test}
-    function_name=fats-local-uppercase-${test}
-    image=$(fats_image_repo ${function_name})
-    create_args="--local-path ."
-    input_data=riff
-    expected_data=RIFF
-    runtime=knative
+    name=fats-local-uppercase-${test}
+    image=$(fats_image_repo ${name})
 
-    run_function $path $function_name $image "${create_args}" $input_data $expected_data $runtime
+    echo "##[group]Run function $name"
+
+    riff function create $name --image $image --namespace $NAMESPACE --tail \
+      --local-path $fats_dir/functions/uppercase/${test} &
+
+    riff core deployer create $name --function-ref $name --namespace $NAMESPACE --tail
+    source $fats_dir/macros/invoke_core_deployer.sh $name "-H Content-Type:text/plain -H Accept:text/plain -d cli" CLI
+    riff core deployer delete $name --namespace $NAMESPACE
+
+    riff knative deployer create $name --function-ref $name --namespace $NAMESPACE --tail
+    source $fats_dir/macros/invoke_knative_deployer.sh $name "-H Content-Type:text/plain -H Accept:text/plain -d cli" CLI
+    riff knative deployer delete $name --namespace $NAMESPACE
+
+    riff function delete $name --namespace $NAMESPACE
+    fats_delete_image $image
+
+    echo "##[endgroup]"
   done
 fi
