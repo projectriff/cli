@@ -119,13 +119,21 @@ func (opts *ProcessorListOptions) print(processor *streamv1alpha1.Processor, _ p
 	}
 	row.Cells = append(row.Cells,
 		processor.Name,
-		cli.FormatEmptyString(processor.Spec.Build.FunctionRef),
+		cli.FormatEmptyString(functionRef(processor)),
 		cli.FormatEmptyString(strings.Join(prependAliases(processor.Spec.Inputs), ", ")),
 		cli.FormatEmptyString(strings.Join(prependAliases(processor.Spec.Outputs), ", ")),
 		cli.FormatConditionStatus(processor.Status.GetCondition(streamv1alpha1.ProcessorConditionReady)),
 		cli.FormatTimestampSince(processor.CreationTimestamp, now),
 	)
 	return []metav1beta1.TableRow{row}, nil
+}
+
+func functionRef(processor *streamv1alpha1.Processor) string {
+	if processor.Spec.Build != nil {
+		return processor.Spec.Build.FunctionRef
+	} else {
+		return ""
+	}
 }
 
 func (opts *ProcessorListOptions) printColumns() []metav1beta1.TableColumnDefinition {
