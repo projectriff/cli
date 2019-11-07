@@ -94,9 +94,9 @@ func (opts *ProcessorCreateOptions) Exec(ctx context.Context, c *cli.Config) err
 			Name:      opts.Name,
 		},
 		Spec: streamv1alpha1.ProcessorSpec{
-			FunctionRef: opts.FunctionRef,
-			Inputs:      inputs,
-			Outputs:     outputs,
+			Build:   &streamv1alpha1.Build{FunctionRef: opts.FunctionRef},
+			Inputs:  inputs,
+			Outputs: outputs,
 		},
 	}
 
