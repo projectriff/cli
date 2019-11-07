@@ -128,7 +128,7 @@ func (opts *ProcessorListOptions) print(processor *streamv1alpha1.Processor, _ p
 	return []metav1beta1.TableRow{row}, nil
 }
 
-func functionRef(processor *streamv1alpha1.Processor) string {
+func (*ProcessorListOptions) functionRef(processor *streamv1alpha1.Processor) string {
 	if processor.Spec.Build != nil {
 		return processor.Spec.Build.FunctionRef
 	} else {
