@@ -102,11 +102,7 @@ metadata:
   namespace: default
 spec:
   bootstrapServers: localhost:9092
-status:
-  liiklusDeploymentName: ""
-  liiklusServiceName: ""
-  provisionerDeploymentName: ""
-  provisionerServiceName: ""
+status: {}
 
 Created kafka provider "my-kafka-provider"
 `,
