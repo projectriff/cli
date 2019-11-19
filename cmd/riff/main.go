@@ -23,7 +23,9 @@ import (
 	"strings"
 
 	// load credential helpers
-	_ "k8s.io/client-go/plugin/pkg/client/auth"
+	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
+	_ "k8s.io/client-go/plugin/pkg/client/auth/oidc"
+	_ "k8s.io/client-go/plugin/pkg/client/auth/openstack"
 
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/riff/commands"
