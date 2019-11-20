@@ -45,6 +45,7 @@ const (
 	GitRevisionFlagName           = "--git-revision"
 	HandlerFlagName               = "--handler"
 	ImageFlagName                 = "--image"
+	IngressPolicyFlagName         = "--ingress-policy"
 	InputFlagName                 = "--input"
 	InvokerFlagName               = "--invoker"
 	KubeConfigFlagName            = "--kubeconfig"

@@ -41,6 +41,7 @@ riff core deployer create my-image-deployer --image registry.example.com/my-imag
       --function-ref name       name of function to deploy
   -h, --help                    help for create
       --image image             container image to deploy
+      --ingress-policy policy   ingress policy for network access to the workload, one of "ClusterLocal" or "External" (default "External")
       --limit-cpu cores         the maximum amount of cpu allowed, in CPU cores (500m = .5 cores)
       --limit-memory bytes      the maximum amount of memory allowed, in bytes (500Mi = 500MiB = 500 * 1024 * 1024)
   -n, --namespace name          kubernetes namespace (defaulted from kube config)

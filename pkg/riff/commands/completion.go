@@ -157,6 +157,11 @@ __` + c.Name + `_list_resource()
 	fi
 }
 
+__` + c.Name + `_ingress_policy()
+{
+	COMPREPLY=( $( compgen -W "ClusterLocal External" -- "$cur" ) )
+}
+
 __` + c.Name + `_custom_func() {
 	case ${last_command} in
 		` + c.Name + `_application_delete | ` + c.Name + `_application_status | ` + c.Name + `_application_tail)

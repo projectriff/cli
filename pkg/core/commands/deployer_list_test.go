@@ -87,7 +87,7 @@ No deployers found.
 				},
 			},
 			ExpectOutput: `
-NAME            TYPE        REF         SERVICE   STATUS      AGE
+NAME            TYPE        REF         URL       STATUS      AGE
 test-deployer   <unknown>   <unknown>   <empty>   <unknown>   <unknown>
 `,
 		},
@@ -124,7 +124,7 @@ No deployers found.
 				},
 			},
 			ExpectOutput: `
-NAMESPACE         NAME                  TYPE        REF         SERVICE   STATUS      AGE
+NAMESPACE         NAME                  TYPE        REF         URL       STATUS      AGE
 default           test-deployer         <unknown>   <unknown>   <empty>   <unknown>   <unknown>
 other-namespace   test-other-deployer   <unknown>   <unknown>   <empty>   <unknown>   <unknown>
 `,
@@ -151,8 +151,10 @@ other-namespace   test-other-deployer   <unknown>   <unknown>   <empty>   <unkno
 								{Type: corev1alpha1.DeployerConditionReady, Status: "True"},
 							},
 						},
-						DeploymentName: "img-deployer",
-						ServiceName:    "img-deployer",
+						Address: &apis.Addressable{
+							URL: "img.default.svc.cluster.local",
+						},
+						URL: "img.default.example.com",
 					},
 				},
 				&corev1alpha1.Deployer{
@@ -161,7 +163,8 @@ other-namespace   test-other-deployer   <unknown>   <unknown>   <empty>   <unkno
 						Namespace: defaultNamespace,
 					},
 					Spec: corev1alpha1.DeployerSpec{
-						Build: &corev1alpha1.Build{ApplicationRef: "petclinic"},
+						Build:         &corev1alpha1.Build{ApplicationRef: "petclinic"},
+						IngressPolicy: corev1alpha1.IngressPolicyExternal,
 					},
 					Status: corev1alpha1.DeployerStatus{
 						Status: apis.Status{
@@ -169,8 +172,10 @@ other-namespace   test-other-deployer   <unknown>   <unknown>   <empty>   <unkno
 								{Type: corev1alpha1.DeployerConditionReady, Status: "True"},
 							},
 						},
-						DeploymentName: "app-deployer",
-						ServiceName:    "app-deployer",
+						Address: &apis.Addressable{
+							URL: "app.default.svc.cluster.local",
+						},
+						URL: "app.default.example.com",
 					},
 				},
 				&corev1alpha1.Deployer{
@@ -179,7 +184,8 @@ other-namespace   test-other-deployer   <unknown>   <unknown>   <empty>   <unkno
 						Namespace: defaultNamespace,
 					},
 					Spec: corev1alpha1.DeployerSpec{
-						Build: &corev1alpha1.Build{FunctionRef: "square"},
+						Build:         &corev1alpha1.Build{FunctionRef: "square"},
+						IngressPolicy: corev1alpha1.IngressPolicyExternal,
 					},
 					Status: corev1alpha1.DeployerStatus{
 						Status: apis.Status{
@@ -187,8 +193,10 @@ other-namespace   test-other-deployer   <unknown>   <unknown>   <empty>   <unkno
 								{Type: corev1alpha1.DeployerConditionReady, Status: "True"},
 							},
 						},
-						DeploymentName: "func-deployer",
-						ServiceName:    "func-deployer",
+						Address: &apis.Addressable{
+							URL: "func.default.svc.cluster.local",
+						},
+						URL: "func.default.example.com",
 					},
 				},
 				&corev1alpha1.Deployer{
@@ -197,7 +205,8 @@ other-namespace   test-other-deployer   <unknown>   <unknown>   <empty>   <unkno
 						Namespace: defaultNamespace,
 					},
 					Spec: corev1alpha1.DeployerSpec{
-						Build: &corev1alpha1.Build{ContainerRef: "busybox"},
+						Build:         &corev1alpha1.Build{ContainerRef: "busybox"},
+						IngressPolicy: corev1alpha1.IngressPolicyClusterLocal,
 					},
 					Status: corev1alpha1.DeployerStatus{
 						Status: apis.Status{
@@ -205,17 +214,19 @@ other-namespace   test-other-deployer   <unknown>   <unknown>   <empty>   <unkno
 								{Type: corev1alpha1.DeployerConditionReady, Status: "True"},
 							},
 						},
-						DeploymentName: "container-deployer",
-						ServiceName:    "container-deployer",
+						Address: &apis.Addressable{
+							URL: "container.default.svc.cluster.local",
+						},
+						URL: "container.default.example.com",
 					},
 				},
 			},
 			ExpectOutput: `
-NAME        TYPE          REF                 SERVICE              STATUS   AGE
-app         application   petclinic           app-deployer         Ready    <unknown>
-container   container     busybox             container-deployer   Ready    <unknown>
-func        function      square              func-deployer        Ready    <unknown>
-img         image         projectriff/upper   img-deployer         Ready    <unknown>
+NAME        TYPE          REF                 URL                                   STATUS   AGE
+app         application   petclinic           app.default.example.com               Ready    <unknown>
+container   container     busybox             container.default.svc.cluster.local   Ready    <unknown>
+func        function      square              func.default.example.com              Ready    <unknown>
+img         image         projectriff/upper   img.default.example.com               Ready    <unknown>
 `,
 		},
 		{
