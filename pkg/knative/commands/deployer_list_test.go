@@ -87,7 +87,7 @@ No deployers found.
 				},
 			},
 			ExpectOutput: `
-NAME            TYPE        REF         HOST      STATUS      AGE
+NAME            TYPE        REF         URL       STATUS      AGE
 test-deployer   <unknown>   <unknown>   <empty>   <unknown>   <unknown>
 `,
 		},
@@ -124,7 +124,7 @@ No deployers found.
 				},
 			},
 			ExpectOutput: `
-NAMESPACE         NAME                  TYPE        REF         HOST      STATUS      AGE
+NAMESPACE         NAME                  TYPE        REF         URL       STATUS      AGE
 default           test-deployer         <unknown>   <unknown>   <empty>   <unknown>   <unknown>
 other-namespace   test-other-deployer   <unknown>   <unknown>   <empty>   <unknown>   <unknown>
 `,
@@ -151,6 +151,9 @@ other-namespace   test-other-deployer   <unknown>   <unknown>   <empty>   <unkno
 								{Type: knativev1alpha1.DeployerConditionReady, Status: "True"},
 							},
 						},
+						Address: &apis.Addressable{
+							URL: "img.default.svc.cluster.local",
+						},
 						URL: "img.default.example.com",
 					},
 				},
@@ -160,13 +163,17 @@ other-namespace   test-other-deployer   <unknown>   <unknown>   <empty>   <unkno
 						Namespace: defaultNamespace,
 					},
 					Spec: knativev1alpha1.DeployerSpec{
-						Build: &knativev1alpha1.Build{ApplicationRef: "petclinic"},
+						Build:         &knativev1alpha1.Build{ApplicationRef: "petclinic"},
+						IngressPolicy: knativev1alpha1.IngressPolicyExternal,
 					},
 					Status: knativev1alpha1.DeployerStatus{
 						Status: apis.Status{
 							Conditions: apis.Conditions{
 								{Type: knativev1alpha1.DeployerConditionReady, Status: "True"},
 							},
+						},
+						Address: &apis.Addressable{
+							URL: "app.default.svc.cluster.local",
 						},
 						URL: "app.default.example.com",
 					},
@@ -177,13 +184,17 @@ other-namespace   test-other-deployer   <unknown>   <unknown>   <empty>   <unkno
 						Namespace: defaultNamespace,
 					},
 					Spec: knativev1alpha1.DeployerSpec{
-						Build: &knativev1alpha1.Build{FunctionRef: "square"},
+						Build:         &knativev1alpha1.Build{FunctionRef: "square"},
+						IngressPolicy: knativev1alpha1.IngressPolicyExternal,
 					},
 					Status: knativev1alpha1.DeployerStatus{
 						Status: apis.Status{
 							Conditions: apis.Conditions{
 								{Type: knativev1alpha1.DeployerConditionReady, Status: "True"},
 							},
+						},
+						Address: &apis.Addressable{
+							URL: "func.default.svc.cluster.local",
 						},
 						URL: "func.default.example.com",
 					},
@@ -194,7 +205,8 @@ other-namespace   test-other-deployer   <unknown>   <unknown>   <empty>   <unkno
 						Namespace: defaultNamespace,
 					},
 					Spec: knativev1alpha1.DeployerSpec{
-						Build: &knativev1alpha1.Build{ContainerRef: "busybox"},
+						Build:         &knativev1alpha1.Build{ContainerRef: "busybox"},
+						IngressPolicy: knativev1alpha1.IngressPolicyClusterLocal,
 					},
 					Status: knativev1alpha1.DeployerStatus{
 						Status: apis.Status{
@@ -202,16 +214,19 @@ other-namespace   test-other-deployer   <unknown>   <unknown>   <empty>   <unkno
 								{Type: knativev1alpha1.DeployerConditionReady, Status: "True"},
 							},
 						},
+						Address: &apis.Addressable{
+							URL: "container.default.svc.cluster.local",
+						},
 						URL: "container.default.example.com",
 					},
 				},
 			},
 			ExpectOutput: `
-NAME        TYPE          REF                 HOST                            STATUS   AGE
-app         application   petclinic           app.default.example.com         Ready    <unknown>
-container   container     busybox             container.default.example.com   Ready    <unknown>
-func        function      square              func.default.example.com        Ready    <unknown>
-img         image         projectriff/upper   img.default.example.com         Ready    <unknown>
+NAME        TYPE          REF                 URL                                   STATUS   AGE
+app         application   petclinic           app.default.example.com               Ready    <unknown>
+container   container     busybox             container.default.svc.cluster.local   Ready    <unknown>
+func        function      square              func.default.example.com              Ready    <unknown>
+img         image         projectriff/upper   img.default.example.com               Ready    <unknown>
 `,
 		},
 		{

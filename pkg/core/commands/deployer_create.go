@@ -43,6 +43,8 @@ type DeployerCreateOptions struct {
 	ContainerRef   string
 	FunctionRef    string
 
+	IngressPolicy string
+
 	Env     []string
 	EnvFrom []string
 
@@ -100,6 +102,10 @@ func (opts *DeployerCreateOptions) Validate(ctx context.Context) cli.FieldErrors
 		errs = errs.Also(cli.ErrMultipleOneOf(used...))
 	}
 
+	if opts.IngressPolicy != string(corev1alpha1.IngressPolicyClusterLocal) && opts.IngressPolicy != string(corev1alpha1.IngressPolicyExternal) {
+		errs = errs.Also(cli.ErrInvalidValue(opts.IngressPolicy, cli.IngressPolicyFlagName))
+	}
+
 	errs = errs.Also(validation.EnvVars(opts.Env, cli.EnvFlagName))
 	errs = errs.Also(validation.EnvVarFroms(opts.EnvFrom, cli.EnvFromFlagName))
 
@@ -135,6 +141,7 @@ func (opts *DeployerCreateOptions) Exec(ctx context.Context, c *cli.Config) erro
 			Template: &corev1.PodSpec{
 				Containers: []corev1.Container{{}},
 			},
+			IngressPolicy: corev1alpha1.IngressPolicy(opts.IngressPolicy),
 		},
 	}
 
@@ -259,6 +266,8 @@ and ` + cli.EnvFromFlagName + ` to map values from a ConfigMap or Secret.
 	_ = cmd.MarkFlagCustom(cli.StripDash(cli.ContainerRefFlagName), "__"+c.Name+"_list_containers")
 	cmd.Flags().StringVar(&opts.FunctionRef, cli.StripDash(cli.FunctionRefFlagName), "", "`name` of function to deploy")
 	_ = cmd.MarkFlagCustom(cli.StripDash(cli.FunctionRefFlagName), "__"+c.Name+"_list_functions")
+	cmd.Flags().StringVar(&opts.IngressPolicy, cli.StripDash(cli.IngressPolicyFlagName), string(corev1alpha1.IngressPolicyExternal), fmt.Sprintf("ingress `policy` for network access to the workload, one of %q or %q", corev1alpha1.IngressPolicyClusterLocal, corev1alpha1.IngressPolicyExternal))
+	_ = cmd.MarkFlagCustom(cli.StripDash(cli.IngressPolicyFlagName), "__"+c.Name+"_ingress_policy")
 	cmd.Flags().StringArrayVar(&opts.Env, cli.StripDash(cli.EnvFlagName), []string{}, fmt.Sprintf("environment `variable` defined as a key value pair separated by an equals sign, example %q (may be set multiple times)", fmt.Sprintf("%s MY_VAR=my-value", cli.EnvFlagName)))
 	cmd.Flags().StringArrayVar(&opts.EnvFrom, cli.StripDash(cli.EnvFromFlagName), []string{}, fmt.Sprintf("environment `variable` from a config map or secret, example %q, %q (may be set multiple times)", fmt.Sprintf("%s MY_SECRET_VALUE=secretKeyRef:my-secret-name:key-in-secret", cli.EnvFromFlagName), fmt.Sprintf("%s MY_CONFIG_MAP_VALUE=configMapKeyRef:my-config-map-name:key-in-config-map", cli.EnvFromFlagName)))
 	cmd.Flags().StringVar(&opts.LimitCPU, cli.StripDash(cli.LimitCPUFlagName), "", "the maximum amount of cpu allowed, in CPU `cores` (500m = .5 cores)")

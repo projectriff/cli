@@ -118,12 +118,20 @@ func (opts *DeployerListOptions) print(deployer *knativev1alpha1.Deployer, _ pri
 		Object: runtime.RawExtension{Object: deployer},
 	}
 	refType, refValue := opts.formatRef(deployer)
-	host := deployer.Status.URL
+	var url string
+	switch deployer.Spec.IngressPolicy {
+	case knativev1alpha1.IngressPolicyClusterLocal:
+		url = deployer.Status.Address.URL
+	case knativev1alpha1.IngressPolicyExternal:
+		url = deployer.Status.URL
+	default:
+		url = deployer.Status.URL
+	}
 	row.Cells = append(row.Cells,
 		deployer.Name,
 		refType,
 		refValue,
-		cli.FormatEmptyString(host),
+		cli.FormatEmptyString(url),
 		cli.FormatConditionStatus(deployer.Status.GetCondition(knativev1alpha1.DeployerConditionReady)),
 		cli.FormatTimestampSince(deployer.CreationTimestamp, now),
 	)
@@ -135,7 +143,7 @@ func (opts *DeployerListOptions) printColumns() []metav1beta1.TableColumnDefinit
 		{Name: "Name", Type: "string"},
 		{Name: "Type", Type: "string"},
 		{Name: "Ref", Type: "string"},
-		{Name: "Host", Type: "string"},
+		{Name: "URL", Type: "string"},
 		{Name: "Status", Type: "string"},
 		{Name: "Age", Type: "string"},
 	}

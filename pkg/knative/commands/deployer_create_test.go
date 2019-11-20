@@ -45,6 +45,7 @@ func TestDeployerCreateOptions(t *testing.T) {
 			},
 			ExpectFieldErrors: rifftesting.InvalidResourceOptionsFieldError.Also(
 				cli.ErrMissingOneOf(cli.ApplicationRefFlagName, cli.ContainerRefFlagName, cli.FunctionRefFlagName, cli.ImageFlagName),
+				cli.ErrInvalidValue("", cli.IngressPolicyFlagName),
 			),
 		},
 		{
@@ -52,6 +53,7 @@ func TestDeployerCreateOptions(t *testing.T) {
 			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				ApplicationRef:  "my-application",
+				IngressPolicy:   string(knativev1alpha1.IngressPolicyClusterLocal),
 			},
 			ShouldValidate: true,
 		},
@@ -60,6 +62,7 @@ func TestDeployerCreateOptions(t *testing.T) {
 			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				ContainerRef:    "my-container",
+				IngressPolicy:   string(knativev1alpha1.IngressPolicyClusterLocal),
 			},
 			ShouldValidate: true,
 		},
@@ -68,6 +71,7 @@ func TestDeployerCreateOptions(t *testing.T) {
 			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				FunctionRef:     "my-function",
+				IngressPolicy:   string(knativev1alpha1.IngressPolicyClusterLocal),
 			},
 			ShouldValidate: true,
 		},
@@ -76,6 +80,7 @@ func TestDeployerCreateOptions(t *testing.T) {
 			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
+				IngressPolicy:   string(knativev1alpha1.IngressPolicyClusterLocal),
 			},
 			ShouldValidate: true,
 		},
@@ -87,14 +92,34 @@ func TestDeployerCreateOptions(t *testing.T) {
 				ContainerRef:    "my-container",
 				FunctionRef:     "my-function",
 				Image:           "example.com/repo:tag",
+				IngressPolicy:   string(knativev1alpha1.IngressPolicyClusterLocal),
 			},
 			ExpectFieldErrors: cli.ErrMultipleOneOf(cli.ApplicationRefFlagName, cli.ContainerRefFlagName, cli.FunctionRefFlagName, cli.ImageFlagName),
+		},
+		{
+			Name: "with external ingress",
+			Options: &commands.DeployerCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Image:           "example.com/repo:tag",
+				IngressPolicy:   string(knativev1alpha1.IngressPolicyExternal),
+			},
+			ShouldValidate: true,
+		},
+		{
+			Name: "with bogus ingress",
+			Options: &commands.DeployerCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Image:           "example.com/repo:tag",
+				IngressPolicy:   "bogus",
+			},
+			ExpectFieldErrors: cli.ErrInvalidValue("bogus", cli.IngressPolicyFlagName),
 		},
 		{
 			Name: "with env",
 			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
+				IngressPolicy:   string(knativev1alpha1.IngressPolicyClusterLocal),
 				Env:             []string{"VAR1=foo", "VAR2=bar"},
 			},
 			ShouldValidate: true,
@@ -104,6 +129,7 @@ func TestDeployerCreateOptions(t *testing.T) {
 			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
+				IngressPolicy:   string(knativev1alpha1.IngressPolicyClusterLocal),
 				Env:             []string{"=foo"},
 			},
 			ExpectFieldErrors: cli.ErrInvalidArrayValue("=foo", cli.EnvFlagName, 0),
@@ -113,6 +139,7 @@ func TestDeployerCreateOptions(t *testing.T) {
 			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
+				IngressPolicy:   string(knativev1alpha1.IngressPolicyClusterLocal),
 				EnvFrom:         []string{"VAR1=secretKeyRef:name:key"},
 			},
 			ShouldValidate: true,
@@ -122,6 +149,7 @@ func TestDeployerCreateOptions(t *testing.T) {
 			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
+				IngressPolicy:   string(knativev1alpha1.IngressPolicyClusterLocal),
 				EnvFrom:         []string{"VAR1=configMapKeyRef:name:key"},
 			},
 			ShouldValidate: true,
@@ -131,6 +159,7 @@ func TestDeployerCreateOptions(t *testing.T) {
 			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
+				IngressPolicy:   string(knativev1alpha1.IngressPolicyClusterLocal),
 				EnvFrom:         []string{"VAR1=someOtherKeyRef:name:key"},
 			},
 			ExpectFieldErrors: cli.ErrInvalidArrayValue("VAR1=someOtherKeyRef:name:key", cli.EnvFromFlagName, 0),
@@ -140,6 +169,7 @@ func TestDeployerCreateOptions(t *testing.T) {
 			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
+				IngressPolicy:   string(knativev1alpha1.IngressPolicyClusterLocal),
 				LimitCPU:        "500m",
 				LimitMemory:     "512Mi",
 			},
@@ -150,6 +180,7 @@ func TestDeployerCreateOptions(t *testing.T) {
 			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
+				IngressPolicy:   string(knativev1alpha1.IngressPolicyClusterLocal),
 				LimitCPU:        "50%",
 				LimitMemory:     "NaN",
 			},
@@ -163,6 +194,7 @@ func TestDeployerCreateOptions(t *testing.T) {
 			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
+				IngressPolicy:   string(knativev1alpha1.IngressPolicyClusterLocal),
 				Tail:            true,
 				WaitTimeout:     "10m",
 			},
@@ -173,6 +205,7 @@ func TestDeployerCreateOptions(t *testing.T) {
 			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
+				IngressPolicy:   string(knativev1alpha1.IngressPolicyClusterLocal),
 				Tail:            true,
 			},
 			ExpectFieldErrors: cli.ErrMissingField(cli.WaitTimeoutFlagName),
@@ -182,6 +215,7 @@ func TestDeployerCreateOptions(t *testing.T) {
 			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
+				IngressPolicy:   string(knativev1alpha1.IngressPolicyClusterLocal),
 				Tail:            true,
 				WaitTimeout:     "d",
 			},
@@ -192,6 +226,7 @@ func TestDeployerCreateOptions(t *testing.T) {
 			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
+				IngressPolicy:   string(knativev1alpha1.IngressPolicyClusterLocal),
 				DryRun:          true,
 			},
 			ShouldValidate: true,
@@ -201,6 +236,7 @@ func TestDeployerCreateOptions(t *testing.T) {
 			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
+				IngressPolicy:   string(knativev1alpha1.IngressPolicyClusterLocal),
 				Tail:            true,
 				WaitTimeout:     "10m",
 				DryRun:          true,
@@ -249,6 +285,7 @@ func TestDeployerCreateCommand(t *testing.T) {
 								{Image: image},
 							},
 						},
+						IngressPolicy: knativev1alpha1.IngressPolicyExternal,
 					},
 				},
 			},
@@ -269,6 +306,7 @@ Created deployer "my-deployer"
 						Build: &knativev1alpha1.Build{
 							ApplicationRef: applicationRef,
 						},
+						IngressPolicy: knativev1alpha1.IngressPolicyExternal,
 					},
 				},
 			},
@@ -289,6 +327,7 @@ Created deployer "my-deployer"
 						Build: &knativev1alpha1.Build{
 							ContainerRef: containerRef,
 						},
+						IngressPolicy: knativev1alpha1.IngressPolicyExternal,
 					},
 				},
 			},
@@ -309,6 +348,7 @@ Created deployer "my-deployer"
 						Build: &knativev1alpha1.Build{
 							FunctionRef: functionRef,
 						},
+						IngressPolicy: knativev1alpha1.IngressPolicyExternal,
 					},
 				},
 			},
@@ -328,6 +368,7 @@ metadata:
   name: my-deployer
   namespace: default
 spec:
+  ingressPolicy: External
   template:
     containers:
     - image: registry.example.com/repo@sha256:deadbeefdeadbeefdeadbeefdeadbeef
@@ -335,6 +376,29 @@ spec:
       resources: {}
 status: {}
 
+Created deployer "my-deployer"
+`,
+		},
+		{
+			Name: "create from cluster-local ingress policy",
+			Args: []string{deployerName, cli.ImageFlagName, image, cli.IngressPolicyFlagName, string(knativev1alpha1.IngressPolicyClusterLocal)},
+			ExpectCreates: []runtime.Object{
+				&knativev1alpha1.Deployer{
+					ObjectMeta: metav1.ObjectMeta{
+						Namespace: defaultNamespace,
+						Name:      deployerName,
+					},
+					Spec: knativev1alpha1.DeployerSpec{
+						Template: &corev1.PodSpec{
+							Containers: []corev1.Container{
+								{Image: image},
+							},
+						},
+						IngressPolicy: knativev1alpha1.IngressPolicyClusterLocal,
+					},
+				},
+			},
+			ExpectOutput: `
 Created deployer "my-deployer"
 `,
 		},
@@ -381,6 +445,7 @@ Created deployer "my-deployer"
 								},
 							},
 						},
+						IngressPolicy: knativev1alpha1.IngressPolicyExternal,
 					},
 				},
 			},
@@ -411,6 +476,7 @@ Created deployer "my-deployer"
 								},
 							},
 						},
+						IngressPolicy: knativev1alpha1.IngressPolicyExternal,
 					},
 				},
 			},
@@ -441,6 +507,7 @@ Created deployer "my-deployer"
 								{Image: image},
 							},
 						},
+						IngressPolicy: knativev1alpha1.IngressPolicyExternal,
 					},
 				},
 			},
@@ -464,6 +531,7 @@ Created deployer "my-deployer"
 								{Image: image},
 							},
 						},
+						IngressPolicy: knativev1alpha1.IngressPolicyExternal,
 					},
 				},
 			},
@@ -487,6 +555,7 @@ Created deployer "my-deployer"
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{{Image: image}},
 						},
+						IngressPolicy: knativev1alpha1.IngressPolicyExternal,
 					},
 				}, cli.TailSinceCreateDefault, mock.Anything).Return(nil).Run(func(args mock.Arguments) {
 					fmt.Fprintf(c.Stdout, "...log output...\n")
@@ -512,6 +581,7 @@ Created deployer "my-deployer"
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{{Image: image}},
 						},
+						IngressPolicy: knativev1alpha1.IngressPolicyExternal,
 					},
 				},
 			},
@@ -539,6 +609,7 @@ Deployer "my-deployer" is ready
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{{Image: image}},
 						},
+						IngressPolicy: knativev1alpha1.IngressPolicyExternal,
 					},
 				}, cli.TailSinceCreateDefault, mock.Anything).Return(k8s.ErrWaitTimeout).Run(func(args mock.Arguments) {
 					ctx := args[0].(context.Context)
@@ -567,6 +638,7 @@ Deployer "my-deployer" is ready
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{{Image: image}},
 						},
+						IngressPolicy: knativev1alpha1.IngressPolicyExternal,
 					},
 				},
 			},
@@ -602,6 +674,7 @@ To continue watching logs run: riff knative deployer tail my-deployer --namespac
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{{Image: image}},
 						},
+						IngressPolicy: knativev1alpha1.IngressPolicyExternal,
 					},
 				}, cli.TailSinceCreateDefault, mock.Anything).Return(fmt.Errorf("kail error"))
 				return ctx, nil
@@ -625,6 +698,7 @@ To continue watching logs run: riff knative deployer tail my-deployer --namespac
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{{Image: image}},
 						},
+						IngressPolicy: knativev1alpha1.IngressPolicyExternal,
 					},
 				},
 			},
