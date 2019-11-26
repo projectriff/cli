@@ -34,9 +34,10 @@ import (
 type ProcessorCreateOptions struct {
 	options.ResourceOptions
 
-	FunctionRef string
-	Inputs      []string
-	Outputs     []string
+	FunctionRef  string
+	ContainerRef string
+	Inputs       []string
+	Outputs      []string
 
 	Tail        bool
 	WaitTimeout string
@@ -55,8 +56,10 @@ func (opts *ProcessorCreateOptions) Validate(ctx context.Context) cli.FieldError
 
 	errs = errs.Also(opts.ResourceOptions.Validate(ctx))
 
-	if opts.FunctionRef == "" {
-		errs = errs.Also(cli.ErrMissingField(cli.FunctionRefFlagName))
+	if opts.ContainerRef == "" && opts.FunctionRef == "" {
+		errs = errs.Also(cli.ErrMissingOneOf(cli.ContainerRefFlagName, cli.FunctionRefFlagName))
+	} else if opts.ContainerRef != "" && opts.FunctionRef != "" {
+		errs = errs.Also(cli.ErrMultipleOneOf(cli.ContainerRefFlagName, cli.FunctionRefFlagName))
 	}
 
 	if len(opts.Inputs) == 0 {
