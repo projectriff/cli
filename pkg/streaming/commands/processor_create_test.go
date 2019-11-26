@@ -41,7 +41,7 @@ func TestProcessorCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.InvalidResourceOptions,
 			},
 			ExpectFieldErrors: rifftesting.InvalidResourceOptionsFieldError.Also(
-				cli.ErrMissingField(cli.FunctionRefFlagName),
+				cli.ErrMissingOneOf(cli.ContainerRefFlagName, cli.FunctionRefFlagName),
 				cli.ErrMissingField(cli.InputFlagName),
 			),
 		},
@@ -53,6 +53,23 @@ func TestProcessorCreateOptions(t *testing.T) {
 				Inputs:          []string{"input1", "input2"},
 			},
 			ShouldValidate: true,
+		}, {
+			Name: "with container ref",
+			Options: &commands.ProcessorCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				ContainerRef:    "my-container",
+				Inputs:          []string{"input1", "input2"},
+			},
+			ShouldValidate: true,
+		}, {
+			Name: "invalid with container ref and function ref",
+			Options: &commands.ProcessorCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				FunctionRef:     "my-function",
+				ContainerRef:    "my-container",
+				Inputs:          []string{"input1", "input2"},
+			},
+			ExpectFieldErrors: cli.ErrMultipleOneOf(cli.ContainerRefFlagName, cli.FunctionRefFlagName),
 		},
 		{
 			Name: "with inputs and outputs",

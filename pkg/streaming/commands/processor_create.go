@@ -41,7 +41,8 @@ type ProcessorCreateOptions struct {
 	Tail        bool
 	WaitTimeout string
 
-	DryRun bool
+	DryRun       bool
+	ContainerRef string
 }
 
 var (
@@ -55,8 +56,12 @@ func (opts *ProcessorCreateOptions) Validate(ctx context.Context) cli.FieldError
 
 	errs = errs.Also(opts.ResourceOptions.Validate(ctx))
 
-	if opts.FunctionRef == "" {
-		errs = errs.Also(cli.ErrMissingField(cli.FunctionRefFlagName))
+	if opts.FunctionRef == "" && opts.ContainerRef == "" {
+		errs = errs.Also(cli.ErrMissingOneOf(cli.ContainerRefFlagName, cli.FunctionRefFlagName))
+	}
+
+	if opts.FunctionRef != "" && opts.ContainerRef != "" {
+		errs = errs.Also(cli.ErrMultipleOneOf(cli.ContainerRefFlagName, cli.FunctionRefFlagName))
 	}
 
 	if len(opts.Inputs) == 0 {
