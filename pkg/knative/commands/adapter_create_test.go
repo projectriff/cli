@@ -70,7 +70,7 @@ func TestAdapterCreateOptions(t *testing.T) {
 			ShouldValidate: true,
 		},
 		{
-			Name: "from application, container and funcation",
+			Name: "from application, container and function",
 			Options: &commands.AdapterCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				ApplicationRef:  "my-application",

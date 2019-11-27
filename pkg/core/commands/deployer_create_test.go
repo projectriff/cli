@@ -79,7 +79,7 @@ func TestDeployerCreateOptions(t *testing.T) {
 			ShouldValidate: true,
 		},
 		{
-			Name: "from application, container, funcation and image",
+			Name: "from application, container, function and image",
 			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				ApplicationRef:  "my-application",
