@@ -12,7 +12,9 @@ Create a core deployer.
 
 Build references are resolved within the same namespace as the deployer. As the
 build produces new images, the image will roll out automatically. Image based
-deployers must be updated manually to roll out new images.
+deployers must be updated manually to roll out new images. Rolling out an image
+means creating a deployment with a pod referencing the image and a service
+referencing the deployment.
 
 The runtime environment can be configured by --env for static key-value pairs
 and --env-from to map values from a ConfigMap or Secret.
@@ -45,6 +47,7 @@ riff core deployer create my-image-deployer --image registry.example.com/my-imag
       --limit-cpu cores         the maximum amount of cpu allowed, in CPU cores (500m = .5 cores)
       --limit-memory bytes      the maximum amount of memory allowed, in bytes (500Mi = 500MiB = 500 * 1024 * 1024)
   -n, --namespace name          kubernetes namespace (defaulted from kube config)
+      --service-name name       name of created service (default is a generated name)
       --tail                    watch deployer logs
       --wait-timeout duration   duration to wait for the deployer to become ready when watching logs (default "10m")
 ```
