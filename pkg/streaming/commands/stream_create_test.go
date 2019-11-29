@@ -133,6 +133,9 @@ spec:
   provider: test-provider
 status:
   address: {}
+  binding:
+    metadataRef: {}
+    secretRef: {}
 
 Created stream "my-stream"
 `,
