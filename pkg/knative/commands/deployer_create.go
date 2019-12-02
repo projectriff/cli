@@ -44,6 +44,7 @@ type DeployerCreateOptions struct {
 	FunctionRef    string
 
 	IngressPolicy string
+	TargetPort    int32
 
 	Env     []string
 	EnvFrom []string
@@ -114,6 +115,10 @@ func (opts *DeployerCreateOptions) Validate(ctx context.Context) cli.FieldErrors
 	}
 	if opts.LimitMemory != "" {
 		errs = errs.Also(validation.Quantity(opts.LimitMemory, cli.LimitMemoryFlagName))
+	}
+
+	if opts.TargetPort != 0 {
+		errs = errs.Also(validation.PortNumber(opts.TargetPort, cli.TargetPortFlagName))
 	}
 
 	if opts.Tail {
@@ -187,6 +192,11 @@ func (opts *DeployerCreateOptions) Exec(ctx context.Context, c *cli.Config) erro
 	if opts.LimitMemory != "" {
 		// parse errors are handled by the opt validation
 		deployer.Spec.Template.Containers[0].Resources.Limits[corev1.ResourceMemory] = resource.MustParse(opts.LimitMemory)
+	}
+	if opts.TargetPort > 0 {
+		deployer.Spec.Template.Containers[0].Ports = []corev1.ContainerPort{
+			{Protocol: corev1.ProtocolTCP, ContainerPort: opts.TargetPort},
+		}
 	}
 
 	if opts.DryRun {
@@ -275,6 +285,7 @@ and ` + cli.EnvFromFlagName + ` to map values from a ConfigMap or Secret.
 	cmd.Flags().BoolVar(&opts.Tail, cli.StripDash(cli.TailFlagName), false, "watch deployer logs")
 	cmd.Flags().StringVar(&opts.WaitTimeout, cli.StripDash(cli.WaitTimeoutFlagName), "10m", "`duration` to wait for the deployer to become ready when watching logs")
 	cmd.Flags().BoolVar(&opts.DryRun, cli.StripDash(cli.DryRunFlagName), false, "print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr")
+	cmd.Flags().Int32Var(&opts.TargetPort, cli.StripDash(cli.TargetPortFlagName), 0, "`port` that the workload listens on for traffic. The value is exposed to the workload as the PORT environment variable")
 
 	return cmd
 }

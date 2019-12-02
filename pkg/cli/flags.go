@@ -66,6 +66,7 @@ const (
 	SinceFlagName                 = "--since"
 	SubPathFlagName               = "--sub-path"
 	TailFlagName                  = "--tail"
+	TargetPortFlagName            = "--target-port"
 	WaitTimeoutFlagName           = "--wait-timeout"
 )
 
