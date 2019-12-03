@@ -67,11 +67,19 @@ for test in command; do
   riff function create $name --image $image --namespace $NAMESPACE --tail \
     --git-repo https://github.com/$fats_repo --git-revision $fats_refspec --sub-path functions/uppercase/${test} &
 
-  riff core deployer create $name --function-ref $name --namespace $NAMESPACE --tail
+  riff core deployer create $name \
+    --function-ref $name \
+    --ingress-policy External \
+    --namespace $NAMESPACE \
+    --tail
   source $fats_dir/macros/invoke_core_deployer.sh $name "-H Content-Type:text/plain -H Accept:text/plain -d cli" CLI
   riff core deployer delete $name --namespace $NAMESPACE
 
-  riff knative deployer create $name --function-ref $name --namespace $NAMESPACE --tail
+  riff knative deployer create $name \
+    --function-ref $name \
+    --ingress-policy External \
+    --namespace $NAMESPACE \
+    --tail
   source $fats_dir/macros/invoke_knative_deployer.sh $name "-H Content-Type:text/plain -H Accept:text/plain -d cli" CLI
   riff knative deployer delete $name --namespace $NAMESPACE
 
@@ -91,11 +99,19 @@ if [ "$machine" != "MinGw" ]; then
     riff function create $name --image $image --namespace $NAMESPACE --tail \
       --local-path $fats_dir/functions/uppercase/${test} &
 
-    riff core deployer create $name --function-ref $name --namespace $NAMESPACE --tail
+    riff core deployer create $name \
+      --function-ref $name \
+      --ingress-policy External \
+      --namespace $NAMESPACE \
+      --tail
     source $fats_dir/macros/invoke_core_deployer.sh $name "-H Content-Type:text/plain -H Accept:text/plain -d cli" CLI
     riff core deployer delete $name --namespace $NAMESPACE
 
-    riff knative deployer create $name --function-ref $name --namespace $NAMESPACE --tail
+    riff knative deployer create $name \
+      --function-ref $name \
+      --ingress-policy External \
+      --namespace $NAMESPACE \
+      --tail
     source $fats_dir/macros/invoke_knative_deployer.sh $name "-H Content-Type:text/plain -H Accept:text/plain -d cli" CLI
     riff knative deployer delete $name --namespace $NAMESPACE
 
