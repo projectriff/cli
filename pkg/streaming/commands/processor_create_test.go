@@ -27,8 +27,9 @@ import (
 	"github.com/projectriff/cli/pkg/streaming/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 	kailtesting "github.com/projectriff/cli/pkg/testing/kail"
-	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
+	streamingv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 	"github.com/stretchr/testify/mock"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	cachetesting "k8s.io/client-go/tools/cache/testing"
@@ -42,7 +43,7 @@ func TestProcessorCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.InvalidResourceOptions,
 			},
 			ExpectFieldErrors: rifftesting.InvalidResourceOptionsFieldError.Also(
-				cli.ErrMissingOneOf(cli.ContainerRefFlagName, cli.FunctionRefFlagName),
+				cli.ErrMissingOneOf(cli.ContainerRefFlagName, cli.FunctionRefFlagName, cli.ImageFlagName),
 				cli.ErrMissingField(cli.InputFlagName),
 			),
 		},
@@ -55,22 +56,39 @@ func TestProcessorCreateOptions(t *testing.T) {
 			},
 			ShouldValidate: true,
 		}, {
+			Name: "with image",
+			Options: &commands.ProcessorCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Image:           "my-image",
+				Inputs:          []string{"input"},
+			},
+			ShouldValidate: true,
+		}, {
 			Name: "with container ref",
 			Options: &commands.ProcessorCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				ContainerRef:    "my-container",
-				Inputs:          []string{"input1", "input2"},
+				Inputs:          []string{"input"},
 			},
 			ShouldValidate: true,
 		}, {
-			Name: "invalid with container ref and function ref",
+			Name: "with function ref",
 			Options: &commands.ProcessorCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				FunctionRef:     "my-function",
+				Inputs:          []string{"input"},
+			},
+			ShouldValidate: true,
+		}, {
+			Name: "invalid with image, container ref and function ref",
+			Options: &commands.ProcessorCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Image:           "my-image",
 				ContainerRef:    "my-container",
+				FunctionRef:     "my-function",
 				Inputs:          []string{"input1", "input2"},
 			},
-			ExpectFieldErrors: cli.ErrMultipleOneOf(cli.ContainerRefFlagName, cli.FunctionRefFlagName),
+			ExpectFieldErrors: cli.ErrMultipleOneOf(cli.ContainerRefFlagName, cli.FunctionRefFlagName, cli.ImageFlagName),
 		},
 		{
 			Name: "with inputs and outputs",
@@ -154,7 +172,9 @@ func TestProcessorCreateOptions(t *testing.T) {
 func TestProcessorCreateCommand(t *testing.T) {
 	defaultNamespace := "default"
 	processorName := "my-processor"
+	containerRef := "my-func"
 	functionRef := "my-func"
+	image := "my-image"
 	inputName := "input"
 	inParameterName := "in"
 	inputNameBinding := fmt.Sprintf("%s:%s", inParameterName, inputName)
@@ -171,17 +191,69 @@ func TestProcessorCreateCommand(t *testing.T) {
 			ShouldError: true,
 		},
 		{
-			Name: "create with single input",
-			Args: []string{processorName, cli.FunctionRefFlagName, functionRef, cli.InputFlagName, inputName},
+			Name: "create with container ref",
+			Args: []string{processorName, cli.ContainerRefFlagName, containerRef, cli.InputFlagName, inputName},
 			ExpectCreates: []runtime.Object{
-				&streamv1alpha1.Processor{
+				&streamingv1alpha1.Processor{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      processorName,
 					},
-					Spec: streamv1alpha1.ProcessorSpec{
-						Build:  &streamv1alpha1.Build{FunctionRef: functionRef},
-						Inputs: []streamv1alpha1.StreamBinding{{Stream: inputName}},
+					Spec: streamingv1alpha1.ProcessorSpec{
+						Build:  &streamingv1alpha1.Build{ContainerRef: containerRef},
+						Inputs: []streamingv1alpha1.StreamBinding{{Stream: inputName}},
+						Template: &corev1.PodSpec{
+							Containers: []corev1.Container{
+								{},
+							},
+						},
+					},
+				},
+			},
+			ExpectOutput: `
+Created processor "my-processor"
+`,
+		},
+		{
+			Name: "create with function ref",
+			Args: []string{processorName, cli.FunctionRefFlagName, functionRef, cli.InputFlagName, inputName},
+			ExpectCreates: []runtime.Object{
+				&streamingv1alpha1.Processor{
+					ObjectMeta: metav1.ObjectMeta{
+						Namespace: defaultNamespace,
+						Name:      processorName,
+					},
+					Spec: streamingv1alpha1.ProcessorSpec{
+						Build:  &streamingv1alpha1.Build{FunctionRef: functionRef},
+						Inputs: []streamingv1alpha1.StreamBinding{{Stream: inputName}},
+						Template: &corev1.PodSpec{
+							Containers: []corev1.Container{
+								{},
+							},
+						},
+					},
+				},
+			},
+			ExpectOutput: `
+Created processor "my-processor"
+`,
+		},
+		{
+			Name: "create with image",
+			Args: []string{processorName, cli.ImageFlagName, image, cli.InputFlagName, inputName},
+			ExpectCreates: []runtime.Object{
+				&streamingv1alpha1.Processor{
+					ObjectMeta: metav1.ObjectMeta{
+						Namespace: defaultNamespace,
+						Name:      processorName,
+					},
+					Spec: streamingv1alpha1.ProcessorSpec{
+						Inputs: []streamingv1alpha1.StreamBinding{{Stream: inputName}},
+						Template: &corev1.PodSpec{
+							Containers: []corev1.Container{
+								{Image: image},
+							},
+						},
 					},
 				},
 			},
@@ -206,6 +278,10 @@ spec:
   inputs:
   - stream: input
   outputs: []
+  template:
+    containers:
+    - name: ""
+      resources: {}
 status: {}
 
 Created processor "my-processor"
@@ -215,16 +291,21 @@ Created processor "my-processor"
 			Name: "create with multiple inputs",
 			Args: []string{processorName, cli.FunctionRefFlagName, functionRef, cli.InputFlagName, inputName, cli.InputFlagName, inputNameOther},
 			ExpectCreates: []runtime.Object{
-				&streamv1alpha1.Processor{
+				&streamingv1alpha1.Processor{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      processorName,
 					},
-					Spec: streamv1alpha1.ProcessorSpec{
-						Build: &streamv1alpha1.Build{FunctionRef: functionRef},
-						Inputs: []streamv1alpha1.StreamBinding{
+					Spec: streamingv1alpha1.ProcessorSpec{
+						Build: &streamingv1alpha1.Build{FunctionRef: functionRef},
+						Inputs: []streamingv1alpha1.StreamBinding{
 							{Stream: inputName},
 							{Stream: inputNameOther},
+						},
+						Template: &corev1.PodSpec{
+							Containers: []corev1.Container{
+								{},
+							},
 						},
 					},
 				},
@@ -237,18 +318,23 @@ Created processor "my-processor"
 			Name: "create with single output",
 			Args: []string{processorName, cli.FunctionRefFlagName, functionRef, cli.InputFlagName, inputName, cli.InputFlagName, inputNameOther, cli.OutputFlagName, outputName},
 			ExpectCreates: []runtime.Object{
-				&streamv1alpha1.Processor{
+				&streamingv1alpha1.Processor{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      processorName,
 					},
-					Spec: streamv1alpha1.ProcessorSpec{
-						Build: &streamv1alpha1.Build{FunctionRef: functionRef},
-						Inputs: []streamv1alpha1.StreamBinding{
+					Spec: streamingv1alpha1.ProcessorSpec{
+						Build: &streamingv1alpha1.Build{FunctionRef: functionRef},
+						Inputs: []streamingv1alpha1.StreamBinding{
 							{Stream: inputName},
 							{Stream: inputNameOther},
 						},
-						Outputs: []streamv1alpha1.StreamBinding{{Stream: outputName}},
+						Outputs: []streamingv1alpha1.StreamBinding{{Stream: outputName}},
+						Template: &corev1.PodSpec{
+							Containers: []corev1.Container{
+								{},
+							},
+						},
 					},
 				},
 			},
@@ -260,20 +346,25 @@ Created processor "my-processor"
 			Name: "create with some explicit parameter bindings",
 			Args: []string{processorName, cli.FunctionRefFlagName, functionRef, cli.InputFlagName, inputNameBinding, cli.InputFlagName, inputNameOther, cli.OutputFlagName, outputNameOther, cli.OutputFlagName, outputNameBinding},
 			ExpectCreates: []runtime.Object{
-				&streamv1alpha1.Processor{
+				&streamingv1alpha1.Processor{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      processorName,
 					},
-					Spec: streamv1alpha1.ProcessorSpec{
-						Build: &streamv1alpha1.Build{FunctionRef: functionRef},
-						Inputs: []streamv1alpha1.StreamBinding{
+					Spec: streamingv1alpha1.ProcessorSpec{
+						Build: &streamingv1alpha1.Build{FunctionRef: functionRef},
+						Inputs: []streamingv1alpha1.StreamBinding{
 							{Stream: inputName, Alias: inParameterName},
 							{Stream: inputNameOther},
 						},
-						Outputs: []streamv1alpha1.StreamBinding{
+						Outputs: []streamingv1alpha1.StreamBinding{
 							{Stream: outputNameOther},
 							{Stream: outputName, Alias: outParameterName},
+						},
+						Template: &corev1.PodSpec{
+							Containers: []corev1.Container{
+								{},
+							},
 						},
 					},
 				},
@@ -286,20 +377,25 @@ Created processor "my-processor"
 			Name: "create with multiple outputs",
 			Args: []string{processorName, cli.FunctionRefFlagName, functionRef, cli.InputFlagName, inputName, cli.InputFlagName, inputNameOther, cli.OutputFlagName, outputName, cli.OutputFlagName, outputNameOther},
 			ExpectCreates: []runtime.Object{
-				&streamv1alpha1.Processor{
+				&streamingv1alpha1.Processor{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      processorName,
 					},
-					Spec: streamv1alpha1.ProcessorSpec{
-						Build: &streamv1alpha1.Build{FunctionRef: functionRef},
-						Inputs: []streamv1alpha1.StreamBinding{
+					Spec: streamingv1alpha1.ProcessorSpec{
+						Build: &streamingv1alpha1.Build{FunctionRef: functionRef},
+						Inputs: []streamingv1alpha1.StreamBinding{
 							{Stream: inputName},
 							{Stream: inputNameOther},
 						},
-						Outputs: []streamv1alpha1.StreamBinding{
+						Outputs: []streamingv1alpha1.StreamBinding{
 							{Stream: outputName},
 							{Stream: outputNameOther},
+						},
+						Template: &corev1.PodSpec{
+							Containers: []corev1.Container{
+								{},
+							},
 						},
 					},
 				},
@@ -312,7 +408,7 @@ Created processor "my-processor"
 			Name: "error existing processor",
 			Args: []string{processorName, cli.FunctionRefFlagName, functionRef, cli.InputFlagName, inputName},
 			GivenObjects: []runtime.Object{
-				&streamv1alpha1.Processor{
+				&streamingv1alpha1.Processor{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      processorName,
@@ -320,14 +416,19 @@ Created processor "my-processor"
 				},
 			},
 			ExpectCreates: []runtime.Object{
-				&streamv1alpha1.Processor{
+				&streamingv1alpha1.Processor{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      processorName,
 					},
-					Spec: streamv1alpha1.ProcessorSpec{
-						Build:  &streamv1alpha1.Build{FunctionRef: functionRef},
-						Inputs: []streamv1alpha1.StreamBinding{{Stream: inputName}},
+					Spec: streamingv1alpha1.ProcessorSpec{
+						Build:  &streamingv1alpha1.Build{FunctionRef: functionRef},
+						Inputs: []streamingv1alpha1.StreamBinding{{Stream: inputName}},
+						Template: &corev1.PodSpec{
+							Containers: []corev1.Container{
+								{},
+							},
+						},
 					},
 				},
 			},
@@ -340,14 +441,19 @@ Created processor "my-processor"
 				rifftesting.InduceFailure("create", "processors"),
 			},
 			ExpectCreates: []runtime.Object{
-				&streamv1alpha1.Processor{
+				&streamingv1alpha1.Processor{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      processorName,
 					},
-					Spec: streamv1alpha1.ProcessorSpec{
-						Build:  &streamv1alpha1.Build{FunctionRef: functionRef},
-						Inputs: []streamv1alpha1.StreamBinding{{Stream: inputName}},
+					Spec: streamingv1alpha1.ProcessorSpec{
+						Build:  &streamingv1alpha1.Build{FunctionRef: functionRef},
+						Inputs: []streamingv1alpha1.StreamBinding{{Stream: inputName}},
+						Template: &corev1.PodSpec{
+							Containers: []corev1.Container{
+								{},
+							},
+						},
 					},
 				},
 			},
@@ -362,15 +468,20 @@ Created processor "my-processor"
 
 				kail := &kailtesting.Logger{}
 				c.Kail = kail
-				kail.On("StreamingProcessorLogs", mock.Anything, &streamv1alpha1.Processor{
+				kail.On("StreamingProcessorLogs", mock.Anything, &streamingv1alpha1.Processor{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      processorName,
 					},
-					Spec: streamv1alpha1.ProcessorSpec{
-						Build:   &streamv1alpha1.Build{FunctionRef: functionRef},
-						Inputs:  []streamv1alpha1.StreamBinding{{Stream: inputName}},
-						Outputs: []streamv1alpha1.StreamBinding{},
+					Spec: streamingv1alpha1.ProcessorSpec{
+						Build:   &streamingv1alpha1.Build{FunctionRef: functionRef},
+						Inputs:  []streamingv1alpha1.StreamBinding{{Stream: inputName}},
+						Outputs: []streamingv1alpha1.StreamBinding{},
+						Template: &corev1.PodSpec{
+							Containers: []corev1.Container{
+								{},
+							},
+						},
 					},
 				}, cli.TailSinceCreateDefault, mock.Anything).Return(nil).Run(func(args mock.Arguments) {
 					fmt.Fprintf(c.Stdout, "...log output...\n")
@@ -387,15 +498,20 @@ Created processor "my-processor"
 				return nil
 			},
 			ExpectCreates: []runtime.Object{
-				&streamv1alpha1.Processor{
+				&streamingv1alpha1.Processor{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      processorName,
 					},
-					Spec: streamv1alpha1.ProcessorSpec{
-						Build:   &streamv1alpha1.Build{FunctionRef: functionRef},
-						Inputs:  []streamv1alpha1.StreamBinding{{Stream: inputName}},
-						Outputs: []streamv1alpha1.StreamBinding{},
+					Spec: streamingv1alpha1.ProcessorSpec{
+						Build:   &streamingv1alpha1.Build{FunctionRef: functionRef},
+						Inputs:  []streamingv1alpha1.StreamBinding{{Stream: inputName}},
+						Outputs: []streamingv1alpha1.StreamBinding{},
+						Template: &corev1.PodSpec{
+							Containers: []corev1.Container{
+								{},
+							},
+						},
 					},
 				},
 			},
@@ -414,15 +530,20 @@ Processor "my-processor" is ready
 
 				kail := &kailtesting.Logger{}
 				c.Kail = kail
-				kail.On("StreamingProcessorLogs", mock.Anything, &streamv1alpha1.Processor{
+				kail.On("StreamingProcessorLogs", mock.Anything, &streamingv1alpha1.Processor{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      processorName,
 					},
-					Spec: streamv1alpha1.ProcessorSpec{
-						Build:   &streamv1alpha1.Build{FunctionRef: functionRef},
-						Inputs:  []streamv1alpha1.StreamBinding{{Stream: inputName}},
-						Outputs: []streamv1alpha1.StreamBinding{},
+					Spec: streamingv1alpha1.ProcessorSpec{
+						Build:   &streamingv1alpha1.Build{FunctionRef: functionRef},
+						Inputs:  []streamingv1alpha1.StreamBinding{{Stream: inputName}},
+						Outputs: []streamingv1alpha1.StreamBinding{},
+						Template: &corev1.PodSpec{
+							Containers: []corev1.Container{
+								{},
+							},
+						},
 					},
 				}, cli.TailSinceCreateDefault, mock.Anything).Return(k8s.ErrWaitTimeout).Run(func(args mock.Arguments) {
 					ctx := args[0].(context.Context)
@@ -442,15 +563,20 @@ Processor "my-processor" is ready
 				return nil
 			},
 			ExpectCreates: []runtime.Object{
-				&streamv1alpha1.Processor{
+				&streamingv1alpha1.Processor{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      processorName,
 					},
-					Spec: streamv1alpha1.ProcessorSpec{
-						Build:   &streamv1alpha1.Build{FunctionRef: functionRef},
-						Inputs:  []streamv1alpha1.StreamBinding{{Stream: inputName}},
-						Outputs: []streamv1alpha1.StreamBinding{},
+					Spec: streamingv1alpha1.ProcessorSpec{
+						Build:   &streamingv1alpha1.Build{FunctionRef: functionRef},
+						Inputs:  []streamingv1alpha1.StreamBinding{{Stream: inputName}},
+						Outputs: []streamingv1alpha1.StreamBinding{},
+						Template: &corev1.PodSpec{
+							Containers: []corev1.Container{
+								{},
+							},
+						},
 					},
 				},
 			},
@@ -477,15 +603,20 @@ To continue watching logs run: riff processor tail my-processor --namespace defa
 
 				kail := &kailtesting.Logger{}
 				c.Kail = kail
-				kail.On("StreamingProcessorLogs", mock.Anything, &streamv1alpha1.Processor{
+				kail.On("StreamingProcessorLogs", mock.Anything, &streamingv1alpha1.Processor{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      processorName,
 					},
-					Spec: streamv1alpha1.ProcessorSpec{
-						Build:   &streamv1alpha1.Build{FunctionRef: functionRef},
-						Inputs:  []streamv1alpha1.StreamBinding{{Stream: inputName}},
-						Outputs: []streamv1alpha1.StreamBinding{},
+					Spec: streamingv1alpha1.ProcessorSpec{
+						Build:   &streamingv1alpha1.Build{FunctionRef: functionRef},
+						Inputs:  []streamingv1alpha1.StreamBinding{{Stream: inputName}},
+						Outputs: []streamingv1alpha1.StreamBinding{},
+						Template: &corev1.PodSpec{
+							Containers: []corev1.Container{
+								{},
+							},
+						},
 					},
 				}, cli.TailSinceCreateDefault, mock.Anything).Return(fmt.Errorf("kail error"))
 				return ctx, nil
@@ -500,15 +631,20 @@ To continue watching logs run: riff processor tail my-processor --namespace defa
 				return nil
 			},
 			ExpectCreates: []runtime.Object{
-				&streamv1alpha1.Processor{
+				&streamingv1alpha1.Processor{
 					ObjectMeta: metav1.ObjectMeta{
 						Namespace: defaultNamespace,
 						Name:      processorName,
 					},
-					Spec: streamv1alpha1.ProcessorSpec{
-						Build:   &streamv1alpha1.Build{FunctionRef: functionRef},
-						Inputs:  []streamv1alpha1.StreamBinding{{Stream: inputName}},
-						Outputs: []streamv1alpha1.StreamBinding{},
+					Spec: streamingv1alpha1.ProcessorSpec{
+						Build:   &streamingv1alpha1.Build{FunctionRef: functionRef},
+						Inputs:  []streamingv1alpha1.StreamBinding{{Stream: inputName}},
+						Outputs: []streamingv1alpha1.StreamBinding{},
+						Template: &corev1.PodSpec{
+							Containers: []corev1.Container{
+								{},
+							},
+						},
 					},
 				},
 			},

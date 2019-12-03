@@ -26,23 +26,26 @@ import (
 	"github.com/projectriff/cli/pkg/cli/options"
 	"github.com/projectriff/cli/pkg/k8s"
 	"github.com/projectriff/cli/pkg/race"
-	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
+	streamingv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 	"github.com/spf13/cobra"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 type ProcessorCreateOptions struct {
 	options.ResourceOptions
 
-	FunctionRef string
-	Inputs      []string
-	Outputs     []string
+	Image        string
+	ContainerRef string
+	FunctionRef  string
+
+	Inputs  []string
+	Outputs []string
 
 	Tail        bool
 	WaitTimeout string
 
-	DryRun       bool
-	ContainerRef string
+	DryRun bool
 }
 
 var (
@@ -56,12 +59,32 @@ func (opts *ProcessorCreateOptions) Validate(ctx context.Context) cli.FieldError
 
 	errs = errs.Also(opts.ResourceOptions.Validate(ctx))
 
-	if opts.FunctionRef == "" && opts.ContainerRef == "" {
-		errs = errs.Also(cli.ErrMissingOneOf(cli.ContainerRefFlagName, cli.FunctionRefFlagName))
+	// build-ref and image are mutually exclusive
+	used := []string{}
+	unused := []string{}
+
+	if opts.ContainerRef != "" {
+		used = append(used, cli.ContainerRefFlagName)
+	} else {
+		unused = append(unused, cli.ContainerRefFlagName)
 	}
 
-	if opts.FunctionRef != "" && opts.ContainerRef != "" {
-		errs = errs.Also(cli.ErrMultipleOneOf(cli.ContainerRefFlagName, cli.FunctionRefFlagName))
+	if opts.FunctionRef != "" {
+		used = append(used, cli.FunctionRefFlagName)
+	} else {
+		unused = append(unused, cli.FunctionRefFlagName)
+	}
+
+	if opts.Image != "" {
+		used = append(used, cli.ImageFlagName)
+	} else {
+		unused = append(unused, cli.ImageFlagName)
+	}
+
+	if len(used) == 0 {
+		errs = errs.Also(cli.ErrMissingOneOf(unused...))
+	} else if len(used) > 1 {
+		errs = errs.Also(cli.ErrMultipleOneOf(used...))
 	}
 
 	if len(opts.Inputs) == 0 {
@@ -93,16 +116,32 @@ func (opts *ProcessorCreateOptions) Exec(ctx context.Context, c *cli.Config) err
 	if err != nil {
 		return err
 	}
-	processor := &streamv1alpha1.Processor{
+	processor := &streamingv1alpha1.Processor{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: opts.Namespace,
 			Name:      opts.Name,
 		},
-		Spec: streamv1alpha1.ProcessorSpec{
-			Build:   &streamv1alpha1.Build{FunctionRef: opts.FunctionRef},
+		Spec: streamingv1alpha1.ProcessorSpec{
 			Inputs:  inputs,
 			Outputs: outputs,
+			Template: &corev1.PodSpec{
+				Containers: []corev1.Container{{}},
+			},
 		},
+	}
+
+	if opts.ContainerRef != "" {
+		processor.Spec.Build = &streamingv1alpha1.Build{
+			ContainerRef: opts.ContainerRef,
+		}
+	}
+	if opts.FunctionRef != "" {
+		processor.Spec.Build = &streamingv1alpha1.Build{
+			FunctionRef: opts.FunctionRef,
+		}
+	}
+	if opts.Image != "" {
+		processor.Spec.Template.Containers[0].Image = opts.Image
 	}
 
 	if opts.DryRun {
@@ -166,7 +205,10 @@ func NewProcessorCreateCommand(ctx context.Context, c *cli.Config) *cobra.Comman
 	)
 
 	cli.NamespaceFlag(cmd, c, &opts.Namespace)
-	cmd.Flags().StringVar(&opts.FunctionRef, cli.StripDash(cli.FunctionRefFlagName), "", "`name` of function build to deploy")
+	cmd.Flags().StringVar(&opts.Image, cli.StripDash(cli.ImageFlagName), "", "container `image` to deploy")
+	cmd.Flags().StringVar(&opts.ContainerRef, cli.StripDash(cli.ContainerRefFlagName), "", "`name` of container to deploy")
+	_ = cmd.MarkFlagCustom(cli.StripDash(cli.ContainerRefFlagName), "__"+c.Name+"_list_containers")
+	cmd.Flags().StringVar(&opts.FunctionRef, cli.StripDash(cli.FunctionRefFlagName), "", "`name` of function to deploy")
 	_ = cmd.MarkFlagCustom(cli.StripDash(cli.FunctionRefFlagName), "__"+c.Name+"_list_functions")
 	cmd.Flags().StringArrayVar(&opts.Inputs, cli.StripDash(cli.InputFlagName), []string{}, "`name` of stream to read messages from (or parameter:stream, may be set multiple times)")
 	cmd.Flags().StringArrayVar(&opts.Outputs, cli.StripDash(cli.OutputFlagName), []string{}, "`name` of stream to write messages to (or parameter:stream, may be set multiple times)")
@@ -184,8 +226,8 @@ func NewProcessorCreateCommand(ctx context.Context, c *cli.Config) *cobra.Comman
 //  - ${STREAM_NAME}
 //
 // Default values are handled on the server side.
-func parseStreamBindings(raw []string) ([]streamv1alpha1.StreamBinding, error) {
-	bindings := make([]streamv1alpha1.StreamBinding, len(raw))
+func parseStreamBindings(raw []string) ([]streamingv1alpha1.StreamBinding, error) {
+	bindings := make([]streamingv1alpha1.StreamBinding, len(raw))
 	for i, s := range raw {
 		parts := strings.Split(s, ":")
 		switch len(parts) {
