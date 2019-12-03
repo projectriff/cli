@@ -25,7 +25,7 @@ import (
 func PortNumber(port int32, field string) cli.FieldErrors {
 	errs := cli.FieldErrors{}
 
-	if port < 0 || port > 65535 {
+	if port < 1 || port > 65535 {
 		errs = errs.Also(cli.ErrInvalidValue(fmt.Sprint(port), field))
 	}
 

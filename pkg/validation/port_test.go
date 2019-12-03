@@ -35,13 +35,17 @@ func TestPortValues(t *testing.T) {
 		expected: cli.FieldErrors{},
 		value:    8888,
 	}, {
-		name:     "unspecified",
+		name:     "low",
 		expected: cli.FieldErrors{},
-		value:    0,
+		value:    1,
 	}, {
 		name:     "high",
 		expected: cli.FieldErrors{},
 		value:    65535,
+	}, {
+		name:     "zero",
+		expected: cli.ErrInvalidValue("0", rifftesting.TestField),
+		value:    0,
 	}, {
 		name:     "too low",
 		expected: cli.ErrInvalidValue("-1", rifftesting.TestField),
