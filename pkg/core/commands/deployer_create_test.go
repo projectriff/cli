@@ -285,7 +285,7 @@ func TestDeployerCreateCommand(t *testing.T) {
 								{Image: image},
 							},
 						},
-						IngressPolicy: corev1alpha1.IngressPolicyExternal,
+						IngressPolicy: corev1alpha1.IngressPolicyClusterLocal,
 					},
 				},
 			},
@@ -306,7 +306,7 @@ Created deployer "my-deployer"
 						Build: &corev1alpha1.Build{
 							ApplicationRef: applicationRef,
 						},
-						IngressPolicy: corev1alpha1.IngressPolicyExternal,
+						IngressPolicy: corev1alpha1.IngressPolicyClusterLocal,
 					},
 				},
 			},
@@ -327,7 +327,7 @@ Created deployer "my-deployer"
 						Build: &corev1alpha1.Build{
 							ContainerRef: containerRef,
 						},
-						IngressPolicy: corev1alpha1.IngressPolicyExternal,
+						IngressPolicy: corev1alpha1.IngressPolicyClusterLocal,
 					},
 				},
 			},
@@ -348,7 +348,7 @@ Created deployer "my-deployer"
 						Build: &corev1alpha1.Build{
 							FunctionRef: functionRef,
 						},
-						IngressPolicy: corev1alpha1.IngressPolicyExternal,
+						IngressPolicy: corev1alpha1.IngressPolicyClusterLocal,
 					},
 				},
 			},
@@ -368,7 +368,7 @@ metadata:
   name: my-deployer
   namespace: default
 spec:
-  ingressPolicy: External
+  ingressPolicy: ClusterLocal
   template:
     containers:
     - image: registry.example.com/repo@sha256:deadbeefdeadbeefdeadbeefdeadbeef
@@ -380,8 +380,8 @@ Created deployer "my-deployer"
 `,
 		},
 		{
-			Name: "create from cluster-local ingress policy",
-			Args: []string{deployerName, cli.ImageFlagName, image, cli.IngressPolicyFlagName, string(corev1alpha1.IngressPolicyClusterLocal)},
+			Name: "create from external ingress policy",
+			Args: []string{deployerName, cli.ImageFlagName, image, cli.IngressPolicyFlagName, string(corev1alpha1.IngressPolicyExternal)},
 			ExpectCreates: []runtime.Object{
 				&corev1alpha1.Deployer{
 					ObjectMeta: metav1.ObjectMeta{
@@ -394,7 +394,7 @@ Created deployer "my-deployer"
 								{Image: image},
 							},
 						},
-						IngressPolicy: corev1alpha1.IngressPolicyClusterLocal,
+						IngressPolicy: corev1alpha1.IngressPolicyExternal,
 					},
 				},
 			},
@@ -445,7 +445,7 @@ Created deployer "my-deployer"
 								},
 							},
 						},
-						IngressPolicy: corev1alpha1.IngressPolicyExternal,
+						IngressPolicy: corev1alpha1.IngressPolicyClusterLocal,
 					},
 				},
 			},
@@ -476,7 +476,7 @@ Created deployer "my-deployer"
 								},
 							},
 						},
-						IngressPolicy: corev1alpha1.IngressPolicyExternal,
+						IngressPolicy: corev1alpha1.IngressPolicyClusterLocal,
 					},
 				},
 			},
@@ -502,6 +502,7 @@ Created deployer "my-deployer"
 								},
 							},
 						},
+						IngressPolicy: corev1alpha1.IngressPolicyClusterLocal,
 					},
 				},
 			},
@@ -532,7 +533,7 @@ Created deployer "my-deployer"
 								{Image: image},
 							},
 						},
-						IngressPolicy: corev1alpha1.IngressPolicyExternal,
+						IngressPolicy: corev1alpha1.IngressPolicyClusterLocal,
 					},
 				},
 			},
@@ -556,7 +557,7 @@ Created deployer "my-deployer"
 								{Image: image},
 							},
 						},
-						IngressPolicy: corev1alpha1.IngressPolicyExternal,
+						IngressPolicy: corev1alpha1.IngressPolicyClusterLocal,
 					},
 				},
 			},
@@ -580,7 +581,7 @@ Created deployer "my-deployer"
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{{Image: image}},
 						},
-						IngressPolicy: corev1alpha1.IngressPolicyExternal,
+						IngressPolicy: corev1alpha1.IngressPolicyClusterLocal,
 					},
 				}, cli.TailSinceCreateDefault, mock.Anything).Return(nil).Run(func(args mock.Arguments) {
 					fmt.Fprintf(c.Stdout, "...log output...\n")
@@ -606,7 +607,7 @@ Created deployer "my-deployer"
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{{Image: image}},
 						},
-						IngressPolicy: corev1alpha1.IngressPolicyExternal,
+						IngressPolicy: corev1alpha1.IngressPolicyClusterLocal,
 					},
 				},
 			},
@@ -634,7 +635,7 @@ Deployer "my-deployer" is ready
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{{Image: image}},
 						},
-						IngressPolicy: corev1alpha1.IngressPolicyExternal,
+						IngressPolicy: corev1alpha1.IngressPolicyClusterLocal,
 					},
 				}, cli.TailSinceCreateDefault, mock.Anything).Return(k8s.ErrWaitTimeout).Run(func(args mock.Arguments) {
 					ctx := args[0].(context.Context)
@@ -663,7 +664,7 @@ Deployer "my-deployer" is ready
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{{Image: image}},
 						},
-						IngressPolicy: corev1alpha1.IngressPolicyExternal,
+						IngressPolicy: corev1alpha1.IngressPolicyClusterLocal,
 					},
 				},
 			},
@@ -699,7 +700,7 @@ To continue watching logs run: riff core deployer tail my-deployer --namespace d
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{{Image: image}},
 						},
-						IngressPolicy: corev1alpha1.IngressPolicyExternal,
+						IngressPolicy: corev1alpha1.IngressPolicyClusterLocal,
 					},
 				}, cli.TailSinceCreateDefault, mock.Anything).Return(fmt.Errorf("kail error"))
 				return ctx, nil
@@ -723,7 +724,7 @@ To continue watching logs run: riff core deployer tail my-deployer --namespace d
 						Template: &corev1.PodSpec{
 							Containers: []corev1.Container{{Image: image}},
 						},
-						IngressPolicy: corev1alpha1.IngressPolicyExternal,
+						IngressPolicy: corev1alpha1.IngressPolicyClusterLocal,
 					},
 				},
 			},

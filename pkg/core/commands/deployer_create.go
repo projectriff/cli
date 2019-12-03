@@ -272,7 +272,7 @@ and ` + cli.EnvFromFlagName + ` to map values from a ConfigMap or Secret.
 	_ = cmd.MarkFlagCustom(cli.StripDash(cli.ContainerRefFlagName), "__"+c.Name+"_list_containers")
 	cmd.Flags().StringVar(&opts.FunctionRef, cli.StripDash(cli.FunctionRefFlagName), "", "`name` of function to deploy")
 	_ = cmd.MarkFlagCustom(cli.StripDash(cli.FunctionRefFlagName), "__"+c.Name+"_list_functions")
-	cmd.Flags().StringVar(&opts.IngressPolicy, cli.StripDash(cli.IngressPolicyFlagName), string(corev1alpha1.IngressPolicyExternal), fmt.Sprintf("ingress `policy` for network access to the workload, one of %q or %q", corev1alpha1.IngressPolicyClusterLocal, corev1alpha1.IngressPolicyExternal))
+	cmd.Flags().StringVar(&opts.IngressPolicy, cli.StripDash(cli.IngressPolicyFlagName), string(corev1alpha1.IngressPolicyClusterLocal), fmt.Sprintf("ingress `policy` for network access to the workload, one of %q or %q", corev1alpha1.IngressPolicyClusterLocal, corev1alpha1.IngressPolicyExternal))
 	_ = cmd.MarkFlagCustom(cli.StripDash(cli.IngressPolicyFlagName), "__"+c.Name+"_ingress_policy")
 	cmd.Flags().StringArrayVar(&opts.Env, cli.StripDash(cli.EnvFlagName), []string{}, fmt.Sprintf("environment `variable` defined as a key value pair separated by an equals sign, example %q (may be set multiple times)", fmt.Sprintf("%s MY_VAR=my-value", cli.EnvFlagName)))
 	cmd.Flags().StringArrayVar(&opts.EnvFrom, cli.StripDash(cli.EnvFromFlagName), []string{}, fmt.Sprintf("environment `variable` from a config map or secret, example %q, %q (may be set multiple times)", fmt.Sprintf("%s MY_SECRET_VALUE=secretKeyRef:my-secret-name:key-in-secret", cli.EnvFromFlagName), fmt.Sprintf("%s MY_CONFIG_MAP_VALUE=configMapKeyRef:my-config-map-name:key-in-config-map", cli.EnvFromFlagName)))
