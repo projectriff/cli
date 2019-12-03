@@ -508,32 +508,6 @@ Created deployer "my-deployer"
 `,
 		},
 		{
-			Name: "create with service name",
-			Args: []string{deployerName, cli.ImageFlagName, image, cli.ServiceNameFlagName, "my-service"},
-			ExpectCreates: []runtime.Object{
-				&corev1alpha1.Deployer{
-					ObjectMeta: metav1.ObjectMeta{
-						Namespace: defaultNamespace,
-						Name:      deployerName,
-					},
-					Spec: corev1alpha1.DeployerSpec{
-						ServiceName: "my-service",
-						Template: &corev1.PodSpec{
-							Containers: []corev1.Container{
-								{
-									Image: image,
-								},
-							},
-						},
-						IngressPolicy: corev1alpha1.IngressPolicyClusterLocal,
-					},
-				},
-			},
-			ExpectOutput: `
-Created deployer "my-deployer"
-`,
-		},
-		{
 			Name: "create with target-port",
 			Args: []string{deployerName, cli.ImageFlagName, image, cli.TargetPortFlagName, "8888"},
 			ExpectCreates: []runtime.Object{
