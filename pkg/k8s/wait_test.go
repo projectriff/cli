@@ -33,8 +33,6 @@ import (
 )
 
 func TestWaitUntilReady(t *testing.T) {
-	t.Skip("TODO figure out why this deadlocks")
-
 	// using Application, but any type will work
 	application := &buildv1alpha1.Application{
 		TypeMeta: metav1.TypeMeta{
@@ -96,6 +94,7 @@ func TestWaitUntilReady(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			lw := cachetesting.NewFakeControllerSource()
+			defer lw.Shutdown()
 			ctx := k8s.WithListerWatcher(context.Background(), lw)
 
 			client := rifftesting.NewClient(application)
@@ -109,7 +108,6 @@ func TestWaitUntilReady(t *testing.T) {
 			for _, event := range test.events {
 				lw.Change(event, 1)
 			}
-			lw.Shutdown()
 
 			err := <-done
 			if expected, actual := fmt.Sprintf("%s", test.err), fmt.Sprintf("%s", err); expected != actual {
