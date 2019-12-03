@@ -59,7 +59,6 @@ const (
 	ProviderFlagName              = "--provider"
 	RegistryFlagName              = "--registry"
 	RegistryUserFlagName          = "--registry-user"
-	ServiceNameFlagName           = "--service-name"
 	ServiceRefFlagName            = "--service-ref"
 	SetDefaultImagePrefixFlagName = "--set-default-image-prefix"
 	ShellFlagName                 = "--shell"

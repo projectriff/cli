@@ -46,8 +46,6 @@ type DeployerCreateOptions struct {
 	IngressPolicy string
 	TargetPort    int32
 
-	ServiceName string
-
 	Env     []string
 	EnvFrom []string
 
@@ -201,8 +199,6 @@ func (opts *DeployerCreateOptions) Exec(ctx context.Context, c *cli.Config) erro
 		}
 	}
 
-	deployer.Spec.ServiceName = opts.ServiceName
-
 	if opts.DryRun {
 		cli.DryRunResource(ctx, deployer, deployer.GetGroupVersionKind())
 	} else {
@@ -288,7 +284,6 @@ and ` + cli.EnvFromFlagName + ` to map values from a ConfigMap or Secret.
 	cmd.Flags().StringArrayVar(&opts.EnvFrom, cli.StripDash(cli.EnvFromFlagName), []string{}, fmt.Sprintf("environment `variable` from a config map or secret, example %q, %q (may be set multiple times)", fmt.Sprintf("%s MY_SECRET_VALUE=secretKeyRef:my-secret-name:key-in-secret", cli.EnvFromFlagName), fmt.Sprintf("%s MY_CONFIG_MAP_VALUE=configMapKeyRef:my-config-map-name:key-in-config-map", cli.EnvFromFlagName)))
 	cmd.Flags().StringVar(&opts.LimitCPU, cli.StripDash(cli.LimitCPUFlagName), "", "the maximum amount of cpu allowed, in CPU `cores` (500m = .5 cores)")
 	cmd.Flags().StringVar(&opts.LimitMemory, cli.StripDash(cli.LimitMemoryFlagName), "", "the maximum amount of memory allowed, in `bytes` (500Mi = 500MiB = 500 * 1024 * 1024)")
-	cmd.Flags().StringVar(&opts.ServiceName, cli.StripDash(cli.ServiceNameFlagName), "", "`name` of created service (default is a generated name)")
 	cmd.Flags().BoolVar(&opts.Tail, cli.StripDash(cli.TailFlagName), false, "watch deployer logs")
 	cmd.Flags().StringVar(&opts.WaitTimeout, cli.StripDash(cli.WaitTimeoutFlagName), "10m", "`duration` to wait for the deployer to become ready when watching logs")
 	cmd.Flags().BoolVar(&opts.DryRun, cli.StripDash(cli.DryRunFlagName), false, "print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr")
