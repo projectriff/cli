@@ -46,6 +46,7 @@ riff knative deployer create my-image-deployer --image registry.example.com/my-i
       --limit-memory bytes      the maximum amount of memory allowed, in bytes (500Mi = 500MiB = 500 * 1024 * 1024)
   -n, --namespace name          kubernetes namespace (defaulted from kube config)
       --tail                    watch deployer logs
+      --target-port port        port that the workload listens on for traffic. The value is exposed to the workload as the PORT environment variable
       --wait-timeout duration   duration to wait for the deployer to become ready when watching logs (default "10m")
 ```
 

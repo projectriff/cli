@@ -17,17 +17,16 @@
 package validation
 
 import (
-	"strings"
+	"fmt"
 
 	"github.com/projectriff/cli/pkg/cli"
 )
 
-func MimeType(mimeType, field string) cli.FieldErrors {
+func PortNumber(port int32, field string) cli.FieldErrors {
 	errs := cli.FieldErrors{}
 
-	index := strings.Index(mimeType, "/")
-	if index == -1 || index == len(mimeType)-1 {
-		errs = errs.Also(cli.ErrInvalidValue(mimeType, field))
+	if port < 1 || port > 65535 {
+		errs = errs.Also(cli.ErrInvalidValue(fmt.Sprint(port), field))
 	}
 
 	return errs

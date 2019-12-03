@@ -190,6 +190,28 @@ func TestDeployerCreateOptions(t *testing.T) {
 			),
 		},
 		{
+			Name: "with target-port",
+			Options: &commands.DeployerCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Image:           "example.com/repo:tag",
+				IngressPolicy:   string(knativev1alpha1.IngressPolicyClusterLocal),
+				TargetPort:      8888,
+			},
+			ShouldValidate: true,
+		},
+		{
+			Name: "with invalid target-port",
+			Options: &commands.DeployerCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Image:           "example.com/repo:tag",
+				IngressPolicy:   string(knativev1alpha1.IngressPolicyClusterLocal),
+				TargetPort:      -1,
+			},
+			ExpectFieldErrors: cli.FieldErrors{}.Also(
+				cli.ErrInvalidValue("-1", cli.TargetPortFlagName),
+			),
+		},
+		{
 			Name: "with tail",
 			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
@@ -254,6 +276,7 @@ func TestDeployerCreateCommand(t *testing.T) {
 	image := "registry.example.com/repo@sha256:deadbeefdeadbeefdeadbeefdeadbeef"
 	applicationRef := "my-app"
 	containerRef := "my-container"
+	containerPort := int32(8888)
 	functionRef := "my-func"
 	envName := "MY_VAR"
 	envValue := "my-value"
@@ -472,6 +495,34 @@ Created deployer "my-deployer"
 											corev1.ResourceCPU:    resource.MustParse("100m"),
 											corev1.ResourceMemory: resource.MustParse("128Mi"),
 										},
+									},
+								},
+							},
+						},
+						IngressPolicy: knativev1alpha1.IngressPolicyClusterLocal,
+					},
+				},
+			},
+			ExpectOutput: `
+Created deployer "my-deployer"
+`,
+		},
+		{
+			Name: "create with target-port",
+			Args: []string{deployerName, cli.ImageFlagName, image, cli.TargetPortFlagName, "8888"},
+			ExpectCreates: []runtime.Object{
+				&knativev1alpha1.Deployer{
+					ObjectMeta: metav1.ObjectMeta{
+						Namespace: defaultNamespace,
+						Name:      deployerName,
+					},
+					Spec: knativev1alpha1.DeployerSpec{
+						Template: &corev1.PodSpec{
+							Containers: []corev1.Container{
+								{
+									Image: image,
+									Ports: []corev1.ContainerPort{
+										{Protocol: corev1.ProtocolTCP, ContainerPort: containerPort},
 									},
 								},
 							},
