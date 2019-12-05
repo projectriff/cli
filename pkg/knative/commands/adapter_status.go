@@ -69,7 +69,7 @@ func NewAdapterStatusCommand(ctx context.Context, c *cli.Config) *cobra.Command 
 		Use:   "status",
 		Short: "show knative adapter status",
 		Long: strings.TrimSpace(`
-Display status details for a adapter.
+Display status details for an adapter.
 
 The Ready condition is shown which should include a reason code and a
 descriptive message when the status is not "True". The status for the condition
