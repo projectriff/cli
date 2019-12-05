@@ -251,7 +251,9 @@ Create a Knative deployer.
 
 Build references are resolved within the same namespace as the deployer. As the
 build produces new images, the image will roll out automatically. Image based
-deployers must be updated manually to roll out new images.
+deployers must be updated manually to roll out new images. Rolling out an image
+means creating a Knative Configuration with a pod referencing the image and a
+Knative Route referencing the Configuration.
 
 The runtime environment can be configured by ` + cli.EnvFlagName + ` for static key-value pairs
 and ` + cli.EnvFromFlagName + ` to map values from a ConfigMap or Secret.
