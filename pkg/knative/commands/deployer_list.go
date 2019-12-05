@@ -121,7 +121,9 @@ func (opts *DeployerListOptions) print(deployer *knativev1alpha1.Deployer, _ pri
 	var url string
 	switch deployer.Spec.IngressPolicy {
 	case knativev1alpha1.IngressPolicyClusterLocal:
-		url = deployer.Status.Address.URL
+		if deployer.Status.Address != nil {
+			url = deployer.Status.Address.URL
+		}
 	case knativev1alpha1.IngressPolicyExternal:
 		url = deployer.Status.URL
 	default:

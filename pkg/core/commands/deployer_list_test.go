@@ -237,6 +237,39 @@ img         image         projectriff/upper   img.default.example.com           
 			},
 			ShouldError: true,
 		},
+		{
+			Name: "cluster local ingress policy with missing address",
+			Args: []string{},
+			GivenObjects: []runtime.Object{
+				&corev1alpha1.Deployer{
+					ObjectMeta: metav1.ObjectMeta{
+						Name:      "img",
+						Namespace: defaultNamespace,
+					},
+					Spec: corev1alpha1.DeployerSpec{
+						Template: &corev1.PodSpec{
+							Containers: []corev1.Container{
+								{Image: "projectriff/upper"},
+							},
+						},
+						IngressPolicy: corev1alpha1.IngressPolicyClusterLocal,
+					},
+					Status: corev1alpha1.DeployerStatus{
+						Status: apis.Status{
+							Conditions: apis.Conditions{
+								{Type: corev1alpha1.DeployerConditionReady, Status: "True"},
+							},
+						},
+						Address: nil,
+						URL:     "img.default.example.com",
+					},
+				},
+			},
+			ExpectOutput: `
+NAME   TYPE    REF                 URL       STATUS   AGE
+img    image   projectriff/upper   <empty>   Ready    <unknown>
+`,
+		},
 	}
 
 	table.Run(t, commands.NewDeployerListCommand)
