@@ -172,7 +172,7 @@ func TestProcessorCreateOptions(t *testing.T) {
 func TestProcessorCreateCommand(t *testing.T) {
 	defaultNamespace := "default"
 	processorName := "my-processor"
-	containerRef := "my-func"
+	containerRef := "my-container"
 	functionRef := "my-func"
 	image := "my-image"
 	inputName := "input"
