@@ -303,9 +303,11 @@ func TestDeployerCreateCommand(t *testing.T) {
 						Name:      deployerName,
 					},
 					Spec: corev1alpha1.DeployerSpec{
-						Template: &corev1.PodSpec{
-							Containers: []corev1.Container{
-								{Image: image},
+						Template: &corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								Containers: []corev1.Container{
+									{Image: image},
+								},
 							},
 						},
 						IngressPolicy: corev1alpha1.IngressPolicyClusterLocal,
@@ -393,10 +395,13 @@ metadata:
 spec:
   ingressPolicy: ClusterLocal
   template:
-    containers:
-    - image: registry.example.com/repo@sha256:deadbeefdeadbeefdeadbeefdeadbeef
-      name: ""
-      resources: {}
+    metadata:
+      creationTimestamp: null
+    spec:
+      containers:
+      - image: registry.example.com/repo@sha256:deadbeefdeadbeefdeadbeefdeadbeef
+        name: ""
+        resources: {}
 status: {}
 
 Created deployer "my-deployer"
@@ -412,9 +417,11 @@ Created deployer "my-deployer"
 						Name:      deployerName,
 					},
 					Spec: corev1alpha1.DeployerSpec{
-						Template: &corev1.PodSpec{
-							Containers: []corev1.Container{
-								{Image: image},
+						Template: &corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								Containers: []corev1.Container{
+									{Image: image},
+								},
 							},
 						},
 						IngressPolicy: corev1alpha1.IngressPolicyExternal,
@@ -435,32 +442,34 @@ Created deployer "my-deployer"
 						Name:      deployerName,
 					},
 					Spec: corev1alpha1.DeployerSpec{
-						Template: &corev1.PodSpec{
-							Containers: []corev1.Container{
-								{
-									Image: image,
-									Env: []corev1.EnvVar{
-										{Name: envName, Value: envValue},
-										{Name: envNameOther, Value: envValueOther},
-										{
-											Name: "MY_VAR_FROM_CONFIGMAP",
-											ValueFrom: &corev1.EnvVarSource{
-												ConfigMapKeyRef: &corev1.ConfigMapKeySelector{
-													LocalObjectReference: corev1.LocalObjectReference{
-														Name: "my-configmap",
+						Template: &corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								Containers: []corev1.Container{
+									{
+										Image: image,
+										Env: []corev1.EnvVar{
+											{Name: envName, Value: envValue},
+											{Name: envNameOther, Value: envValueOther},
+											{
+												Name: "MY_VAR_FROM_CONFIGMAP",
+												ValueFrom: &corev1.EnvVarSource{
+													ConfigMapKeyRef: &corev1.ConfigMapKeySelector{
+														LocalObjectReference: corev1.LocalObjectReference{
+															Name: "my-configmap",
+														},
+														Key: "my-key",
 													},
-													Key: "my-key",
 												},
 											},
-										},
-										{
-											Name: "MY_VAR_FROM_SECRET",
-											ValueFrom: &corev1.EnvVarSource{
-												SecretKeyRef: &corev1.SecretKeySelector{
-													LocalObjectReference: corev1.LocalObjectReference{
-														Name: "my-secret",
+											{
+												Name: "MY_VAR_FROM_SECRET",
+												ValueFrom: &corev1.EnvVarSource{
+													SecretKeyRef: &corev1.SecretKeySelector{
+														LocalObjectReference: corev1.LocalObjectReference{
+															Name: "my-secret",
+														},
+														Key: "my-key",
 													},
-													Key: "my-key",
 												},
 											},
 										},
@@ -486,14 +495,16 @@ Created deployer "my-deployer"
 						Name:      deployerName,
 					},
 					Spec: corev1alpha1.DeployerSpec{
-						Template: &corev1.PodSpec{
-							Containers: []corev1.Container{
-								{
-									Image: image,
-									Resources: corev1.ResourceRequirements{
-										Limits: corev1.ResourceList{
-											corev1.ResourceCPU:    resource.MustParse("100m"),
-											corev1.ResourceMemory: resource.MustParse("128Mi"),
+						Template: &corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								Containers: []corev1.Container{
+									{
+										Image: image,
+										Resources: corev1.ResourceRequirements{
+											Limits: corev1.ResourceList{
+												corev1.ResourceCPU:    resource.MustParse("100m"),
+												corev1.ResourceMemory: resource.MustParse("128Mi"),
+											},
 										},
 									},
 								},
@@ -517,12 +528,14 @@ Created deployer "my-deployer"
 						Name:      deployerName,
 					},
 					Spec: corev1alpha1.DeployerSpec{
-						Template: &corev1.PodSpec{
-							Containers: []corev1.Container{
-								{
-									Image: image,
-									Ports: []corev1.ContainerPort{
-										{Protocol: corev1.ProtocolTCP, ContainerPort: containerPort},
+						Template: &corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								Containers: []corev1.Container{
+									{
+										Image: image,
+										Ports: []corev1.ContainerPort{
+											{Protocol: corev1.ProtocolTCP, ContainerPort: containerPort},
+										},
 									},
 								},
 							},
@@ -553,9 +566,11 @@ Created deployer "my-deployer"
 						Name:      deployerName,
 					},
 					Spec: corev1alpha1.DeployerSpec{
-						Template: &corev1.PodSpec{
-							Containers: []corev1.Container{
-								{Image: image},
+						Template: &corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								Containers: []corev1.Container{
+									{Image: image},
+								},
 							},
 						},
 						IngressPolicy: corev1alpha1.IngressPolicyClusterLocal,
@@ -577,9 +592,11 @@ Created deployer "my-deployer"
 						Name:      deployerName,
 					},
 					Spec: corev1alpha1.DeployerSpec{
-						Template: &corev1.PodSpec{
-							Containers: []corev1.Container{
-								{Image: image},
+						Template: &corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								Containers: []corev1.Container{
+									{Image: image},
+								},
 							},
 						},
 						IngressPolicy: corev1alpha1.IngressPolicyClusterLocal,
@@ -603,8 +620,10 @@ Created deployer "my-deployer"
 						Name:      deployerName,
 					},
 					Spec: corev1alpha1.DeployerSpec{
-						Template: &corev1.PodSpec{
-							Containers: []corev1.Container{{Image: image}},
+						Template: &corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								Containers: []corev1.Container{{Image: image}},
+							},
 						},
 						IngressPolicy: corev1alpha1.IngressPolicyClusterLocal,
 					},
@@ -629,8 +648,10 @@ Created deployer "my-deployer"
 						Name:      deployerName,
 					},
 					Spec: corev1alpha1.DeployerSpec{
-						Template: &corev1.PodSpec{
-							Containers: []corev1.Container{{Image: image}},
+						Template: &corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								Containers: []corev1.Container{{Image: image}},
+							},
 						},
 						IngressPolicy: corev1alpha1.IngressPolicyClusterLocal,
 					},
@@ -657,8 +678,10 @@ Deployer "my-deployer" is ready
 						Name:      deployerName,
 					},
 					Spec: corev1alpha1.DeployerSpec{
-						Template: &corev1.PodSpec{
-							Containers: []corev1.Container{{Image: image}},
+						Template: &corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								Containers: []corev1.Container{{Image: image}},
+							},
 						},
 						IngressPolicy: corev1alpha1.IngressPolicyClusterLocal,
 					},
@@ -686,8 +709,10 @@ Deployer "my-deployer" is ready
 						Name:      deployerName,
 					},
 					Spec: corev1alpha1.DeployerSpec{
-						Template: &corev1.PodSpec{
-							Containers: []corev1.Container{{Image: image}},
+						Template: &corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								Containers: []corev1.Container{{Image: image}},
+							},
 						},
 						IngressPolicy: corev1alpha1.IngressPolicyClusterLocal,
 					},
@@ -722,8 +747,10 @@ To continue watching logs run: riff core deployer tail my-deployer --namespace d
 						Name:      deployerName,
 					},
 					Spec: corev1alpha1.DeployerSpec{
-						Template: &corev1.PodSpec{
-							Containers: []corev1.Container{{Image: image}},
+						Template: &corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								Containers: []corev1.Container{{Image: image}},
+							},
 						},
 						IngressPolicy: corev1alpha1.IngressPolicyClusterLocal,
 					},
@@ -746,8 +773,10 @@ To continue watching logs run: riff core deployer tail my-deployer --namespace d
 						Name:      deployerName,
 					},
 					Spec: corev1alpha1.DeployerSpec{
-						Template: &corev1.PodSpec{
-							Containers: []corev1.Container{{Image: image}},
+						Template: &corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								Containers: []corev1.Container{{Image: image}},
+							},
 						},
 						IngressPolicy: corev1alpha1.IngressPolicyClusterLocal,
 					},

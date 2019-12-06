@@ -124,8 +124,10 @@ func (opts *ProcessorCreateOptions) Exec(ctx context.Context, c *cli.Config) err
 		Spec: streamingv1alpha1.ProcessorSpec{
 			Inputs:  inputs,
 			Outputs: outputs,
-			Template: &corev1.PodSpec{
-				Containers: []corev1.Container{{}},
+			Template: &corev1.PodTemplateSpec{
+				Spec: corev1.PodSpec{
+					Containers: []corev1.Container{{}},
+				},
 			},
 		},
 	}
@@ -141,7 +143,7 @@ func (opts *ProcessorCreateOptions) Exec(ctx context.Context, c *cli.Config) err
 		}
 	}
 	if opts.Image != "" {
-		processor.Spec.Template.Containers[0].Image = opts.Image
+		processor.Spec.Template.Spec.Containers[0].Image = opts.Image
 	}
 
 	if opts.DryRun {
