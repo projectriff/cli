@@ -117,10 +117,14 @@ func (opts *KafkaProviderListOptions) print(provider *streamv1alpha1.KafkaProvid
 	row := metav1beta1.TableRow{
 		Object: runtime.RawExtension{Object: provider},
 	}
+	var provisionerService string
+	if provider.Status.ProvisionerServiceRef != nil {
+		provisionerService = provider.Status.ProvisionerServiceRef.Name
+	}
 	row.Cells = append(row.Cells,
 		provider.Name,
 		cli.FormatEmptyString(provider.Spec.BootstrapServers),
-		cli.FormatEmptyString(provider.Status.ProvisionerServiceName),
+		cli.FormatEmptyString(provisionerService),
 		cli.FormatConditionStatus(provider.Status.GetCondition(streamv1alpha1.KafkaProviderConditionReady)),
 		cli.FormatTimestampSince(provider.CreationTimestamp, now),
 	)

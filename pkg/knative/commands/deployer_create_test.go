@@ -392,6 +392,7 @@ metadata:
   namespace: default
 spec:
   ingressPolicy: ClusterLocal
+  scale: {}
   template:
     containers:
     - image: registry.example.com/repo@sha256:deadbeefdeadbeefdeadbeefdeadbeef
