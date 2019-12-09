@@ -162,8 +162,8 @@ func (opts *DeployerListOptions) formatRef(deployer *corev1alpha1.Deployer) (str
 		if deployer.Spec.Build.ContainerRef != "" {
 			return "container", deployer.Spec.Build.ContainerRef
 		}
-	} else if deployer.Spec.Template != nil && deployer.Spec.Template.Containers[0].Image != "" {
-		return "image", deployer.Spec.Template.Containers[0].Image
+	} else if deployer.Spec.Template != nil && deployer.Spec.Template.Spec.Containers[0].Image != "" {
+		return "image", deployer.Spec.Template.Spec.Containers[0].Image
 	}
 	return cli.Swarnf("<unknown>"), cli.Swarnf("<unknown>")
 }

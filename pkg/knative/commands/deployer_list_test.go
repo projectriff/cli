@@ -139,9 +139,11 @@ other-namespace   test-other-deployer   <unknown>   <unknown>   <empty>   <unkno
 						Namespace: defaultNamespace,
 					},
 					Spec: knativev1alpha1.DeployerSpec{
-						Template: &corev1.PodSpec{
-							Containers: []corev1.Container{
-								{Image: "projectriff/upper"},
+						Template: &corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								Containers: []corev1.Container{
+									{Image: "projectriff/upper"},
+								},
 							},
 						},
 					},
@@ -247,9 +249,11 @@ img         image         projectriff/upper   img.default.example.com           
 						Namespace: defaultNamespace,
 					},
 					Spec: knativev1alpha1.DeployerSpec{
-						Template: &corev1.PodSpec{
-							Containers: []corev1.Container{
-								{Image: "projectriff/upper"},
+						Template: &corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								Containers: []corev1.Container{
+									{Image: "projectriff/upper"},
+								},
 							},
 						},
 						IngressPolicy: knativev1alpha1.IngressPolicyClusterLocal,

@@ -143,8 +143,10 @@ func (opts *DeployerCreateOptions) Exec(ctx context.Context, c *cli.Config) erro
 			Name:      opts.Name,
 		},
 		Spec: knativev1alpha1.DeployerSpec{
-			Template: &corev1.PodSpec{
-				Containers: []corev1.Container{{}},
+			Template: &corev1.PodTemplateSpec{
+				Spec: corev1.PodSpec{
+					Containers: []corev1.Container{{}},
+				},
 			},
 			IngressPolicy: knativev1alpha1.IngressPolicy(opts.IngressPolicy),
 		},
@@ -166,35 +168,35 @@ func (opts *DeployerCreateOptions) Exec(ctx context.Context, c *cli.Config) erro
 		}
 	}
 	if opts.Image != "" {
-		deployer.Spec.Template.Containers[0].Image = opts.Image
+		deployer.Spec.Template.Spec.Containers[0].Image = opts.Image
 	}
 
 	for _, env := range opts.Env {
-		if deployer.Spec.Template.Containers[0].Env == nil {
-			deployer.Spec.Template.Containers[0].Env = []corev1.EnvVar{}
+		if deployer.Spec.Template.Spec.Containers[0].Env == nil {
+			deployer.Spec.Template.Spec.Containers[0].Env = []corev1.EnvVar{}
 		}
-		deployer.Spec.Template.Containers[0].Env = append(deployer.Spec.Template.Containers[0].Env, parsers.EnvVar(env))
+		deployer.Spec.Template.Spec.Containers[0].Env = append(deployer.Spec.Template.Spec.Containers[0].Env, parsers.EnvVar(env))
 	}
 	for _, env := range opts.EnvFrom {
-		if deployer.Spec.Template.Containers[0].Env == nil {
-			deployer.Spec.Template.Containers[0].Env = []corev1.EnvVar{}
+		if deployer.Spec.Template.Spec.Containers[0].Env == nil {
+			deployer.Spec.Template.Spec.Containers[0].Env = []corev1.EnvVar{}
 		}
-		deployer.Spec.Template.Containers[0].Env = append(deployer.Spec.Template.Containers[0].Env, parsers.EnvVarFrom(env))
+		deployer.Spec.Template.Spec.Containers[0].Env = append(deployer.Spec.Template.Spec.Containers[0].Env, parsers.EnvVarFrom(env))
 	}
 
-	if (opts.LimitCPU != "" || opts.LimitMemory != "") && deployer.Spec.Template.Containers[0].Resources.Limits == nil {
-		deployer.Spec.Template.Containers[0].Resources.Limits = corev1.ResourceList{}
+	if (opts.LimitCPU != "" || opts.LimitMemory != "") && deployer.Spec.Template.Spec.Containers[0].Resources.Limits == nil {
+		deployer.Spec.Template.Spec.Containers[0].Resources.Limits = corev1.ResourceList{}
 	}
 	if opts.LimitCPU != "" {
 		// parse errors are handled by the opt validation
-		deployer.Spec.Template.Containers[0].Resources.Limits[corev1.ResourceCPU] = resource.MustParse(opts.LimitCPU)
+		deployer.Spec.Template.Spec.Containers[0].Resources.Limits[corev1.ResourceCPU] = resource.MustParse(opts.LimitCPU)
 	}
 	if opts.LimitMemory != "" {
 		// parse errors are handled by the opt validation
-		deployer.Spec.Template.Containers[0].Resources.Limits[corev1.ResourceMemory] = resource.MustParse(opts.LimitMemory)
+		deployer.Spec.Template.Spec.Containers[0].Resources.Limits[corev1.ResourceMemory] = resource.MustParse(opts.LimitMemory)
 	}
 	if opts.TargetPort > 0 {
-		deployer.Spec.Template.Containers[0].Ports = []corev1.ContainerPort{
+		deployer.Spec.Template.Spec.Containers[0].Ports = []corev1.ContainerPort{
 			{Protocol: corev1.ProtocolTCP, ContainerPort: opts.TargetPort},
 		}
 	}
