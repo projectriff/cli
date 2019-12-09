@@ -109,12 +109,7 @@ if [ "$machine" != "MinGw" ]; then
       --ingress-policy External \
       --namespace $NAMESPACE \
       --tail
-    source $fats_dir/macros/invoke_incluster.sh \
-      "$(kubectl get deployers.core.projectriff.io ${name} --namespace ${NAMESPACE} -ojsonpath='{.status.address.url}')" \
-      "${curl_opts}" \
-      "${expected_data}"
-    # TODO invoke via ingress as well
-    source $fats_dir/macros/invoke_core_deployer.sh $name "-H Content-Type:text/plain -H Accept:text/plain -d cli" CLI
+    source $fats_dir/macros/invoke_core_deployer.sh "${name}" "${curl_opts}" "${expected_data}"
     riff core deployer delete $name --namespace $NAMESPACE
 
     riff knative deployer create $name \
@@ -122,14 +117,7 @@ if [ "$machine" != "MinGw" ]; then
       --ingress-policy External \
       --namespace $NAMESPACE \
       --tail
-    source $fats_dir/macros/invoke_incluster.sh \
-      "$(kubectl get deployers.knative.projectriff.io ${name} --namespace ${NAMESPACE} -ojsonpath='{.status.address.url}')" \
-      "${curl_opts}" \
-      "${expected_data}"
-    source $fats_dir/macros/invoke_knative_deployer.sh \
-      "${name}" \
-      "${curl_opts}" \
-      "${expected_data}"
+    source $fats_dir/macros/invoke_knative_deployer.sh "${name}" "${curl_opts}" "${expected_data}"
     riff knative deployer delete $name --namespace $NAMESPACE
 
     riff function delete $name --namespace $NAMESPACE
