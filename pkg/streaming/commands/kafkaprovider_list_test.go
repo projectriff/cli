@@ -25,6 +25,7 @@ import (
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 	"github.com/projectriff/system/pkg/apis"
 	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
+	"github.com/projectriff/system/pkg/refs"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
@@ -146,7 +147,7 @@ other-namespace   test-other-kafka-provider   <empty>             <empty>       
 								{Type: streamv1alpha1.KafkaProviderConditionReady, Status: "True"},
 							},
 						},
-						ProvisionerServiceName: "my-kafka-provisioner",
+						ProvisionerServiceRef: &refs.TypedLocalObjectReference{Name: "my-kafka-provisioner", Kind: "Service"},
 					},
 				},
 			},
