@@ -79,7 +79,7 @@ for test in command; do
     "$(kubectl get deployers.core.projectriff.io ${name} --namespace ${NAMESPACE} -ojsonpath='{.status.address.url}')" \
     "${curl_opts}" \
     "${expected_data}"
-  # TODO invoke via ingress as well
+  # TODO also test external ingress for core runtime
   riff core deployer delete $name --namespace $NAMESPACE
 
   riff knative deployer create $name \
@@ -87,10 +87,7 @@ for test in command; do
     --ingress-policy External \
     --namespace $NAMESPACE \
     --tail
-  source $fats_dir/macros/invoke_incluster.sh \
-    "$(kubectl get deployers.knative.projectriff.io ${name} --namespace ${NAMESPACE} -ojsonpath='{.status.address.url}')" \
-    "${curl_opts}" \
-    "${expected_data}"
+  # TODO also test clusterlocal ingress for knative runtime
   source $fats_dir/macros/invoke_knative_deployer.sh \
     "${name}" \
     "${curl_opts}" \
