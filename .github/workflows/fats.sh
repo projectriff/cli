@@ -12,7 +12,7 @@ readonly slug=${version}-${git_timestamp}-${git_sha:0:16}
 # fetch FATS scripts
 fats_dir=`dirname "${BASH_SOURCE[0]}"`/fats
 fats_repo="projectriff/fats"
-fats_refspec=696bfb86ab8111c1945b81a661629d7dd70388e7 # master as of 2019-12-08
+fats_refspec=60c124bcc3c0c3c5d5c784def30ea965c942b461 # master as of 2019-12-09
 source `dirname "${BASH_SOURCE[0]}"`/fats-fetch.sh $fats_dir $fats_refspec $fats_repo
 source $fats_dir/.util.sh
 
@@ -75,11 +75,7 @@ for test in command; do
     --ingress-policy External \
     --namespace $NAMESPACE \
     --tail
-  source $fats_dir/macros/invoke_incluster.sh \
-    "$(kubectl get deployers.core.projectriff.io ${name} --namespace ${NAMESPACE} -ojsonpath='{.status.address.url}')" \
-    "${curl_opts}" \
-    "${expected_data}"
-  # TODO also test external ingress for core runtime
+  source $fats_dir/macros/invoke_core_deployer.sh "${name}" "${curl_opts}" "${expected_data}"
   riff core deployer delete $name --namespace $NAMESPACE
 
   riff knative deployer create $name \
@@ -87,11 +83,7 @@ for test in command; do
     --ingress-policy External \
     --namespace $NAMESPACE \
     --tail
-  # TODO also test clusterlocal ingress for knative runtime
-  source $fats_dir/macros/invoke_knative_deployer.sh \
-    "${name}" \
-    "${curl_opts}" \
-    "${expected_data}"
+  source $fats_dir/macros/invoke_knative_deployer.sh "${name}" "${curl_opts}" "${expected_data}"
   riff knative deployer delete $name --namespace $NAMESPACE
 
   riff function delete $name --namespace $NAMESPACE
