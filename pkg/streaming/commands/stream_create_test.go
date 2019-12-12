@@ -18,6 +18,7 @@ package commands_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/streaming/commands"
@@ -79,6 +80,25 @@ func TestStreamCreateOptions(t *testing.T) {
 				DryRun:          true,
 			},
 			ShouldValidate: true,
+		},
+		{
+			Name: "dry run, tail",
+			Options: &commands.StreamCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Provider:        "test-provider",
+				DryRun:          true,
+				Tail:            true,
+			},
+			ExpectFieldErrors: cli.ErrMultipleOneOf(cli.DryRunFlagName, cli.TailFlagName),
+		},
+		{
+			Name: "negative timeout",
+			Options: &commands.StreamCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Provider:        "test-provider",
+				WaitTimeout:     -3 * time.Second,
+			},
+			ExpectFieldErrors: cli.ErrInvalidValue(-3*time.Second, cli.WaitTimeoutFlagName),
 		},
 	}
 
