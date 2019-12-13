@@ -34,7 +34,6 @@ func TestRun(t *testing.T) {
 	}{{
 		name:    "empty",
 		timeout: time.Millisecond,
-		err:     context.DeadlineExceeded,
 	}, {
 		name:    "return immediately",
 		timeout: time.Minute,
