@@ -111,6 +111,56 @@ func TestProcessorCreateOptions(t *testing.T) {
 			ShouldValidate: true,
 		},
 		{
+			Name: "with env",
+			Options: &commands.ProcessorCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Image:           "example.com/repo:tag",
+				Inputs:          []string{"input1", "input2"},
+				Env:             []string{"VAR1=foo", "VAR2=bar"},
+			},
+			ShouldValidate: true,
+		},
+		{
+			Name: "with invalid env",
+			Options: &commands.ProcessorCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Image:           "example.com/repo:tag",
+				Inputs:          []string{"input1", "input2"},
+				Env:             []string{"=foo"},
+			},
+			ExpectFieldErrors: cli.ErrInvalidArrayValue("=foo", cli.EnvFlagName, 0),
+		},
+		{
+			Name: "with envfrom secret",
+			Options: &commands.ProcessorCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Image:           "example.com/repo:tag",
+				Inputs:          []string{"input1", "input2"},
+				EnvFrom:         []string{"VAR1=secretKeyRef:name:key"},
+			},
+			ShouldValidate: true,
+		},
+		{
+			Name: "with envfrom configmap",
+			Options: &commands.ProcessorCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Image:           "example.com/repo:tag",
+				Inputs:          []string{"input1", "input2"},
+				EnvFrom:         []string{"VAR1=configMapKeyRef:name:key"},
+			},
+			ShouldValidate: true,
+		},
+		{
+			Name: "with invalid envfrom",
+			Options: &commands.ProcessorCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Image:           "example.com/repo:tag",
+				Inputs:          []string{"input1", "input2"},
+				EnvFrom:         []string{"VAR1=someOtherKeyRef:name:key"},
+			},
+			ExpectFieldErrors: cli.ErrInvalidArrayValue("VAR1=someOtherKeyRef:name:key", cli.EnvFromFlagName, 0),
+		},
+		{
 			Name: "with tail",
 			Options: &commands.ProcessorCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
@@ -183,6 +233,14 @@ func TestProcessorCreateCommand(t *testing.T) {
 	outputNameBinding := fmt.Sprintf("%s:%s", outParameterName, outputName)
 	inputNameOther := "otherinput"
 	outputNameOther := "otheroutput"
+	envName := "MY_VAR"
+	envValue := "my-value"
+	envVar := fmt.Sprintf("%s=%s", envName, envValue)
+	envNameOther := "MY_VAR_OTHER"
+	envValueOther := "my-value-other"
+	envVarOther := fmt.Sprintf("%s=%s", envNameOther, envValueOther)
+	envVarFromConfigMap := "MY_VAR_FROM_CONFIGMAP=configMapKeyRef:my-configmap:my-key"
+	envVarFromSecret := "MY_VAR_FROM_SECRET=secretKeyRef:my-secret:my-key"
 
 	table := rifftesting.CommandTable{
 		{
@@ -683,6 +741,59 @@ To continue watching logs run: riff processor tail my-processor --namespace defa
 				},
 			},
 			ShouldError: true,
+		},
+		{
+			Name: "create from function ref with env and env-from",
+			Args: []string{processorName, cli.FunctionRefFlagName, functionRef, cli.InputFlagName, inputName, cli.EnvFlagName, envVar, cli.EnvFlagName, envVarOther, cli.EnvFromFlagName, envVarFromConfigMap, cli.EnvFromFlagName, envVarFromSecret},
+			ExpectCreates: []runtime.Object{
+				&streamingv1alpha1.Processor{
+					ObjectMeta: metav1.ObjectMeta{
+						Namespace: defaultNamespace,
+						Name:      processorName,
+					},
+					Spec: streamingv1alpha1.ProcessorSpec{
+						Build:  &streamingv1alpha1.Build{FunctionRef: functionRef},
+						Inputs: []streamingv1alpha1.InputStreamBinding{{Stream: inputName}},
+						Template: &corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								Containers: []corev1.Container{
+									{
+										Env: []corev1.EnvVar{
+											{Name: envName, Value: envValue},
+											{Name: envNameOther, Value: envValueOther},
+											{
+												Name: "MY_VAR_FROM_CONFIGMAP",
+												ValueFrom: &corev1.EnvVarSource{
+													ConfigMapKeyRef: &corev1.ConfigMapKeySelector{
+														LocalObjectReference: corev1.LocalObjectReference{
+															Name: "my-configmap",
+														},
+														Key: "my-key",
+													},
+												},
+											},
+											{
+												Name: "MY_VAR_FROM_SECRET",
+												ValueFrom: &corev1.EnvVarSource{
+													SecretKeyRef: &corev1.SecretKeySelector{
+														LocalObjectReference: corev1.LocalObjectReference{
+															Name: "my-secret",
+														},
+														Key: "my-key",
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			ExpectOutput: `
+Created processor "my-processor"
+`,
 		},
 	}
 
