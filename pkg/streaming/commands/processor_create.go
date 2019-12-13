@@ -23,6 +23,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/projectriff/cli/pkg/parsers"
+	"github.com/projectriff/cli/pkg/validation"
+
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/cli/options"
 	"github.com/projectriff/cli/pkg/k8s"
@@ -39,6 +42,9 @@ type ProcessorCreateOptions struct {
 	Image        string
 	ContainerRef string
 	FunctionRef  string
+
+	Env     []string
+	EnvFrom []string
 
 	Inputs  []string
 	Outputs []string
@@ -75,6 +81,9 @@ func (opts *ProcessorCreateOptions) Validate(ctx context.Context) cli.FieldError
 	} else {
 		unused = append(unused, cli.FunctionRefFlagName)
 	}
+
+	errs = errs.Also(validation.EnvVars(opts.Env, cli.EnvFlagName))
+	errs = errs.Also(validation.EnvVarFroms(opts.EnvFrom, cli.EnvFromFlagName))
 
 	if opts.Image != "" {
 		used = append(used, cli.ImageFlagName)
@@ -143,6 +152,20 @@ func (opts *ProcessorCreateOptions) Exec(ctx context.Context, c *cli.Config) err
 			FunctionRef: opts.FunctionRef,
 		}
 	}
+
+	for _, env := range opts.Env {
+		if processor.Spec.Template.Spec.Containers[0].Env == nil {
+			processor.Spec.Template.Spec.Containers[0].Env = []corev1.EnvVar{}
+		}
+		processor.Spec.Template.Spec.Containers[0].Env = append(processor.Spec.Template.Spec.Containers[0].Env, parsers.EnvVar(env))
+	}
+	for _, env := range opts.EnvFrom {
+		if processor.Spec.Template.Spec.Containers[0].Env == nil {
+			processor.Spec.Template.Spec.Containers[0].Env = []corev1.EnvVar{}
+		}
+		processor.Spec.Template.Spec.Containers[0].Env = append(processor.Spec.Template.Spec.Containers[0].Env, parsers.EnvVarFrom(env))
+	}
+
 	if opts.Image != "" {
 		processor.Spec.Template.Spec.Containers[0].Image = opts.Image
 	}
@@ -218,6 +241,8 @@ func NewProcessorCreateCommand(ctx context.Context, c *cli.Config) *cobra.Comman
 	cmd.Flags().BoolVar(&opts.Tail, cli.StripDash(cli.TailFlagName), false, "watch processor logs")
 	cmd.Flags().StringVar(&opts.WaitTimeout, cli.StripDash(cli.WaitTimeoutFlagName), "10m", "`duration` to wait for the processor to become ready when watching logs")
 	cmd.Flags().BoolVar(&opts.DryRun, cli.StripDash(cli.DryRunFlagName), false, "print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr")
+	cmd.Flags().StringArrayVar(&opts.Env, cli.StripDash(cli.EnvFlagName), []string{}, fmt.Sprintf("environment `variable` defined as a key value pair separated by an equals sign, example %q (may be set multiple times)", fmt.Sprintf("%s MY_VAR=my-value", cli.EnvFlagName)))
+	cmd.Flags().StringArrayVar(&opts.EnvFrom, cli.StripDash(cli.EnvFromFlagName), []string{}, fmt.Sprintf("environment `variable` from a config map or secret, example %q, %q (may be set multiple times)", fmt.Sprintf("%s MY_SECRET_VALUE=secretKeyRef:my-secret-name:key-in-secret", cli.EnvFromFlagName), fmt.Sprintf("%s MY_CONFIG_MAP_VALUE=configMapKeyRef:my-config-map-name:key-in-config-map", cli.EnvFromFlagName)))
 
 	return cmd
 }

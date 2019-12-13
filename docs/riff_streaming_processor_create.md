@@ -26,6 +26,8 @@ riff streaming processor create my-processor --function-ref my-func --input inpu
 ```
       --container-ref name      name of container to deploy
       --dry-run                 print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr
+      --env variable            environment variable defined as a key value pair separated by an equals sign, example "--env MY_VAR=my-value" (may be set multiple times)
+      --env-from variable       environment variable from a config map or secret, example "--env-from MY_SECRET_VALUE=secretKeyRef:my-secret-name:key-in-secret", "--env-from MY_CONFIG_MAP_VALUE=configMapKeyRef:my-config-map-name:key-in-config-map" (may be set multiple times)
       --function-ref name       name of function to deploy
   -h, --help                    help for create
       --image image             container image to deploy
