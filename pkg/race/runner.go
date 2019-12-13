@@ -19,6 +19,8 @@ package race
 import (
 	"context"
 	"time"
+
+	"k8s.io/apimachinery/pkg/util/wait"
 )
 
 // Task is a function which performs some kind of activity and returns an error value. It also observes the given
@@ -26,24 +28,25 @@ import (
 type Task func(ctx context.Context) error
 
 // Run runs each task in its own go routine and returns the result of the first task to complete (or error). A timeout
-// is specified to limit the whole process. Each task should observe the context and return once the context is done.
+// is specified to limit the whole process. Each task must observe the context and return once the context is done.
 func Run(ctx context.Context, timeout time.Duration, tasks ...Task) error {
 	ctx, cancel := context.WithTimeout(ctx, timeout)
-	defer cancel()
 	errChan := make(chan error, len(tasks)+1)
 	defer close(errChan)
 
+	var wg wait.Group
 	for _, task := range tasks {
-		go func(task Task) {
+		task := task
+		wg.StartWithContext(ctx, func(ctx context.Context) {
 			defer cancel()
 			err := task(ctx)
 			if ctx.Err() == nil {
 				errChan <- err
 			}
-		}(task)
+		})
 	}
 
-	<-ctx.Done()
+	wg.Wait()
 	errChan <- ctx.Err()
 
 	return <-errChan
