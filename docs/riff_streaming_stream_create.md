@@ -29,7 +29,7 @@ riff streaming stream create my-stream --provider my-provider
   -n, --namespace name           kubernetes namespace (defaulted from kube config)
       --provider name            name of stream provider
       --tail                     watch provisioning progress
-      --wait-timeout duration    duration to wait for the stream to become ready when watching progress (default 10m0s)
+      --wait-timeout duration    duration to wait for the stream to become ready when watching progress (default 1m0s)
 ```
 
 ### Options inherited from parent commands

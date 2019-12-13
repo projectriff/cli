@@ -18,6 +18,7 @@ package commands_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/streaming/commands"
@@ -54,6 +55,25 @@ func TestKafkaProviderCreateOptions(t *testing.T) {
 				DryRun:           true,
 			},
 			ShouldValidate: true,
+		},
+		{
+			Name: "dry run, tail",
+			Options: &commands.KafkaProviderCreateOptions{
+				ResourceOptions:  rifftesting.ValidResourceOptions,
+				BootstrapServers: "localhost:9092",
+				DryRun:           true,
+				Tail:             true,
+			},
+			ExpectFieldErrors: cli.ErrMultipleOneOf(cli.DryRunFlagName, cli.TailFlagName),
+		},
+		{
+			Name: "invalid timeout",
+			Options: &commands.KafkaProviderCreateOptions{
+				ResourceOptions:  rifftesting.ValidResourceOptions,
+				BootstrapServers: "localhost:9092",
+				WaitTimeout:      -4 * time.Second,
+			},
+			ExpectFieldErrors: cli.ErrInvalidValue(-4*time.Second, cli.WaitTimeoutFlagName),
 		},
 	}
 
