@@ -24,7 +24,6 @@ import (
 
 	"github.com/projectriff/cli/pkg/k8s"
 	"github.com/projectriff/cli/pkg/race"
-
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/cli/options"
 	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
