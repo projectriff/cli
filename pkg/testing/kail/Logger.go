@@ -66,6 +66,20 @@ func (_m *Logger) FunctionLogs(ctx context.Context, function *v1alpha1.Function,
 	return r0
 }
 
+// KafkaProviderLogs provides a mock function with given fields: ctx, provider, since, out
+func (_m *Logger) KafkaProviderLogs(ctx context.Context, provider *streamingv1alpha1.KafkaProvider, since time.Duration, out io.Writer) error {
+	ret := _m.Called(ctx, provider, since, out)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *streamingv1alpha1.KafkaProvider, time.Duration, io.Writer) error); ok {
+		r0 = rf(ctx, provider, since, out)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // KnativeDeployerLogs provides a mock function with given fields: ctx, deployer, since, out
 func (_m *Logger) KnativeDeployerLogs(ctx context.Context, deployer *knativev1alpha1.Deployer, since time.Duration, out io.Writer) error {
 	ret := _m.Called(ctx, deployer, since, out)

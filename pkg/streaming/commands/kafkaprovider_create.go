@@ -20,9 +20,12 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/cli/options"
+	"github.com/projectriff/cli/pkg/k8s"
+	"github.com/projectriff/cli/pkg/race"
 	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -34,6 +37,9 @@ type KafkaProviderCreateOptions struct {
 	BootstrapServers string
 
 	DryRun bool
+
+	Tail        bool
+	WaitTimeout time.Duration
 }
 
 var (
@@ -49,6 +55,12 @@ func (opts *KafkaProviderCreateOptions) Validate(ctx context.Context) cli.FieldE
 
 	if opts.BootstrapServers == "" {
 		errs = errs.Also(cli.ErrMissingField(cli.BootstrapServersFlagName))
+	}
+	if opts.DryRun && opts.Tail {
+		errs = errs.Also(cli.ErrMultipleOneOf(cli.DryRunFlagName, cli.TailFlagName))
+	}
+	if opts.WaitTimeout < 0 {
+		errs = errs.Also(cli.ErrInvalidValue(opts.WaitTimeout, cli.WaitTimeoutFlagName))
 	}
 
 	return errs
@@ -75,6 +87,26 @@ func (opts *KafkaProviderCreateOptions) Exec(ctx context.Context, c *cli.Config)
 		}
 	}
 	c.Successf("Created kafka provider %q\n", provider.Name)
+	if opts.Tail {
+		err := race.Run(ctx, opts.WaitTimeout,
+			func(ctx context.Context) error {
+				return k8s.WaitUntilReady(ctx, c.StreamingRuntime().RESTClient(), "kafkaproviders", provider)
+			},
+			func(ctx context.Context) error {
+				return c.Kail.KafkaProviderLogs(ctx, provider, cli.TailSinceCreateDefault, c.Stdout)
+			},
+		)
+		if err == context.DeadlineExceeded {
+			c.Errorf("Timeout after %q waiting for %q to become ready\n", opts.WaitTimeout, opts.Name)
+			c.Infof("To view status run: %s streaming kafka-provider list %s %s\n", c.Name, cli.NamespaceFlagName, opts.Namespace)
+			err = cli.SilenceError(err)
+		}
+		if err != nil {
+			return err
+		}
+		c.Successf("KafkaProvider %q is ready\n", provider.Name)
+	}
+
 	return nil
 }
 
@@ -103,6 +135,8 @@ func NewKafkaProviderCreateCommand(ctx context.Context, c *cli.Config) *cobra.Co
 	cli.NamespaceFlag(cmd, c, &opts.Namespace)
 	cmd.Flags().StringVar(&opts.BootstrapServers, cli.StripDash(cli.BootstrapServersFlagName), "", "`address` of the kafka broker")
 	cmd.Flags().BoolVar(&opts.DryRun, cli.StripDash(cli.DryRunFlagName), false, "print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr")
+	cmd.Flags().BoolVar(&opts.Tail, cli.StripDash(cli.TailFlagName), false, "watch creation progress")
+	cmd.Flags().DurationVar(&opts.WaitTimeout, cli.StripDash(cli.WaitTimeoutFlagName), time.Minute*1, "`duration` to wait for the provider to become ready when watching progress")
 
 	return cmd
 }

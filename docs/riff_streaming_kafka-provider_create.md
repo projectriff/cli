@@ -27,6 +27,8 @@ riff streaming kafka-provider create my-kafka-provider --bootstrap-servers kafka
       --dry-run                     print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr
   -h, --help                        help for create
   -n, --namespace name              kubernetes namespace (defaulted from kube config)
+      --tail                        watch creation progress
+      --wait-timeout duration       duration to wait for the provider to become ready when watching progress (default 1m0s)
 ```
 
 ### Options inherited from parent commands

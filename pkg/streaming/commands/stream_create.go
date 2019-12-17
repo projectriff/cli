@@ -20,9 +20,12 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/cli/options"
+	"github.com/projectriff/cli/pkg/k8s"
+	"github.com/projectriff/cli/pkg/race"
 	"github.com/projectriff/cli/pkg/validation"
 	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 	"github.com/spf13/cobra"
@@ -36,6 +39,9 @@ type StreamCreateOptions struct {
 	ContentType string
 
 	DryRun bool
+
+	Tail        bool
+	WaitTimeout time.Duration
 }
 
 var (
@@ -58,6 +64,12 @@ func (opts *StreamCreateOptions) Validate(ctx context.Context) cli.FieldErrors {
 		errs = errs.Also(validation.MimeType(contentType, cli.ContentTypeFlagName))
 	}
 
+	if opts.DryRun && opts.Tail {
+		errs = errs.Also(cli.ErrMultipleOneOf(cli.DryRunFlagName, cli.TailFlagName))
+	}
+	if opts.WaitTimeout < 0 {
+		errs = errs.Also(cli.ErrInvalidValue(opts.WaitTimeout, cli.WaitTimeoutFlagName))
+	}
 	return errs
 }
 
@@ -83,6 +95,22 @@ func (opts *StreamCreateOptions) Exec(ctx context.Context, c *cli.Config) error 
 		}
 	}
 	c.Successf("Created stream %q\n", stream.Name)
+	if opts.Tail {
+		err := race.Run(ctx, opts.WaitTimeout,
+			func(ctx context.Context) error {
+				return k8s.WaitUntilReady(ctx, c.StreamingRuntime().RESTClient(), "streams", stream)
+			},
+		)
+		if err == context.DeadlineExceeded {
+			c.Errorf("Timeout after %q waiting for %q to become ready\n", opts.WaitTimeout, opts.Name)
+			c.Infof("To view status run: %s streaming stream list %s %s\n", c.Name, cli.NamespaceFlagName, opts.Namespace)
+			err = cli.SilenceError(err)
+		}
+		if err != nil {
+			return err
+		}
+		c.Successf("Stream %q is ready\n", stream.Name)
+	}
 	return nil
 }
 
@@ -113,6 +141,8 @@ func NewStreamCreateCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 	_ = cmd.MarkFlagCustom(cli.StripDash(cli.ProviderFlagName), "__"+c.Name+"_list_streaming_provisioner_services")
 	cmd.Flags().StringVar(&opts.ContentType, cli.StripDash(cli.ContentTypeFlagName), "", "`MIME type` for message payloads accepted by the stream")
 	cmd.Flags().BoolVar(&opts.DryRun, cli.StripDash(cli.DryRunFlagName), false, "print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr")
+	cmd.Flags().BoolVar(&opts.Tail, cli.StripDash(cli.TailFlagName), false, "watch provisioning progress")
+	cmd.Flags().DurationVar(&opts.WaitTimeout, cli.StripDash(cli.WaitTimeoutFlagName), time.Second*10, "`duration` to wait for the stream to become ready when watching progress")
 
 	return cmd
 }

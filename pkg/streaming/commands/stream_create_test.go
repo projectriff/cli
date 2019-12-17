@@ -17,9 +17,15 @@
 package commands_test
 
 import (
+	"context"
 	"testing"
+	"time"
+
+	clientgotesting "k8s.io/client-go/testing"
+	cachetesting "k8s.io/client-go/tools/cache/testing"
 
 	"github.com/projectriff/cli/pkg/cli"
+	"github.com/projectriff/cli/pkg/k8s"
 	"github.com/projectriff/cli/pkg/streaming/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
@@ -80,6 +86,25 @@ func TestStreamCreateOptions(t *testing.T) {
 			},
 			ShouldValidate: true,
 		},
+		{
+			Name: "dry run, tail",
+			Options: &commands.StreamCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Provider:        "test-provider",
+				DryRun:          true,
+				Tail:            true,
+			},
+			ExpectFieldErrors: cli.ErrMultipleOneOf(cli.DryRunFlagName, cli.TailFlagName),
+		},
+		{
+			Name: "negative timeout",
+			Options: &commands.StreamCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Provider:        "test-provider",
+				WaitTimeout:     -3 * time.Second,
+			},
+			ExpectFieldErrors: cli.ErrInvalidValue(-3*time.Second, cli.WaitTimeoutFlagName),
+		},
 	}
 
 	table.Run(t)
@@ -91,6 +116,8 @@ func TestStreamCreateCommand(t *testing.T) {
 	defaultContentType := "application/octet-stream"
 	contentType := "video/jpeg"
 	provider := "test-provider"
+
+	var lister *cachetesting.FakeControllerSource
 
 	table := rifftesting.CommandTable{
 		{
@@ -201,6 +228,89 @@ Created stream "my-stream"
 				},
 			},
 			ShouldError: true,
+		},
+		{
+			Name: "tail",
+			Args: []string{"input", cli.ProviderFlagName, "franz", cli.TailFlagName, cli.ContentTypeFlagName, "application/json"},
+			Prepare: func(t *testing.T, ctx context.Context, c *cli.Config) (context.Context, error) {
+				lister = cachetesting.NewFakeControllerSource()
+				ctx = k8s.WithListerWatcher(ctx, lister)
+
+				return ctx, nil
+			},
+			WithReactors: []rifftesting.ReactionFunc{
+				func(action clientgotesting.Action) (handled bool, ret runtime.Object, err error) {
+					if c, ok := action.(clientgotesting.CreateAction); ok {
+						copy := c.GetObject().DeepCopyObject()
+						t := time.NewTimer(time.Millisecond * 200)
+						go func() {
+							<-t.C
+							copy.(*streamv1alpha1.Stream).Status.MarkBindingReady()
+							copy.(*streamv1alpha1.Stream).Status.MarkStreamProvisioned()
+							lister.Modify(copy)
+						}()
+					}
+					return false, nil, nil
+				},
+			},
+			CleanUp: func(t *testing.T, ctx context.Context, c *cli.Config) error {
+				if lw, ok := k8s.GetListerWatcher(ctx, nil, "", nil).(*cachetesting.FakeControllerSource); ok {
+					lw.Shutdown()
+				}
+				lister = nil
+				return nil
+			},
+			ExpectCreates: []runtime.Object{
+				&streamv1alpha1.Stream{
+					ObjectMeta: metav1.ObjectMeta{
+						Namespace: defaultNamespace,
+						Name:      "input",
+					},
+					Spec: streamv1alpha1.StreamSpec{
+						ContentType: "application/json",
+						Provider:    "franz",
+					},
+				},
+			},
+			ExpectOutput: `
+Created stream "input"
+Stream "input" is ready
+`,
+		},
+		{
+			Name: "tail timeout",
+			Args: []string{"input", cli.ProviderFlagName, "franz", cli.TailFlagName, cli.ContentTypeFlagName, "application/json", cli.WaitTimeoutFlagName, "10ms"},
+			Prepare: func(t *testing.T, ctx context.Context, c *cli.Config) (context.Context, error) {
+				lister = cachetesting.NewFakeControllerSource()
+				ctx = k8s.WithListerWatcher(ctx, lister)
+
+				return ctx, nil
+			},
+			CleanUp: func(t *testing.T, ctx context.Context, c *cli.Config) error {
+				if lw, ok := k8s.GetListerWatcher(ctx, nil, "", nil).(*cachetesting.FakeControllerSource); ok {
+					lw.Shutdown()
+				}
+				lister = nil
+				return nil
+			},
+			ExpectCreates: []runtime.Object{
+				&streamv1alpha1.Stream{
+					ObjectMeta: metav1.ObjectMeta{
+						Namespace: defaultNamespace,
+						Name:      "input",
+					},
+					Spec: streamv1alpha1.StreamSpec{
+						ContentType: "application/json",
+						Provider:    "franz",
+					},
+				},
+			},
+			ShouldError: true,
+			ExpectOutput: `
+Created stream "input"
+Timeout after "10ms" waiting for "input" to become ready
+To view status run: riff streaming stream list --namespace default
+`,
 		},
 	}
 
