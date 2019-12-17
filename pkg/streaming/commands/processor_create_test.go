@@ -283,7 +283,6 @@ spec:
     functionRef: my-func
   inputs:
   - stream: input
-  outputs: []
   template:
     metadata:
       creationTimestamp: null

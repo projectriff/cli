@@ -36,6 +36,8 @@ func NewStreamingCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 	cmd.AddCommand(NewStreamCommand(ctx, c))
 	cmd.AddCommand(NewProcessorCommand(ctx, c))
 	cmd.AddCommand(NewKafkaProviderCommand(ctx, c))
+	cmd.AddCommand(NewPulsarProviderCommand(ctx, c))
+	cmd.AddCommand(NewInMemoryProviderCommand(ctx, c))
 
 	return cmd
 }

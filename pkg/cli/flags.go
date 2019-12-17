@@ -60,6 +60,7 @@ const (
 	RegistryFlagName              = "--registry"
 	RegistryUserFlagName          = "--registry-user"
 	ServiceRefFlagName            = "--service-ref"
+	ServiceURLFlagName            = "--service-url"
 	SetDefaultImagePrefixFlagName = "--set-default-image-prefix"
 	ShellFlagName                 = "--shell"
 	SinceFlagName                 = "--since"

@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/buildpack/pack"
+	"github.com/buildpacks/pack"
 	riffpack "github.com/projectriff/cli/pkg/pack"
 )
 

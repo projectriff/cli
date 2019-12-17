@@ -66,6 +66,20 @@ func (_m *Logger) FunctionLogs(ctx context.Context, function *v1alpha1.Function,
 	return r0
 }
 
+// InMemoryProviderLogs provides a mock function with given fields: ctx, provider, since, out
+func (_m *Logger) InMemoryProviderLogs(ctx context.Context, provider *streamingv1alpha1.InMemoryProvider, since time.Duration, out io.Writer) error {
+	ret := _m.Called(ctx, provider, since, out)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *streamingv1alpha1.InMemoryProvider, time.Duration, io.Writer) error); ok {
+		r0 = rf(ctx, provider, since, out)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // KafkaProviderLogs provides a mock function with given fields: ctx, provider, since, out
 func (_m *Logger) KafkaProviderLogs(ctx context.Context, provider *streamingv1alpha1.KafkaProvider, since time.Duration, out io.Writer) error {
 	ret := _m.Called(ctx, provider, since, out)
@@ -87,6 +101,20 @@ func (_m *Logger) KnativeDeployerLogs(ctx context.Context, deployer *knativev1al
 	var r0 error
 	if rf, ok := ret.Get(0).(func(context.Context, *knativev1alpha1.Deployer, time.Duration, io.Writer) error); ok {
 		r0 = rf(ctx, deployer, since, out)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// PulsarProviderLogs provides a mock function with given fields: ctx, provider, since, out
+func (_m *Logger) PulsarProviderLogs(ctx context.Context, provider *streamingv1alpha1.PulsarProvider, since time.Duration, out io.Writer) error {
+	ret := _m.Called(ctx, provider, since, out)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *streamingv1alpha1.PulsarProvider, time.Duration, io.Writer) error); ok {
+		r0 = rf(ctx, provider, since, out)
 	} else {
 		r0 = ret.Error(0)
 	}
