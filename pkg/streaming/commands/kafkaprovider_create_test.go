@@ -324,6 +324,9 @@ To view status run: riff streaming kafka-provider list --namespace default
 				},
 			},
 			ShouldError: true,
+			ExpectOutput: `
+Created kafka provider "franz"
+`,
 		},
 	}
 

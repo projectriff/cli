@@ -272,10 +272,14 @@ Created stream "my-stream"
 					},
 				},
 			},
+			ExpectOutput: `
+Created stream "input"
+Stream "input" is ready
+`,
 		},
 		{
 			Name: "tail timeout",
-			Args: []string{"input", cli.ProviderFlagName, "franz", cli.TailFlagName, cli.ContentTypeFlagName, "application/json", cli.WaitTimeoutFlagName, "100ms"},
+			Args: []string{"input", cli.ProviderFlagName, "franz", cli.TailFlagName, cli.ContentTypeFlagName, "application/json", cli.WaitTimeoutFlagName, "10ms"},
 			Prepare: func(t *testing.T, ctx context.Context, c *cli.Config) (context.Context, error) {
 				lister = cachetesting.NewFakeControllerSource()
 				ctx = k8s.WithListerWatcher(ctx, lister)
@@ -302,6 +306,11 @@ Created stream "my-stream"
 				},
 			},
 			ShouldError: true,
+			ExpectOutput: `
+Created stream "input"
+Timeout after "10ms" waiting for "input" to become ready
+To view status run: riff streaming stream list --namespace default
+`,
 		},
 	}
 
