@@ -22,10 +22,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/projectriff/cli/pkg/k8s"
-	"github.com/projectriff/cli/pkg/race"
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/cli/options"
+	"github.com/projectriff/cli/pkg/k8s"
+	"github.com/projectriff/cli/pkg/race"
 	"github.com/projectriff/cli/pkg/validation"
 	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 	"github.com/spf13/cobra"
@@ -142,7 +142,7 @@ func NewStreamCreateCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 	cmd.Flags().StringVar(&opts.ContentType, cli.StripDash(cli.ContentTypeFlagName), "", "`MIME type` for message payloads accepted by the stream")
 	cmd.Flags().BoolVar(&opts.DryRun, cli.StripDash(cli.DryRunFlagName), false, "print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr")
 	cmd.Flags().BoolVar(&opts.Tail, cli.StripDash(cli.TailFlagName), false, "watch provisioning progress")
-	cmd.Flags().DurationVar(&opts.WaitTimeout, cli.StripDash(cli.WaitTimeoutFlagName), time.Minute*1, "`duration` to wait for the stream to become ready when watching progress")
+	cmd.Flags().DurationVar(&opts.WaitTimeout, cli.StripDash(cli.WaitTimeoutFlagName), time.Second*10, "`duration` to wait for the stream to become ready when watching progress")
 
 	return cmd
 }
