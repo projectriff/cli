@@ -92,6 +92,9 @@ func (opts *KafkaProviderCreateOptions) Exec(ctx context.Context, c *cli.Config)
 			func(ctx context.Context) error {
 				return k8s.WaitUntilReady(ctx, c.StreamingRuntime().RESTClient(), "kafkaproviders", provider)
 			},
+			func(ctx context.Context) error {
+				return c.Kail.KafkaProviderLogs(ctx, provider, cli.TailSinceCreateDefault, c.Stdout)
+			},
 		)
 		if err == context.DeadlineExceeded {
 			c.Errorf("Timeout after %q waiting for %q to become ready\n", opts.WaitTimeout, opts.Name)
