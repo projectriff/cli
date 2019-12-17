@@ -14,23 +14,30 @@
  * limitations under the License.
  */
 
-package pack
+package commands
 
 import (
 	"context"
-	"io"
+	"strings"
 
-	"github.com/buildpacks/pack"
-	"github.com/buildpacks/pack/logging"
+	"github.com/projectriff/cli/pkg/cli"
+	"github.com/spf13/cobra"
 )
 
-// Client exposes methods on pack.Client. Its only purpose is to decouple riff from the
-// pack.Client struct at test time.
-type Client interface {
-	Build(ctx context.Context, opts pack.BuildOptions) error
-}
+func NewPulsarProviderCommand(ctx context.Context, c *cli.Config) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "pulsar-provider",
+		Short: "(experimental) pulsar stream provider",
+		Long: strings.TrimSpace(`
+<todo>
+`),
+		Aliases: []string{"pulsar"},
+	}
 
-func NewClient(stdout io.Writer) (Client, error) {
-	logger := logging.New(stdout)
-	return pack.NewClient(pack.WithLogger(logger))
+	cmd.AddCommand(NewPulsarProviderListCommand(ctx, c))
+	cmd.AddCommand(NewPulsarProviderCreateCommand(ctx, c))
+	cmd.AddCommand(NewPulsarProviderDeleteCommand(ctx, c))
+	cmd.AddCommand(NewPulsarProviderStatusCommand(ctx, c))
+
+	return cmd
 }

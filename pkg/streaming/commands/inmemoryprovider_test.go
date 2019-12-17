@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-package pack
+package commands_test
 
 import (
-	"context"
-	"io"
+	"testing"
 
-	"github.com/buildpacks/pack"
-	"github.com/buildpacks/pack/logging"
+	"github.com/projectriff/cli/pkg/streaming/commands"
+	rifftesting "github.com/projectriff/cli/pkg/testing"
 )
 
-// Client exposes methods on pack.Client. Its only purpose is to decouple riff from the
-// pack.Client struct at test time.
-type Client interface {
-	Build(ctx context.Context, opts pack.BuildOptions) error
-}
+func TestInMemoryProviderCommand(t *testing.T) {
+	table := rifftesting.CommandTable{
+		{
+			Name: "empty",
+			Args: []string{},
+		},
+	}
 
-func NewClient(stdout io.Writer) (Client, error) {
-	logger := logging.New(stdout)
-	return pack.NewClient(pack.WithLogger(logger))
+	table.Run(t, commands.NewInMemoryProviderCommand)
 }

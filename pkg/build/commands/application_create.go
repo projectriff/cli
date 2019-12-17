@@ -23,7 +23,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/buildpack/pack"
+	"github.com/buildpacks/pack"
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/cli/options"
 	"github.com/projectriff/cli/pkg/k8s"

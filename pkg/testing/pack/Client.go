@@ -5,7 +5,7 @@ package pack
 import (
 	context "context"
 
-	pack "github.com/buildpack/pack"
+	pack "github.com/buildpacks/pack"
 	mock "github.com/stretchr/testify/mock"
 )
 

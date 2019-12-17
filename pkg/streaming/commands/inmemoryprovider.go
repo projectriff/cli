@@ -14,23 +14,30 @@
  * limitations under the License.
  */
 
-package pack
+package commands
 
 import (
 	"context"
-	"io"
+	"strings"
 
-	"github.com/buildpacks/pack"
-	"github.com/buildpacks/pack/logging"
+	"github.com/projectriff/cli/pkg/cli"
+	"github.com/spf13/cobra"
 )
 
-// Client exposes methods on pack.Client. Its only purpose is to decouple riff from the
-// pack.Client struct at test time.
-type Client interface {
-	Build(ctx context.Context, opts pack.BuildOptions) error
-}
+func NewInMemoryProviderCommand(ctx context.Context, c *cli.Config) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "inmemory-provider",
+		Short: "(experimental) in-memory stream provider",
+		Long: strings.TrimSpace(`
+<todo>
+`),
+		Aliases: []string{"inmemory"},
+	}
 
-func NewClient(stdout io.Writer) (Client, error) {
-	logger := logging.New(stdout)
-	return pack.NewClient(pack.WithLogger(logger))
+	cmd.AddCommand(NewInMemoryProviderListCommand(ctx, c))
+	cmd.AddCommand(NewInMemoryProviderCreateCommand(ctx, c))
+	cmd.AddCommand(NewInMemoryProviderDeleteCommand(ctx, c))
+	cmd.AddCommand(NewInMemoryProviderStatusCommand(ctx, c))
+
+	return cmd
 }

@@ -24,7 +24,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/buildpack/pack"
+	"github.com/buildpacks/pack"
 	"github.com/projectriff/cli/pkg/build/commands"
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/k8s"
