@@ -139,8 +139,8 @@ other-namespace   test-other-processor   <empty>    <empty>   <empty>   <unknown
 					},
 					Spec: streamv1alpha1.ProcessorSpec{
 						Build:   &streamv1alpha1.Build{FunctionRef: "square"},
-						Inputs:  []streamv1alpha1.StreamBinding{{Stream: "numbers", Alias: "n1"}, {Stream: "morenumbers", Alias: "n2"}},
-						Outputs: []streamv1alpha1.StreamBinding{{Stream: "squares", Alias: "s"}},
+						Inputs:  []streamv1alpha1.InputStreamBinding{{Stream: "numbers", Alias: "n1"}, {Stream: "morenumbers", Alias: "n2"}},
+						Outputs: []streamv1alpha1.OutputStreamBinding{{Stream: "squares", Alias: "s"}},
 					},
 					Status: streamv1alpha1.ProcessorStatus{
 						Status: apis.Status{

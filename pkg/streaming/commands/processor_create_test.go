@@ -201,7 +201,7 @@ func TestProcessorCreateCommand(t *testing.T) {
 					},
 					Spec: streamingv1alpha1.ProcessorSpec{
 						Build:  &streamingv1alpha1.Build{ContainerRef: containerRef},
-						Inputs: []streamingv1alpha1.StreamBinding{{Stream: inputName}},
+						Inputs: []streamingv1alpha1.InputStreamBinding{{Stream: inputName}},
 						Template: &corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
 								Containers: []corev1.Container{
@@ -227,7 +227,7 @@ Created processor "my-processor"
 					},
 					Spec: streamingv1alpha1.ProcessorSpec{
 						Build:  &streamingv1alpha1.Build{FunctionRef: functionRef},
-						Inputs: []streamingv1alpha1.StreamBinding{{Stream: inputName}},
+						Inputs: []streamingv1alpha1.InputStreamBinding{{Stream: inputName}},
 						Template: &corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
 								Containers: []corev1.Container{
@@ -252,7 +252,7 @@ Created processor "my-processor"
 						Name:      processorName,
 					},
 					Spec: streamingv1alpha1.ProcessorSpec{
-						Inputs: []streamingv1alpha1.StreamBinding{{Stream: inputName}},
+						Inputs: []streamingv1alpha1.InputStreamBinding{{Stream: inputName}},
 						Template: &corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
 								Containers: []corev1.Container{
@@ -282,7 +282,9 @@ spec:
   build:
     functionRef: my-func
   inputs:
-  - stream: input
+  - startOffset: ""
+    stream: input
+  outputs: []
   template:
     metadata:
       creationTimestamp: null
@@ -306,7 +308,7 @@ Created processor "my-processor"
 					},
 					Spec: streamingv1alpha1.ProcessorSpec{
 						Build: &streamingv1alpha1.Build{FunctionRef: functionRef},
-						Inputs: []streamingv1alpha1.StreamBinding{
+						Inputs: []streamingv1alpha1.InputStreamBinding{
 							{Stream: inputName},
 							{Stream: inputNameOther},
 						},
@@ -335,11 +337,11 @@ Created processor "my-processor"
 					},
 					Spec: streamingv1alpha1.ProcessorSpec{
 						Build: &streamingv1alpha1.Build{FunctionRef: functionRef},
-						Inputs: []streamingv1alpha1.StreamBinding{
+						Inputs: []streamingv1alpha1.InputStreamBinding{
 							{Stream: inputName},
 							{Stream: inputNameOther},
 						},
-						Outputs: []streamingv1alpha1.StreamBinding{{Stream: outputName}},
+						Outputs: []streamingv1alpha1.OutputStreamBinding{{Stream: outputName}},
 						Template: &corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
 								Containers: []corev1.Container{
@@ -365,11 +367,11 @@ Created processor "my-processor"
 					},
 					Spec: streamingv1alpha1.ProcessorSpec{
 						Build: &streamingv1alpha1.Build{FunctionRef: functionRef},
-						Inputs: []streamingv1alpha1.StreamBinding{
+						Inputs: []streamingv1alpha1.InputStreamBinding{
 							{Stream: inputName, Alias: inParameterName},
 							{Stream: inputNameOther},
 						},
-						Outputs: []streamingv1alpha1.StreamBinding{
+						Outputs: []streamingv1alpha1.OutputStreamBinding{
 							{Stream: outputNameOther},
 							{Stream: outputName, Alias: outParameterName},
 						},
@@ -398,11 +400,11 @@ Created processor "my-processor"
 					},
 					Spec: streamingv1alpha1.ProcessorSpec{
 						Build: &streamingv1alpha1.Build{FunctionRef: functionRef},
-						Inputs: []streamingv1alpha1.StreamBinding{
+						Inputs: []streamingv1alpha1.InputStreamBinding{
 							{Stream: inputName},
 							{Stream: inputNameOther},
 						},
-						Outputs: []streamingv1alpha1.StreamBinding{
+						Outputs: []streamingv1alpha1.OutputStreamBinding{
 							{Stream: outputName},
 							{Stream: outputNameOther},
 						},
@@ -439,7 +441,7 @@ Created processor "my-processor"
 					},
 					Spec: streamingv1alpha1.ProcessorSpec{
 						Build:  &streamingv1alpha1.Build{FunctionRef: functionRef},
-						Inputs: []streamingv1alpha1.StreamBinding{{Stream: inputName}},
+						Inputs: []streamingv1alpha1.InputStreamBinding{{Stream: inputName}},
 						Template: &corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
 								Containers: []corev1.Container{
@@ -466,7 +468,7 @@ Created processor "my-processor"
 					},
 					Spec: streamingv1alpha1.ProcessorSpec{
 						Build:  &streamingv1alpha1.Build{FunctionRef: functionRef},
-						Inputs: []streamingv1alpha1.StreamBinding{{Stream: inputName}},
+						Inputs: []streamingv1alpha1.InputStreamBinding{{Stream: inputName}},
 						Template: &corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
 								Containers: []corev1.Container{
@@ -495,8 +497,8 @@ Created processor "my-processor"
 					},
 					Spec: streamingv1alpha1.ProcessorSpec{
 						Build:   &streamingv1alpha1.Build{FunctionRef: functionRef},
-						Inputs:  []streamingv1alpha1.StreamBinding{{Stream: inputName}},
-						Outputs: []streamingv1alpha1.StreamBinding{},
+						Inputs:  []streamingv1alpha1.InputStreamBinding{{Stream: inputName}},
+						Outputs: []streamingv1alpha1.OutputStreamBinding{},
 						Template: &corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
 								Containers: []corev1.Container{
@@ -527,8 +529,8 @@ Created processor "my-processor"
 					},
 					Spec: streamingv1alpha1.ProcessorSpec{
 						Build:   &streamingv1alpha1.Build{FunctionRef: functionRef},
-						Inputs:  []streamingv1alpha1.StreamBinding{{Stream: inputName}},
-						Outputs: []streamingv1alpha1.StreamBinding{},
+						Inputs:  []streamingv1alpha1.InputStreamBinding{{Stream: inputName}},
+						Outputs: []streamingv1alpha1.OutputStreamBinding{},
 						Template: &corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
 								Containers: []corev1.Container{
@@ -561,8 +563,8 @@ Processor "my-processor" is ready
 					},
 					Spec: streamingv1alpha1.ProcessorSpec{
 						Build:   &streamingv1alpha1.Build{FunctionRef: functionRef},
-						Inputs:  []streamingv1alpha1.StreamBinding{{Stream: inputName}},
-						Outputs: []streamingv1alpha1.StreamBinding{},
+						Inputs:  []streamingv1alpha1.InputStreamBinding{{Stream: inputName}},
+						Outputs: []streamingv1alpha1.OutputStreamBinding{},
 						Template: &corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
 								Containers: []corev1.Container{
@@ -596,8 +598,8 @@ Processor "my-processor" is ready
 					},
 					Spec: streamingv1alpha1.ProcessorSpec{
 						Build:   &streamingv1alpha1.Build{FunctionRef: functionRef},
-						Inputs:  []streamingv1alpha1.StreamBinding{{Stream: inputName}},
-						Outputs: []streamingv1alpha1.StreamBinding{},
+						Inputs:  []streamingv1alpha1.InputStreamBinding{{Stream: inputName}},
+						Outputs: []streamingv1alpha1.OutputStreamBinding{},
 						Template: &corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
 								Containers: []corev1.Container{
@@ -638,8 +640,8 @@ To continue watching logs run: riff processor tail my-processor --namespace defa
 					},
 					Spec: streamingv1alpha1.ProcessorSpec{
 						Build:   &streamingv1alpha1.Build{FunctionRef: functionRef},
-						Inputs:  []streamingv1alpha1.StreamBinding{{Stream: inputName}},
-						Outputs: []streamingv1alpha1.StreamBinding{},
+						Inputs:  []streamingv1alpha1.InputStreamBinding{{Stream: inputName}},
+						Outputs: []streamingv1alpha1.OutputStreamBinding{},
 						Template: &corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
 								Containers: []corev1.Container{
@@ -668,8 +670,8 @@ To continue watching logs run: riff processor tail my-processor --namespace defa
 					},
 					Spec: streamingv1alpha1.ProcessorSpec{
 						Build:   &streamingv1alpha1.Build{FunctionRef: functionRef},
-						Inputs:  []streamingv1alpha1.StreamBinding{{Stream: inputName}},
-						Outputs: []streamingv1alpha1.StreamBinding{},
+						Inputs:  []streamingv1alpha1.InputStreamBinding{{Stream: inputName}},
+						Outputs: []streamingv1alpha1.OutputStreamBinding{},
 						Template: &corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
 								Containers: []corev1.Container{

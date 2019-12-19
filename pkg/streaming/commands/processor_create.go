@@ -19,6 +19,7 @@ package commands
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"strings"
 	"time"
 
@@ -108,11 +109,11 @@ func (opts *ProcessorCreateOptions) Validate(ctx context.Context) cli.FieldError
 
 func (opts *ProcessorCreateOptions) Exec(ctx context.Context, c *cli.Config) error {
 	var err error
-	inputs, err := parseStreamBindings(opts.Inputs)
+	inputs, err := parseInputStreamBindings(opts.Inputs)
 	if err != nil {
 		return err
 	}
-	outputs, err := parseStreamBindings(opts.Outputs)
+	outputs, err := parseOutputStreamBindings(opts.Outputs)
 	if err != nil {
 		return err
 	}
@@ -196,7 +197,7 @@ func NewProcessorCreateCommand(ctx context.Context, c *cli.Config) *cobra.Comman
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s streaming processor create my-processor %s my-func %s my-input-stream", c.Name, cli.FunctionRefFlagName, cli.InputFlagName),
-			fmt.Sprintf("%s streaming processor create my-processor %s my-func %s my-input-stream %s my-join-stream %s my-output-stream", c.Name, cli.FunctionRefFlagName, cli.InputFlagName, cli.InputFlagName, cli.OutputFlagName),
+			fmt.Sprintf("%s streaming processor create my-processor %s my-func %s input:my-input-stream %s my-join-stream@earliest %s out:my-output-stream", c.Name, cli.FunctionRefFlagName, cli.InputFlagName, cli.InputFlagName, cli.OutputFlagName),
 		}, "\n"),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),
@@ -212,8 +213,8 @@ func NewProcessorCreateCommand(ctx context.Context, c *cli.Config) *cobra.Comman
 	_ = cmd.MarkFlagCustom(cli.StripDash(cli.ContainerRefFlagName), "__"+c.Name+"_list_containers")
 	cmd.Flags().StringVar(&opts.FunctionRef, cli.StripDash(cli.FunctionRefFlagName), "", "`name` of function to deploy")
 	_ = cmd.MarkFlagCustom(cli.StripDash(cli.FunctionRefFlagName), "__"+c.Name+"_list_functions")
-	cmd.Flags().StringArrayVar(&opts.Inputs, cli.StripDash(cli.InputFlagName), []string{}, "`name` of stream to read messages from (or parameter:stream, may be set multiple times)")
-	cmd.Flags().StringArrayVar(&opts.Outputs, cli.StripDash(cli.OutputFlagName), []string{}, "`name` of stream to write messages to (or parameter:stream, may be set multiple times)")
+	cmd.Flags().StringArrayVar(&opts.Inputs, cli.StripDash(cli.InputFlagName), []string{}, "`name` of stream to read messages from (or [<alias>:]<stream>[@<earliest|latest>], may be set multiple times)")
+	cmd.Flags().StringArrayVar(&opts.Outputs, cli.StripDash(cli.OutputFlagName), []string{}, "`name` of stream to write messages to (or [<alias>:]<stream>, may be set multiple times)")
 	cmd.Flags().BoolVar(&opts.Tail, cli.StripDash(cli.TailFlagName), false, "watch processor logs")
 	cmd.Flags().StringVar(&opts.WaitTimeout, cli.StripDash(cli.WaitTimeoutFlagName), "10m", "`duration` to wait for the processor to become ready when watching logs")
 	cmd.Flags().BoolVar(&opts.DryRun, cli.StripDash(cli.DryRunFlagName), false, "print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr")
@@ -221,25 +222,36 @@ func NewProcessorCreateCommand(ctx context.Context, c *cli.Config) *cobra.Comman
 	return cmd
 }
 
-// Parse stream bindings, returns potential aliases and stream names.
-//
-// Valid values are:
-//  - ${ALIAS}:${STREAM_NAME}
-//  - ${STREAM_NAME}
-//
+// Parse input stream bindings. Valid values are of the form [<alias>:]<stream>[@<offset>].
 // Default values are handled on the server side.
-func parseStreamBindings(raw []string) ([]streamingv1alpha1.StreamBinding, error) {
-	bindings := make([]streamingv1alpha1.StreamBinding, len(raw))
+func parseInputStreamBindings(raw []string) ([]streamingv1alpha1.InputStreamBinding, error) {
+	bindings := make([]streamingv1alpha1.InputStreamBinding, len(raw))
+	pattern := regexp.MustCompile(`^(?:([^:]+):)?([^:@]+)(?:@(earliest|latest))?$`)
 	for i, s := range raw {
-		parts := strings.Split(s, ":")
-		switch len(parts) {
-		case 2:
-			bindings[i].Alias = parts[0]
-			bindings[i].Stream = parts[1]
-		case 1:
-			bindings[i].Stream = parts[0]
-		default:
-			return nil, fmt.Errorf("malformed stream reference %q, should contain at most one colon", s)
+		parts := pattern.FindStringSubmatch(s)
+		if len(parts) != 4 {
+			return nil, fmt.Errorf("malformed input stream reference %q, should be of the form [<alias>:]<stream>[@<offset>]", s)
+		} else {
+			bindings[i].Alias = parts[1]       // group 1
+			bindings[i].Stream = parts[2]      // group 2
+			bindings[i].StartOffset = parts[3] // group 3
+		}
+	}
+	return bindings, nil
+}
+
+// Parse output stream bindings. Valid values are of the form [<alias>:]<stream>.
+// Default values are handled on the server side.
+func parseOutputStreamBindings(raw []string) ([]streamingv1alpha1.OutputStreamBinding, error) {
+	bindings := make([]streamingv1alpha1.OutputStreamBinding, len(raw))
+	pattern := regexp.MustCompile(`^(?:([^:]+):)?([^:]+)$`)
+	for i, s := range raw {
+		parts := pattern.FindStringSubmatch(s)
+		if len(parts) != 3 {
+			return nil, fmt.Errorf("malformed output stream reference %q, should be of the form [<alias>:]<stream>", s)
+		} else {
+			bindings[i].Alias = parts[1]  // group 1
+			bindings[i].Stream = parts[2] // group 2
 		}
 	}
 	return bindings, nil

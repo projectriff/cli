@@ -120,8 +120,8 @@ func (opts *ProcessorListOptions) print(processor *streamv1alpha1.Processor, _ p
 	row.Cells = append(row.Cells,
 		processor.Name,
 		cli.FormatEmptyString(opts.functionRef(processor)),
-		cli.FormatEmptyString(strings.Join(prependAliases(processor.Spec.Inputs), ", ")),
-		cli.FormatEmptyString(strings.Join(prependAliases(processor.Spec.Outputs), ", ")),
+		cli.FormatEmptyString(strings.Join(prependInputAliases(processor.Spec.Inputs), ", ")),
+		cli.FormatEmptyString(strings.Join(prependOutputAliases(processor.Spec.Outputs), ", ")),
 		cli.FormatConditionStatus(processor.Status.GetCondition(streamv1alpha1.ProcessorConditionReady)),
 		cli.FormatTimestampSince(processor.CreationTimestamp, now),
 	)
@@ -147,7 +147,19 @@ func (opts *ProcessorListOptions) printColumns() []metav1beta1.TableColumnDefini
 	}
 }
 
-func prependAliases(bindings []streamv1alpha1.StreamBinding) []string {
+func prependInputAliases(bindings []streamv1alpha1.InputStreamBinding) []string {
+	result := make([]string, len(bindings))
+	for i, binding := range bindings {
+		if binding.Alias != binding.Stream {
+			result[i] = fmt.Sprintf("%s:%s", binding.Alias, binding.Stream)
+		} else {
+			result[i] = binding.Stream
+		}
+	}
+	return result
+}
+
+func prependOutputAliases(bindings []streamv1alpha1.OutputStreamBinding) []string {
 	result := make([]string, len(bindings))
 	for i, binding := range bindings {
 		if binding.Alias != binding.Stream {

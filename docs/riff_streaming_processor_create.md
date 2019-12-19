@@ -18,7 +18,7 @@ riff streaming processor create <name> [flags]
 
 ```
 riff streaming processor create my-processor --function-ref my-func --input my-input-stream
-riff streaming processor create my-processor --function-ref my-func --input my-input-stream --input my-join-stream --output my-output-stream
+riff streaming processor create my-processor --function-ref my-func --input input:my-input-stream --input my-join-stream@earliest --output out:my-output-stream
 ```
 
 ### Options
@@ -29,9 +29,9 @@ riff streaming processor create my-processor --function-ref my-func --input my-i
       --function-ref name       name of function to deploy
   -h, --help                    help for create
       --image image             container image to deploy
-      --input name              name of stream to read messages from (or parameter:stream, may be set multiple times)
+      --input name              name of stream to read messages from (or [<alias>:]<stream>[@<earliest|latest>], may be set multiple times)
   -n, --namespace name          kubernetes namespace (defaulted from kube config)
-      --output name             name of stream to write messages to (or parameter:stream, may be set multiple times)
+      --output name             name of stream to write messages to (or [<alias>:]<stream>, may be set multiple times)
       --tail                    watch processor logs
       --wait-timeout duration   duration to wait for the processor to become ready when watching logs (default "10m")
 ```
