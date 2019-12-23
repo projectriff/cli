@@ -191,7 +191,7 @@ func (opts *FunctionCreateOptions) Exec(ctx context.Context, c *cli.Config) erro
 			riffBuildConfig, err := c.Core().ConfigMaps(function.Namespace).Get("riff-build", metav1.GetOptions{})
 			if err != nil {
 				if apierrs.IsNotFound(err) {
-					return fmt.Errorf("default image prefix requires initialized credentails, run `%s help credentials`", c.Name)
+					return fmt.Errorf("default image prefix requires initialized credentials, run `%s help credentials`", c.Name)
 				}
 				return err
 			}

@@ -780,7 +780,7 @@ Created application "my-application"
 			Args:        []string{applicationName, cli.LocalPathFlagName, localPath},
 			ShouldError: true,
 			Verify: func(t *testing.T, output string, err error) {
-				if expected, actual := "default image prefix requires initialized credentails, run `riff help credentials`", err.Error(); expected != actual {
+				if expected, actual := "default image prefix requires initialized credentials, run `riff help credentials`", err.Error(); expected != actual {
 					t.Errorf("expected error %q, actual %q", expected, actual)
 				}
 			},
