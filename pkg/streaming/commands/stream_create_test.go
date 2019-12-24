@@ -159,7 +159,6 @@ spec:
   contentType: ""
   provider: test-provider
 status:
-  address: {}
   binding:
     metadataRef: {}
     secretRef: {}

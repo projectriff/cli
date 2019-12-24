@@ -119,8 +119,6 @@ func (opts *StreamListOptions) print(stream *streamv1alpha1.Stream, _ printers.P
 	}
 	row.Cells = append(row.Cells,
 		stream.Name,
-		cli.FormatEmptyString(stream.Status.Address.Topic),
-		cli.FormatEmptyString(stream.Status.Address.Gateway),
 		cli.FormatEmptyString(stream.Spec.Provider),
 		cli.FormatEmptyString(stream.Spec.ContentType),
 		cli.FormatConditionStatus(stream.Status.GetCondition(streamv1alpha1.StreamConditionReady)),
@@ -132,8 +130,6 @@ func (opts *StreamListOptions) print(stream *streamv1alpha1.Stream, _ printers.P
 func (opts *StreamListOptions) printColumns() []metav1beta1.TableColumnDefinition {
 	return []metav1beta1.TableColumnDefinition{
 		{Name: "Name", Type: "string"},
-		{Name: "Topic", Type: "string"},
-		{Name: "Gateway", Type: "string"},
 		{Name: "Provider", Type: "string"},
 		{Name: "Content-Type", Type: "string"},
 		{Name: "Status", Type: "string"},
