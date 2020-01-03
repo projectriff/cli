@@ -1,0 +1,17 @@
+{
+  "headerFile": "./license-header.txt",
+  "style": "SlashStar",
+  "includes": ["**/*.go"],
+  "excludes": [
+    "pkg/cli/printers/**/*.go",
+    "pkg/testing/kail/*.go",
+    "pkg/testing/pack/*.go",
+    "pkg/testing/actions.go",
+    "pkg/testing/reactions.go",
+    "pkg/testing/sorter.go"
+  ],
+  "data": {
+    "Owner": "the original author or authors"
+  }
+}
+
