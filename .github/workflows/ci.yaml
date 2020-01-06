@@ -79,10 +79,8 @@ jobs:
           qualifier: kind
           cluster: kind
           registry: dockerhub
-        # TODO restore windows
-        # - os: windows-latest
-        - os: ubuntu-latest
-          qualifier: gke
+        - os: windows-latest
+          qualifier: windows
           cluster: gke
           registry: gcr
       fail-fast: false
