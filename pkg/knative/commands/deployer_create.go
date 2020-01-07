@@ -52,6 +52,9 @@ type DeployerCreateOptions struct {
 	LimitCPU    string
 	LimitMemory string
 
+	MaxScale int32
+	MinScale int32
+
 	Tail        bool
 	WaitTimeout string
 
@@ -115,6 +118,20 @@ func (opts *DeployerCreateOptions) Validate(ctx context.Context) cli.FieldErrors
 	}
 	if opts.LimitMemory != "" {
 		errs = errs.Also(validation.Quantity(opts.LimitMemory, cli.LimitMemoryFlagName))
+	}
+
+	if opts.MinScale < int32(0) {
+		errs = errs.Also(cli.ErrInvalidValue(opts.MinScale, cli.MinScaleFlagName))
+	}
+
+	if cmd := cli.CommandFromContext(ctx); cmd != nil {
+		if cmd.Flags().Changed(cli.StripDash(cli.MaxScaleFlagName)) && opts.MaxScale < int32(1) {
+			errs = errs.Also(cli.ErrInvalidValue(opts.MaxScale, cli.MaxScaleFlagName))
+		}
+	}
+
+	if opts.MaxScale > int32(0) && opts.MinScale > opts.MaxScale {
+		errs = errs.Also(cli.ErrInvalidValue(opts.MaxScale, cli.MaxScaleFlagName))
 	}
 
 	if opts.TargetPort != 0 {
@@ -198,6 +215,14 @@ func (opts *DeployerCreateOptions) Exec(ctx context.Context, c *cli.Config) erro
 	if opts.TargetPort > 0 {
 		deployer.Spec.Template.Spec.Containers[0].Ports = []corev1.ContainerPort{
 			{Protocol: corev1.ProtocolTCP, ContainerPort: opts.TargetPort},
+		}
+	}
+	if opts.MaxScale > 0 {
+		deployer.Spec.Scale.Max = &opts.MaxScale
+	}
+	if cmd := cli.CommandFromContext(ctx); cmd != nil {
+		if cmd.Flags().Changed(cli.StripDash(cli.MinScaleFlagName)) {
+			deployer.Spec.Scale.Min = &opts.MinScale
 		}
 	}
 
@@ -286,6 +311,8 @@ and ` + cli.EnvFromFlagName + ` to map values from a ConfigMap or Secret.
 	cmd.Flags().StringArrayVar(&opts.EnvFrom, cli.StripDash(cli.EnvFromFlagName), []string{}, fmt.Sprintf("environment `variable` from a config map or secret, example %q, %q (may be set multiple times)", fmt.Sprintf("%s MY_SECRET_VALUE=secretKeyRef:my-secret-name:key-in-secret", cli.EnvFromFlagName), fmt.Sprintf("%s MY_CONFIG_MAP_VALUE=configMapKeyRef:my-config-map-name:key-in-config-map", cli.EnvFromFlagName)))
 	cmd.Flags().StringVar(&opts.LimitCPU, cli.StripDash(cli.LimitCPUFlagName), "", "the maximum amount of cpu allowed, in CPU `cores` (500m = .5 cores)")
 	cmd.Flags().StringVar(&opts.LimitMemory, cli.StripDash(cli.LimitMemoryFlagName), "", "the maximum amount of memory allowed, in `bytes` (500Mi = 500MiB = 500 * 1024 * 1024)")
+	cmd.Flags().Int32Var(&opts.MaxScale, cli.StripDash(cli.MaxScaleFlagName), int32(0), "maximum value (default unbounded)")
+	cmd.Flags().Int32Var(&opts.MinScale, cli.StripDash(cli.MinScaleFlagName), int32(0), "minimum value (default 0)")
 	cmd.Flags().BoolVar(&opts.Tail, cli.StripDash(cli.TailFlagName), false, "watch deployer logs")
 	cmd.Flags().StringVar(&opts.WaitTimeout, cli.StripDash(cli.WaitTimeoutFlagName), "10m", "`duration` to wait for the deployer to become ready when watching logs")
 	cmd.Flags().BoolVar(&opts.DryRun, cli.StripDash(cli.DryRunFlagName), false, "print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr")

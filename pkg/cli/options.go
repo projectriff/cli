@@ -34,6 +34,7 @@ import (
 // ```
 func ValidateOptions(ctx context.Context, opts Validatable) func(cmd *cobra.Command, args []string) error {
 	return func(cmd *cobra.Command, args []string) error {
+		ctx := WithCommand(ctx, cmd)
 		if err := opts.Validate(ctx); len(err) != 0 {
 			return err.ToAggregate()
 		}

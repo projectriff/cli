@@ -200,6 +200,57 @@ func TestDeployerCreateOptions(t *testing.T) {
 			ShouldValidate: true,
 		},
 		{
+			Name: "with min scale",
+			Options: &commands.DeployerCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Image:           "example.com/repo:tag",
+				IngressPolicy:   string(knativev1alpha1.IngressPolicyClusterLocal),
+				MinScale:        int32(1),
+			},
+			ShouldValidate: true,
+		},
+		{
+			Name: "with max scale",
+			Options: &commands.DeployerCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Image:           "example.com/repo:tag",
+				IngressPolicy:   string(knativev1alpha1.IngressPolicyClusterLocal),
+				MaxScale:        int32(1),
+			},
+			ShouldValidate: true,
+		},
+		{
+			Name: "with min scale zero",
+			Options: &commands.DeployerCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Image:           "example.com/repo:tag",
+				IngressPolicy:   string(knativev1alpha1.IngressPolicyClusterLocal),
+				MinScale:        int32(0),
+			},
+			ShouldValidate: true,
+		},
+		{
+			Name: "with negative min scale",
+			Options: &commands.DeployerCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Image:           "example.com/repo:tag",
+				IngressPolicy:   string(knativev1alpha1.IngressPolicyClusterLocal),
+				MinScale:        int32(-1),
+			},
+			ExpectFieldErrors: cli.ErrInvalidValue(int32(-1), cli.MinScaleFlagName),
+		},
+		{
+			Name: "with min scale greater than max scale",
+			Options: &commands.DeployerCreateOptions{
+				ResourceOptions: rifftesting.ValidResourceOptions,
+				Image:           "example.com/repo:tag",
+				IngressPolicy:   string(knativev1alpha1.IngressPolicyClusterLocal),
+				MinScale:        int32(2),
+				MaxScale:        int32(1),
+			},
+			ExpectFieldErrors: cli.ErrInvalidValue(int32(1), cli.MaxScaleFlagName),
+		},
+		{
 			Name: "with invalid target-port",
 			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
@@ -286,6 +337,8 @@ func TestDeployerCreateCommand(t *testing.T) {
 	envVarOther := fmt.Sprintf("%s=%s", envNameOther, envValueOther)
 	envVarFromConfigMap := "MY_VAR_FROM_CONFIGMAP=configMapKeyRef:my-configmap:my-key"
 	envVarFromSecret := "MY_VAR_FROM_SECRET=secretKeyRef:my-secret:my-key"
+	zero := int32(0)
+	one := int32(1)
 
 	table := rifftesting.CommandTable{
 		{
@@ -548,6 +601,95 @@ Created deployer "my-deployer"
 			ExpectOutput: `
 Created deployer "my-deployer"
 `,
+		},
+		{
+			Name: "create with min scale",
+			Args: []string{deployerName, cli.ImageFlagName, image, cli.MinScaleFlagName, "1"},
+			ExpectCreates: []runtime.Object{
+				&knativev1alpha1.Deployer{
+					ObjectMeta: metav1.ObjectMeta{
+						Namespace: defaultNamespace,
+						Name:      deployerName,
+					},
+					Spec: knativev1alpha1.DeployerSpec{
+						Scale: knativev1alpha1.Scale{
+							Min: &one,
+						},
+						Template: &corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								Containers: []corev1.Container{
+									{Image: image},
+								},
+							},
+						},
+						IngressPolicy: knativev1alpha1.IngressPolicyClusterLocal,
+					},
+				},
+			},
+			ExpectOutput: `
+Created deployer "my-deployer"
+`,
+		},
+		{
+			Name: "create with min scale zero",
+			Args: []string{deployerName, cli.ImageFlagName, image, cli.MinScaleFlagName, "0"},
+			ExpectCreates: []runtime.Object{
+				&knativev1alpha1.Deployer{
+					ObjectMeta: metav1.ObjectMeta{
+						Namespace: defaultNamespace,
+						Name:      deployerName,
+					},
+					Spec: knativev1alpha1.DeployerSpec{
+						Scale: knativev1alpha1.Scale{
+							Min: &zero,
+						},
+						Template: &corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								Containers: []corev1.Container{
+									{Image: image},
+								},
+							},
+						},
+						IngressPolicy: knativev1alpha1.IngressPolicyClusterLocal,
+					},
+				},
+			},
+			ExpectOutput: `
+Created deployer "my-deployer"
+`,
+		},
+		{
+			Name: "create with max scale",
+			Args: []string{deployerName, cli.ImageFlagName, image, cli.MaxScaleFlagName, "1"},
+			ExpectCreates: []runtime.Object{
+				&knativev1alpha1.Deployer{
+					ObjectMeta: metav1.ObjectMeta{
+						Namespace: defaultNamespace,
+						Name:      deployerName,
+					},
+					Spec: knativev1alpha1.DeployerSpec{
+						Scale: knativev1alpha1.Scale{
+							Max: &one,
+						},
+						Template: &corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								Containers: []corev1.Container{
+									{Image: image},
+								},
+							},
+						},
+						IngressPolicy: knativev1alpha1.IngressPolicyClusterLocal,
+					},
+				},
+			},
+			ExpectOutput: `
+Created deployer "my-deployer"
+`,
+		},
+		{
+			Name:        "create with max scale zero",
+			Args:        []string{deployerName, cli.ImageFlagName, image, cli.MaxScaleFlagName, "0"},
+			ShouldError: true,
 		},
 		{
 			Name: "error existing deployer",
