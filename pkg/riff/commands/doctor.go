@@ -107,14 +107,13 @@ func NewDoctorCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "doctor",
 		Aliases: []string{"doc"},
-		Short:   "check " + c.Name + "'s requirements are installed",
+		Short:   "check " + c.Name + "'s permissions",
 		Long: strings.TrimSpace(`
-Check that ` + c.Name + ` is installed.
+The doctor checks that the current user has permission to access ` + c.Name + `, and ` + c.Name + `
+related, resources in a namespace.
 
-The doctor checks that necessary system components are installed and the user
-has access to resources in the namespace.
-
-The doctor is not a tool for monitoring the health of the cluster.
+The doctor is not a tool for monitoring the health of the cluster or the ` + c.Name + `
+install.
 `),
 		Example: "riff doctor",
 		PreRunE: cli.ValidateOptions(ctx, opts),

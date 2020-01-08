@@ -46,7 +46,7 @@ zero-to-n autoscaling and managed ingress.
 * [riff container](riff_container.md)	 - containers resolve the latest image
 * [riff core](riff_core.md)	 - core runtime for riff workloads
 * [riff credential](riff_credential.md)	 - credentials for container registries
-* [riff doctor](riff_doctor.md)	 - check riff's requirements are installed
+* [riff doctor](riff_doctor.md)	 - check riff's permissions
 * [riff function](riff_function.md)	 - functions built from source using function buildpacks
 * [riff knative](riff_knative.md)	 - Knative runtime for riff workloads
 * [riff streaming](riff_streaming.md)	 - (experimental) streaming runtime for riff functions
