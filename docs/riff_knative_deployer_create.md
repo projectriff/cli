@@ -46,6 +46,8 @@ riff knative deployer create my-image-deployer --image registry.example.com/my-i
       --ingress-policy policy   ingress policy for network access to the workload, one of "ClusterLocal" or "External" (default "ClusterLocal")
       --limit-cpu cores         the maximum amount of cpu allowed, in CPU cores (500m = .5 cores)
       --limit-memory bytes      the maximum amount of memory allowed, in bytes (500Mi = 500MiB = 500 * 1024 * 1024)
+      --max-scale number        maximum number of replicas (default unbounded)
+      --min-scale number        minimum number of replicas (default 0)
   -n, --namespace name          kubernetes namespace (defaulted from kube config)
       --tail                    watch deployer logs
       --target-port port        port that the workload listens on for traffic. The value is exposed to the workload as the PORT environment variable

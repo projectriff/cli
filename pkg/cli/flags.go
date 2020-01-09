@@ -53,6 +53,8 @@ const (
 	LimitCPUFlagName              = "--limit-cpu"
 	LimitMemoryFlagName           = "--limit-memory"
 	LocalPathFlagName             = "--local-path"
+	MaxScaleFlagName              = "--max-scale"
+	MinScaleFlagName              = "--min-scale"
 	NamespaceFlagName             = "--namespace"
 	NoColorFlagName               = "--no-color"
 	OutputFlagName                = "--output"
