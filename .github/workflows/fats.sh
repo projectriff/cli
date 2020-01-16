@@ -31,23 +31,29 @@ fi
 # start FATS
 source $fats_dir/start.sh
 
-$fats_dir/install.sh helm
-source $fats_dir/macros/helm-init.sh
-helm repo add projectriff https://projectriff.storage.googleapis.com/charts/releases
-helm repo update
+$fats_dir/install.sh kapp
 
 echo "Installing Cert Manager"
-helm install projectriff/cert-manager --name cert-manager --devel --wait
+fats_retry kapp deploy -n apps -a cert-manager -f https://storage.googleapis.com/projectriff/charts/uncharted/${version}/cert-manager.yaml -y
 
 source $fats_dir/macros/no-resource-requests.sh
 
-echo "Installing riff system"
-helm install projectriff/istio --name istio --namespace istio-system --devel --wait \
-  --set gateways.istio-ingressgateway.type=${K8S_SERVICE_TYPE}
-helm install projectriff/riff --name riff --devel --wait \
-  --set tags.core-runtime=true \
-  --set tags.knative-runtime=true \
-  --set cert-manager.enabled=false
+echo "Installing kpack"
+kapp deploy -n apps -a kpack -f https://storage.googleapis.com/projectriff/charts/uncharted/${version}/kpack.yaml -y
+
+echo "Installing riff Build"
+kapp deploy -n apps -a riff-builders -f https://storage.googleapis.com/projectriff/charts/uncharted/${version}/riff-builders.yaml -y
+kapp deploy -n apps -a riff-build -f https://storage.googleapis.com/projectriff/charts/uncharted/${version}/riff-build.yaml -y
+
+echo "Installing Core Runtime"
+kapp deploy -n apps -a riff-core-runtime -f https://storage.googleapis.com/projectriff/charts/uncharted/${version}/riff-core-runtime.yaml -y
+
+echo "Installing Knative"
+ytt -f https://storage.googleapis.com/projectriff/charts/uncharted/${version}/istio.yaml -f https://storage.googleapis.com/projectriff/charts/overlays/service-nodeport.yaml --file-mark istio.yaml:type=yaml-plain | kapp deploy -n apps -a istio -f - -y
+kapp deploy -n apps -a knative -f https://storage.googleapis.com/projectriff/charts/uncharted/${version}/knative.yaml -y
+
+echo "Installing Knative Runtime"
+kapp deploy -n apps -a riff-knative-runtime -f https://storage.googleapis.com/projectriff/charts/uncharted/${version}/riff-knative-runtime.yaml -y
 
 # health checks
 echo "Checking for ready ingress"
