@@ -21,6 +21,7 @@ import (
 	"testing"
 	"time"
 
+	corev1 "k8s.io/api/core/v1"
 	clientgotesting "k8s.io/client-go/testing"
 	cachetesting "k8s.io/client-go/tools/cache/testing"
 
@@ -41,29 +42,29 @@ func TestStreamCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.InvalidResourceOptions,
 			},
 			ExpectFieldErrors: rifftesting.InvalidResourceOptionsFieldError.Also(
-				cli.ErrMissingField(cli.ProviderFlagName),
+				cli.ErrMissingField(cli.GatewayFlagName),
 			),
 		},
 		{
-			Name: "valid provider",
+			Name: "valid gateway",
 			Options: &commands.StreamCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
-				Provider:        "test-provider",
+				Gateway:         "test-gateway",
 			},
 			ShouldValidate: true,
 		},
 		{
-			Name: "no provider",
+			Name: "no gateway",
 			Options: &commands.StreamCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 			},
-			ExpectFieldErrors: cli.ErrMissingField(cli.ProviderFlagName),
+			ExpectFieldErrors: cli.ErrMissingField(cli.GatewayFlagName),
 		},
 		{
 			Name: "with valid content type",
 			Options: &commands.StreamCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
-				Provider:        "test-provider",
+				Gateway:         "test-gateway",
 				ContentType:     "application/x-doom",
 			},
 			ShouldValidate: true,
@@ -72,7 +73,7 @@ func TestStreamCreateOptions(t *testing.T) {
 			Name: "with invalid content-type",
 			Options: &commands.StreamCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
-				Provider:        "test-provider",
+				Gateway:         "test-gateway",
 				ContentType:     "invalid-content-type",
 			},
 			ExpectFieldErrors: cli.ErrInvalidValue("invalid-content-type", cli.ContentTypeFlagName),
@@ -81,7 +82,7 @@ func TestStreamCreateOptions(t *testing.T) {
 			Name: "dry run",
 			Options: &commands.StreamCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
-				Provider:        "test-provider",
+				Gateway:         "test-gateway",
 				DryRun:          true,
 			},
 			ShouldValidate: true,
@@ -90,7 +91,7 @@ func TestStreamCreateOptions(t *testing.T) {
 			Name: "dry run, tail",
 			Options: &commands.StreamCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
-				Provider:        "test-provider",
+				Gateway:         "test-gateway",
 				DryRun:          true,
 				Tail:            true,
 			},
@@ -100,7 +101,7 @@ func TestStreamCreateOptions(t *testing.T) {
 			Name: "negative timeout",
 			Options: &commands.StreamCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
-				Provider:        "test-provider",
+				Gateway:         "test-gateway",
 				WaitTimeout:     -3 * time.Second,
 			},
 			ExpectFieldErrors: cli.ErrInvalidValue(-3*time.Second, cli.WaitTimeoutFlagName),
@@ -115,7 +116,7 @@ func TestStreamCreateCommand(t *testing.T) {
 	streamName := "my-stream"
 	defaultContentType := "application/octet-stream"
 	contentType := "video/jpeg"
-	provider := "test-provider"
+	gateway := "test-gateway"
 
 	var lister *cachetesting.FakeControllerSource
 
@@ -126,8 +127,8 @@ func TestStreamCreateCommand(t *testing.T) {
 			ShouldError: true,
 		},
 		{
-			Name: "stream provider",
-			Args: []string{streamName, cli.ProviderFlagName, provider},
+			Name: "stream gateway",
+			Args: []string{streamName, cli.GatewayFlagName, gateway},
 			ExpectCreates: []runtime.Object{
 				&streamv1alpha1.Stream{
 					ObjectMeta: metav1.ObjectMeta{
@@ -135,7 +136,7 @@ func TestStreamCreateCommand(t *testing.T) {
 						Name:      streamName,
 					},
 					Spec: streamv1alpha1.StreamSpec{
-						Provider:    provider,
+						Gateway:     corev1.LocalObjectReference{Name: gateway},
 						ContentType: defaultContentType,
 					},
 				},
@@ -146,7 +147,7 @@ Created stream "my-stream"
 		},
 		{
 			Name: "dry run",
-			Args: []string{streamName, cli.ProviderFlagName, provider, cli.DryRunFlagName},
+			Args: []string{streamName, cli.GatewayFlagName, gateway, cli.DryRunFlagName},
 			ExpectOutput: `
 ---
 apiVersion: streaming.projectriff.io/v1alpha1
@@ -157,7 +158,9 @@ metadata:
   namespace: default
 spec:
   contentType: ""
-  provider: test-provider
+  gateway:
+    name: test-gateway
+  provider: ""
 status:
   binding:
     metadataRef: {}
@@ -168,7 +171,7 @@ Created stream "my-stream"
 		},
 		{
 			Name: "with optional content-type",
-			Args: []string{streamName, cli.ProviderFlagName, provider, cli.ContentTypeFlagName, contentType},
+			Args: []string{streamName, cli.GatewayFlagName, gateway, cli.ContentTypeFlagName, contentType},
 			ExpectCreates: []runtime.Object{
 				&streamv1alpha1.Stream{
 					ObjectMeta: metav1.ObjectMeta{
@@ -176,7 +179,7 @@ Created stream "my-stream"
 						Name:      streamName,
 					},
 					Spec: streamv1alpha1.StreamSpec{
-						Provider:    provider,
+						Gateway:     corev1.LocalObjectReference{Name: gateway},
 						ContentType: contentType,
 					},
 				},
@@ -187,7 +190,7 @@ Created stream "my-stream"
 		},
 		{
 			Name: "error existing stream",
-			Args: []string{streamName, cli.ProviderFlagName, provider},
+			Args: []string{streamName, cli.GatewayFlagName, gateway},
 			GivenObjects: []runtime.Object{
 				&streamv1alpha1.Stream{
 					ObjectMeta: metav1.ObjectMeta{
@@ -203,7 +206,7 @@ Created stream "my-stream"
 						Name:      streamName,
 					},
 					Spec: streamv1alpha1.StreamSpec{
-						Provider: provider,
+						Gateway: corev1.LocalObjectReference{Name: gateway},
 					},
 				},
 			},
@@ -211,7 +214,7 @@ Created stream "my-stream"
 		},
 		{
 			Name: "error during create",
-			Args: []string{streamName, cli.ProviderFlagName, provider},
+			Args: []string{streamName, cli.GatewayFlagName, gateway},
 			WithReactors: []rifftesting.ReactionFunc{
 				rifftesting.InduceFailure("create", "streams"),
 			},
@@ -222,7 +225,7 @@ Created stream "my-stream"
 						Name:      streamName,
 					},
 					Spec: streamv1alpha1.StreamSpec{
-						Provider: provider,
+						Gateway: corev1.LocalObjectReference{Name: gateway},
 					},
 				},
 			},
@@ -230,7 +233,7 @@ Created stream "my-stream"
 		},
 		{
 			Name: "tail",
-			Args: []string{"input", cli.ProviderFlagName, "franz", cli.TailFlagName, cli.ContentTypeFlagName, "application/json"},
+			Args: []string{"input", cli.GatewayFlagName, "franz", cli.TailFlagName, cli.ContentTypeFlagName, "application/json"},
 			Prepare: func(t *testing.T, ctx context.Context, c *cli.Config) (context.Context, error) {
 				lister = cachetesting.NewFakeControllerSource()
 				ctx = k8s.WithListerWatcher(ctx, lister)
@@ -267,7 +270,7 @@ Created stream "my-stream"
 					},
 					Spec: streamv1alpha1.StreamSpec{
 						ContentType: "application/json",
-						Provider:    "franz",
+						Gateway:     corev1.LocalObjectReference{Name: "franz"},
 					},
 				},
 			},
@@ -278,7 +281,7 @@ Stream "input" is ready
 		},
 		{
 			Name: "tail timeout",
-			Args: []string{"input", cli.ProviderFlagName, "franz", cli.TailFlagName, cli.ContentTypeFlagName, "application/json", cli.WaitTimeoutFlagName, "10ms"},
+			Args: []string{"input", cli.GatewayFlagName, "franz", cli.TailFlagName, cli.ContentTypeFlagName, "application/json", cli.WaitTimeoutFlagName, "10ms"},
 			Prepare: func(t *testing.T, ctx context.Context, c *cli.Config) (context.Context, error) {
 				lister = cachetesting.NewFakeControllerSource()
 				ctx = k8s.WithListerWatcher(ctx, lister)
@@ -300,7 +303,7 @@ Stream "input" is ready
 					},
 					Spec: streamv1alpha1.StreamSpec{
 						ContentType: "application/json",
-						Provider:    "franz",
+						Gateway:     corev1.LocalObjectReference{Name: "franz"},
 					},
 				},
 			},

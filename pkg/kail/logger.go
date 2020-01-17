@@ -40,9 +40,9 @@ type Logger interface {
 	FunctionLogs(ctx context.Context, function *buildv1alpha1.Function, since time.Duration, out io.Writer) error
 	CoreDeployerLogs(ctx context.Context, deployer *corev1alpha1.Deployer, since time.Duration, out io.Writer) error
 	StreamingProcessorLogs(ctx context.Context, processor *streamingv1alpha1.Processor, since time.Duration, out io.Writer) error
-	KafkaProviderLogs(ctx context.Context, provider *streamingv1alpha1.KafkaProvider, since time.Duration, out io.Writer) error
-	PulsarProviderLogs(ctx context.Context, provider *streamingv1alpha1.PulsarProvider, since time.Duration, out io.Writer) error
-	InMemoryProviderLogs(ctx context.Context, provider *streamingv1alpha1.InMemoryProvider, since time.Duration, out io.Writer) error
+	KafkaGatewayLogs(ctx context.Context, gateway *streamingv1alpha1.KafkaGateway, since time.Duration, out io.Writer) error
+	PulsarGatewayLogs(ctx context.Context, gateway *streamingv1alpha1.PulsarGateway, since time.Duration, out io.Writer) error
+	InMemoryGatewayLogs(ctx context.Context, gateway *streamingv1alpha1.InMemoryGateway, since time.Duration, out io.Writer) error
 	KnativeDeployerLogs(ctx context.Context, deployer *knativev1alpha1.Deployer, since time.Duration, out io.Writer) error
 }
 
@@ -92,31 +92,31 @@ func (c *logger) StreamingProcessorLogs(ctx context.Context, processor *streamin
 	return c.stream(ctx, processor.Namespace, selector, containers, since, out)
 }
 
-func (c *logger) KafkaProviderLogs(ctx context.Context, provider *streamingv1alpha1.KafkaProvider, since time.Duration, out io.Writer) error {
-	selector, err := labels.Parse(fmt.Sprintf("%s=%s", streamingv1alpha1.KafkaProviderLabelKey, provider.Name))
+func (c *logger) KafkaGatewayLogs(ctx context.Context, gateway *streamingv1alpha1.KafkaGateway, since time.Duration, out io.Writer) error {
+	selector, err := labels.Parse(fmt.Sprintf("%s=%s", streamingv1alpha1.KafkaGatewayLabelKey, gateway.Name))
 	if err != nil {
 		panic(err)
 	}
 	containers := []string{}
-	return c.stream(ctx, provider.Namespace, selector, containers, since, out)
+	return c.stream(ctx, gateway.Namespace, selector, containers, since, out)
 }
 
-func (c *logger) PulsarProviderLogs(ctx context.Context, provider *streamingv1alpha1.PulsarProvider, since time.Duration, out io.Writer) error {
-	selector, err := labels.Parse(fmt.Sprintf("%s=%s", streamingv1alpha1.PulsarProviderLabelKey, provider.Name))
+func (c *logger) PulsarGatewayLogs(ctx context.Context, gateway *streamingv1alpha1.PulsarGateway, since time.Duration, out io.Writer) error {
+	selector, err := labels.Parse(fmt.Sprintf("%s=%s", streamingv1alpha1.PulsarGatewayLabelKey, gateway.Name))
 	if err != nil {
 		panic(err)
 	}
 	containers := []string{}
-	return c.stream(ctx, provider.Namespace, selector, containers, since, out)
+	return c.stream(ctx, gateway.Namespace, selector, containers, since, out)
 }
 
-func (c *logger) InMemoryProviderLogs(ctx context.Context, provider *streamingv1alpha1.InMemoryProvider, since time.Duration, out io.Writer) error {
-	selector, err := labels.Parse(fmt.Sprintf("%s=%s", streamingv1alpha1.InMemoryProviderLabelKey, provider.Name))
+func (c *logger) InMemoryGatewayLogs(ctx context.Context, gateway *streamingv1alpha1.InMemoryGateway, since time.Duration, out io.Writer) error {
+	selector, err := labels.Parse(fmt.Sprintf("%s=%s", streamingv1alpha1.InMemoryGatewayLabelKey, gateway.Name))
 	if err != nil {
 		panic(err)
 	}
 	containers := []string{}
-	return c.stream(ctx, provider.Namespace, selector, containers, since, out)
+	return c.stream(ctx, gateway.Namespace, selector, containers, since, out)
 }
 
 func (c *logger) KnativeDeployerLogs(ctx context.Context, deployer *knativev1alpha1.Deployer, since time.Duration, out io.Writer) error {

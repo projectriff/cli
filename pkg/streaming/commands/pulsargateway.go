@@ -24,20 +24,20 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewStreamingCommand(ctx context.Context, c *cli.Config) *cobra.Command {
-	var cmd = &cobra.Command{
-		Use:   "streaming",
-		Short: "(experimental) streaming runtime for riff functions",
+func NewPulsarGatewayCommand(ctx context.Context, c *cli.Config) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "pulsar-gateway",
+		Short: "(experimental) pulsar stream gateway",
 		Long: strings.TrimSpace(`
 <todo>
 `),
+		Aliases: []string{"pulsar"},
 	}
 
-	cmd.AddCommand(NewStreamCommand(ctx, c))
-	cmd.AddCommand(NewProcessorCommand(ctx, c))
-	cmd.AddCommand(NewKafkaGatewayCommand(ctx, c))
-	cmd.AddCommand(NewPulsarGatewayCommand(ctx, c))
-	cmd.AddCommand(NewInMemoryGatewayCommand(ctx, c))
+	cmd.AddCommand(NewPulsarGatewayListCommand(ctx, c))
+	cmd.AddCommand(NewPulsarGatewayCreateCommand(ctx, c))
+	cmd.AddCommand(NewPulsarGatewayDeleteCommand(ctx, c))
+	cmd.AddCommand(NewPulsarGatewayStatusCommand(ctx, c))
 
 	return cmd
 }

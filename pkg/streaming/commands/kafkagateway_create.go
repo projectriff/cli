@@ -26,18 +26,15 @@ import (
 	"github.com/projectriff/cli/pkg/cli/options"
 	"github.com/projectriff/cli/pkg/k8s"
 	"github.com/projectriff/cli/pkg/race"
-	"github.com/projectriff/cli/pkg/validation"
 	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
 	"github.com/spf13/cobra"
-	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-type StreamCreateOptions struct {
+type KafkaGatewayCreateOptions struct {
 	options.ResourceOptions
 
-	Gateway     string
-	ContentType string
+	BootstrapServers string
 
 	DryRun bool
 
@@ -46,89 +43,87 @@ type StreamCreateOptions struct {
 }
 
 var (
-	_ cli.Validatable = (*StreamCreateOptions)(nil)
-	_ cli.Executable  = (*StreamCreateOptions)(nil)
-	_ cli.DryRunable  = (*StreamCreateOptions)(nil)
+	_ cli.Validatable = (*KafkaGatewayCreateOptions)(nil)
+	_ cli.Executable  = (*KafkaGatewayCreateOptions)(nil)
+	_ cli.DryRunable  = (*KafkaGatewayCreateOptions)(nil)
 )
 
-func (opts *StreamCreateOptions) Validate(ctx context.Context) cli.FieldErrors {
+func (opts *KafkaGatewayCreateOptions) Validate(ctx context.Context) cli.FieldErrors {
 	errs := cli.FieldErrors{}
 
 	errs = errs.Also(opts.ResourceOptions.Validate(ctx))
 
-	if opts.Gateway == "" {
-		errs = errs.Also(cli.ErrMissingField(cli.GatewayFlagName))
+	if opts.BootstrapServers == "" {
+		errs = errs.Also(cli.ErrMissingField(cli.BootstrapServersFlagName))
 	}
-
-	contentType := opts.ContentType
-	if contentType != "" {
-		errs = errs.Also(validation.MimeType(contentType, cli.ContentTypeFlagName))
-	}
-
 	if opts.DryRun && opts.Tail {
 		errs = errs.Also(cli.ErrMultipleOneOf(cli.DryRunFlagName, cli.TailFlagName))
 	}
 	if opts.WaitTimeout < 0 {
 		errs = errs.Also(cli.ErrInvalidValue(opts.WaitTimeout, cli.WaitTimeoutFlagName))
 	}
+
 	return errs
 }
 
-func (opts *StreamCreateOptions) Exec(ctx context.Context, c *cli.Config) error {
-	stream := &streamv1alpha1.Stream{
+func (opts *KafkaGatewayCreateOptions) Exec(ctx context.Context, c *cli.Config) error {
+	gateway := &streamv1alpha1.KafkaGateway{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: opts.Namespace,
 			Name:      opts.Name,
 		},
-		Spec: streamv1alpha1.StreamSpec{
-			Gateway:     corev1.LocalObjectReference{Name: opts.Gateway},
-			ContentType: opts.ContentType,
+		Spec: streamv1alpha1.KafkaGatewaySpec{
+			BootstrapServers: opts.BootstrapServers,
 		},
 	}
 
 	if opts.DryRun {
-		cli.DryRunResource(ctx, stream, stream.GetGroupVersionKind())
+		cli.DryRunResource(ctx, gateway, gateway.GetGroupVersionKind())
 	} else {
 		var err error
-		stream, err = c.StreamingRuntime().Streams(opts.Namespace).Create(stream)
+		gateway, err = c.StreamingRuntime().KafkaGateways(opts.Namespace).Create(gateway)
 		if err != nil {
 			return err
 		}
 	}
-	c.Successf("Created stream %q\n", stream.Name)
+	c.Successf("Created kafka gateway %q\n", gateway.Name)
 	if opts.Tail {
 		err := race.Run(ctx, opts.WaitTimeout,
 			func(ctx context.Context) error {
-				return k8s.WaitUntilReady(ctx, c.StreamingRuntime().RESTClient(), "streams", stream)
+				return k8s.WaitUntilReady(ctx, c.StreamingRuntime().RESTClient(), "kafkagatewaies", gateway)
+			},
+			func(ctx context.Context) error {
+				return c.Kail.KafkaGatewayLogs(ctx, gateway, cli.TailSinceCreateDefault, c.Stdout)
 			},
 		)
 		if err == context.DeadlineExceeded {
 			c.Errorf("Timeout after %q waiting for %q to become ready\n", opts.WaitTimeout, opts.Name)
-			c.Infof("To view status run: %s streaming stream list %s %s\n", c.Name, cli.NamespaceFlagName, opts.Namespace)
+			c.Infof("To view status run: %s streaming kafka-gateway list %s %s\n", c.Name, cli.NamespaceFlagName, opts.Namespace)
 			err = cli.SilenceError(err)
 		}
 		if err != nil {
 			return err
 		}
-		c.Successf("Stream %q is ready\n", stream.Name)
+		c.Successf("KafkaGateway %q is ready\n", gateway.Name)
 	}
+
 	return nil
 }
 
-func (opts *StreamCreateOptions) IsDryRun() bool {
+func (opts *KafkaGatewayCreateOptions) IsDryRun() bool {
 	return opts.DryRun
 }
 
-func NewStreamCreateCommand(ctx context.Context, c *cli.Config) *cobra.Command {
-	opts := &StreamCreateOptions{}
+func NewKafkaGatewayCreateCommand(ctx context.Context, c *cli.Config) *cobra.Command {
+	opts := &KafkaGatewayCreateOptions{}
 
 	cmd := &cobra.Command{
 		Use:   "create",
-		Short: "create a stream of messages",
+		Short: "create a kafka gateway of messages",
 		Long: strings.TrimSpace(`
 <todo>
 `),
-		Example: fmt.Sprintf("%s streaming stream create my-stream %s my-gateway", c.Name, cli.GatewayFlagName),
+		Example: fmt.Sprintf("%s streaming kafka-gateway create my-kafka-gateway %s kafka.local:9092", c.Name, cli.BootstrapServersFlagName),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),
 	}
@@ -138,12 +133,10 @@ func NewStreamCreateCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 	)
 
 	cli.NamespaceFlag(cmd, c, &opts.Namespace)
-	cmd.Flags().StringVar(&opts.Gateway, cli.StripDash(cli.GatewayFlagName), "", "`name` of stream gateway")
-	_ = cmd.MarkFlagCustom(cli.StripDash(cli.GatewayFlagName), "__"+c.Name+"_list_streaming_gateways")
-	cmd.Flags().StringVar(&opts.ContentType, cli.StripDash(cli.ContentTypeFlagName), "", "`MIME type` for message payloads accepted by the stream")
+	cmd.Flags().StringVar(&opts.BootstrapServers, cli.StripDash(cli.BootstrapServersFlagName), "", "`address` of the kafka broker")
 	cmd.Flags().BoolVar(&opts.DryRun, cli.StripDash(cli.DryRunFlagName), false, "print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr")
-	cmd.Flags().BoolVar(&opts.Tail, cli.StripDash(cli.TailFlagName), false, "watch provisioning progress")
-	cmd.Flags().DurationVar(&opts.WaitTimeout, cli.StripDash(cli.WaitTimeoutFlagName), time.Second*10, "`duration` to wait for the stream to become ready when watching progress")
+	cmd.Flags().BoolVar(&opts.Tail, cli.StripDash(cli.TailFlagName), false, "watch creation progress")
+	cmd.Flags().DurationVar(&opts.WaitTimeout, cli.StripDash(cli.WaitTimeoutFlagName), time.Minute*1, "`duration` to wait for the gateway to become ready when watching progress")
 
 	return cmd
 }

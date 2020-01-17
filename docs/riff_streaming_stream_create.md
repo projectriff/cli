@@ -17,7 +17,7 @@ riff streaming stream create <name> [flags]
 ### Examples
 
 ```
-riff streaming stream create my-stream --provider my-provider
+riff streaming stream create my-stream --gateway my-gateway
 ```
 
 ### Options
@@ -25,9 +25,9 @@ riff streaming stream create my-stream --provider my-provider
 ```
       --content-type MIME type   MIME type for message payloads accepted by the stream
       --dry-run                  print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr
+      --gateway name             name of stream gateway
   -h, --help                     help for create
   -n, --namespace name           kubernetes namespace (defaulted from kube config)
-      --provider name            name of stream provider
       --tail                     watch provisioning progress
       --wait-timeout duration    duration to wait for the stream to become ready when watching progress (default 10s)
 ```

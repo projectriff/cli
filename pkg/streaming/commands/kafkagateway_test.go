@@ -14,30 +14,22 @@
  * limitations under the License.
  */
 
-package commands
+package commands_test
 
 import (
-	"context"
-	"strings"
+	"testing"
 
-	"github.com/projectriff/cli/pkg/cli"
-	"github.com/spf13/cobra"
+	"github.com/projectriff/cli/pkg/streaming/commands"
+	rifftesting "github.com/projectriff/cli/pkg/testing"
 )
 
-func NewStreamingCommand(ctx context.Context, c *cli.Config) *cobra.Command {
-	var cmd = &cobra.Command{
-		Use:   "streaming",
-		Short: "(experimental) streaming runtime for riff functions",
-		Long: strings.TrimSpace(`
-<todo>
-`),
+func TestKafkaGatewayCommand(t *testing.T) {
+	table := rifftesting.CommandTable{
+		{
+			Name: "empty",
+			Args: []string{},
+		},
 	}
 
-	cmd.AddCommand(NewStreamCommand(ctx, c))
-	cmd.AddCommand(NewProcessorCommand(ctx, c))
-	cmd.AddCommand(NewKafkaGatewayCommand(ctx, c))
-	cmd.AddCommand(NewPulsarGatewayCommand(ctx, c))
-	cmd.AddCommand(NewInMemoryGatewayCommand(ctx, c))
-
-	return cmd
+	table.Run(t, commands.NewKafkaGatewayCommand)
 }

@@ -11,14 +11,13 @@ require (
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/go-cmp v0.4.0
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/projectriff/system v0.0.0-20191224102836-b4a03f4e0d8c
+	github.com/projectriff/system v0.0.0-20200117214235-79653e435821
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.6.2
 	github.com/stretchr/testify v1.4.0
 	golang.org/x/crypto v0.0.0-20190611184440-5c40567a22f8
-	// equivalent of kubernetes-1.16.3 tag for each k8s.io repo
-	k8s.io/api v0.0.0-20191114100352-16d7abae0d2a
-	k8s.io/apiextensions-apiserver v0.0.0-20191114105449-027877536833
-	k8s.io/apimachinery v0.0.0-20191028221656-72ed19daf4bb
-	k8s.io/client-go v0.0.0-20191114101535-6c5935290e33
+	k8s.io/api v0.16.4
+	k8s.io/apiextensions-apiserver v0.16.4
+	k8s.io/apimachinery v0.16.4
+	k8s.io/client-go v0.16.4
 )

@@ -25,23 +25,22 @@ import (
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 	"github.com/projectriff/system/pkg/apis"
 	streamv1alpha1 "github.com/projectriff/system/pkg/apis/streaming/v1alpha1"
-	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-func TestStreamListOptions(t *testing.T) {
+func TestKafkaGatewayListOptions(t *testing.T) {
 	table := rifftesting.OptionsTable{
 		{
 			Name: "invalid list",
-			Options: &commands.StreamListOptions{
+			Options: &commands.KafkaGatewayListOptions{
 				ListOptions: rifftesting.InvalidListOptions,
 			},
 			ExpectFieldErrors: rifftesting.InvalidListOptionsFieldError,
 		},
 		{
 			Name: "valid list",
-			Options: &commands.StreamListOptions{
+			Options: &commands.KafkaGatewayListOptions{
 				ListOptions: rifftesting.ValidListOptions,
 			},
 			ShouldValidate: true,
@@ -51,9 +50,9 @@ func TestStreamListOptions(t *testing.T) {
 	table.Run(t)
 }
 
-func TestStreamListCommand(t *testing.T) {
-	streamName := "test-stream"
-	streamOtherName := "test-other-stream"
+func TestKafkaGatewayListCommand(t *testing.T) {
+	kafkaGatewayName := "test-kafka-gateway"
+	kafkaGatewayOtherName := "test-other-kafka-gateway"
 	defaultNamespace := "default"
 	otherNamespace := "other-namespace"
 
@@ -72,99 +71,98 @@ func TestStreamListCommand(t *testing.T) {
 			Name: "empty",
 			Args: []string{},
 			ExpectOutput: `
-No streams found.
+No kafka gateways found.
 `,
 		},
 		{
 			Name: "lists an item",
 			Args: []string{},
 			GivenObjects: []runtime.Object{
-				&streamv1alpha1.Stream{
+				&streamv1alpha1.KafkaGateway{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      streamName,
+						Name:      kafkaGatewayName,
 						Namespace: defaultNamespace,
 					},
 				},
 			},
 			ExpectOutput: `
-NAME          GATEWAY   CONTENT-TYPE   STATUS      AGE
-test-stream   <empty>   <empty>        <unknown>   <unknown>
+NAME                 BOOTSTRAP SERVERS   STATUS      AGE
+test-kafka-gateway   <empty>             <unknown>   <unknown>
 `,
 		},
 		{
 			Name: "filters by namespace",
 			Args: []string{cli.NamespaceFlagName, otherNamespace},
 			GivenObjects: []runtime.Object{
-				&streamv1alpha1.Stream{
+				&streamv1alpha1.KafkaGateway{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      streamName,
+						Name:      kafkaGatewayName,
 						Namespace: defaultNamespace,
 					},
 				},
 			},
 			ExpectOutput: `
-No streams found.
+No kafka gateways found.
 `,
 		},
 		{
 			Name: "all namespace",
 			Args: []string{cli.AllNamespacesFlagName},
 			GivenObjects: []runtime.Object{
-				&streamv1alpha1.Stream{
+				&streamv1alpha1.KafkaGateway{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      streamName,
+						Name:      kafkaGatewayName,
 						Namespace: defaultNamespace,
 					},
 				},
-				&streamv1alpha1.Stream{
+				&streamv1alpha1.KafkaGateway{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      streamOtherName,
+						Name:      kafkaGatewayOtherName,
 						Namespace: otherNamespace,
 					},
 				},
 			},
 			ExpectOutput: `
-NAMESPACE         NAME                GATEWAY   CONTENT-TYPE   STATUS      AGE
-default           test-stream         <empty>   <empty>        <unknown>   <unknown>
-other-namespace   test-other-stream   <empty>   <empty>        <unknown>   <unknown>
+NAMESPACE         NAME                       BOOTSTRAP SERVERS   STATUS      AGE
+default           test-kafka-gateway         <empty>             <unknown>   <unknown>
+other-namespace   test-other-kafka-gateway   <empty>             <unknown>   <unknown>
 `,
 		},
 		{
 			Name: "table populates all columns",
 			Args: []string{},
 			GivenObjects: []runtime.Object{
-				&streamv1alpha1.Stream{
+				&streamv1alpha1.KafkaGateway{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      "words",
+						Name:      "my-kafka",
 						Namespace: defaultNamespace,
 					},
-					Spec: streamv1alpha1.StreamSpec{
-						Gateway:     corev1.LocalObjectReference{Name: "kafka"},
-						ContentType: "text/csv",
+					Spec: streamv1alpha1.KafkaGatewaySpec{
+						BootstrapServers: "localhost:9092",
 					},
-					Status: streamv1alpha1.StreamStatus{
+					Status: streamv1alpha1.KafkaGatewayStatus{
 						Status: apis.Status{
 							Conditions: apis.Conditions{
-								{Type: streamv1alpha1.StreamConditionReady, Status: "True"},
+								{Type: streamv1alpha1.KafkaGatewayConditionReady, Status: "True"},
 							},
 						},
 					},
 				},
 			},
 			ExpectOutput: `
-NAME    GATEWAY   CONTENT-TYPE   STATUS   AGE
-words   kafka     text/csv       Ready    <unknown>
+NAME       BOOTSTRAP SERVERS   STATUS   AGE
+my-kafka   localhost:9092      Ready    <unknown>
 `,
 		},
 		{
 			Name: "list error",
 			Args: []string{},
 			WithReactors: []rifftesting.ReactionFunc{
-				rifftesting.InduceFailure("list", "streams"),
+				rifftesting.InduceFailure("list", "kafkagatewaies"),
 			},
 			ShouldError: true,
 		},
 	}
 
-	table.Run(t, commands.NewStreamListCommand)
+	table.Run(t, commands.NewKafkaGatewayListCommand)
 }

@@ -24,20 +24,20 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewStreamingCommand(ctx context.Context, c *cli.Config) *cobra.Command {
-	var cmd = &cobra.Command{
-		Use:   "streaming",
-		Short: "(experimental) streaming runtime for riff functions",
+func NewInMemoryGatewayCommand(ctx context.Context, c *cli.Config) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "inmemory-gateway",
+		Short: "(experimental) in-memory stream gateway",
 		Long: strings.TrimSpace(`
 <todo>
 `),
+		Aliases: []string{"inmemory"},
 	}
 
-	cmd.AddCommand(NewStreamCommand(ctx, c))
-	cmd.AddCommand(NewProcessorCommand(ctx, c))
-	cmd.AddCommand(NewKafkaGatewayCommand(ctx, c))
-	cmd.AddCommand(NewPulsarGatewayCommand(ctx, c))
-	cmd.AddCommand(NewInMemoryGatewayCommand(ctx, c))
+	cmd.AddCommand(NewInMemoryGatewayListCommand(ctx, c))
+	cmd.AddCommand(NewInMemoryGatewayCreateCommand(ctx, c))
+	cmd.AddCommand(NewInMemoryGatewayDeleteCommand(ctx, c))
+	cmd.AddCommand(NewInMemoryGatewayStatusCommand(ctx, c))
 
 	return cmd
 }
