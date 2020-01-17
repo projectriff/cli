@@ -32,16 +32,16 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-type StreamListOptions struct {
+type InMemoryGatewayListOptions struct {
 	options.ListOptions
 }
 
 var (
-	_ cli.Validatable = (*StreamListOptions)(nil)
-	_ cli.Executable  = (*StreamListOptions)(nil)
+	_ cli.Validatable = (*InMemoryGatewayListOptions)(nil)
+	_ cli.Executable  = (*InMemoryGatewayListOptions)(nil)
 )
 
-func (opts *StreamListOptions) Validate(ctx context.Context) cli.FieldErrors {
+func (opts *InMemoryGatewayListOptions) Validate(ctx context.Context) cli.FieldErrors {
 	errs := cli.FieldErrors{}
 
 	errs = errs.Also(opts.ListOptions.Validate(ctx))
@@ -49,14 +49,14 @@ func (opts *StreamListOptions) Validate(ctx context.Context) cli.FieldErrors {
 	return errs
 }
 
-func (opts *StreamListOptions) Exec(ctx context.Context, c *cli.Config) error {
-	streams, err := c.StreamingRuntime().Streams(opts.Namespace).List(metav1.ListOptions{})
+func (opts *InMemoryGatewayListOptions) Exec(ctx context.Context, c *cli.Config) error {
+	gateways, err := c.StreamingRuntime().InMemoryGateways(opts.Namespace).List(metav1.ListOptions{})
 	if err != nil {
 		return err
 	}
 
-	if len(streams.Items) == 0 {
-		c.Infof("No streams found.\n")
+	if len(gateways.Items) == 0 {
+		c.Infof("No in-memory gateways found.\n")
 		return nil
 	}
 
@@ -68,28 +68,28 @@ func (opts *StreamListOptions) Exec(ctx context.Context, c *cli.Config) error {
 		h.TableHandler(columns, opts.print)
 	})
 
-	streams = streams.DeepCopy()
-	cli.SortByNamespaceAndName(streams.Items)
+	gateways = gateways.DeepCopy()
+	cli.SortByNamespaceAndName(gateways.Items)
 
-	return tablePrinter.PrintObj(streams, c.Stdout)
+	return tablePrinter.PrintObj(gateways, c.Stdout)
 }
 
-func NewStreamListCommand(ctx context.Context, c *cli.Config) *cobra.Command {
-	opts := &StreamListOptions{}
+func NewInMemoryGatewayListCommand(ctx context.Context, c *cli.Config) *cobra.Command {
+	opts := &InMemoryGatewayListOptions{}
 
 	cmd := &cobra.Command{
 		Use:   "list",
-		Short: "table listing of streams",
+		Short: "table listing of in-memory gateways",
 		Long: strings.TrimSpace(`
-List streams in a namespace or across all namespaces.
+List in-memory gateways in a namespace or across all namespaces.
 
-For detail regarding the status of a single stream, run:
+For detail regarding the status of a single in-memory gateway, run:
 
-    ` + c.Name + ` streaming stream status <stream-name>
+    ` + c.Name + ` streaming inmemory-gateway status <inmemory-gateway-name>
 `),
 		Example: strings.Join([]string{
-			fmt.Sprintf("%s streaming stream list", c.Name),
-			fmt.Sprintf("%s streaming stream list %s", c.Name, cli.AllNamespacesFlagName),
+			fmt.Sprintf("%s streaming inmemory-gateway list", c.Name),
+			fmt.Sprintf("%s streaming inmemory-gateway list %s", c.Name, cli.AllNamespacesFlagName),
 		}, "\n"),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),
@@ -100,10 +100,10 @@ For detail regarding the status of a single stream, run:
 	return cmd
 }
 
-func (opts *StreamListOptions) printList(streams *streamv1alpha1.StreamList, printOpts printers.PrintOptions) ([]metav1beta1.TableRow, error) {
-	rows := make([]metav1beta1.TableRow, 0, len(streams.Items))
-	for i := range streams.Items {
-		r, err := opts.print(&streams.Items[i], printOpts)
+func (opts *InMemoryGatewayListOptions) printList(gateways *streamv1alpha1.InMemoryGatewayList, printOpts printers.PrintOptions) ([]metav1beta1.TableRow, error) {
+	rows := make([]metav1beta1.TableRow, 0, len(gateways.Items))
+	for i := range gateways.Items {
+		r, err := opts.print(&gateways.Items[i], printOpts)
 		if err != nil {
 			return nil, err
 		}
@@ -112,26 +112,22 @@ func (opts *StreamListOptions) printList(streams *streamv1alpha1.StreamList, pri
 	return rows, nil
 }
 
-func (opts *StreamListOptions) print(stream *streamv1alpha1.Stream, _ printers.PrintOptions) ([]metav1beta1.TableRow, error) {
+func (opts *InMemoryGatewayListOptions) print(gateway *streamv1alpha1.InMemoryGateway, _ printers.PrintOptions) ([]metav1beta1.TableRow, error) {
 	now := time.Now()
 	row := metav1beta1.TableRow{
-		Object: runtime.RawExtension{Object: stream},
+		Object: runtime.RawExtension{Object: gateway},
 	}
 	row.Cells = append(row.Cells,
-		stream.Name,
-		cli.FormatEmptyString(stream.Spec.Gateway.Name),
-		cli.FormatEmptyString(stream.Spec.ContentType),
-		cli.FormatConditionStatus(stream.Status.GetCondition(streamv1alpha1.StreamConditionReady)),
-		cli.FormatTimestampSince(stream.CreationTimestamp, now),
+		gateway.Name,
+		cli.FormatConditionStatus(gateway.Status.GetCondition(streamv1alpha1.InMemoryGatewayConditionReady)),
+		cli.FormatTimestampSince(gateway.CreationTimestamp, now),
 	)
 	return []metav1beta1.TableRow{row}, nil
 }
 
-func (opts *StreamListOptions) printColumns() []metav1beta1.TableColumnDefinition {
+func (opts *InMemoryGatewayListOptions) printColumns() []metav1beta1.TableColumnDefinition {
 	return []metav1beta1.TableColumnDefinition{
 		{Name: "Name", Type: "string"},
-		{Name: "Gateway", Type: "string"},
-		{Name: "Content-Type", Type: "string"},
 		{Name: "Status", Type: "string"},
 		{Name: "Age", Type: "string"},
 	}

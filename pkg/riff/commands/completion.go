@@ -121,13 +121,13 @@ __` + c.Name + `_list_knative_services()
 	fi
 }
 
-__` + c.Name + `_list_streaming_provisioner_services()
+__` + c.Name + `_list_streaming_gateways()
 {
 	local template
 	template="{{ range .items }}{{ .metadata.name }} {{ end }}"
 	local kubectl_out
 	# TODO decouple from kubectl
-	if kubectl_out=$(kubectl get $(__` + c.Name + `_override_flags) -o template --template="${template}" --selector streaming.projectriff.io/provisioner services 2>/dev/null); then
+	if kubectl_out=$(kubectl get $(__` + c.Name + `_override_flags) -o template --template="${template}" gateways.streaming.projectriff.io 2>/dev/null); then
 		COMPREPLY=( $( compgen -W "${kubectl_out}" -- "$cur" ) )
 	fi
 }
@@ -192,8 +192,8 @@ __` + c.Name + `_custom_func() {
 			__` + c.Name + `_list_resource 'knative adapter list'
 			return
 			;;
-		` + c.Name + `_streaming_kafka-provider_delete | ` + c.Name + `_streaming_kafka-provider_status)
-			__` + c.Name + `_list_resource 'streaming kafka-provider list'
+		` + c.Name + `_streaming_kafka-gateway_delete | ` + c.Name + `_streaming_kafka-gateway_status)
+			__` + c.Name + `_list_resource 'streaming kafka-gateway list'
 			return
 			;;
 		` + c.Name + `_streaming_processor_delete | ` + c.Name + `_streaming_processor_status | ` + c.Name + `_streaming_processor_tail)

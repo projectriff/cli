@@ -32,16 +32,16 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-type StreamListOptions struct {
+type KafkaGatewayListOptions struct {
 	options.ListOptions
 }
 
 var (
-	_ cli.Validatable = (*StreamListOptions)(nil)
-	_ cli.Executable  = (*StreamListOptions)(nil)
+	_ cli.Validatable = (*KafkaGatewayListOptions)(nil)
+	_ cli.Executable  = (*KafkaGatewayListOptions)(nil)
 )
 
-func (opts *StreamListOptions) Validate(ctx context.Context) cli.FieldErrors {
+func (opts *KafkaGatewayListOptions) Validate(ctx context.Context) cli.FieldErrors {
 	errs := cli.FieldErrors{}
 
 	errs = errs.Also(opts.ListOptions.Validate(ctx))
@@ -49,14 +49,14 @@ func (opts *StreamListOptions) Validate(ctx context.Context) cli.FieldErrors {
 	return errs
 }
 
-func (opts *StreamListOptions) Exec(ctx context.Context, c *cli.Config) error {
-	streams, err := c.StreamingRuntime().Streams(opts.Namespace).List(metav1.ListOptions{})
+func (opts *KafkaGatewayListOptions) Exec(ctx context.Context, c *cli.Config) error {
+	gateways, err := c.StreamingRuntime().KafkaGateways(opts.Namespace).List(metav1.ListOptions{})
 	if err != nil {
 		return err
 	}
 
-	if len(streams.Items) == 0 {
-		c.Infof("No streams found.\n")
+	if len(gateways.Items) == 0 {
+		c.Infof("No kafka gateways found.\n")
 		return nil
 	}
 
@@ -68,28 +68,28 @@ func (opts *StreamListOptions) Exec(ctx context.Context, c *cli.Config) error {
 		h.TableHandler(columns, opts.print)
 	})
 
-	streams = streams.DeepCopy()
-	cli.SortByNamespaceAndName(streams.Items)
+	gateways = gateways.DeepCopy()
+	cli.SortByNamespaceAndName(gateways.Items)
 
-	return tablePrinter.PrintObj(streams, c.Stdout)
+	return tablePrinter.PrintObj(gateways, c.Stdout)
 }
 
-func NewStreamListCommand(ctx context.Context, c *cli.Config) *cobra.Command {
-	opts := &StreamListOptions{}
+func NewKafkaGatewayListCommand(ctx context.Context, c *cli.Config) *cobra.Command {
+	opts := &KafkaGatewayListOptions{}
 
 	cmd := &cobra.Command{
 		Use:   "list",
-		Short: "table listing of streams",
+		Short: "table listing of kafka gateways",
 		Long: strings.TrimSpace(`
-List streams in a namespace or across all namespaces.
+List kafka gateways in a namespace or across all namespaces.
 
-For detail regarding the status of a single stream, run:
+For detail regarding the status of a single kafka gateway, run:
 
-    ` + c.Name + ` streaming stream status <stream-name>
+    ` + c.Name + ` streaming kafka-gateway status <kafka-gateway-name>
 `),
 		Example: strings.Join([]string{
-			fmt.Sprintf("%s streaming stream list", c.Name),
-			fmt.Sprintf("%s streaming stream list %s", c.Name, cli.AllNamespacesFlagName),
+			fmt.Sprintf("%s streaming kafka-gateway list", c.Name),
+			fmt.Sprintf("%s streaming kafka-gateway list %s", c.Name, cli.AllNamespacesFlagName),
 		}, "\n"),
 		PreRunE: cli.ValidateOptions(ctx, opts),
 		RunE:    cli.ExecOptions(ctx, c, opts),
@@ -100,10 +100,10 @@ For detail regarding the status of a single stream, run:
 	return cmd
 }
 
-func (opts *StreamListOptions) printList(streams *streamv1alpha1.StreamList, printOpts printers.PrintOptions) ([]metav1beta1.TableRow, error) {
-	rows := make([]metav1beta1.TableRow, 0, len(streams.Items))
-	for i := range streams.Items {
-		r, err := opts.print(&streams.Items[i], printOpts)
+func (opts *KafkaGatewayListOptions) printList(gateways *streamv1alpha1.KafkaGatewayList, printOpts printers.PrintOptions) ([]metav1beta1.TableRow, error) {
+	rows := make([]metav1beta1.TableRow, 0, len(gateways.Items))
+	for i := range gateways.Items {
+		r, err := opts.print(&gateways.Items[i], printOpts)
 		if err != nil {
 			return nil, err
 		}
@@ -112,26 +112,24 @@ func (opts *StreamListOptions) printList(streams *streamv1alpha1.StreamList, pri
 	return rows, nil
 }
 
-func (opts *StreamListOptions) print(stream *streamv1alpha1.Stream, _ printers.PrintOptions) ([]metav1beta1.TableRow, error) {
+func (opts *KafkaGatewayListOptions) print(gateway *streamv1alpha1.KafkaGateway, _ printers.PrintOptions) ([]metav1beta1.TableRow, error) {
 	now := time.Now()
 	row := metav1beta1.TableRow{
-		Object: runtime.RawExtension{Object: stream},
+		Object: runtime.RawExtension{Object: gateway},
 	}
 	row.Cells = append(row.Cells,
-		stream.Name,
-		cli.FormatEmptyString(stream.Spec.Gateway.Name),
-		cli.FormatEmptyString(stream.Spec.ContentType),
-		cli.FormatConditionStatus(stream.Status.GetCondition(streamv1alpha1.StreamConditionReady)),
-		cli.FormatTimestampSince(stream.CreationTimestamp, now),
+		gateway.Name,
+		cli.FormatEmptyString(gateway.Spec.BootstrapServers),
+		cli.FormatConditionStatus(gateway.Status.GetCondition(streamv1alpha1.KafkaGatewayConditionReady)),
+		cli.FormatTimestampSince(gateway.CreationTimestamp, now),
 	)
 	return []metav1beta1.TableRow{row}, nil
 }
 
-func (opts *StreamListOptions) printColumns() []metav1beta1.TableColumnDefinition {
+func (opts *KafkaGatewayListOptions) printColumns() []metav1beta1.TableColumnDefinition {
 	return []metav1beta1.TableColumnDefinition{
 		{Name: "Name", Type: "string"},
-		{Name: "Gateway", Type: "string"},
-		{Name: "Content-Type", Type: "string"},
+		{Name: "Bootstrap Servers", Type: "string"},
 		{Name: "Status", Type: "string"},
 		{Name: "Age", Type: "string"},
 	}

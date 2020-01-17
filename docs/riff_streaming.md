@@ -27,9 +27,9 @@ title: "riff streaming"
 ### SEE ALSO
 
 * [riff](riff.md)	 - riff is for functions
-* [riff streaming inmemory-provider](riff_streaming_inmemory-provider.md)	 - (experimental) in-memory stream provider
-* [riff streaming kafka-provider](riff_streaming_kafka-provider.md)	 - (experimental) kafka stream provider
+* [riff streaming inmemory-gateway](riff_streaming_inmemory-gateway.md)	 - (experimental) in-memory stream gateway
+* [riff streaming kafka-gateway](riff_streaming_kafka-gateway.md)	 - (experimental) kafka stream gateway
 * [riff streaming processor](riff_streaming_processor.md)	 - (experimental) processors apply functions to messages on streams
-* [riff streaming pulsar-provider](riff_streaming_pulsar-provider.md)	 - (experimental) pulsar stream provider
+* [riff streaming pulsar-gateway](riff_streaming_pulsar-gateway.md)	 - (experimental) pulsar stream gateway
 * [riff streaming stream](riff_streaming_stream.md)	 - (experimental) streams of messages
 
