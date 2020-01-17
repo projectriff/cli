@@ -32,6 +32,7 @@ fi
 source $fats_dir/start.sh
 
 $fats_dir/install.sh kapp
+kubectl create namespace apps
 
 echo "Installing Cert Manager"
 fats_retry kapp deploy -n apps -a cert-manager -f https://storage.googleapis.com/projectriff/charts/uncharted/${version}/cert-manager.yaml -y
