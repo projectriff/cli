@@ -115,6 +115,36 @@ func TestDeployerCreateOptions(t *testing.T) {
 			ExpectFieldErrors: cli.ErrInvalidValue("bogus", cli.IngressPolicyFlagName),
 		},
 		{
+			Name: "with container concurrency",
+			Options: &commands.DeployerCreateOptions{
+				ResourceOptions:      rifftesting.ValidResourceOptions,
+				Image:                "example.com/repo:tag",
+				IngressPolicy:        string(knativev1alpha1.IngressPolicyClusterLocal),
+				ContainerConcurrency: 1,
+			},
+			ShouldValidate: true,
+		},
+		{
+			Name: "with invalid negative container concurrency",
+			Options: &commands.DeployerCreateOptions{
+				ResourceOptions:      rifftesting.ValidResourceOptions,
+				Image:                "example.com/repo:tag",
+				IngressPolicy:        string(knativev1alpha1.IngressPolicyClusterLocal),
+				ContainerConcurrency: -1,
+			},
+			ExpectFieldErrors: cli.ErrInvalidValue(fmt.Sprint(-1), cli.ContainerConcurrencyFlagName),
+		},
+		{
+			Name: "with invalid high container concurrency",
+			Options: &commands.DeployerCreateOptions{
+				ResourceOptions:      rifftesting.ValidResourceOptions,
+				Image:                "example.com/repo:tag",
+				IngressPolicy:        string(knativev1alpha1.IngressPolicyClusterLocal),
+				ContainerConcurrency: 1001,
+			},
+			ExpectFieldErrors: cli.ErrInvalidValue(fmt.Sprint(1001), cli.ContainerConcurrencyFlagName),
+		},
+		{
 			Name: "with env",
 			Options: &commands.DeployerCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
@@ -337,8 +367,10 @@ func TestDeployerCreateCommand(t *testing.T) {
 	envVarOther := fmt.Sprintf("%s=%s", envNameOther, envValueOther)
 	envVarFromConfigMap := "MY_VAR_FROM_CONFIGMAP=configMapKeyRef:my-configmap:my-key"
 	envVarFromSecret := "MY_VAR_FROM_SECRET=secretKeyRef:my-secret:my-key"
-	zero := int32(0)
-	one := int32(1)
+	scaleZero := int32(0)
+	scaleOne := int32(1)
+	concurrencyZero := int64(0)
+	concurrencyOne := int64(1)
 
 	table := rifftesting.CommandTable{
 		{
@@ -487,6 +519,58 @@ Created deployer "my-deployer"
 `,
 		},
 		{
+			Name: "create with container concurrency",
+			Args: []string{deployerName, cli.ImageFlagName, image, cli.ContainerConcurrencyFlagName, "1"},
+			ExpectCreates: []runtime.Object{
+				&knativev1alpha1.Deployer{
+					ObjectMeta: metav1.ObjectMeta{
+						Namespace: defaultNamespace,
+						Name:      deployerName,
+					},
+					Spec: knativev1alpha1.DeployerSpec{
+						Template: &corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								Containers: []corev1.Container{
+									{Image: image},
+								},
+							},
+						},
+						ContainerConcurrency: &concurrencyOne,
+						IngressPolicy:        knativev1alpha1.IngressPolicyClusterLocal,
+					},
+				},
+			},
+			ExpectOutput: `
+Created deployer "my-deployer"
+`,
+		},
+		{
+			Name: "create with container concurrency zero",
+			Args: []string{deployerName, cli.ImageFlagName, image, cli.ContainerConcurrencyFlagName, "0"},
+			ExpectCreates: []runtime.Object{
+				&knativev1alpha1.Deployer{
+					ObjectMeta: metav1.ObjectMeta{
+						Namespace: defaultNamespace,
+						Name:      deployerName,
+					},
+					Spec: knativev1alpha1.DeployerSpec{
+						Template: &corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								Containers: []corev1.Container{
+									{Image: image},
+								},
+							},
+						},
+						ContainerConcurrency: &concurrencyZero,
+						IngressPolicy:        knativev1alpha1.IngressPolicyClusterLocal,
+					},
+				},
+			},
+			ExpectOutput: `
+Created deployer "my-deployer"
+`,
+		},
+		{
 			Name: "create from image with env and env-from",
 			Args: []string{deployerName, cli.ImageFlagName, image, cli.EnvFlagName, envVar, cli.EnvFlagName, envVarOther, cli.EnvFromFlagName, envVarFromConfigMap, cli.EnvFromFlagName, envVarFromSecret},
 			ExpectCreates: []runtime.Object{
@@ -613,7 +697,7 @@ Created deployer "my-deployer"
 					},
 					Spec: knativev1alpha1.DeployerSpec{
 						Scale: knativev1alpha1.Scale{
-							Min: &one,
+							Min: &scaleOne,
 						},
 						Template: &corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
@@ -641,7 +725,7 @@ Created deployer "my-deployer"
 					},
 					Spec: knativev1alpha1.DeployerSpec{
 						Scale: knativev1alpha1.Scale{
-							Min: &zero,
+							Min: &scaleZero,
 						},
 						Template: &corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{
@@ -669,7 +753,7 @@ Created deployer "my-deployer"
 					},
 					Spec: knativev1alpha1.DeployerSpec{
 						Scale: knativev1alpha1.Scale{
-							Max: &one,
+							Max: &scaleOne,
 						},
 						Template: &corev1.PodTemplateSpec{
 							Spec: corev1.PodSpec{

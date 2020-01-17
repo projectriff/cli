@@ -29,6 +29,7 @@ const (
 	ArtifactFlagName              = "--artifact"
 	BootstrapServersFlagName      = "--bootstrap-servers"
 	CacheSizeFlagName             = "--cache-size"
+	ContainerConcurrencyFlagName  = "--container-concurrency"
 	ConfigFlagName                = "--config"
 	ConfigurationRefFlagName      = "--configuration-ref"
 	ContainerRefFlagName          = "--container-ref"
