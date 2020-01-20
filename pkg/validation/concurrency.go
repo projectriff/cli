@@ -22,10 +22,14 @@ import (
 	"github.com/projectriff/cli/pkg/cli"
 )
 
+const (
+	MaxContainerConcurrency int64 = 1000
+)
+
 func ContainerConcurrency(value int64, field string) cli.FieldErrors {
 	errs := cli.FieldErrors{}
 
-	if value < 0 || value > 1000 {
+	if value < 0 || value > MaxContainerConcurrency {
 		errs = errs.Also(cli.ErrInvalidValue(fmt.Sprint(value), field))
 	}
 

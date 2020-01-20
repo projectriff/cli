@@ -17,6 +17,7 @@
 package validation_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -48,7 +49,7 @@ func TestConcurrencyValues(t *testing.T) {
 		value:    1000,
 	}, {
 		name:     "too high",
-		expected: cli.ErrInvalidValue("1001", rifftesting.TestField),
+		expected: cli.ErrInvalidValue(fmt.Sprint(validation.MaxContainerConcurrency+1), rifftesting.TestField),
 		value:    1001,
 	}}
 
