@@ -53,7 +53,6 @@ riff knative deployer create my-image-deployer --image registry.example.com/my-i
       --tail                           watch deployer logs
       --target-port port               port that the workload listens on for traffic. The value is exposed to the workload as the PORT environment variable
       --wait-timeout duration          duration to wait for the deployer to become ready when watching logs (default "10m")
-
 ```
 
 ### Options inherited from parent commands
