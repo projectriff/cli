@@ -35,23 +35,25 @@ riff knative deployer create my-image-deployer --image registry.example.com/my-i
 ### Options
 
 ```
-      --application-ref name    name of application to deploy
-      --container-ref name      name of container to deploy
-      --dry-run                 print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr
-      --env variable            environment variable defined as a key value pair separated by an equals sign, example "--env MY_VAR=my-value" (may be set multiple times)
-      --env-from variable       environment variable from a config map or secret, example "--env-from MY_SECRET_VALUE=secretKeyRef:my-secret-name:key-in-secret", "--env-from MY_CONFIG_MAP_VALUE=configMapKeyRef:my-config-map-name:key-in-config-map" (may be set multiple times)
-      --function-ref name       name of function to deploy
-  -h, --help                    help for create
-      --image image             container image to deploy
-      --ingress-policy policy   ingress policy for network access to the workload, one of "ClusterLocal" or "External" (default "ClusterLocal")
-      --limit-cpu cores         the maximum amount of cpu allowed, in CPU cores (500m = .5 cores)
-      --limit-memory bytes      the maximum amount of memory allowed, in bytes (500Mi = 500MiB = 500 * 1024 * 1024)
-      --max-scale number        maximum number of replicas (default unbounded)
-      --min-scale number        minimum number of replicas (default 0)
-  -n, --namespace name          kubernetes namespace (defaulted from kube config)
-      --tail                    watch deployer logs
-      --target-port port        port that the workload listens on for traffic. The value is exposed to the workload as the PORT environment variable
-      --wait-timeout duration   duration to wait for the deployer to become ready when watching logs (default "10m")
+      --application-ref name           name of application to deploy
+      --container-concurrency number   the maximum number of concurrent requests to send to a replica at one time
+      --container-ref name             name of container to deploy
+      --dry-run                        print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr
+      --env variable                   environment variable defined as a key value pair separated by an equals sign, example "--env MY_VAR=my-value" (may be set multiple times)
+      --env-from variable              environment variable from a config map or secret, example "--env-from MY_SECRET_VALUE=secretKeyRef:my-secret-name:key-in-secret", "--env-from MY_CONFIG_MAP_VALUE=configMapKeyRef:my-config-map-name:key-in-config-map" (may be set multiple times)
+      --function-ref name              name of function to deploy
+  -h, --help                           help for create
+      --image image                    container image to deploy
+      --ingress-policy policy          ingress policy for network access to the workload, one of "ClusterLocal" or "External" (default "ClusterLocal")
+      --limit-cpu cores                the maximum amount of cpu allowed, in CPU cores (500m = .5 cores)
+      --limit-memory bytes             the maximum amount of memory allowed, in bytes (500Mi = 500MiB = 500 * 1024 * 1024)
+      --max-scale number               maximum number of replicas (default unbounded)
+      --min-scale number               minimum number of replicas (default 0)
+  -n, --namespace name                 kubernetes namespace (defaulted from kube config)
+      --tail                           watch deployer logs
+      --target-port port               port that the workload listens on for traffic. The value is exposed to the workload as the PORT environment variable
+      --wait-timeout duration          duration to wait for the deployer to become ready when watching logs (default "10m")
+
 ```
 
 ### Options inherited from parent commands
