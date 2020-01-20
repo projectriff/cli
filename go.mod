@@ -18,6 +18,6 @@ require (
 	golang.org/x/crypto v0.0.0-20190611184440-5c40567a22f8
 	k8s.io/api v0.16.4
 	k8s.io/apiextensions-apiserver v0.16.4
-	k8s.io/apimachinery v0.16.4
+	k8s.io/apimachinery v0.17.1
 	k8s.io/client-go v0.16.4
 )
