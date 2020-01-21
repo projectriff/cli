@@ -32,6 +32,7 @@ fi
 source $fats_dir/start.sh
 
 $fats_dir/install.sh kapp
+$fats_dir/install.sh ytt
 kubectl create namespace apps
 
 riff_release_version=0.5.0-snapshot
