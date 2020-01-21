@@ -53,7 +53,7 @@ echo "Installing Core Runtime"
 kapp deploy -n apps -a riff-core-runtime -f https://storage.googleapis.com/projectriff/release/${riff_release_version}/riff-core-runtime.yaml -y
 
 echo "Installing Knative"
-ytt -f https://storage.googleapis.com/projectriff/release/${riff_release_version}/istio.yaml -f https://storage.googleapis.com/projectriff/charts/overlays/service-nodeport.yaml --file-mark istio.yaml:type=yaml-plain | kapp deploy -n apps -a istio -f - -y
+ytt -f https://storage.googleapis.com/projectriff/release/${riff_release_version}/istio.yaml -f https://storage.googleapis.com/projectriff/charts/overlays/service-$(echo ${K8S_SERVICE_TYPE} | tr '[A-Z]' '[a-z]').yaml --file-mark istio.yaml:type=yaml-plain | kapp deploy -n apps -a istio -f - -y
 kapp deploy -n apps -a knative -f https://storage.googleapis.com/projectriff/release/${riff_release_version}/knative.yaml -y
 
 echo "Installing Knative Runtime"
