@@ -90,7 +90,7 @@ func (opts *PulsarGatewayCreateOptions) Exec(ctx context.Context, c *cli.Config)
 	if opts.Tail {
 		err := race.Run(ctx, opts.WaitTimeout,
 			func(ctx context.Context) error {
-				return k8s.WaitUntilReady(ctx, c.StreamingRuntime().RESTClient(), "pulsargatewaies", gateway)
+				return k8s.WaitUntilReady(ctx, c.StreamingRuntime().RESTClient(), "pulsargateways", gateway)
 			},
 			func(ctx context.Context) error {
 				return c.Kail.PulsarGatewayLogs(ctx, gateway, cli.TailSinceCreateDefault, c.Stdout)

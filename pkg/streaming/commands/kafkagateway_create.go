@@ -90,7 +90,7 @@ func (opts *KafkaGatewayCreateOptions) Exec(ctx context.Context, c *cli.Config) 
 	if opts.Tail {
 		err := race.Run(ctx, opts.WaitTimeout,
 			func(ctx context.Context) error {
-				return k8s.WaitUntilReady(ctx, c.StreamingRuntime().RESTClient(), "kafkagatewaies", gateway)
+				return k8s.WaitUntilReady(ctx, c.StreamingRuntime().RESTClient(), "kafkagateways", gateway)
 			},
 			func(ctx context.Context) error {
 				return c.Kail.KafkaGatewayLogs(ctx, gateway, cli.TailSinceCreateDefault, c.Stdout)
