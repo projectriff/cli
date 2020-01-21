@@ -34,27 +34,29 @@ source $fats_dir/start.sh
 $fats_dir/install.sh kapp
 kubectl create namespace apps
 
+riff_release_version=0.5.0-snapshot
+
 echo "Installing Cert Manager"
-fats_retry kapp deploy -n apps -a cert-manager -f https://storage.googleapis.com/projectriff/charts/uncharted/${version}/cert-manager.yaml -y
+fats_retry kapp deploy -n apps -a cert-manager -f https://storage.googleapis.com/projectriff/release/${riff_release_version}/cert-manager.yaml -y
 
 source $fats_dir/macros/no-resource-requests.sh
 
 echo "Installing kpack"
-kapp deploy -n apps -a kpack -f https://storage.googleapis.com/projectriff/charts/uncharted/${version}/kpack.yaml -y
+kapp deploy -n apps -a kpack -f https://storage.googleapis.com/projectriff/release/${riff_release_version}/kpack.yaml -y
 
 echo "Installing riff Build"
-kapp deploy -n apps -a riff-builders -f https://storage.googleapis.com/projectriff/charts/uncharted/${version}/riff-builders.yaml -y
-kapp deploy -n apps -a riff-build -f https://storage.googleapis.com/projectriff/charts/uncharted/${version}/riff-build.yaml -y
+kapp deploy -n apps -a riff-builders -f https://storage.googleapis.com/projectriff/release/${riff_release_version}/riff-builders.yaml -y
+kapp deploy -n apps -a riff-build -f https://storage.googleapis.com/projectriff/release/${riff_release_version}/riff-build.yaml -y
 
 echo "Installing Core Runtime"
-kapp deploy -n apps -a riff-core-runtime -f https://storage.googleapis.com/projectriff/charts/uncharted/${version}/riff-core-runtime.yaml -y
+kapp deploy -n apps -a riff-core-runtime -f https://storage.googleapis.com/projectriff/release/${riff_release_version}/riff-core-runtime.yaml -y
 
 echo "Installing Knative"
-ytt -f https://storage.googleapis.com/projectriff/charts/uncharted/${version}/istio.yaml -f https://storage.googleapis.com/projectriff/charts/overlays/service-nodeport.yaml --file-mark istio.yaml:type=yaml-plain | kapp deploy -n apps -a istio -f - -y
-kapp deploy -n apps -a knative -f https://storage.googleapis.com/projectriff/charts/uncharted/${version}/knative.yaml -y
+ytt -f https://storage.googleapis.com/projectriff/release/${riff_release_version}/istio.yaml -f https://storage.googleapis.com/projectriff/charts/overlays/service-nodeport.yaml --file-mark istio.yaml:type=yaml-plain | kapp deploy -n apps -a istio -f - -y
+kapp deploy -n apps -a knative -f https://storage.googleapis.com/projectriff/release/${riff_release_version}/knative.yaml -y
 
 echo "Installing Knative Runtime"
-kapp deploy -n apps -a riff-knative-runtime -f https://storage.googleapis.com/projectriff/charts/uncharted/${version}/riff-knative-runtime.yaml -y
+kapp deploy -n apps -a riff-knative-runtime -f https://storage.googleapis.com/projectriff/release/${riff_release_version}/riff-knative-runtime.yaml -y
 
 # health checks
 echo "Checking for ready ingress"
