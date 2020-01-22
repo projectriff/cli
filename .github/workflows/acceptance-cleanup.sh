@@ -4,7 +4,7 @@ set -o nounset
 
 fats_dir=`dirname "${BASH_SOURCE[0]}"`/fats
 
-# attempt to cleanup fats
+# attempt to uninstall and cleanup test resources
 if [ -d "$fats_dir" ]; then
   source $fats_dir/macros/cleanup-user-resources.sh
   kubectl delete namespace $NAMESPACE
