@@ -68,8 +68,8 @@ jobs:
       env:
         GCLOUD_CLIENT_SECRET: ${{ secrets.GCLOUD_CLIENT_SECRET }}
 
-  fats:
-    name: FATS
+  acceptance:
+    name: Acceptance
     needs: stage
     if: success() && github.event_name == 'push'
     strategy:
@@ -101,21 +101,21 @@ jobs:
           echo "##[set-env name=CLUSTER_NAME]cli-${job}-${{ matrix.config.qualifier }}"
           echo "##[set-env name=NAMESPACE]cli-${job}-${{ matrix.config.qualifier }}"
         shell: bash
-      - name: Run FATS
-        run: .github/workflows/fats.sh
+      - name: Run acceptance tests
+        run: .github/workflows/acceptance.sh
         shell: bash
       - name: Collect diagnostics
         run: .github/workflows/diagnostics.sh
         shell: bash
         if: always()
-      - name: Cleanup FATS
-        run: .github/workflows/fats-cleanup.sh
+      - name: Cleanup
+        run: .github/workflows/acceptance-cleanup.sh
         shell: bash
         if: always()
 
   publish:
     name: Publish
-    needs: fats
+    needs: acceptance
     if: |
       success() && 
       github.event_name == 'push' && (
