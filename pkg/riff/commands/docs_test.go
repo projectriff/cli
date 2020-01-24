@@ -20,7 +20,10 @@ import (
 	"context"
 	"io/ioutil"
 	"os"
+	"strings"
 	"testing"
+
+	"github.com/spf13/cobra"
 
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/riff/commands"
@@ -81,4 +84,36 @@ func TestDocsCommand(t *testing.T) {
 	}
 
 	table.Run(t, commands.NewDocsCommand)
+}
+
+func TestLineWrapping(t *testing.T) {
+	failed := false
+	rootCommand := commands.NewRootCommand(context.Background(), cli.Initialize())
+	err := cli.Visit(rootCommand, func(c *cobra.Command) error {
+		if !isValid(c.Short) {
+			failed = true
+			t.Logf("command `%s`'s Short description exceeds the 80-character margin", c.UseLine())
+		}
+		if !isValid(c.Long) {
+			failed = true
+			t.Logf("command `%s`'s Long description exceeds the 80-character margin", c.UseLine())
+		}
+		return nil
+	})
+	if err != nil {
+		t.Errorf("%v", err)
+	}
+	if failed {
+		t.Errorf("Line wrapping not properly applied by some commands - see above")
+	}
+}
+
+func isValid(doc string) bool {
+	lines := strings.Split(doc, "\n")
+	for _, line := range lines {
+		if len(line) > 80 {
+			return false
+		}
+	}
+	return true
 }

@@ -31,9 +31,9 @@ func NewDeployerCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 		Long: strings.TrimSpace(`
 Deployers can be created for a build reference or image. Build based deployers
 continuously watch for the latest built image and will deploy new images. If the
-underlying build resource is deleted, the deployer will continue to run, but will
-no longer self update. Image based deployers must be manually updated to trigger
-roll out of an updated image.
+underlying build resource is deleted, the deployer will continue to run, but
+will no longer self update. Image based deployers must be manually updated to
+trigger the rollout of an updated image.
 
 Users wishing to perform checks on built images before deploying them can
 provide their own external process to watch the build resource for new images

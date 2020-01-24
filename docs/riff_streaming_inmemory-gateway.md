@@ -8,7 +8,7 @@ title: "riff streaming inmemory-gateway"
 
 ### Synopsis
 
-<todo>
+The in-memory gateway stores messages in memory.
 
 ### Options
 
@@ -27,7 +27,7 @@ title: "riff streaming inmemory-gateway"
 ### SEE ALSO
 
 * [riff streaming](riff_streaming.md)	 - (experimental) streaming runtime for riff functions
-* [riff streaming inmemory-gateway create](riff_streaming_inmemory-gateway_create.md)	 - create a in-memory gateway of messages
+* [riff streaming inmemory-gateway create](riff_streaming_inmemory-gateway_create.md)	 - create an in-memory gateway of messages
 * [riff streaming inmemory-gateway delete](riff_streaming_inmemory-gateway_delete.md)	 - delete in-memory gateway(s)
 * [riff streaming inmemory-gateway list](riff_streaming_inmemory-gateway_list.md)	 - table listing of in-memory gateways
 * [riff streaming inmemory-gateway status](riff_streaming_inmemory-gateway_status.md)	 - show inmemory gateway status

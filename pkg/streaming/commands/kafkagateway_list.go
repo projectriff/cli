@@ -81,9 +81,9 @@ func NewKafkaGatewayListCommand(ctx context.Context, c *cli.Config) *cobra.Comma
 		Use:   "list",
 		Short: "table listing of kafka gateways",
 		Long: strings.TrimSpace(`
-List kafka gateways in a namespace or across all namespaces.
+List Kafka gateways in a namespace or across all namespaces.
 
-For detail regarding the status of a single kafka gateway, run:
+For detail regarding the status of a single Kafka gateway, run:
 
     ` + c.Name + ` streaming kafka-gateway status <kafka-gateway-name>
 `),

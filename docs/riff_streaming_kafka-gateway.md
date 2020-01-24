@@ -8,7 +8,12 @@ title: "riff streaming kafka-gateway"
 
 ### Synopsis
 
-<todo>
+The Kafka gateway encapsulates the address of a streaming gateway and a Kafka
+provisioner instance.
+
+The Kafka provisioner is responsible for creating topics in a Kafka cluster. The
+streaming gateway coordinates and standardizes reads and writes to a Kafka
+broker.
 
 ### Options
 

@@ -8,7 +8,9 @@ create a kafka gateway of messages
 
 ### Synopsis
 
-<todo>
+Creates a Kafka gateway within a namespace.
+
+The gateway is configured with the address of the Kafka broker.
 
 ```
 riff streaming kafka-gateway create <name> [flags]

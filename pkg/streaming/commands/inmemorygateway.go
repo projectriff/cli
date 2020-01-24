@@ -29,8 +29,7 @@ func NewInMemoryGatewayCommand(ctx context.Context, c *cli.Config) *cobra.Comman
 		Use:   "inmemory-gateway",
 		Short: "(experimental) in-memory stream gateway",
 		Long: strings.TrimSpace(`
-<todo>
-`),
+The in-memory gateway stores messages in memory.`),
 		Aliases: []string{"inmemory"},
 	}
 

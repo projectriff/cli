@@ -121,7 +121,9 @@ func NewKafkaGatewayCreateCommand(ctx context.Context, c *cli.Config) *cobra.Com
 		Use:   "create",
 		Short: "create a kafka gateway of messages",
 		Long: strings.TrimSpace(`
-<todo>
+Creates a Kafka gateway within a namespace.
+
+The gateway is configured with the address of the Kafka broker.
 `),
 		Example: fmt.Sprintf("%s streaming kafka-gateway create my-kafka-gateway %s kafka.local:9092", c.Name, cli.BootstrapServersFlagName),
 		PreRunE: cli.ValidateOptions(ctx, opts),

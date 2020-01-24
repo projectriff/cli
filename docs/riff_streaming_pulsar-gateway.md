@@ -8,7 +8,12 @@ title: "riff streaming pulsar-gateway"
 
 ### Synopsis
 
-<todo>
+The Pulsar gateway encapsulates the address of a streaming gateway and a Pulsar
+provisioner instance.
+
+The Pulsar provisioner is responsible for resolving topic addresses in a Pulsar
+cluster. The streaming gateway coordinates and standardizes reads and writes to
+a Pulsar broker.
 
 ### Options
 

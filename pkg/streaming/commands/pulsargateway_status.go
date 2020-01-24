@@ -69,12 +69,12 @@ func NewPulsarGatewayStatusCommand(ctx context.Context, c *cli.Config) *cobra.Co
 		Use:   "status",
 		Short: "show pulsar gateway status",
 		Long: strings.TrimSpace(`
-Display status details for a pulsar gateway.
+Display status details for a Pulsar gateway.
 
 The Ready condition is shown which should include a reason code and a
 descriptive message when the status is not "True". The status for the condition
 may be: "True", "False" or "Unknown". An "Unknown" status is common while the
-pulsar gateway roll out is being processed.
+pulsar gateway rollout is being processed.
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s streamming pulsar-gateway status my-pulsar-gateway", c.Name),

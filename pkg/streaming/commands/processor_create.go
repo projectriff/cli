@@ -216,7 +216,10 @@ func NewProcessorCreateCommand(ctx context.Context, c *cli.Config) *cobra.Comman
 		Use:   "create",
 		Short: "create a processor to apply a function to messages on streams",
 		Long: strings.TrimSpace(`
-<todo>
+Creates a processor within a namespace.
+
+The processor is configured with a function or container reference and multiple
+input and/or output streams.
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s streaming processor create my-processor %s my-func %s my-input-stream", c.Name, cli.FunctionRefFlagName, cli.InputFlagName),

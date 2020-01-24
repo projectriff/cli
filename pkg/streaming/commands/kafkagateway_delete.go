@@ -72,12 +72,12 @@ func NewKafkaGatewayDeleteCommand(ctx context.Context, c *cli.Config) *cobra.Com
 		Use:   "delete",
 		Short: "delete kafka gateway(s)",
 		Long: strings.TrimSpace(`
-Delete one or more kafka gateways by name or all kafka gateways within a
+Delete one or more Kafka gateways by name or all Kafka gateways within a
 namespace.
 
-Deleting a kafka gateway will disrupt all processors consuming streams managed
+Deleting a Kafka gateway will disrupt all processors consuming streams managed
 by the gateway. Existing messages in the stream may be preserved by the
-underlying kafka broker, depending on the implementation.
+underlying Kafka broker, depending on the implementation.
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s streaming kafka-gateway delete my-kafka-gateway", c.Name),
