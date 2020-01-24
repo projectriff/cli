@@ -42,7 +42,7 @@ runtimes.
 Functions are distinct from applications in the scope and responsibilities of
 the source code. Unlike applications, functions:
 
-- no main method
+- have no main method
 - practice Inversion of Control (we'll call you)
 - invocations are decoupled from networking protocols, no HTTP specifics
 - limited to a single responsibility

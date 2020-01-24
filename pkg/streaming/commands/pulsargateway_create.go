@@ -121,7 +121,9 @@ func NewPulsarGatewayCreateCommand(ctx context.Context, c *cli.Config) *cobra.Co
 		Use:   "create",
 		Short: "create a pulsar gateway of messages",
 		Long: strings.TrimSpace(`
-<todo>
+Creates a Pulsar gateway within a namespace.
+
+The gateway is configured with a Pulsar service URL.
 `),
 		Example: fmt.Sprintf("%s streaming pulsar-gateway create my-pulsar-gateway %s pulsar://localhost:6650", c.Name, cli.ServiceURLFlagName),
 		PreRunE: cli.ValidateOptions(ctx, opts),

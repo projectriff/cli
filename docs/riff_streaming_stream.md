@@ -8,7 +8,11 @@ title: "riff streaming stream"
 
 ### Synopsis
 
-<todo>
+A stream encapsulates an addressable message channel (typically a message 
+broker's topic). It can be mapped to a function input or output stream.
+
+Streams are managed by an associated streaming gateway and define a content 
+type that its messages adhere to.
 
 ### Options
 

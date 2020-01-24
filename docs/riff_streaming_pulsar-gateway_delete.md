@@ -8,10 +8,10 @@ delete pulsar gateway(s)
 
 ### Synopsis
 
-Delete one or more pulsar gateways by name or all pulsar gateways within a
+Delete one or more Pulsar gateways by name or all Pulsar gateways within a
 namespace.
 
-Deleting a pulsar gateway will disrupt all processors consuming streams managed
+Deleting a Pulsar gateway will disrupt all processors consuming streams managed
 by the gateway. Existing messages in the stream may be preserved by the
 underlying pulsar broker, depending on the implementation.
 

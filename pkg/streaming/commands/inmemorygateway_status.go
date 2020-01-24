@@ -69,12 +69,12 @@ func NewInMemoryGatewayStatusCommand(ctx context.Context, c *cli.Config) *cobra.
 		Use:   "status",
 		Short: "show inmemory gateway status",
 		Long: strings.TrimSpace(`
-Display status details for a in-memory gateway.
+Display status details for an in-memory gateway.
 
 The Ready condition is shown which should include a reason code and a
 descriptive message when the status is not "True". The status for the condition
 may be: "True", "False" or "Unknown". An "Unknown" status is common while the
-in-memory gateway roll out is being processed.
+in-memory gateway rollout is being processed.
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s streamming inmemory-gateway status my-inmemory-gateway", c.Name),

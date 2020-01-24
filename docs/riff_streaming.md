@@ -8,7 +8,10 @@ title: "riff streaming"
 
 ### Synopsis
 
-<todo>
+The streaming runtime uses riff functions, processor and stream custom resources
+to deploy streaming workloads. 
+
+Functions can accept several input and/or output streams.
 
 ### Options
 

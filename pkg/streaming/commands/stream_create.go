@@ -126,7 +126,11 @@ func NewStreamCreateCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 		Use:   "create",
 		Short: "create a stream of messages",
 		Long: strings.TrimSpace(`
-<todo>
+Create a stream resource within a namespace and provision a stream in the
+underlying message broker via the referenced stream gateway.
+
+The created stream can then be referenced as an input or an output of a given
+function when creating a streaming processor.
 `),
 		Example: fmt.Sprintf("%s streaming stream create my-stream %s my-gateway", c.Name, cli.GatewayFlagName),
 		PreRunE: cli.ValidateOptions(ctx, opts),

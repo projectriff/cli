@@ -29,7 +29,13 @@ func NewProcessorCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 		Use:   "processor",
 		Short: "(experimental) processors apply functions to messages on streams",
 		Long: strings.TrimSpace(`
-<todo>
+Processors coordinate reading from input streams and writing to output streams
+with a function or container.
+
+Function-based processors continuously watch for the latest built image and will
+deploy new images. If the underlying build resource is deleted, the processor
+will continue to run, but will no longer self update. Container-based processors
+must be manually updated to trigger the rollout of an updated image.
 `),
 		Aliases: []string{"processors"},
 	}

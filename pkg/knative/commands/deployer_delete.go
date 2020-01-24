@@ -74,8 +74,8 @@ func NewDeployerDeleteCommand(ctx context.Context, c *cli.Config) *cobra.Command
 		Long: strings.TrimSpace(`
 Delete one or more deployers by name or all deployers within a namespace.
 
-New HTTP requests addressed to the deployer will fail. A new deployer created with
-the same name will start to receive new HTTP requests addressed to the same
+New HTTP requests addressed to the deployer will fail. A new deployer created
+with the same name will start to receive new HTTP requests addressed to the same
 deployer.
 `),
 		Example: strings.Join([]string{

@@ -29,7 +29,12 @@ func NewKafkaGatewayCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 		Use:   "kafka-gateway",
 		Short: "(experimental) kafka stream gateway",
 		Long: strings.TrimSpace(`
-<todo>
+The Kafka gateway encapsulates the address of a streaming gateway and a Kafka
+provisioner instance.
+
+The Kafka provisioner is responsible for creating topics in a Kafka cluster. The
+streaming gateway coordinates and standardizes reads and writes to a Kafka
+broker.
 `),
 		Aliases: []string{"kafka"},
 	}

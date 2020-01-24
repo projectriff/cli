@@ -76,8 +76,8 @@ func NewDeployerTailCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 Stream runtime logs for a deployer until canceled. To cancel, press Ctl-c in the
 shell or kill the process.
 
-As new deployer pods are started, the logs are displayed. To show historical logs
-use ` + cli.SinceFlagName + `.
+As new deployer pods are started, the logs are displayed. To show historical
+logs use ` + cli.SinceFlagName + `.
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s core deployer tail my-deployer", c.Name),

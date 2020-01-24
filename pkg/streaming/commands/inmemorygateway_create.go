@@ -112,9 +112,9 @@ func NewInMemoryGatewayCreateCommand(ctx context.Context, c *cli.Config) *cobra.
 
 	cmd := &cobra.Command{
 		Use:   "create",
-		Short: "create a in-memory gateway of messages",
+		Short: "create an in-memory gateway of messages",
 		Long: strings.TrimSpace(`
-<todo>
+Creates an in-memory gateway within a namespace.
 `),
 		Example: fmt.Sprintf("%s streaming inmemory-gateway create my-inmemory-gateway", c.Name),
 		PreRunE: cli.ValidateOptions(ctx, opts),

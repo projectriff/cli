@@ -74,7 +74,7 @@ Display status details for a processor.
 The Ready condition is shown which should include a reason code and a
 descriptive message when the status is not "True". The status for the condition
 may be: "True", "False" or "Unknown". An "Unknown" status is common while the
-processor roll out is processed.
+processor rollout is processed.
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s streaming processor status my-processor", c.Name),

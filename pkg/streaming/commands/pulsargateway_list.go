@@ -81,7 +81,7 @@ func NewPulsarGatewayListCommand(ctx context.Context, c *cli.Config) *cobra.Comm
 		Use:   "list",
 		Short: "table listing of pulsar gateways",
 		Long: strings.TrimSpace(`
-List pulsar gateways in a namespace or across all namespaces.
+List Pulsar gateways in a namespace or across all namespaces.
 
 For detail regarding the status of a single pulsar gateway, run:
 

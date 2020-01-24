@@ -8,12 +8,12 @@ show pulsar gateway status
 
 ### Synopsis
 
-Display status details for a pulsar gateway.
+Display status details for a Pulsar gateway.
 
 The Ready condition is shown which should include a reason code and a
 descriptive message when the status is not "True". The status for the condition
 may be: "True", "False" or "Unknown". An "Unknown" status is common while the
-pulsar gateway roll out is being processed.
+pulsar gateway rollout is being processed.
 
 ```
 riff streaming pulsar-gateway status <name> [flags]

@@ -8,12 +8,12 @@ show inmemory gateway status
 
 ### Synopsis
 
-Display status details for a in-memory gateway.
+Display status details for an in-memory gateway.
 
 The Ready condition is shown which should include a reason code and a
 descriptive message when the status is not "True". The status for the condition
 may be: "True", "False" or "Unknown". An "Unknown" status is common while the
-in-memory gateway roll out is being processed.
+in-memory gateway rollout is being processed.
 
 ```
 riff streaming inmemory-gateway status <name> [flags]

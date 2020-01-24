@@ -11,8 +11,8 @@ watch deployer logs
 Stream runtime logs for a deployer until canceled. To cancel, press Ctl-c in the
 shell or kill the process.
 
-As new deployer pods are started, the logs are displayed. To show historical logs
-use --since.
+As new deployer pods are started, the logs are displayed. To show historical
+logs use --since.
 
 ```
 riff core deployer tail <name> [flags]

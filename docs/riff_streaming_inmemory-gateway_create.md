@@ -4,11 +4,11 @@ title: "riff streaming inmemory-gateway create"
 ---
 ## riff streaming inmemory-gateway create
 
-create a in-memory gateway of messages
+create an in-memory gateway of messages
 
 ### Synopsis
 
-<todo>
+Creates an in-memory gateway within a namespace.
 
 ```
 riff streaming inmemory-gateway create <name> [flags]
