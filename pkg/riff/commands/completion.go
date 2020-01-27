@@ -192,8 +192,16 @@ __` + c.Name + `_custom_func() {
 			__` + c.Name + `_list_resource 'knative adapter list'
 			return
 			;;
+		` + c.Name + `_streaming_inmemory-gateway_delete | ` + c.Name + `_streaming_inmemory-gateway_status)
+			__` + c.Name + `_list_resource 'streaming inmemory-gateway list'
+			return
+			;;
 		` + c.Name + `_streaming_kafka-gateway_delete | ` + c.Name + `_streaming_kafka-gateway_status)
 			__` + c.Name + `_list_resource 'streaming kafka-gateway list'
+			return
+			;;
+		` + c.Name + `_streaming_pulsar-gateway_delete | ` + c.Name + `_streaming_pulsar-gateway_status)
+			__` + c.Name + `_list_resource 'streaming pulsar-gateway list'
 			return
 			;;
 		` + c.Name + `_streaming_processor_delete | ` + c.Name + `_streaming_processor_status | ` + c.Name + `_streaming_processor_tail)
