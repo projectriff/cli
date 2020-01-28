@@ -93,6 +93,8 @@ github.com/buildpacks/pack v0.6.0 h1:hOnUrwmFQp5OxxrEp6qIxWVtqjXypJ0g31JuKRUGrLU
 github.com/buildpacks/pack v0.6.0/go.mod h1:5YXVrPFdS9CAQWS5iOcMhk3ul5YCMw4EvZr2pIecO7A=
 github.com/buildpacks/pack v0.7.0 h1:6jgT1ROcfn+c72p2B6lka0djy2kfdvgD6l0sIekcDms=
 github.com/buildpacks/pack v0.7.0/go.mod h1:5YXVrPFdS9CAQWS5iOcMhk3ul5YCMw4EvZr2pIecO7A=
+github.com/buildpacks/pack v0.8.0 h1:yp6qbcZUBd/DqOuIBHbyd9A+9PE7Af6fAEE67pv3B6I=
+github.com/buildpacks/pack v0.8.0/go.mod h1:5YXVrPFdS9CAQWS5iOcMhk3ul5YCMw4EvZr2pIecO7A=
 github.com/caarlos0/ctrlc v1.0.0/go.mod h1:CdXpj4rmq0q/1Eb44M9zi2nKB0QraNKuRGYGrrHhcQw=
 github.com/campoy/unique v0.0.0-20180121183637-88950e537e7e h1:V9a67dfYqPLAvzk5hMQOXYJlZ4SLIXgyKIE+ZiHzgGQ=
 github.com/campoy/unique v0.0.0-20180121183637-88950e537e7e/go.mod h1:9IOqJGCPMSc6E5ydlp5NIonxObaeu/Iub/X03EKPVYo=
