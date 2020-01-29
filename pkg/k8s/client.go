@@ -29,7 +29,6 @@ import (
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-	clientcmdapi "k8s.io/client-go/tools/clientcmd/api"
 )
 
 type Client interface {
@@ -96,10 +95,10 @@ type client struct {
 
 func (c *client) lazyLoadKubeConfig() clientcmd.ClientConfig {
 	if c.kubeConfig == nil {
-		c.kubeConfig = clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
-			&clientcmd.ClientConfigLoadingRules{ExplicitPath: c.kubeConfigFile},
-			&clientcmd.ConfigOverrides{ClusterInfo: clientcmdapi.Cluster{Server: ""}},
-		)
+		loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
+		loadingRules.ExplicitPath = c.kubeConfigFile
+		configOverrides := &clientcmd.ConfigOverrides{}
+		c.kubeConfig = clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, configOverrides)
 	}
 	return c.kubeConfig
 }

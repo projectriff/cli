@@ -19,7 +19,6 @@ package cli
 import (
 	"bytes"
 	"os"
-	"path/filepath"
 	"strings"
 	"testing"
 
@@ -132,37 +131,6 @@ func TestInitKubeConfig_EnvVar(t *testing.T) {
 	c.initKubeConfig()
 
 	if expected, actual := "testdata/.kube/config", c.KubeConfigFile; expected != actual {
-		t.Errorf("Expected kubeconfig path %q, actually %q", expected, actual)
-	}
-	if diff := cmp.Diff("", strings.TrimSpace(output.String())); diff != "" {
-		t.Errorf("Unexpected output (-expected, +actual): %s", diff)
-	}
-}
-
-func TestInitKubeConfig_HomeDir(t *testing.T) {
-	noColor := color.NoColor
-	color.NoColor = false
-	defer func() { color.NoColor = noColor }()
-
-	home, homeisset := os.LookupEnv("HOME")
-	defer func() {
-		homedir.Reset()
-		if homeisset {
-			os.Setenv("HOME", home)
-		} else {
-			os.Unsetenv("HOME")
-		}
-	}()
-
-	c := NewDefaultConfig()
-	output := &bytes.Buffer{}
-	c.Stdout = output
-	c.Stderr = output
-
-	os.Setenv("HOME", "testdata")
-	c.initKubeConfig()
-
-	if expected, actual := filepath.FromSlash("testdata/.kube/config"), c.KubeConfigFile; expected != actual {
 		t.Errorf("Expected kubeconfig path %q, actually %q", expected, actual)
 	}
 	if diff := cmp.Diff("", strings.TrimSpace(output.String())); diff != "" {
