@@ -22,7 +22,6 @@ import (
 	"io"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 
 	"github.com/fatih/color"
@@ -140,13 +139,6 @@ func (c *Config) initKubeConfig() {
 	}
 	if kubeEnvConf, ok := os.LookupEnv("KUBECONFIG"); ok {
 		c.KubeConfigFile = kubeEnvConf
-	} else {
-		home, err := homedir.Dir()
-		if err != nil {
-			c.Errorf("%s\n", err)
-			os.Exit(1)
-		}
-		c.KubeConfigFile = filepath.Join(home, ".kube", "config")
 	}
 }
 
