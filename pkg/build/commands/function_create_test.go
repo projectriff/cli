@@ -959,6 +959,7 @@ Created function "my-function"
 			},
 			ExpectOutput: `
 Created function "my-function"
+Waiting for function "my-function" to become ready...
 ...log output...
 Function "my-function" is ready
 `,
@@ -1022,6 +1023,7 @@ Function "my-function" is ready
 			},
 			ExpectOutput: `
 Created function "my-function"
+Waiting for function "my-function" to become ready...
 ...log output...
 Timeout after "5ms" waiting for "my-function" to become ready
 To view status run: riff function list --namespace default
@@ -1086,6 +1088,10 @@ To continue watching logs run: riff function tail my-function --namespace defaul
 					},
 				},
 			},
+			ExpectOutput: `
+Created function "my-function"
+Waiting for function "my-function" to become ready...
+`,
 			ShouldError: true,
 		},
 	}

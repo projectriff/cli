@@ -659,6 +659,7 @@ Created deployer "my-deployer"
 			},
 			ExpectOutput: `
 Created deployer "my-deployer"
+Waiting for deployer "my-deployer" to become ready...
 ...log output...
 Deployer "my-deployer" is ready
 `,
@@ -720,6 +721,7 @@ Deployer "my-deployer" is ready
 			},
 			ExpectOutput: `
 Created deployer "my-deployer"
+Waiting for deployer "my-deployer" to become ready...
 ...log output...
 Timeout after "5ms" waiting for "my-deployer" to become ready
 To view status run: riff core deployer list --namespace default
@@ -782,6 +784,10 @@ To continue watching logs run: riff core deployer tail my-deployer --namespace d
 					},
 				},
 			},
+			ExpectOutput: `
+Created deployer "my-deployer"
+Waiting for deployer "my-deployer" to become ready...
+`,
 			ShouldError: true,
 		},
 	}

@@ -243,6 +243,7 @@ Created container "my-container"
 			},
 			ExpectOutput: `
 Created container "my-container"
+Waiting for container "my-container" to become ready...
 ...log output...
 Container "my-container" is ready
 `,
@@ -276,6 +277,7 @@ Container "my-container" is ready
 			},
 			ExpectOutput: `
 Created container "my-container"
+Waiting for container "my-container" to become ready...
 Timeout after "5ms" waiting for "my-container" to become ready
 To view status run: riff container list --namespace default
 To continue watching logs run: riff container tail my-container --namespace default
@@ -315,6 +317,10 @@ To continue watching logs run: riff container tail my-container --namespace defa
 					},
 				},
 			},
+			ExpectOutput: `
+Created container "my-container"
+Waiting for container "my-container" to become ready...
+`,
 			ShouldError: true,
 		},
 	}

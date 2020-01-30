@@ -97,6 +97,7 @@ func (opts *StreamCreateOptions) Exec(ctx context.Context, c *cli.Config) error 
 	}
 	c.Successf("Created stream %q\n", stream.Name)
 	if opts.Tail {
+		c.Infof("Waiting for stream %q to become ready...\n", stream.Name)
 		err := race.Run(ctx, opts.WaitTimeout,
 			func(ctx context.Context) error {
 				return k8s.WaitUntilReady(ctx, c.StreamingRuntime().RESTClient(), "streams", stream)

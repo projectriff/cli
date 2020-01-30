@@ -197,6 +197,7 @@ Created in-memory gateway "my-inmemory-gateway"
 			},
 			ExpectOutput: `
 Created in-memory gateway "franz"
+Waiting for in-memory gateway "franz" to become ready...
 ...log output...
 InMemoryGateway "franz" is ready
 `,
@@ -243,6 +244,7 @@ InMemoryGateway "franz" is ready
 			},
 			ExpectOutput: `
 Created in-memory gateway "franz"
+Waiting for in-memory gateway "franz" to become ready...
 ...log output...
 Timeout after "7ms" waiting for "franz" to become ready
 To view status run: riff streaming inmemory-gateway list --namespace default
@@ -293,6 +295,7 @@ To view status run: riff streaming inmemory-gateway list --namespace default
 			ShouldError: true,
 			ExpectOutput: `
 Created in-memory gateway "franz"
+Waiting for in-memory gateway "franz" to become ready...
 `,
 		},
 	}

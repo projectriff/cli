@@ -240,6 +240,7 @@ func (opts *FunctionCreateOptions) Exec(ctx context.Context, c *cli.Config) erro
 	}
 	c.Successf("Created function %q\n", function.Name)
 	if opts.Tail {
+		c.Infof("Waiting for function %q to become ready...\n", function.Name)
 		// err guarded by Validate()
 		timeout, _ := time.ParseDuration(opts.WaitTimeout)
 		err := race.Run(ctx, timeout,

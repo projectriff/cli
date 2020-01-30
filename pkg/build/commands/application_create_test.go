@@ -920,6 +920,7 @@ Created application "my-application"
 			},
 			ExpectOutput: `
 Created application "my-application"
+Waiting for application "my-application" to become ready...
 ...log output...
 Application "my-application" is ready
 `,
@@ -983,6 +984,7 @@ Application "my-application" is ready
 			},
 			ExpectOutput: `
 Created application "my-application"
+Waiting for application "my-application" to become ready...
 ...log output...
 Timeout after "5ms" waiting for "my-application" to become ready
 To view status run: riff application list --namespace default
@@ -1047,6 +1049,10 @@ To continue watching logs run: riff application tail my-application --namespace 
 					},
 				},
 			},
+			ExpectOutput: `
+Created application "my-application"
+Waiting for application "my-application" to become ready...
+`,
 			ShouldError: true,
 		},
 	}

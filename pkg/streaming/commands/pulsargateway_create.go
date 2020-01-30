@@ -88,6 +88,7 @@ func (opts *PulsarGatewayCreateOptions) Exec(ctx context.Context, c *cli.Config)
 	}
 	c.Successf("Created pulsar gateway %q\n", gateway.Name)
 	if opts.Tail {
+		c.Infof("Waiting for pulsar gateway %q to become ready...\n", gateway.Name)
 		err := race.Run(ctx, opts.WaitTimeout,
 			func(ctx context.Context) error {
 				return k8s.WaitUntilReady(ctx, c.StreamingRuntime().RESTClient(), "pulsargateways", gateway)

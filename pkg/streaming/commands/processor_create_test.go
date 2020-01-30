@@ -601,6 +601,7 @@ Created processor "my-processor"
 			},
 			ExpectOutput: `
 Created processor "my-processor"
+Waiting for processor "my-processor" to become ready...
 ...log output...
 Processor "my-processor" is ready
 `,
@@ -670,6 +671,7 @@ Processor "my-processor" is ready
 			},
 			ExpectOutput: `
 Created processor "my-processor"
+Waiting for processor "my-processor" to become ready...
 ...log output...
 Timeout after "5ms" waiting for "my-processor" to become ready
 To view status run: riff processor list --namespace default
@@ -740,6 +742,10 @@ To continue watching logs run: riff processor tail my-processor --namespace defa
 					},
 				},
 			},
+			ExpectOutput: `
+Created processor "my-processor"
+Waiting for processor "my-processor" to become ready...
+`,
 			ShouldError: true,
 		},
 		{
