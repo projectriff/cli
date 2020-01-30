@@ -222,6 +222,7 @@ Created pulsar gateway "my-pulsar-gateway"
 			},
 			ExpectOutput: `
 Created pulsar gateway "franz"
+Waiting for pulsar gateway "franz" to become ready...
 ...log output...
 PulsarGateway "franz" is ready
 `,
@@ -272,6 +273,7 @@ PulsarGateway "franz" is ready
 			},
 			ExpectOutput: `
 Created pulsar gateway "franz"
+Waiting for pulsar gateway "franz" to become ready...
 ...log output...
 Timeout after "7ms" waiting for "franz" to become ready
 To view status run: riff streaming pulsar-gateway list --namespace default
@@ -326,6 +328,7 @@ To view status run: riff streaming pulsar-gateway list --namespace default
 			ShouldError: true,
 			ExpectOutput: `
 Created pulsar gateway "franz"
+Waiting for pulsar gateway "franz" to become ready...
 `,
 		},
 	}

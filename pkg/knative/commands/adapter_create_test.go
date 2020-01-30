@@ -407,6 +407,7 @@ Created adapter "my-adapter"
 			},
 			ExpectOutput: `
 Created adapter "my-adapter"
+Waiting for adapter "my-adapter" to become ready...
 ...log output...
 Adapter "my-adapter" is ready
 `,
@@ -445,6 +446,7 @@ Adapter "my-adapter" is ready
 			},
 			ExpectOutput: `
 Created adapter "my-adapter"
+Waiting for adapter "my-adapter" to become ready...
 Timeout after "5ms" waiting for "my-adapter" to become ready
 To view status run: riff knative adapter list --namespace default
 `,
@@ -488,6 +490,10 @@ To view status run: riff knative adapter list --namespace default
 					},
 				},
 			},
+			ExpectOutput: `
+Created adapter "my-adapter"
+Waiting for adapter "my-adapter" to become ready...
+`,
 			ShouldError: true,
 		},
 	}

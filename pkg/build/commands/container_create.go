@@ -94,6 +94,7 @@ func (opts *ContainerCreateOptions) Exec(ctx context.Context, c *cli.Config) err
 	}
 	c.Successf("Created container %q\n", container.Name)
 	if opts.Tail {
+		c.Infof("Waiting for container %q to become ready...\n", container.Name)
 		// err guarded by Validate()
 		timeout, _ := time.ParseDuration(opts.WaitTimeout)
 		err := race.Run(ctx, timeout,

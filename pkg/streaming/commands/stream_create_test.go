@@ -276,6 +276,7 @@ Created stream "my-stream"
 			},
 			ExpectOutput: `
 Created stream "input"
+Waiting for stream "input" to become ready...
 Stream "input" is ready
 `,
 		},
@@ -310,6 +311,7 @@ Stream "input" is ready
 			ShouldError: true,
 			ExpectOutput: `
 Created stream "input"
+Waiting for stream "input" to become ready...
 Timeout after "10ms" waiting for "input" to become ready
 To view status run: riff streaming stream list --namespace default
 `,

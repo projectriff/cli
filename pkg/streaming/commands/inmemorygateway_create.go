@@ -81,6 +81,7 @@ func (opts *InMemoryGatewayCreateOptions) Exec(ctx context.Context, c *cli.Confi
 	}
 	c.Successf("Created in-memory gateway %q\n", gateway.Name)
 	if opts.Tail {
+		c.Infof("Waiting for in-memory gateway %q to become ready...\n", gateway.Name)
 		err := race.Run(ctx, opts.WaitTimeout,
 			func(ctx context.Context) error {
 				return k8s.WaitUntilReady(ctx, c.StreamingRuntime().RESTClient(), "inmemorygateways", gateway)

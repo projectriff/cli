@@ -226,6 +226,7 @@ func (opts *ApplicationCreateOptions) Exec(ctx context.Context, c *cli.Config) e
 	}
 	c.Successf("Created application %q\n", application.Name)
 	if opts.Tail {
+		c.Infof("Waiting for application %q to become ready...\n", application.Name)
 		// err guarded by Validate()
 		timeout, _ := time.ParseDuration(opts.WaitTimeout)
 		err := race.Run(ctx, timeout,

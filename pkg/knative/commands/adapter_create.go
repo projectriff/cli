@@ -170,6 +170,7 @@ func (opts *AdapterCreateOptions) Exec(ctx context.Context, c *cli.Config) error
 	}
 	c.Successf("Created adapter %q\n", adapter.Name)
 	if opts.Tail {
+		c.Infof("Waiting for adapter %q to become ready...\n", adapter.Name)
 		// err guarded by Validate()
 		timeout, _ := time.ParseDuration(opts.WaitTimeout)
 		err := race.Run(ctx, timeout,

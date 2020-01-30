@@ -212,6 +212,7 @@ func (opts *DeployerCreateOptions) Exec(ctx context.Context, c *cli.Config) erro
 	}
 	c.Successf("Created deployer %q\n", deployer.Name)
 	if opts.Tail {
+		c.Infof("Waiting for deployer %q to become ready...\n", deployer.Name)
 		// err guarded by Validate()
 		timeout, _ := time.ParseDuration(opts.WaitTimeout)
 		err := race.Run(ctx, timeout,

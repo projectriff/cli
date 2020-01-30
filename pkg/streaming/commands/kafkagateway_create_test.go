@@ -222,6 +222,7 @@ Created kafka gateway "my-kafka-gateway"
 			},
 			ExpectOutput: `
 Created kafka gateway "franz"
+Waiting for kafka gateway "franz" to become ready...
 ...log output...
 KafkaGateway "franz" is ready
 `,
@@ -272,6 +273,7 @@ KafkaGateway "franz" is ready
 			},
 			ExpectOutput: `
 Created kafka gateway "franz"
+Waiting for kafka gateway "franz" to become ready...
 ...log output...
 Timeout after "7ms" waiting for "franz" to become ready
 To view status run: riff streaming kafka-gateway list --namespace default
@@ -326,6 +328,7 @@ To view status run: riff streaming kafka-gateway list --namespace default
 			ShouldError: true,
 			ExpectOutput: `
 Created kafka gateway "franz"
+Waiting for kafka gateway "franz" to become ready...
 `,
 		},
 	}
