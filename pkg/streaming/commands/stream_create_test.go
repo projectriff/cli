@@ -160,7 +160,6 @@ spec:
   contentType: ""
   gateway:
     name: test-gateway
-  provider: ""
 status:
   binding:
     metadataRef: {}

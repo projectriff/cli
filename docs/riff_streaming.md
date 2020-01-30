@@ -30,6 +30,7 @@ Functions can accept several input and/or output streams.
 ### SEE ALSO
 
 * [riff](riff.md)	 - riff is for functions
+* [riff streaming gateway](riff_streaming_gateway.md)	 - (experimental) stream gateway
 * [riff streaming inmemory-gateway](riff_streaming_inmemory-gateway.md)	 - (experimental) in-memory stream gateway
 * [riff streaming kafka-gateway](riff_streaming_kafka-gateway.md)	 - (experimental) kafka stream gateway
 * [riff streaming processor](riff_streaming_processor.md)	 - (experimental) processors apply functions to messages on streams
