@@ -38,9 +38,10 @@ Functions can accept several input and/or output streams.
 
 	cmd.AddCommand(NewStreamCommand(ctx, c))
 	cmd.AddCommand(NewProcessorCommand(ctx, c))
+	cmd.AddCommand(NewGatewayCommand(ctx, c))
+	cmd.AddCommand(NewInMemoryGatewayCommand(ctx, c))
 	cmd.AddCommand(NewKafkaGatewayCommand(ctx, c))
 	cmd.AddCommand(NewPulsarGatewayCommand(ctx, c))
-	cmd.AddCommand(NewInMemoryGatewayCommand(ctx, c))
 
 	return cmd
 }

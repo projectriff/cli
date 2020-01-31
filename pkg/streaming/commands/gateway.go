@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 the original author or authors.
+ * Copyright 2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,20 +24,19 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewInMemoryGatewayCommand(ctx context.Context, c *cli.Config) *cobra.Command {
+func NewGatewayCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "inmemory-gateway",
-		Short: "(experimental) in-memory stream gateway",
+		Use:   "gateway",
+		Short: "(experimental) stream gateway",
 		Long: strings.TrimSpace(`
-The in-memory gateway stores messages in memory.
+The gateway represents an abstract backing for streams. This resource is
+typically controlled by a specific gateway implication. It may be observed, but
+not directly managed.
 `),
-		Aliases: []string{"inmemory"},
 	}
 
-	cmd.AddCommand(NewInMemoryGatewayListCommand(ctx, c))
-	cmd.AddCommand(NewInMemoryGatewayCreateCommand(ctx, c))
-	cmd.AddCommand(NewInMemoryGatewayDeleteCommand(ctx, c))
-	cmd.AddCommand(NewInMemoryGatewayStatusCommand(ctx, c))
+	cmd.AddCommand(NewGatewayListCommand(ctx, c))
+	cmd.AddCommand(NewGatewayStatusCommand(ctx, c))
 
 	return cmd
 }
