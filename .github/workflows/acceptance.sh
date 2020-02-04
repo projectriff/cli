@@ -12,7 +12,7 @@ readonly slug=${version}-${git_timestamp}-${git_sha:0:16}
 # fetch FATS scripts
 fats_dir=`dirname "${BASH_SOURCE[0]}"`/fats
 fats_repo="projectriff/fats"
-fats_refspec=ccf572b7f6d5fbec8408e28d28e158b6818a3bf2 # master as of 2020-01-24
+fats_refspec=3d6cead12932026fdb933a1bb550cb7eca0a8def # master as of 2020-02-04
 source `dirname "${BASH_SOURCE[0]}"`/fats-fetch.sh $fats_dir $fats_refspec $fats_repo
 source $fats_dir/.util.sh
 
@@ -49,19 +49,19 @@ echo "Installing riff Build"
 kapp deploy -n apps -a riff-builders -f https://storage.googleapis.com/projectriff/release/${riff_release_version}/riff-builders.yaml -y
 kapp deploy -n apps -a riff-build -f https://storage.googleapis.com/projectriff/release/${riff_release_version}/riff-build.yaml -y
 
+echo "Installing Contour"
+ytt -f https://storage.googleapis.com/projectriff/release/${riff_release_version}/contour.yaml \
+  -f https://storage.googleapis.com/projectriff/charts/overlays/service-$(echo ${K8S_SERVICE_TYPE} | tr '[A-Z]' '[a-z]').yaml \
+  --file-mark contour.yaml:type=yaml-plain | kapp deploy -n apps -a contour -f - -y
+
 echo "Installing Core Runtime"
 kapp deploy -n apps -a riff-core-runtime -f https://storage.googleapis.com/projectriff/release/${riff_release_version}/riff-core-runtime.yaml -y
 
 echo "Installing Knative"
-ytt -f https://storage.googleapis.com/projectriff/release/${riff_release_version}/istio.yaml -f https://storage.googleapis.com/projectriff/charts/overlays/service-$(echo ${K8S_SERVICE_TYPE} | tr '[A-Z]' '[a-z]').yaml --file-mark istio.yaml:type=yaml-plain | kapp deploy -n apps -a istio -f - -y
 kapp deploy -n apps -a knative -f https://storage.googleapis.com/projectriff/release/${riff_release_version}/knative.yaml -y
 
 echo "Installing Knative Runtime"
 kapp deploy -n apps -a riff-knative-runtime -f https://storage.googleapis.com/projectriff/release/${riff_release_version}/riff-knative-runtime.yaml -y
-
-# health checks
-echo "Checking for ready ingress"
-wait_for_ingress_ready 'istio-ingressgateway' 'istio-system'
 
 # setup namespace
 kubectl create namespace $NAMESPACE
@@ -85,7 +85,10 @@ for test in command; do
     --ingress-policy External \
     --namespace $NAMESPACE \
     --tail
-  source $fats_dir/macros/invoke_core_deployer.sh "${name}" "${curl_opts}" "${expected_data}"
+  source $fats_dir/macros/invoke_contour.sh \
+    "$(kubectl get deployers.core.projectriff.io ${name} --namespace ${NAMESPACE} -ojsonpath='{.status.url}')" \
+    "${curl_opts}" \
+    "${expected_data}"
   riff core deployer delete $name --namespace $NAMESPACE
 
   riff knative deployer create $name \
@@ -93,7 +96,10 @@ for test in command; do
     --ingress-policy External \
     --namespace $NAMESPACE \
     --tail
-  source $fats_dir/macros/invoke_knative_deployer.sh "${name}" "${curl_opts}" "${expected_data}"
+  source $fats_dir/macros/invoke_contour.sh \
+    "$(kubectl get deployers.knative.projectriff.io ${name} --namespace ${NAMESPACE} -ojsonpath='{.status.url}')" \
+    "${curl_opts}" \
+    "${expected_data}"
   riff knative deployer delete $name --namespace $NAMESPACE
 
   riff function delete $name --namespace $NAMESPACE
@@ -119,7 +125,10 @@ if [ "$machine" != "MinGw" ]; then
       --ingress-policy External \
       --namespace $NAMESPACE \
       --tail
-    source $fats_dir/macros/invoke_core_deployer.sh "${name}" "${curl_opts}" "${expected_data}"
+    source $fats_dir/macros/invoke_contour.sh \
+      "$(kubectl get deployers.core.projectriff.io ${name} --namespace ${NAMESPACE} -ojsonpath='{.status.url}')" \
+      "${curl_opts}" \
+      "${expected_data}"
     riff core deployer delete $name --namespace $NAMESPACE
 
     riff knative deployer create $name \
@@ -127,7 +136,10 @@ if [ "$machine" != "MinGw" ]; then
       --ingress-policy External \
       --namespace $NAMESPACE \
       --tail
-    source $fats_dir/macros/invoke_knative_deployer.sh "${name}" "${curl_opts}" "${expected_data}"
+    source $fats_dir/macros/invoke_contour.sh \
+      "$(kubectl get deployers.knative.projectriff.io ${name} --namespace ${NAMESPACE} -ojsonpath='{.status.url}')" \
+      "${curl_opts}" \
+      "${expected_data}"
     riff knative deployer delete $name --namespace $NAMESPACE
 
     riff function delete $name --namespace $NAMESPACE

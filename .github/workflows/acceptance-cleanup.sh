@@ -17,8 +17,9 @@ if [ -d "$fats_dir" ]; then
 
   echo "Cleanup Knative"
   kapp delete -n apps -a knative -y
-  kapp delete -n apps -a istio -y
-  kubectl get customresourcedefinitions.apiextensions.k8s.io -oname | grep istio.io | xargs -L1 kubectl delete
+
+  echo "Cleanup Contour"
+  kapp delete -n apps -a contour -y
 
   echo "Cleanup riff Build"
   kapp delete -n apps -a riff-build -y
