@@ -11,13 +11,13 @@ require (
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/go-cmp v0.4.0
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/projectriff/system v0.0.0-20200130194255-5da2491e3c52
+	github.com/projectriff/system v0.0.0-20200204235724-6b14b4303135
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.6.2
 	github.com/stretchr/testify v1.4.0
-	golang.org/x/crypto v0.0.0-20190611184440-5c40567a22f8
-	k8s.io/api v0.16.4
-	k8s.io/apiextensions-apiserver v0.16.4
-	k8s.io/apimachinery v0.16.4
-	k8s.io/client-go v0.16.4
+	golang.org/x/crypto v0.0.0-20190820162420-60c769a6c586
+	k8s.io/api v0.17.2
+	k8s.io/apiextensions-apiserver v0.17.2
+	k8s.io/apimachinery v0.17.2
+	k8s.io/client-go v0.17.2
 )
