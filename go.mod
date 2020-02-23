@@ -14,7 +14,7 @@ require (
 	github.com/projectriff/system v0.5.0
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/viper v1.6.2
-	github.com/stretchr/testify v1.5.0
+	github.com/stretchr/testify v1.5.1
 	golang.org/x/crypto v0.0.0-20190820162420-60c769a6c586
 	k8s.io/api v0.17.3
 	k8s.io/apiextensions-apiserver v0.17.3
