@@ -26,8 +26,9 @@ import (
 func TestStreamingCommand(t *testing.T) {
 	table := rifftesting.CommandTable{
 		{
-			Name: "empty",
-			Args: []string{},
+			Name:        "empty",
+			Args:        []string{},
+			ShouldError: true,
 		},
 	}
 
