@@ -17,8 +17,10 @@
 package commands_test
 
 import (
+	"context"
 	"testing"
 
+	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/core/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 )
@@ -33,4 +35,24 @@ func TestCoreCommand(t *testing.T) {
 	}
 
 	table.Run(t, commands.NewCoreCommand)
+}
+
+func TestCoreAliasCommand(t *testing.T) {
+	config := cli.NewDefaultConfig()
+	context := context.TODO()
+
+	expected := []string{"c"}
+
+	result := commands.NewCoreCommand(context, config)
+
+	if len(result.Aliases) == 0 {
+		t.Errorf("NewCoreCommand failed, expected %v, got nothing", expected)
+	}
+
+	for i := range result.Aliases {
+		if result.Aliases[i] != expected[i] {
+			t.Errorf("NewCoreCommand failed, expected %v, got %v", expected[i], result.Aliases[i])
+		}
+	}
+
 }
