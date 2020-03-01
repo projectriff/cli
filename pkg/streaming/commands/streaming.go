@@ -26,8 +26,9 @@ import (
 
 func NewStreamingCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 	var cmd = &cobra.Command{
-		Use:   "streaming",
-		Short: "(experimental) streaming runtime for " + c.Name + " functions",
+		Use:     "streaming",
+		Aliases: []string{"s"},
+		Short:   "(experimental) streaming runtime for " + c.Name + " functions",
 		Long: strings.TrimSpace(`
 The streaming runtime uses ` + c.Name + ` functions, processor and stream custom resources
 to deploy streaming workloads. 

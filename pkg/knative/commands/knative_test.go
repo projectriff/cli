@@ -17,8 +17,10 @@
 package commands_test
 
 import (
+	"context"
 	"testing"
 
+	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/knative/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
 )
@@ -33,4 +35,23 @@ func TestKnativeCommand(t *testing.T) {
 	}
 
 	table.Run(t, commands.NewKnativeCommand)
+}
+
+func TestKnativeAliasCommand(t *testing.T) {
+	config := cli.NewDefaultConfig()
+	context := context.TODO()
+	expected := []string{"k"}
+
+	result := commands.NewKnativeCommand(context, config)
+
+	if len(result.Aliases) == 0 {
+		t.Errorf("NewKnativeCommand failed, expected %v, got nothing", expected)
+	}
+
+	for i := range result.Aliases {
+		if result.Aliases[i] != expected[i] {
+			t.Errorf("NewKnativeCommand failed, expected %v, got %v", expected[i], result.Aliases[i])
+		}
+	}
+
 }
