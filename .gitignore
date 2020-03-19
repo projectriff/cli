@@ -1,8 +1,6 @@
 # built artifacts
-/riff
-/riff.zip
-/riff-*.tgz
-/riff-*.zip
+/bin
+/dist
 
 # coverage artifacts
 /coverage.txt
