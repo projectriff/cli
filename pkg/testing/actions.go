@@ -49,8 +49,9 @@ func (l ActionRecorderList) ActionsByVerb() (Actions, error) {
 		for _, action := range recorder.Actions() {
 			switch action.GetVerb() {
 			case "get":
-				a.Gets = append(a.Gets,
-					action.(clientgotesting.GetAction))
+				if get, ok := action.(clientgotesting.GetAction); ok {
+					a.Gets = append(a.Gets, get)
+				}
 			case "create":
 				a.Creates = append(a.Creates,
 					action.(clientgotesting.CreateAction))

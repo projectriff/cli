@@ -17,6 +17,8 @@
 package k8s
 
 import (
+	bindingsclientset "github.com/projectriff/bindings/pkg/client/clientset/versioned"
+	bindingsv1alpha1 "github.com/projectriff/bindings/pkg/client/clientset/versioned/typed/bindings/v1alpha1"
 	projectriffclientset "github.com/projectriff/system/pkg/client/clientset/versioned"
 	buildv1alpha1 "github.com/projectriff/system/pkg/client/clientset/versioned/typed/build/v1alpha1"
 	corev1alpha1 "github.com/projectriff/system/pkg/client/clientset/versioned/typed/core/v1alpha1"
@@ -24,6 +26,7 @@ import (
 	streamv1alpha1 "github.com/projectriff/system/pkg/client/clientset/versioned/typed/streaming/v1alpha1"
 	apiextensionsclientset "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	apiextensionsv1beta1 "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1"
+	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/kubernetes"
 	authv1client "k8s.io/client-go/kubernetes/typed/authorization/v1"
 	corev1 "k8s.io/client-go/kubernetes/typed/core/v1"
@@ -35,8 +38,10 @@ type Client interface {
 	DefaultNamespace() string
 	KubeRestConfig() *rest.Config
 	Core() corev1.CoreV1Interface
+	Discovery() discovery.DiscoveryInterface
 	Auth() authv1client.AuthorizationV1Interface
 	APIExtension() apiextensionsv1beta1.ApiextensionsV1beta1Interface
+	Bindings() bindingsv1alpha1.BindingsV1alpha1Interface
 	Build() buildv1alpha1.BuildV1alpha1Interface
 	CoreRuntime() corev1alpha1.CoreV1alpha1Interface
 	StreamingRuntime() streamv1alpha1.StreamingV1alpha1Interface
@@ -55,12 +60,20 @@ func (c *client) Core() corev1.CoreV1Interface {
 	return c.lazyLoadKubernetesClientsetOrDie().CoreV1()
 }
 
+func (c *client) Discovery() discovery.DiscoveryInterface {
+	return c.lazyLoadKubernetesClientsetOrDie().Discovery()
+}
+
 func (c *client) Auth() authv1client.AuthorizationV1Interface {
 	return c.lazyLoadKubernetesClientsetOrDie().AuthorizationV1()
 }
 
 func (c *client) APIExtension() apiextensionsv1beta1.ApiextensionsV1beta1Interface {
 	return c.lazyLoadAPIExtensionsClientsetOrDie().ApiextensionsV1beta1()
+}
+
+func (c *client) Bindings() bindingsv1alpha1.BindingsV1alpha1Interface {
+	return c.lazyLoadBindingsClientsetOrDie().BindingsV1alpha1()
 }
 
 func (c *client) Build() buildv1alpha1.BuildV1alpha1Interface {
@@ -90,6 +103,7 @@ type client struct {
 	restConfig             *rest.Config
 	kubeClientset          *kubernetes.Clientset
 	apiExtensionsClientset *apiextensionsclientset.Clientset
+	bindingsClientset      *bindingsclientset.Clientset
 	riffClientset          *projectriffclientset.Clientset
 }
 
@@ -130,6 +144,14 @@ func (c *client) lazyLoadAPIExtensionsClientsetOrDie() *apiextensionsclientset.C
 	}
 	return c.apiExtensionsClientset
 
+}
+
+func (c *client) lazyLoadBindingsClientsetOrDie() *bindingsclientset.Clientset {
+	if c.riffClientset == nil {
+		restConfig := c.lazyLoadRestConfigOrDie()
+		c.bindingsClientset = bindingsclientset.NewForConfigOrDie(restConfig)
+	}
+	return c.bindingsClientset
 }
 
 func (c *client) lazyLoadRiffClientsetOrDie() *projectriffclientset.Clientset {
