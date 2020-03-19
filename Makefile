@@ -16,8 +16,8 @@ all: build test verify-goimports docs ## Build, test, verify source formatting a
 
 .PHONY: clean
 clean: ## Delete build output
-	rm -f bin/
-	rm -f dist/
+	rm -rf bin/
+	rm -rf dist/
 
 .PHONY: build
 build: $(OUTPUT) ## Build riff
@@ -51,6 +51,7 @@ $(OUTPUT): $(GO_SOURCES) VERSION
 
 .PHONY: release
 release: $(GO_SOURCES) VERSION ## Cross-compile riff for various operating systems
+	@mkdir -p dist
 	GOOS=darwin   GOARCH=amd64 go build -ldflags "$(LDFLAGS_VERSION)" -o $(OUTPUT)     ./cmd/riff && tar -czf dist/$(NAME)-darwin-amd64.tgz  $(OUTPUT)     && rm -f $(OUTPUT)
 	GOOS=linux    GOARCH=amd64 go build -ldflags "$(LDFLAGS_VERSION)" -o $(OUTPUT)     ./cmd/riff && tar -czf dist/$(NAME)-linux-amd64.tgz   $(OUTPUT)     && rm -f $(OUTPUT)
 	GOOS=windows  GOARCH=amd64 go build -ldflags "$(LDFLAGS_VERSION)" -o $(OUTPUT).exe ./cmd/riff && zip -mq  dist/$(NAME)-windows-amd64.zip $(OUTPUT).exe && rm -f $(OUTPUT).exe
