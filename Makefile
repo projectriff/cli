@@ -52,9 +52,9 @@ $(OUTPUT): $(GO_SOURCES) VERSION
 .PHONY: release
 release: $(GO_SOURCES) VERSION ## Cross-compile riff for various operating systems
 	@mkdir -p dist
-	GOOS=darwin   GOARCH=amd64 go build -ldflags "$(LDFLAGS_VERSION)" -o $(OUTPUT)     ./cmd/riff && tar -czf dist/$(NAME)-darwin-amd64.tgz  $(OUTPUT)     && rm -f $(OUTPUT)
-	GOOS=linux    GOARCH=amd64 go build -ldflags "$(LDFLAGS_VERSION)" -o $(OUTPUT)     ./cmd/riff && tar -czf dist/$(NAME)-linux-amd64.tgz   $(OUTPUT)     && rm -f $(OUTPUT)
-	GOOS=windows  GOARCH=amd64 go build -ldflags "$(LDFLAGS_VERSION)" -o $(OUTPUT).exe ./cmd/riff && zip -mq  dist/$(NAME)-windows-amd64.zip $(OUTPUT).exe && rm -f $(OUTPUT).exe
+	GOOS=darwin   GOARCH=amd64 go build -ldflags "$(LDFLAGS_VERSION)" -o $(OUTPUT)     ./cmd/riff && tar -czf dist/$(NAME)-darwin-amd64.tgz  -C bin . && rm -f $(OUTPUT)
+	GOOS=linux    GOARCH=amd64 go build -ldflags "$(LDFLAGS_VERSION)" -o $(OUTPUT)     ./cmd/riff && tar -czf dist/$(NAME)-linux-amd64.tgz   -C bin . && rm -f $(OUTPUT)
+	GOOS=windows  GOARCH=amd64 go build -ldflags "$(LDFLAGS_VERSION)" -o $(OUTPUT).exe ./cmd/riff && zip -rj  dist/$(NAME)-windows-amd64.zip    bin   && rm -f $(OUTPUT).exe
 
 docs: $(OUTPUT) clean-docs ## Generate documentation
 	$(OUTPUT) docs
