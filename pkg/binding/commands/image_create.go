@@ -32,8 +32,8 @@ import (
 type ImageCreateOptions struct {
 	options.ResourceOptions
 
-	Subject   string
-	Providers []string
+	Subject  string
+	Provider string
 
 	DryRun bool
 }
@@ -53,13 +53,8 @@ func (opts *ImageCreateOptions) Validate(ctx context.Context) cli.FieldErrors {
 		errs = errs.Also(cli.ErrInvalidValue(opts.Subject, cli.SubjectFlagName))
 	}
 
-	if len(opts.Providers) == 0 {
-		errs = errs.Also(cli.ErrMissingField(cli.ProvidersFlagName))
-	}
-	for i := range opts.Providers {
-		if chunks := strings.Split(opts.Providers[i], ":"); len(chunks) != 3 {
-			errs = errs.Also(cli.ErrInvalidValue(opts.Providers[i], cli.CurrentField).ViaFieldIndex(cli.ProvidersFlagName, i))
-		}
+	if chunks := strings.Split(opts.Provider, ":"); len(chunks) != 3 {
+		errs = errs.Also(cli.ErrInvalidValue(opts.Provider, cli.ProviderFlagName))
 	}
 
 	return errs
@@ -72,7 +67,7 @@ func (opts *ImageCreateOptions) Exec(ctx context.Context, c *cli.Config) error {
 			Name:      opts.Name,
 		},
 		Spec: bindingsv1alpha1.ImageBindingSpec{
-			Providers: make([]bindingsv1alpha1.ImageProvider, len(opts.Providers)),
+			Providers: make([]bindingsv1alpha1.ImageProvider, 1),
 		},
 	}
 
@@ -81,22 +76,20 @@ func (opts *ImageCreateOptions) Exec(ctx context.Context, c *cli.Config) error {
 		return err
 	}
 
-	for i := range opts.Providers {
-		apiVersion, kind, name, container, err := opts.ResolveObjectRef(resources, opts.Providers[i])
-		if err != nil {
-			return err
-		}
-		image.Spec.Providers[i] = bindingsv1alpha1.ImageProvider{
-			ImageableRef: &tracker.Reference{
-				APIVersion: apiVersion,
-				Kind:       kind,
-				Namespace:  opts.Namespace,
-				Name:       name,
-			},
-			ContainerName: container,
-		}
+	apiVersion, kind, name, container, err := opts.ResolveObjectRef(resources, opts.Provider)
+	if err != nil {
+		return err
 	}
-	apiVersion, kind, name, _, err := opts.ResolveObjectRef(resources, opts.Subject)
+	image.Spec.Providers[0] = bindingsv1alpha1.ImageProvider{
+		ImageableRef: &tracker.Reference{
+			APIVersion: apiVersion,
+			Kind:       kind,
+			Namespace:  opts.Namespace,
+			Name:       name,
+		},
+		ContainerName: container,
+	}
+	apiVersion, kind, name, _, err = opts.ResolveObjectRef(resources, opts.Subject)
 	if err != nil {
 		return err
 	}
@@ -173,7 +166,7 @@ Create an image binding.
 
 	cli.NamespaceFlag(cmd, c, &opts.Namespace)
 	cmd.Flags().StringVar(&opts.Subject, cli.StripDash(cli.SubjectFlagName), "", "subject `object reference` to inject images into")
-	cmd.Flags().StringArrayVar(&opts.Providers, cli.StripDash(cli.ProvidersFlagName), []string{}, "provider `object reference` to get images from per container")
+	cmd.Flags().StringVar(&opts.Provider, cli.StripDash(cli.ProviderFlagName), "", "provider `object reference` to get images from")
 	cmd.Flags().BoolVar(&opts.DryRun, cli.StripDash(cli.DryRunFlagName), false, "print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr")
 
 	return cmd

@@ -25,11 +25,11 @@ riff binding image create my-image-binding
 ### Options
 
 ```
-      --dry-run                      print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr
-  -h, --help                         help for create
-  -n, --namespace name               kubernetes namespace (defaulted from kube config)
-      --providers object reference   provider object reference to get images from per container
-      --subject object reference     subject object reference to inject images into
+      --dry-run                     print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr
+  -h, --help                        help for create
+  -n, --namespace name              kubernetes namespace (defaulted from kube config)
+      --provider object reference   provider object reference to get images from
+      --subject object reference    subject object reference to inject images into
 ```
 
 ### Options inherited from parent commands

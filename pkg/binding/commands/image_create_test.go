@@ -39,7 +39,7 @@ func TestImageBindingCreateOptions(t *testing.T) {
 			},
 			ExpectFieldErrors: rifftesting.InvalidResourceOptionsFieldError.Also(
 				cli.ErrInvalidValue("", cli.SubjectFlagName),
-				cli.ErrMissingField(cli.ProvidersFlagName),
+				cli.ErrInvalidValue("", cli.ProviderFlagName),
 			),
 		},
 		{
@@ -47,7 +47,7 @@ func TestImageBindingCreateOptions(t *testing.T) {
 			Options: &commands.ImageCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Subject:         "deployment:my-deployment",
-				Providers:       []string{"function:my-function:user-container"},
+				Provider:        "function:my-function:user-container",
 			},
 			ShouldValidate: true,
 		},
@@ -56,7 +56,7 @@ func TestImageBindingCreateOptions(t *testing.T) {
 			Options: &commands.ImageCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Subject:         "foo",
-				Providers:       []string{"function:my-function:user-container"},
+				Provider:        "function:my-function:user-container",
 			},
 			ExpectFieldErrors: cli.ErrInvalidValue("foo", cli.SubjectFlagName),
 		},
@@ -65,9 +65,9 @@ func TestImageBindingCreateOptions(t *testing.T) {
 			Options: &commands.ImageCreateOptions{
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Subject:         "deployment:my-deployment",
-				Providers:       []string{"foo"},
+				Provider:        "foo",
 			},
-			ExpectFieldErrors: cli.ErrInvalidValue("foo", cli.CurrentField).ViaFieldIndex(cli.ProvidersFlagName, 0),
+			ExpectFieldErrors: cli.ErrInvalidValue("foo", cli.ProviderFlagName),
 		},
 	}
 
@@ -89,7 +89,7 @@ func TestImageBindingCreateCommand(t *testing.T) {
 		},
 		{
 			Name: "create",
-			Args: []string{imageBindingName, cli.SubjectFlagName, "deployments.apps:my-deployment", cli.ProvidersFlagName, "functions.build.projectriff.io:my-function:user-container"},
+			Args: []string{imageBindingName, cli.SubjectFlagName, "deployments.apps:my-deployment", cli.ProviderFlagName, "functions.build.projectriff.io:my-function:user-container"},
 			Prepare: func(t *testing.T, ctx context.Context, config *cli.Config) (context.Context, error) {
 				discovery := config.Client.Discovery().(*fakediscovery.FakeDiscovery)
 				addTestDiscoveryResources(discovery)
@@ -133,7 +133,7 @@ Created image binding "my-image-binding"
 		},
 		{
 			Name: "create, dry run",
-			Args: []string{imageBindingName, cli.SubjectFlagName, "deployments.apps:my-deployment", cli.ProvidersFlagName, "functions.build.projectriff.io:my-function:user-container", cli.DryRunFlagName},
+			Args: []string{imageBindingName, cli.SubjectFlagName, "deployments.apps:my-deployment", cli.ProviderFlagName, "functions.build.projectriff.io:my-function:user-container", cli.DryRunFlagName},
 			Prepare: func(t *testing.T, ctx context.Context, config *cli.Config) (context.Context, error) {
 				discovery := config.Client.Discovery().(*fakediscovery.FakeDiscovery)
 				addTestDiscoveryResources(discovery)
@@ -172,7 +172,7 @@ Created image binding "my-image-binding"
 		},
 		{
 			Name: "create, unknown subject",
-			Args: []string{imageBindingName, cli.SubjectFlagName, "foo:my-foo", cli.ProvidersFlagName, "functions.build.projectriff.io:my-function:user-container"},
+			Args: []string{imageBindingName, cli.SubjectFlagName, "foo:my-foo", cli.ProviderFlagName, "functions.build.projectriff.io:my-function:user-container"},
 			Prepare: func(t *testing.T, ctx context.Context, config *cli.Config) (context.Context, error) {
 				discovery := config.Client.Discovery().(*fakediscovery.FakeDiscovery)
 				addTestDiscoveryResources(discovery)
@@ -187,7 +187,7 @@ Created image binding "my-image-binding"
 		},
 		{
 			Name: "error existing image binding",
-			Args: []string{imageBindingName, cli.SubjectFlagName, "deployments.apps:my-deployment", cli.ProvidersFlagName, "functions.build.projectriff.io:my-function:user-container"},
+			Args: []string{imageBindingName, cli.SubjectFlagName, "deployments.apps:my-deployment", cli.ProviderFlagName, "functions.build.projectriff.io:my-function:user-container"},
 			Prepare: func(t *testing.T, ctx context.Context, config *cli.Config) (context.Context, error) {
 				discovery := config.Client.Discovery().(*fakediscovery.FakeDiscovery)
 				addTestDiscoveryResources(discovery)
@@ -237,7 +237,7 @@ Created image binding "my-image-binding"
 		},
 		{
 			Name: "error during create",
-			Args: []string{imageBindingName, cli.SubjectFlagName, "deployments.apps:my-deployment", cli.ProvidersFlagName, "functions.build.projectriff.io:my-function:user-container"},
+			Args: []string{imageBindingName, cli.SubjectFlagName, "deployments.apps:my-deployment", cli.ProviderFlagName, "functions.build.projectriff.io:my-function:user-container"},
 			WithReactors: []rifftesting.ReactionFunc{
 				rifftesting.InduceFailure("create", "imagebindings"),
 			},

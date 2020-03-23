@@ -60,7 +60,7 @@ const (
 	NamespaceFlagName             = "--namespace"
 	NoColorFlagName               = "--no-color"
 	OutputFlagName                = "--output"
-	ProvidersFlagName             = "--providers"
+	ProviderFlagName              = "--provider"
 	RegistryFlagName              = "--registry"
 	RegistryUserFlagName          = "--registry-user"
 	ServiceRefFlagName            = "--service-ref"
