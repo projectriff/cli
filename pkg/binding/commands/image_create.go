@@ -29,6 +29,19 @@ import (
 	"knative.dev/pkg/tracker"
 )
 
+// this should go away once we can properly resolve shortnames and partial names
+// from the server
+var resourceShortNames = map[string]string{
+	"deployment":  "deployments.apps",
+	"deployments": "deployments.apps",
+	"ksvc":        "services.serving.knative.dev",
+	"image":       "images.build.pivotal.io",
+	"function":    "functions.build.projectriff.io",
+	"application": "applications.build.pivotal.io",
+	"container":   "containers.build.pivotal.io",
+	// add more, but only if we expect it to resolve via `kubectl get foo`
+}
+
 type ImageCreateOptions struct {
 	options.ResourceOptions
 
@@ -121,10 +134,16 @@ func (opts *ImageCreateOptions) Exec(ctx context.Context, c *cli.Config) error {
 func (opts *ImageCreateOptions) ResolveObjectRef(resources []*metav1.APIResourceList, ref string) (apiVersion, kind, name string, err error) {
 	chunks := strings.Split(ref, ":")
 
+	resource := chunks[0]
 	name = chunks[1]
 
+	// TODO replace static lookup by resolving short names from the resources metadata
+	if r, ok := resourceShortNames[resource]; ok {
+		resource = r
+	}
+
 	// tease out apiVersion and kind
-	target := fmt.Sprintf("%s/", chunks[0])
+	target := fmt.Sprintf("%s/", resource)
 	for _, rl := range resources {
 		for _, r := range rl.APIResources {
 			fullname := fmt.Sprintf("%s.%s", r.Name, rl.GroupVersion)
@@ -136,7 +155,7 @@ func (opts *ImageCreateOptions) ResolveObjectRef(resources []*metav1.APIResource
 		}
 	}
 
-	err = fmt.Errorf("the server doesn't have a resource type %q", target)
+	err = fmt.Errorf("the server doesn't have a resource type %q", resource)
 	return
 }
 
