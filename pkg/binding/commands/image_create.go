@@ -32,8 +32,9 @@ import (
 type ImageCreateOptions struct {
 	options.ResourceOptions
 
-	Subject  string
-	Provider string
+	Subject       string
+	Provider      string
+	ContainerName string
 
 	DryRun bool
 }
@@ -53,8 +54,12 @@ func (opts *ImageCreateOptions) Validate(ctx context.Context) cli.FieldErrors {
 		errs = errs.Also(cli.ErrInvalidValue(opts.Subject, cli.SubjectFlagName))
 	}
 
-	if chunks := strings.Split(opts.Provider, ":"); len(chunks) != 3 {
+	if chunks := strings.Split(opts.Provider, ":"); len(chunks) != 2 {
 		errs = errs.Also(cli.ErrInvalidValue(opts.Provider, cli.ProviderFlagName))
+	}
+
+	if opts.ContainerName == "" {
+		errs = errs.Also(cli.ErrInvalidValue(opts.ContainerName, cli.ContainerNameFlagName))
 	}
 
 	return errs
@@ -76,7 +81,7 @@ func (opts *ImageCreateOptions) Exec(ctx context.Context, c *cli.Config) error {
 		return err
 	}
 
-	apiVersion, kind, name, container, err := opts.ResolveObjectRef(resources, opts.Provider)
+	apiVersion, kind, name, err := opts.ResolveObjectRef(resources, opts.Provider)
 	if err != nil {
 		return err
 	}
@@ -87,9 +92,9 @@ func (opts *ImageCreateOptions) Exec(ctx context.Context, c *cli.Config) error {
 			Namespace:  opts.Namespace,
 			Name:       name,
 		},
-		ContainerName: container,
+		ContainerName: opts.ContainerName,
 	}
-	apiVersion, kind, name, _, err = opts.ResolveObjectRef(resources, opts.Subject)
+	apiVersion, kind, name, err = opts.ResolveObjectRef(resources, opts.Subject)
 	if err != nil {
 		return err
 	}
@@ -113,13 +118,10 @@ func (opts *ImageCreateOptions) Exec(ctx context.Context, c *cli.Config) error {
 	return nil
 }
 
-func (opts *ImageCreateOptions) ResolveObjectRef(resources []*metav1.APIResourceList, ref string) (apiVersion, kind, name, container string, err error) {
+func (opts *ImageCreateOptions) ResolveObjectRef(resources []*metav1.APIResourceList, ref string) (apiVersion, kind, name string, err error) {
 	chunks := strings.Split(ref, ":")
 
 	name = chunks[1]
-	if len(chunks) > 2 {
-		container = chunks[2]
-	}
 
 	// tease out apiVersion and kind
 	target := fmt.Sprintf("%s/", chunks[0])
@@ -167,6 +169,7 @@ Create an image binding.
 	cli.NamespaceFlag(cmd, c, &opts.Namespace)
 	cmd.Flags().StringVar(&opts.Subject, cli.StripDash(cli.SubjectFlagName), "", "subject `object reference` to inject images into")
 	cmd.Flags().StringVar(&opts.Provider, cli.StripDash(cli.ProviderFlagName), "", "provider `object reference` to get images from")
+	cmd.Flags().StringVar(&opts.ContainerName, cli.StripDash(cli.ContainerNameFlagName), "", "`container` in the subject to inject into")
 	cmd.Flags().BoolVar(&opts.DryRun, cli.StripDash(cli.DryRunFlagName), false, "print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr")
 
 	return cmd

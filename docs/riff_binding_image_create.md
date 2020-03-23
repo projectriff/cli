@@ -25,6 +25,7 @@ riff binding image create my-image-binding
 ### Options
 
 ```
+      --container-name container    container in the subject to inject into
       --dry-run                     print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr
   -h, --help                        help for create
   -n, --namespace name              kubernetes namespace (defaulted from kube config)

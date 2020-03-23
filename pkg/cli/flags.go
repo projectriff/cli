@@ -30,6 +30,7 @@ const (
 	BootstrapServersFlagName      = "--bootstrap-servers"
 	CacheSizeFlagName             = "--cache-size"
 	ContainerConcurrencyFlagName  = "--container-concurrency"
+	ContainerNameFlagName         = "--container-name"
 	ConfigFlagName                = "--config"
 	ConfigurationRefFlagName      = "--configuration-ref"
 	ContainerRefFlagName          = "--container-ref"
