@@ -79,43 +79,30 @@ func (opts *ImageCreateOptions) Validate(ctx context.Context) cli.FieldErrors {
 }
 
 func (opts *ImageCreateOptions) Exec(ctx context.Context, c *cli.Config) error {
+	resources, err := c.Discovery().ServerResources()
+	if err != nil {
+		return err
+	}
+
+	provider, err := opts.ResolveObjectRef(resources, opts.Provider)
+	if err != nil {
+		return err
+	}
+	subject, err := opts.ResolveObjectRef(resources, opts.Subject)
+	if err != nil {
+		return err
+	}
+
 	image := &bindingsv1alpha1.ImageBinding{
 		ObjectMeta: metav1.ObjectMeta{
 			Namespace: opts.Namespace,
 			Name:      opts.Name,
 		},
 		Spec: bindingsv1alpha1.ImageBindingSpec{
-			Providers: make([]bindingsv1alpha1.ImageProvider, 1),
+			ContainerName: opts.ContainerName,
+			Provider:      provider,
+			Subject:       subject,
 		},
-	}
-
-	resources, err := c.Discovery().ServerResources()
-	if err != nil {
-		return err
-	}
-
-	apiVersion, kind, name, err := opts.ResolveObjectRef(resources, opts.Provider)
-	if err != nil {
-		return err
-	}
-	image.Spec.Providers[0] = bindingsv1alpha1.ImageProvider{
-		ImageableRef: &tracker.Reference{
-			APIVersion: apiVersion,
-			Kind:       kind,
-			Namespace:  opts.Namespace,
-			Name:       name,
-		},
-		ContainerName: opts.ContainerName,
-	}
-	apiVersion, kind, name, err = opts.ResolveObjectRef(resources, opts.Subject)
-	if err != nil {
-		return err
-	}
-	image.Spec.Subject = &tracker.Reference{
-		APIVersion: apiVersion,
-		Kind:       kind,
-		Namespace:  opts.Namespace,
-		Name:       name,
 	}
 
 	if opts.DryRun {
@@ -131,11 +118,11 @@ func (opts *ImageCreateOptions) Exec(ctx context.Context, c *cli.Config) error {
 	return nil
 }
 
-func (opts *ImageCreateOptions) ResolveObjectRef(resources []*metav1.APIResourceList, ref string) (apiVersion, kind, name string, err error) {
+func (opts *ImageCreateOptions) ResolveObjectRef(resources []*metav1.APIResourceList, ref string) (*tracker.Reference, error) {
 	chunks := strings.Split(ref, ":")
 
 	resource := chunks[0]
-	name = chunks[1]
+	name := chunks[1]
 
 	// TODO replace static lookup by resolving short names from the resources metadata
 	if r, ok := resourceShortNames[resource]; ok {
@@ -143,20 +130,22 @@ func (opts *ImageCreateOptions) ResolveObjectRef(resources []*metav1.APIResource
 	}
 
 	// tease out apiVersion and kind
-	target := fmt.Sprintf("%s/", resource)
+	targetPrefix := fmt.Sprintf("%s/", resource)
 	for _, rl := range resources {
 		for _, r := range rl.APIResources {
 			fullname := fmt.Sprintf("%s.%s", r.Name, rl.GroupVersion)
-			if strings.HasPrefix(fullname, target) {
-				apiVersion = rl.GroupVersion
-				kind = r.Kind
-				return
+			if strings.HasPrefix(fullname, targetPrefix) {
+				return &tracker.Reference{
+					APIVersion: rl.GroupVersion,
+					Kind:       r.Kind,
+					Namespace:  opts.Namespace,
+					Name:       name,
+				}, nil
 			}
 		}
 	}
 
-	err = fmt.Errorf("the server doesn't have a resource type %q", resource)
-	return
+	return nil, fmt.Errorf("the server doesn't have a resource type %q", resource)
 }
 
 func (opts *ImageCreateOptions) IsDryRun() bool {

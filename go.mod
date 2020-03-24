@@ -17,7 +17,7 @@ require (
 	github.com/markbates/inflect v1.0.4 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/openzipkin/zipkin-go v0.2.2 // indirect
-	github.com/projectriff/bindings v0.0.0-20200318195709-9163212c16f7
+	github.com/projectriff/bindings v0.0.0-20200324142740-31ff49b9aed9
 	github.com/projectriff/system v0.0.0-20200204235724-6b14b4303135
 	github.com/spf13/cobra v0.0.6
 	github.com/spf13/viper v1.6.2

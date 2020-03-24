@@ -117,17 +117,13 @@ func TestImageBindingCreateCommand(t *testing.T) {
 							Namespace:  defaultNamespace,
 							Name:       deploymentName,
 						},
-						Providers: []bindingsv1alpha1.ImageProvider{
-							{
-								ImageableRef: &tracker.Reference{
-									APIVersion: "build.projectriff.io/v1alpha1",
-									Kind:       "Function",
-									Namespace:  defaultNamespace,
-									Name:       functionName,
-								},
-								ContainerName: containerName,
-							},
+						Provider: &tracker.Reference{
+							APIVersion: "build.projectriff.io/v1alpha1",
+							Kind:       "Function",
+							Namespace:  defaultNamespace,
+							Name:       functionName,
 						},
+						ContainerName: containerName,
 					},
 				},
 			},
@@ -157,13 +153,12 @@ metadata:
   name: my-image-binding
   namespace: default
 spec:
-  providers:
-  - containerName: user-container
-    imageableRef:
-      apiVersion: build.projectriff.io/v1alpha1
-      kind: Function
-      name: my-function
-      namespace: default
+  containerName: user-container
+  provider:
+    apiVersion: build.projectriff.io/v1alpha1
+    kind: Function
+    name: my-function
+    namespace: default
   subject:
     apiVersion: apps/v1
     kind: Deployment
@@ -223,17 +218,13 @@ Created image binding "my-image-binding"
 							Namespace:  defaultNamespace,
 							Name:       deploymentName,
 						},
-						Providers: []bindingsv1alpha1.ImageProvider{
-							{
-								ImageableRef: &tracker.Reference{
-									APIVersion: "build.projectriff.io/v1alpha1",
-									Kind:       "Function",
-									Namespace:  defaultNamespace,
-									Name:       functionName,
-								},
-								ContainerName: containerName,
-							},
+						Provider: &tracker.Reference{
+							APIVersion: "build.projectriff.io/v1alpha1",
+							Kind:       "Function",
+							Namespace:  defaultNamespace,
+							Name:       functionName,
 						},
+						ContainerName: containerName,
 					},
 				},
 			},
@@ -268,17 +259,13 @@ Created image binding "my-image-binding"
 							Namespace:  defaultNamespace,
 							Name:       deploymentName,
 						},
-						Providers: []bindingsv1alpha1.ImageProvider{
-							{
-								ImageableRef: &tracker.Reference{
-									APIVersion: "build.projectriff.io/v1alpha1",
-									Kind:       "Function",
-									Namespace:  defaultNamespace,
-									Name:       functionName,
-								},
-								ContainerName: containerName,
-							},
+						Provider: &tracker.Reference{
+							APIVersion: "build.projectriff.io/v1alpha1",
+							Kind:       "Function",
+							Namespace:  defaultNamespace,
+							Name:       functionName,
 						},
+						ContainerName: containerName,
 					},
 				},
 			},

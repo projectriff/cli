@@ -87,8 +87,8 @@ No image bindings found.
 				},
 			},
 			ExpectOutput: `
-NAME                 SUBJECT   PROVIDERS   STATUS      AGE
-test-image-binding   <empty>   <empty>     <unknown>   <unknown>
+NAME                 SUBJECT   PROVIDERS   CONTAINER NAME   STATUS      AGE
+test-image-binding   <empty>   <empty>     <empty>          <unknown>   <unknown>
 `,
 		},
 		{
@@ -124,9 +124,9 @@ No image bindings found.
 				},
 			},
 			ExpectOutput: `
-NAMESPACE         NAME                       SUBJECT   PROVIDERS   STATUS      AGE
-default           test-image-binding         <empty>   <empty>     <unknown>   <unknown>
-other-namespace   test-other-image-binding   <empty>   <empty>     <unknown>   <unknown>
+NAMESPACE         NAME                       SUBJECT   PROVIDERS   CONTAINER NAME   STATUS      AGE
+default           test-image-binding         <empty>   <empty>     <empty>          <unknown>   <unknown>
+other-namespace   test-other-image-binding   <empty>   <empty>     <empty>          <unknown>   <unknown>
 `,
 		},
 		{
@@ -145,17 +145,13 @@ other-namespace   test-other-image-binding   <empty>   <empty>     <unknown>   <
 							Namespace:  "default",
 							Name:       "my-deployment",
 						},
-						Providers: []bindingsv1alpha1.ImageProvider{
-							{
-								ImageableRef: &tracker.Reference{
-									APIVersion: "build.projectriff.io/v1alpha1",
-									Kind:       "Function",
-									Namespace:  "default",
-									Name:       "my-function",
-								},
-								ContainerName: "user-container",
-							},
+						Provider: &tracker.Reference{
+							APIVersion: "build.projectriff.io/v1alpha1",
+							Kind:       "Function",
+							Namespace:  "default",
+							Name:       "my-function",
 						},
+						ContainerName: "user-container",
 					},
 					Status: bindingsv1alpha1.ImageBindingStatus{
 						Status: duckv1beta1.Status{
@@ -167,8 +163,8 @@ other-namespace   test-other-image-binding   <empty>   <empty>     <unknown>   <
 				},
 			},
 			ExpectOutput: `
-NAME                 SUBJECT                          PROVIDERS                                                   STATUS   AGE
-test-image-binding   deployments.apps:my-deployment   functions.build.projectriff.io:my-function:user-container   Ready    <unknown>
+NAME                 SUBJECT                          PROVIDERS                                    CONTAINER NAME   STATUS   AGE
+test-image-binding   deployments.apps:my-deployment   functions.build.projectriff.io:my-function   user-container   Ready    <unknown>
 `,
 		},
 		{

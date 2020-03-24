@@ -124,18 +124,18 @@ func (opts *ImageListOptions) print(image *bindingsv1alpha1.ImageBinding, _ prin
 		condition = &knapis.Condition{}
 	}
 	// TODO use discovery client to get resource names for group/kind
-	var subject string
+	var subject, provider string
 	if image.Spec.Subject != nil {
 		subject = fmt.Sprintf("%ss.%s:%s", strings.ToLower(image.Spec.Subject.Kind), strings.Split(image.Spec.Subject.APIVersion, "/")[0], image.Spec.Subject.Name)
 	}
-	providers := []string{}
-	for _, p := range image.Spec.Providers {
-		providers = append(providers, fmt.Sprintf("%ss.%s:%s:%s", strings.ToLower(p.ImageableRef.Kind), strings.Split(p.ImageableRef.APIVersion, "/")[0], p.ImageableRef.Name, p.ContainerName))
+	if image.Spec.Provider != nil {
+		provider = fmt.Sprintf("%ss.%s:%s", strings.ToLower(image.Spec.Provider.Kind), strings.Split(image.Spec.Provider.APIVersion, "/")[0], image.Spec.Provider.Name)
 	}
 	row.Cells = append(row.Cells,
 		image.Name,
 		cli.FormatEmptyString(subject),
-		cli.FormatEmptyString(strings.Join(providers, ", ")),
+		cli.FormatEmptyString(provider),
+		cli.FormatEmptyString(image.Spec.ContainerName),
 		cli.FormatConditionStatus(&apis.Condition{
 			Type:   apis.ConditionReady,
 			Reason: condition.Reason,
@@ -151,6 +151,7 @@ func (opts *ImageListOptions) printColumns() []metav1beta1.TableColumnDefinition
 		{Name: "Name", Type: "string"},
 		{Name: "Subject", Type: "string"},
 		{Name: "Providers", Type: "string"},
+		{Name: "Container Name", Type: "string"},
 		{Name: "Status", Type: "string"},
 		{Name: "Age", Type: "string"},
 	}

@@ -583,6 +583,8 @@ github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZN
 github.com/pquerna/cachecontrol v0.0.0-20171018203845-0dec1b30a021/go.mod h1:prYjPmNq4d1NPVmpShWobRqXY3q7Vp+80DqgxxUrUIA=
 github.com/projectriff/bindings v0.0.0-20200318195709-9163212c16f7 h1:JL9I2fRFy98tVh3nMPwPDEfC5ERCRI8dL4rxzGsmXpw=
 github.com/projectriff/bindings v0.0.0-20200318195709-9163212c16f7/go.mod h1:782FqadC162KDdoL9fW1/AS2HocHiHE2WlOQ4ICgkJI=
+github.com/projectriff/bindings v0.0.0-20200324142740-31ff49b9aed9 h1:zjIaWx1a/GDUyb9NtX1I5zxJWr0MctES8+5wyOAEzB0=
+github.com/projectriff/bindings v0.0.0-20200324142740-31ff49b9aed9/go.mod h1:782FqadC162KDdoL9fW1/AS2HocHiHE2WlOQ4ICgkJI=
 github.com/projectriff/system v0.0.0-20200204235724-6b14b4303135 h1:qHrwoZLfMyFTz7lC8fTAAxkW8OrqpRbBrVAIB9HlA6c=
 github.com/projectriff/system v0.0.0-20200204235724-6b14b4303135/go.mod h1:BwwoPLg8KT9CTmWSaI1QU62FzBrD7wc97PTmbVSKKEs=
 github.com/projectriff/system v0.5.0 h1:BEVMhKLSxYD8X3E71AncjfcTZnfIb6jttmZsKn4SnI4=
