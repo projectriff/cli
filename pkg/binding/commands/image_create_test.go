@@ -83,6 +83,7 @@ func TestImageBindingCreateCommand(t *testing.T) {
 	imageBindingName := "my-image-binding"
 	functionName := "my-function"
 	deploymentName := "my-deployment"
+	serviceName := "my-service"
 	containerName := "user-container"
 
 	table := rifftesting.CommandTable{
@@ -116,6 +117,46 @@ func TestImageBindingCreateCommand(t *testing.T) {
 							Kind:       "Deployment",
 							Namespace:  defaultNamespace,
 							Name:       deploymentName,
+						},
+						Provider: &tracker.Reference{
+							APIVersion: "build.projectriff.io/v1alpha1",
+							Kind:       "Function",
+							Namespace:  defaultNamespace,
+							Name:       functionName,
+						},
+						ContainerName: containerName,
+					},
+				},
+			},
+			ExpectOutput: `
+Created image binding "my-image-binding"
+`,
+		},
+		{
+			Name: "create, short names",
+			Args: []string{imageBindingName, cli.SubjectFlagName, "ksvc:my-service", cli.ProviderFlagName, "function:my-function", cli.ContainerNameFlagName, containerName},
+			Prepare: func(t *testing.T, ctx context.Context, config *cli.Config) (context.Context, error) {
+				discovery := config.Client.Discovery().(*fakediscovery.FakeDiscovery)
+				addTestDiscoveryResources(discovery)
+				return ctx, nil
+			},
+			CleanUp: func(t *testing.T, ctx context.Context, config *cli.Config) error {
+				discovery := config.Client.Discovery().(*fakediscovery.FakeDiscovery)
+				discovery.Resources = []*metav1.APIResourceList{}
+				return nil
+			},
+			ExpectCreates: []runtime.Object{
+				&bindingsv1alpha1.ImageBinding{
+					ObjectMeta: metav1.ObjectMeta{
+						Namespace: defaultNamespace,
+						Name:      imageBindingName,
+					},
+					Spec: bindingsv1alpha1.ImageBindingSpec{
+						Subject: &tracker.Reference{
+							APIVersion: "serving.knative.dev/v1",
+							Kind:       "Service",
+							Namespace:  defaultNamespace,
+							Name:       serviceName,
 						},
 						Provider: &tracker.Reference{
 							APIVersion: "build.projectriff.io/v1alpha1",
@@ -293,6 +334,15 @@ func addTestDiscoveryResources(discovery *fakediscovery.FakeDiscovery) {
 				{
 					Name: "functions",
 					Kind: "Function",
+				},
+			},
+		},
+		{
+			GroupVersion: "serving.knative.dev/v1",
+			APIResources: []metav1.APIResource{
+				{
+					Name: "services",
+					Kind: "Service",
 				},
 			},
 		},
