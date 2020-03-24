@@ -28,7 +28,7 @@ title: "riff binding image"
 
 * [riff binding](riff_binding.md)	 - <todo>
 * [riff binding image create](riff_binding_image_create.md)	 - create a image to deploy a workload
-* [riff binding image delete](riff_binding_image_delete.md)	 - delete image(s)
+* [riff binding image delete](riff_binding_image_delete.md)	 - delete image binding(s)
 * [riff binding image list](riff_binding_image_list.md)	 - table listing of image bindings
 * [riff binding image status](riff_binding_image_status.md)	 - show image binding status
 

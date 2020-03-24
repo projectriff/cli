@@ -70,9 +70,10 @@ func NewImageDeleteCommand(ctx context.Context, c *cli.Config) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:   "delete",
-		Short: "delete image(s)",
+		Short: "delete image binding(s)",
 		Long: strings.TrimSpace(`
-Delete one or more images by name or all images within a namespace.
+Delete one or more image bindings by name or all image bindings within a
+namespace.
 `),
 		Example: strings.Join([]string{
 			fmt.Sprintf("%s binding image delete my-image-binding", c.Name),
@@ -87,7 +88,7 @@ Delete one or more images by name or all images within a namespace.
 	)
 
 	cli.NamespaceFlag(cmd, c, &opts.Namespace)
-	cmd.Flags().BoolVar(&opts.All, cli.StripDash(cli.AllFlagName), false, "delete all images within the namespace")
+	cmd.Flags().BoolVar(&opts.All, cli.StripDash(cli.AllFlagName), false, "delete all image bindings within the namespace")
 
 	return cmd
 }

@@ -34,8 +34,11 @@ import (
 var resourceShortNames = map[string]string{
 	"deployment":  "deployments.apps",
 	"deployments": "deployments.apps",
+	"kservice":    "services.serving.knative.dev",
 	"ksvc":        "services.serving.knative.dev",
 	"image":       "images.build.pivotal.io",
+	"img":         "images.build.pivotal.io",
+	"imgs":        "images.build.pivotal.io",
 	"function":    "functions.build.projectriff.io",
 	"application": "applications.build.pivotal.io",
 	"container":   "containers.build.pivotal.io",

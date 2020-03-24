@@ -4,11 +4,12 @@ title: "riff binding image delete"
 ---
 ## riff binding image delete
 
-delete image(s)
+delete image binding(s)
 
 ### Synopsis
 
-Delete one or more images by name or all images within a namespace.
+Delete one or more image bindings by name or all image bindings within a
+namespace.
 
 ```
 riff binding image delete <name(s)> [flags]
@@ -24,7 +25,7 @@ riff binding image delete --all
 ### Options
 
 ```
-      --all              delete all images within the namespace
+      --all              delete all image bindings within the namespace
   -h, --help             help for delete
   -n, --namespace name   kubernetes namespace (defaulted from kube config)
 ```
