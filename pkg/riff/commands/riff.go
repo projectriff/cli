@@ -20,6 +20,7 @@ import (
 	"context"
 	"strings"
 
+	bindingcommands "github.com/projectriff/cli/pkg/binding/commands"
 	buildcommands "github.com/projectriff/cli/pkg/build/commands"
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/spf13/cobra"
@@ -49,6 +50,8 @@ alternate execution models and capabilities.
 	cmd.AddCommand(buildcommands.NewApplicationCommand(ctx, c))
 	cmd.AddCommand(buildcommands.NewContainerCommand(ctx, c))
 	cmd.AddCommand(buildcommands.NewFunctionCommand(ctx, c))
+
+	cmd.AddCommand(bindingcommands.NewBindingCommand(ctx, c))
 
 	return cmd
 }

@@ -17,6 +17,8 @@
 package testing
 
 import (
+	bindingsclientset "github.com/projectriff/bindings/pkg/client/clientset/versioned/fake"
+	bindingsv1alpha1clientset "github.com/projectriff/bindings/pkg/client/clientset/versioned/typed/bindings/v1alpha1"
 	projectriffclientset "github.com/projectriff/system/pkg/client/clientset/versioned/fake"
 	buildv1alpha1clientset "github.com/projectriff/system/pkg/client/clientset/versioned/typed/build/v1alpha1"
 	corev1alpha1clientset "github.com/projectriff/system/pkg/client/clientset/versioned/typed/core/v1alpha1"
@@ -25,6 +27,7 @@ import (
 	apiextensionsv1beta1clientset "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/fake"
 	apiextensionsv1beta1 "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/typed/apiextensions/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/client-go/discovery"
 	kubernetes "k8s.io/client-go/kubernetes/fake"
 	authv1client "k8s.io/client-go/kubernetes/typed/authorization/v1"
 	corev1clientset "k8s.io/client-go/kubernetes/typed/core/v1"
@@ -35,6 +38,7 @@ type FakeClient struct {
 	Namespace                  string
 	FakeKubeRestConfig         *rest.Config
 	FakeKubeClientset          *kubernetes.Clientset
+	FakeBindingsClientset      *bindingsclientset.Clientset
 	FakeRiffClientset          *projectriffclientset.Clientset
 	FakeAPIExtensionsClientset *apiextensionsv1beta1clientset.Clientset
 	ActionRecorderList         ActionRecorderList
@@ -52,12 +56,20 @@ func (c *FakeClient) Core() corev1clientset.CoreV1Interface {
 	return c.FakeKubeClientset.CoreV1()
 }
 
+func (c *FakeClient) Discovery() discovery.DiscoveryInterface {
+	return c.FakeKubeClientset.Discovery()
+}
+
 func (c *FakeClient) Auth() authv1client.AuthorizationV1Interface {
 	return c.FakeKubeClientset.AuthorizationV1()
 }
 
 func (c *FakeClient) APIExtension() apiextensionsv1beta1.ApiextensionsV1beta1Interface {
 	return c.FakeAPIExtensionsClientset.ApiextensionsV1beta1()
+}
+
+func (c *FakeClient) Bindings() bindingsv1alpha1clientset.BindingsV1alpha1Interface {
+	return c.FakeBindingsClientset.BindingsV1alpha1()
 }
 
 func (c *FakeClient) Build() buildv1alpha1clientset.BuildV1alpha1Interface {
@@ -79,6 +91,7 @@ func (c *FakeClient) KnativeRuntime() knativev1alpha1clientset.KnativeV1alpha1In
 func (c *FakeClient) PrependReactor(verb, resource string, reaction ReactionFunc) {
 	c.FakeKubeClientset.PrependReactor(verb, resource, reaction)
 	c.FakeAPIExtensionsClientset.PrependReactor(verb, resource, reaction)
+	c.FakeBindingsClientset.PrependReactor(verb, resource, reaction)
 	c.FakeRiffClientset.PrependReactor(verb, resource, reaction)
 }
 
@@ -88,15 +101,22 @@ func NewClient(objects ...runtime.Object) *FakeClient {
 	kubeRestConfig := &rest.Config{Host: "https://localhost:8443"}
 	kubeClientset := kubernetes.NewSimpleClientset(lister.GetKubeObjects()...)
 	apiExtensionsClientset := apiextensionsv1beta1clientset.NewSimpleClientset(lister.GetAPIExtensionsObjects()...)
+	bindingsClientset := bindingsclientset.NewSimpleClientset(lister.GetBindingsObjects()...)
 	riffClientset := projectriffclientset.NewSimpleClientset(lister.GetProjectriffObjects()...)
 
-	actionRecorderList := ActionRecorderList{kubeClientset, apiExtensionsClientset, riffClientset}
+	actionRecorderList := ActionRecorderList{
+		kubeClientset,
+		apiExtensionsClientset,
+		bindingsClientset,
+		riffClientset,
+	}
 
 	return &FakeClient{
 		Namespace:                  "default",
 		FakeKubeRestConfig:         kubeRestConfig,
 		FakeKubeClientset:          kubeClientset,
 		FakeAPIExtensionsClientset: apiExtensionsClientset,
+		FakeBindingsClientset:      bindingsClientset,
 		FakeRiffClientset:          riffClientset,
 		ActionRecorderList:         actionRecorderList,
 	}

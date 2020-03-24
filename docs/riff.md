@@ -42,6 +42,7 @@ zero-to-n autoscaling and managed ingress.
 ### SEE ALSO
 
 * [riff application](riff_application.md)	 - applications built from source using application buildpacks
+* [riff binding](riff_binding.md)	 - <todo>
 * [riff completion](riff_completion.md)	 - generate shell completion script
 * [riff container](riff_container.md)	 - containers resolve the latest image
 * [riff core](riff_core.md)	 - core runtime for riff workloads

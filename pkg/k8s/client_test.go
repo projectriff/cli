@@ -31,6 +31,9 @@ func TestNewClient(t *testing.T) {
 	if client.KubeRestConfig() == nil {
 		t.Errorf("Expected REST config to not be nil")
 	}
+	if client.Discovery() == nil {
+		t.Errorf("Expected Discovery client to not be nil")
+	}
 	if client.Core() == nil {
 		t.Errorf("Expected Core client to not be nil")
 	}
@@ -42,6 +45,9 @@ func TestNewClient(t *testing.T) {
 	}
 	if client.Build() == nil {
 		t.Errorf("Expected Build client to not be nil")
+	}
+	if client.Bindings() == nil {
+		t.Errorf("Expected Bindings client to not be nil")
 	}
 	if client.CoreRuntime() == nil {
 		t.Errorf("Expected CoreRuntime client to not be nil")

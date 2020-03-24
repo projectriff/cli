@@ -17,6 +17,7 @@
 package testing
 
 import (
+	fakebindingsclientset "github.com/projectriff/bindings/pkg/client/clientset/versioned/fake"
 	fakeprojectriffclientset "github.com/projectriff/system/pkg/client/clientset/versioned/fake"
 	fakeapiextensionsclientset "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/fake"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -27,6 +28,7 @@ import (
 var clientSetSchemes = []func(*runtime.Scheme) error{
 	fakekubeclientset.AddToScheme,
 	fakeapiextensionsclientset.AddToScheme,
+	fakebindingsclientset.AddToScheme,
 	fakeprojectriffclientset.AddToScheme,
 }
 
@@ -60,6 +62,10 @@ func (l *Listers) GetKubeObjects() []runtime.Object {
 
 func (l *Listers) GetAPIExtensionsObjects() []runtime.Object {
 	return l.sorter.ObjectsForSchemeFunc(fakeapiextensionsclientset.AddToScheme)
+}
+
+func (l *Listers) GetBindingsObjects() []runtime.Object {
+	return l.sorter.ObjectsForSchemeFunc(fakebindingsclientset.AddToScheme)
 }
 
 func (l *Listers) GetProjectriffObjects() []runtime.Object {
