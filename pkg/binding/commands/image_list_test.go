@@ -87,8 +87,8 @@ No image bindings found.
 				},
 			},
 			ExpectOutput: `
-NAME                 SUBJECT   PROVIDERS   CONTAINER NAME   STATUS      AGE
-test-image-binding   <empty>   <empty>     <empty>          <unknown>   <unknown>
+NAME                 SUBJECT   PROVIDER   CONTAINER NAME   STATUS      AGE
+test-image-binding   <empty>   <empty>    <empty>          <unknown>   <unknown>
 `,
 		},
 		{
@@ -124,9 +124,9 @@ No image bindings found.
 				},
 			},
 			ExpectOutput: `
-NAMESPACE         NAME                       SUBJECT   PROVIDERS   CONTAINER NAME   STATUS      AGE
-default           test-image-binding         <empty>   <empty>     <empty>          <unknown>   <unknown>
-other-namespace   test-other-image-binding   <empty>   <empty>     <empty>          <unknown>   <unknown>
+NAMESPACE         NAME                       SUBJECT   PROVIDER   CONTAINER NAME   STATUS      AGE
+default           test-image-binding         <empty>   <empty>    <empty>          <unknown>   <unknown>
+other-namespace   test-other-image-binding   <empty>   <empty>    <empty>          <unknown>   <unknown>
 `,
 		},
 		{
@@ -163,7 +163,7 @@ other-namespace   test-other-image-binding   <empty>   <empty>     <empty>      
 				},
 			},
 			ExpectOutput: `
-NAME                 SUBJECT                          PROVIDERS                                    CONTAINER NAME   STATUS   AGE
+NAME                 SUBJECT                          PROVIDER                                     CONTAINER NAME   STATUS   AGE
 test-image-binding   deployments.apps:my-deployment   functions.build.projectriff.io:my-function   user-container   Ready    <unknown>
 `,
 		},

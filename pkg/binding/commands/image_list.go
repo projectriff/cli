@@ -150,7 +150,7 @@ func (opts *ImageListOptions) printColumns() []metav1beta1.TableColumnDefinition
 	return []metav1beta1.TableColumnDefinition{
 		{Name: "Name", Type: "string"},
 		{Name: "Subject", Type: "string"},
-		{Name: "Providers", Type: "string"},
+		{Name: "Provider", Type: "string"},
 		{Name: "Container Name", Type: "string"},
 		{Name: "Status", Type: "string"},
 		{Name: "Age", Type: "string"},
