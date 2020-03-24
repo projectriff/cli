@@ -147,7 +147,7 @@ func (c *client) lazyLoadAPIExtensionsClientsetOrDie() *apiextensionsclientset.C
 }
 
 func (c *client) lazyLoadBindingsClientsetOrDie() *bindingsclientset.Clientset {
-	if c.riffClientset == nil {
+	if c.bindingsClientset == nil {
 		restConfig := c.lazyLoadRestConfigOrDie()
 		c.bindingsClientset = bindingsclientset.NewForConfigOrDie(restConfig)
 	}
