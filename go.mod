@@ -23,7 +23,7 @@ require (
 	github.com/spf13/viper v1.6.2
 	github.com/stretchr/testify v1.5.1
 	golang.org/x/crypto v0.0.0-20200220183623-bac4c82f6975
-	k8s.io/api v0.17.4
+	k8s.io/api v0.18.0
 	k8s.io/apiextensions-apiserver v0.17.4
 	k8s.io/apimachinery v0.17.4
 	k8s.io/client-go v0.17.4
