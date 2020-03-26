@@ -24,7 +24,7 @@ require (
 	github.com/stretchr/testify v1.5.1
 	golang.org/x/crypto v0.0.0-20200220183623-bac4c82f6975
 	k8s.io/api v0.17.4
-	k8s.io/apiextensions-apiserver v0.17.4
+	k8s.io/apiextensions-apiserver v0.18.0
 	k8s.io/apimachinery v0.17.4
 	k8s.io/client-go v0.17.4
 	knative.dev/pkg v0.0.0-20200317162206-42d1b005c814
