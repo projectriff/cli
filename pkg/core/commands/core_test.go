@@ -26,9 +26,8 @@ import (
 func TestCoreCommand(t *testing.T) {
 	table := rifftesting.CommandTable{
 		{
-			Name:        "empty",
-			Args:        []string{},
-			ShouldError: true,
+			Name: "empty",
+			Args: []string{},
 		},
 	}
 
