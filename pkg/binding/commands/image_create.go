@@ -40,8 +40,8 @@ var resourceShortNames = map[string]string{
 	"img":         "images.build.pivotal.io",
 	"imgs":        "images.build.pivotal.io",
 	"function":    "functions.build.projectriff.io",
-	"application": "applications.build.pivotal.io",
-	"container":   "containers.build.pivotal.io",
+	"application": "applications.build.projectriff.io",
+	"container":   "containers.build.projectriff.io",
 	// add more, but only if we expect it to resolve via `kubectl get foo`
 }
 
