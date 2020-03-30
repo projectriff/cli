@@ -20,16 +20,10 @@ jobs:
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v1.0.0
-    - uses: actions/setup-go@v1.1.2
+    - uses: actions/checkout@v2
+    - uses: actions/setup-go@v2-beta
       with:
         go-version: '1.13'
-    # TODO remove after https://github.com/actions/setup-go/issues/14
-    - name: Add GOPATH/bin to PATH
-      run: |
-        echo "##[set-env name=GOPATH;]$(go env GOPATH)"
-        echo "##[add-path]$(go env GOPATH)/bin"
-      shell: bash
     - name: Verify code formatting
       run: |
         go get golang.org/x/tools/cmd/goimports
@@ -54,15 +48,10 @@ jobs:
     if: success() && github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1.0.0
-    - uses: actions/setup-go@v1.1.2
+    - uses: actions/checkout@v2
+    - uses: actions/setup-go@v2-beta
       with:
         go-version: '1.13'
-    # TODO remove after https://github.com/actions/setup-go/issues/14
-    - name: Add GOPATH/bin to PATH
-      run: |
-        echo "##[set-env name=GOPATH]$(go env GOPATH)"
-        echo "##[add-path]$(go env GOPATH)/bin"
     - name: Stage riff release artifacts
       run: .github/workflows/stage.sh
       env:
@@ -92,7 +81,7 @@ jobs:
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       GCLOUD_CLIENT_SECRET: ${{ secrets.GCLOUD_CLIENT_SECRET }}
     steps:
-      - uses: actions/checkout@v1.0.0
+      - uses: actions/checkout@v2
       - name: Setup env
         run: |
           job=$(date +%s) # TODO use something that is assigned by CI to guarantee uniqueness
@@ -125,7 +114,7 @@ jobs:
       )
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1.0.0
+    - uses: actions/checkout@v2
     - name: Publish riff release artifacts
       run: .github/workflows/publish.sh ${{ github.ref }}
       env:
