@@ -19,7 +19,7 @@ require (
 	github.com/openzipkin/zipkin-go v0.2.2 // indirect
 	github.com/projectriff/bindings v0.0.0-20200324142740-31ff49b9aed9
 	github.com/projectriff/system v0.0.0-20200204235724-6b14b4303135
-	github.com/spf13/cobra v0.0.6
+	github.com/spf13/cobra v0.0.7
 	github.com/spf13/viper v1.6.2
 	github.com/stretchr/testify v1.5.1
 	golang.org/x/crypto v0.0.0-20200220183623-bac4c82f6975
