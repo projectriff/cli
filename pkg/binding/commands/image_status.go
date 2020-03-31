@@ -21,7 +21,6 @@ import (
 	"fmt"
 	"strings"
 
-	bindingsv1alpha1 "github.com/projectriff/bindings/pkg/apis/bindings/v1alpha1"
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/cli/options"
 	"github.com/projectriff/system/pkg/apis"
@@ -57,7 +56,7 @@ func (opts *ImageStatusOptions) Exec(ctx context.Context, c *cli.Config) error {
 		return cli.SilenceError(err)
 	}
 
-	ready := image.Status.GetCondition(bindingsv1alpha1.ImageBindingConditionReady)
+	ready := image.Status.GetCondition(apis.ConditionReady)
 	cli.PrintResourceStatus(c, image.Name, &apis.Condition{
 		Type:    apis.ConditionReady,
 		Message: ready.Message,

@@ -21,12 +21,11 @@ import (
 	"fmt"
 	"strings"
 
-	bindingsv1alpha1 "github.com/projectriff/bindings/pkg/apis/bindings/v1alpha1"
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/cli/options"
+	bindingsv1alpha1 "github.com/projectriff/system/pkg/apis/bindings/v1alpha1"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"knative.dev/pkg/tracker"
 )
 
 // this should go away once we can properly resolve shortnames and partial names
@@ -109,7 +108,7 @@ func (opts *ImageCreateOptions) Exec(ctx context.Context, c *cli.Config) error {
 	}
 
 	if opts.DryRun {
-		cli.DryRunResource(ctx, image, image.GetGroupVersionKind())
+		cli.DryRunResource(ctx, image, bindingsv1alpha1.GroupVersion.WithKind("ImageBinding"))
 	} else {
 		var err error
 		image, err = c.Bindings().ImageBindings(opts.Namespace).Create(image)
@@ -121,7 +120,7 @@ func (opts *ImageCreateOptions) Exec(ctx context.Context, c *cli.Config) error {
 	return nil
 }
 
-func (opts *ImageCreateOptions) ResolveObjectRef(resources []*metav1.APIResourceList, ref string) (*tracker.Reference, error) {
+func (opts *ImageCreateOptions) ResolveObjectRef(resources []*metav1.APIResourceList, ref string) (*bindingsv1alpha1.Reference, error) {
 	chunks := strings.Split(ref, ":")
 
 	resource := chunks[0]
@@ -138,7 +137,7 @@ func (opts *ImageCreateOptions) ResolveObjectRef(resources []*metav1.APIResource
 		for _, r := range rl.APIResources {
 			fullname := fmt.Sprintf("%s.%s", r.Name, rl.GroupVersion)
 			if strings.HasPrefix(fullname, targetPrefix) {
-				return &tracker.Reference{
+				return &bindingsv1alpha1.Reference{
 					APIVersion: rl.GroupVersion,
 					Kind:       r.Kind,
 					Namespace:  opts.Namespace,

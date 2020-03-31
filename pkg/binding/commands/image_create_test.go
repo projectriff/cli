@@ -20,14 +20,13 @@ import (
 	"context"
 	"testing"
 
-	bindingsv1alpha1 "github.com/projectriff/bindings/pkg/apis/bindings/v1alpha1"
 	"github.com/projectriff/cli/pkg/binding/commands"
 	"github.com/projectriff/cli/pkg/cli"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
+	bindingsv1alpha1 "github.com/projectriff/system/pkg/apis/bindings/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	fakediscovery "k8s.io/client-go/discovery/fake"
-	"knative.dev/pkg/tracker"
 )
 
 func TestImageBindingCreateOptions(t *testing.T) {
@@ -112,13 +111,13 @@ func TestImageBindingCreateCommand(t *testing.T) {
 						Name:      imageBindingName,
 					},
 					Spec: bindingsv1alpha1.ImageBindingSpec{
-						Subject: &tracker.Reference{
+						Subject: &bindingsv1alpha1.Reference{
 							APIVersion: "apps/v1",
 							Kind:       "Deployment",
 							Namespace:  defaultNamespace,
 							Name:       deploymentName,
 						},
-						Provider: &tracker.Reference{
+						Provider: &bindingsv1alpha1.Reference{
 							APIVersion: "build.projectriff.io/v1alpha1",
 							Kind:       "Function",
 							Namespace:  defaultNamespace,
@@ -152,13 +151,13 @@ Created image binding "my-image-binding"
 						Name:      imageBindingName,
 					},
 					Spec: bindingsv1alpha1.ImageBindingSpec{
-						Subject: &tracker.Reference{
+						Subject: &bindingsv1alpha1.Reference{
 							APIVersion: "serving.knative.dev/v1",
 							Kind:       "Service",
 							Namespace:  defaultNamespace,
 							Name:       serviceName,
 						},
-						Provider: &tracker.Reference{
+						Provider: &bindingsv1alpha1.Reference{
 							APIVersion: "build.projectriff.io/v1alpha1",
 							Kind:       "Function",
 							Namespace:  defaultNamespace,
@@ -253,13 +252,13 @@ Created image binding "my-image-binding"
 						Name:      imageBindingName,
 					},
 					Spec: bindingsv1alpha1.ImageBindingSpec{
-						Subject: &tracker.Reference{
+						Subject: &bindingsv1alpha1.Reference{
 							APIVersion: "apps/v1",
 							Kind:       "Deployment",
 							Namespace:  defaultNamespace,
 							Name:       deploymentName,
 						},
-						Provider: &tracker.Reference{
+						Provider: &bindingsv1alpha1.Reference{
 							APIVersion: "build.projectriff.io/v1alpha1",
 							Kind:       "Function",
 							Namespace:  defaultNamespace,
@@ -294,13 +293,13 @@ Created image binding "my-image-binding"
 						Name:      imageBindingName,
 					},
 					Spec: bindingsv1alpha1.ImageBindingSpec{
-						Subject: &tracker.Reference{
+						Subject: &bindingsv1alpha1.Reference{
 							APIVersion: "apps/v1",
 							Kind:       "Deployment",
 							Namespace:  defaultNamespace,
 							Name:       deploymentName,
 						},
-						Provider: &tracker.Reference{
+						Provider: &bindingsv1alpha1.Reference{
 							APIVersion: "build.projectriff.io/v1alpha1",
 							Kind:       "Function",
 							Namespace:  defaultNamespace,

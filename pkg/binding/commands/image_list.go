@@ -22,16 +22,15 @@ import (
 	"strings"
 	"time"
 
-	bindingsv1alpha1 "github.com/projectriff/bindings/pkg/apis/bindings/v1alpha1"
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/cli/options"
 	"github.com/projectriff/cli/pkg/cli/printers"
 	"github.com/projectriff/system/pkg/apis"
+	bindingsv1alpha1 "github.com/projectriff/system/pkg/apis/bindings/v1alpha1"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	metav1beta1 "k8s.io/apimachinery/pkg/apis/meta/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime"
-	knapis "knative.dev/pkg/apis"
 )
 
 type ImageListOptions struct {
@@ -119,9 +118,9 @@ func (opts *ImageListOptions) print(image *bindingsv1alpha1.ImageBinding, _ prin
 	row := metav1beta1.TableRow{
 		Object: runtime.RawExtension{Object: image},
 	}
-	condition := image.Status.GetCondition(bindingsv1alpha1.ImageBindingConditionReady)
+	condition := image.Status.GetCondition(apis.ConditionReady)
 	if condition == nil {
-		condition = &knapis.Condition{}
+		condition = &apis.Condition{}
 	}
 	// TODO use discovery client to get resource names for group/kind
 	var subject, provider string
