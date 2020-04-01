@@ -17,9 +17,8 @@
 package k8s
 
 import (
-	bindingsclientset "github.com/projectriff/bindings/pkg/client/clientset/versioned"
-	bindingsv1alpha1 "github.com/projectriff/bindings/pkg/client/clientset/versioned/typed/bindings/v1alpha1"
 	projectriffclientset "github.com/projectriff/system/pkg/client/clientset/versioned"
+	bindingsv1alpha1 "github.com/projectriff/system/pkg/client/clientset/versioned/typed/bindings/v1alpha1"
 	buildv1alpha1 "github.com/projectriff/system/pkg/client/clientset/versioned/typed/build/v1alpha1"
 	corev1alpha1 "github.com/projectriff/system/pkg/client/clientset/versioned/typed/core/v1alpha1"
 	knativev1alpha1 "github.com/projectriff/system/pkg/client/clientset/versioned/typed/knative/v1alpha1"
@@ -73,7 +72,7 @@ func (c *client) APIExtension() apiextensionsv1beta1.ApiextensionsV1beta1Interfa
 }
 
 func (c *client) Bindings() bindingsv1alpha1.BindingsV1alpha1Interface {
-	return c.lazyLoadBindingsClientsetOrDie().BindingsV1alpha1()
+	return c.lazyLoadRiffClientsetOrDie().BindingsV1alpha1()
 }
 
 func (c *client) Build() buildv1alpha1.BuildV1alpha1Interface {
@@ -103,7 +102,6 @@ type client struct {
 	restConfig             *rest.Config
 	kubeClientset          *kubernetes.Clientset
 	apiExtensionsClientset *apiextensionsclientset.Clientset
-	bindingsClientset      *bindingsclientset.Clientset
 	riffClientset          *projectriffclientset.Clientset
 }
 
@@ -144,14 +142,6 @@ func (c *client) lazyLoadAPIExtensionsClientsetOrDie() *apiextensionsclientset.C
 	}
 	return c.apiExtensionsClientset
 
-}
-
-func (c *client) lazyLoadBindingsClientsetOrDie() *bindingsclientset.Clientset {
-	if c.bindingsClientset == nil {
-		restConfig := c.lazyLoadRestConfigOrDie()
-		c.bindingsClientset = bindingsclientset.NewForConfigOrDie(restConfig)
-	}
-	return c.bindingsClientset
 }
 
 func (c *client) lazyLoadRiffClientsetOrDie() *projectriffclientset.Clientset {

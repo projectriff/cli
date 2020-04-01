@@ -20,14 +20,13 @@ import (
 	"context"
 	"testing"
 
-	bindingsv1alpha1 "github.com/projectriff/bindings/pkg/apis/bindings/v1alpha1"
 	"github.com/projectriff/cli/pkg/binding/commands"
 	"github.com/projectriff/cli/pkg/cli"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
+	"github.com/projectriff/system/pkg/apis"
+	bindingsv1alpha1 "github.com/projectriff/system/pkg/apis/bindings/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	duckv1beta1 "knative.dev/pkg/apis/duck/v1beta1"
-	"knative.dev/pkg/tracker"
 )
 
 func TestImageBindingListOptions(t *testing.T) {
@@ -139,13 +138,13 @@ other-namespace   test-other-image-binding   <empty>   <empty>    <empty>       
 						Namespace: defaultNamespace,
 					},
 					Spec: bindingsv1alpha1.ImageBindingSpec{
-						Subject: &tracker.Reference{
+						Subject: &bindingsv1alpha1.Reference{
 							APIVersion: "apps/v1",
 							Kind:       "Deployment",
 							Namespace:  "default",
 							Name:       "my-deployment",
 						},
-						Provider: &tracker.Reference{
+						Provider: &bindingsv1alpha1.Reference{
 							APIVersion: "build.projectriff.io/v1alpha1",
 							Kind:       "Function",
 							Namespace:  "default",
@@ -154,9 +153,9 @@ other-namespace   test-other-image-binding   <empty>   <empty>    <empty>       
 						ContainerName: "user-container",
 					},
 					Status: bindingsv1alpha1.ImageBindingStatus{
-						Status: duckv1beta1.Status{
-							Conditions: duckv1beta1.Conditions{
-								{Type: bindingsv1alpha1.ImageBindingConditionReady, Status: "True"},
+						Status: apis.Status{
+							Conditions: apis.Conditions{
+								{Type: apis.ConditionReady, Status: "True"},
 							},
 						},
 					},

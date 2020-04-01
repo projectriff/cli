@@ -20,14 +20,13 @@ import (
 	"testing"
 	"time"
 
-	bindingsv1alpha1 "github.com/projectriff/bindings/pkg/apis/bindings/v1alpha1"
 	"github.com/projectriff/cli/pkg/binding/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
+	"github.com/projectriff/system/pkg/apis"
+	bindingsv1alpha1 "github.com/projectriff/system/pkg/apis/bindings/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	"knative.dev/pkg/apis"
-	duckv1beta1 "knative.dev/pkg/apis/duck/v1beta1"
 )
 
 func TestImageBindingStatusOptions(t *testing.T) {
@@ -71,8 +70,8 @@ func TestImageBindingStatusCommand(t *testing.T) {
 						Namespace: defaultNamespace,
 					},
 					Status: bindingsv1alpha1.ImageBindingStatus{
-						Status: duckv1beta1.Status{
-							Conditions: duckv1beta1.Conditions{
+						Status: apis.Status{
+							Conditions: apis.Conditions{
 								{
 									Type:    apis.ConditionReady,
 									Status:  corev1.ConditionFalse,
@@ -117,8 +116,8 @@ Image binding "default/my-image-binding" not found
 						Namespace: defaultNamespace,
 					},
 					Status: bindingsv1alpha1.ImageBindingStatus{
-						Status: duckv1beta1.Status{
-							Conditions: duckv1beta1.Conditions{
+						Status: apis.Status{
+							Conditions: apis.Conditions{
 								{
 									Type:    apis.ConditionReady,
 									Status:  corev1.ConditionFalse,
