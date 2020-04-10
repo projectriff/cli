@@ -13,7 +13,7 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/projectriff/system v0.0.0-20200401134747-1c33ace80085
 	github.com/spf13/cobra v0.0.7
-	github.com/spf13/viper v1.6.2
+	github.com/spf13/viper v1.6.3
 	github.com/stretchr/testify v1.5.1
 	golang.org/x/crypto v0.0.0-20200220183623-bac4c82f6975
 	k8s.io/api v0.17.4
