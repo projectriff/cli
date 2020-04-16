@@ -12,7 +12,7 @@ readonly slug=${version}-${git_timestamp}-${git_sha:0:16}
 # fetch FATS scripts
 fats_dir=`dirname "${BASH_SOURCE[0]}"`/fats
 fats_repo="projectriff/fats"
-fats_refspec=3d6cead12932026fdb933a1bb550cb7eca0a8def # master as of 2020-02-04
+fats_refspec=833b7c4d6fb565b46e3fec304d10aaf1fd8ba58d # master as of 2020-04-16
 source `dirname "${BASH_SOURCE[0]}"`/fats-fetch.sh $fats_dir $fats_refspec $fats_repo
 source $fats_dir/.util.sh
 
@@ -35,7 +35,7 @@ $fats_dir/install.sh kapp
 $fats_dir/install.sh ytt
 kubectl create namespace apps
 
-riff_release_version=0.5.0-snapshot
+riff_release_version=0.6.0-snapshot
 
 echo "Installing Cert Manager"
 fats_retry kapp deploy -n apps -a cert-manager -f https://storage.googleapis.com/projectriff/release/${riff_release_version}/cert-manager.yaml -y
