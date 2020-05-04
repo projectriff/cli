@@ -25,7 +25,7 @@ import (
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/cli/options"
 	"github.com/projectriff/cli/pkg/cli/printers"
-	"github.com/projectriff/system/pkg/apis"
+	"github.com/projectriff/reconciler-runtime/apis"
 	bindingsv1alpha1 "github.com/projectriff/system/pkg/apis/bindings/v1alpha1"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

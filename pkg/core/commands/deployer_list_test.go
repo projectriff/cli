@@ -23,8 +23,9 @@ import (
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/core/commands"
 	rifftesting "github.com/projectriff/cli/pkg/testing"
-	"github.com/projectriff/system/pkg/apis"
+	"github.com/projectriff/reconciler-runtime/apis"
 	corev1alpha1 "github.com/projectriff/system/pkg/apis/core/v1alpha1"
+	duckv1 "github.com/projectriff/system/pkg/apis/duck/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -153,7 +154,7 @@ other-namespace   test-other-deployer   <unknown>   <unknown>   <empty>   <unkno
 								{Type: corev1alpha1.DeployerConditionReady, Status: "True"},
 							},
 						},
-						Address: &apis.Addressable{
+						Address: &duckv1.Addressable{
 							URL: "img.default.svc.cluster.local",
 						},
 						URL: "img.default.example.com",
@@ -174,7 +175,7 @@ other-namespace   test-other-deployer   <unknown>   <unknown>   <empty>   <unkno
 								{Type: corev1alpha1.DeployerConditionReady, Status: "True"},
 							},
 						},
-						Address: &apis.Addressable{
+						Address: &duckv1.Addressable{
 							URL: "app.default.svc.cluster.local",
 						},
 						URL: "app.default.example.com",
@@ -195,7 +196,7 @@ other-namespace   test-other-deployer   <unknown>   <unknown>   <empty>   <unkno
 								{Type: corev1alpha1.DeployerConditionReady, Status: "True"},
 							},
 						},
-						Address: &apis.Addressable{
+						Address: &duckv1.Addressable{
 							URL: "func.default.svc.cluster.local",
 						},
 						URL: "func.default.example.com",
@@ -216,7 +217,7 @@ other-namespace   test-other-deployer   <unknown>   <unknown>   <empty>   <unkno
 								{Type: corev1alpha1.DeployerConditionReady, Status: "True"},
 							},
 						},
-						Address: &apis.Addressable{
+						Address: &duckv1.Addressable{
 							URL: "container.default.svc.cluster.local",
 						},
 						URL: "container.default.example.com",
