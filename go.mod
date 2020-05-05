@@ -11,8 +11,8 @@ require (
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/go-cmp v0.4.0
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/projectriff/reconciler-runtime v0.0.0
-	github.com/projectriff/system v0.0.0-20200401134747-1c33ace80085
+	github.com/projectriff/reconciler-runtime v0.0.0-20200504190939-826b427c492f
+	github.com/projectriff/system v0.0.0-20200504230615-e80c1570003d
 	github.com/spf13/cobra v0.0.7
 	github.com/spf13/viper v1.6.3
 	github.com/stretchr/testify v1.5.1
@@ -21,9 +21,4 @@ require (
 	k8s.io/apiextensions-apiserver v0.17.4
 	k8s.io/apimachinery v0.17.4
 	k8s.io/client-go v0.17.4
-)
-
-replace (
-	github.com/projectriff/reconciler-runtime => ../reconciler-runtime
-	github.com/projectriff/system => ../system
 )
