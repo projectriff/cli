@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/projectriff/system/pkg/apis"
+	sapis "github.com/projectriff/system/pkg/apis"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -35,7 +35,7 @@ import (
 var ErrWaitTimeout = wait.ErrWaitTimeout
 
 type object interface {
-	apis.Resource
+	sapis.Resource
 	metav1.Object
 	runtime.Object
 }
