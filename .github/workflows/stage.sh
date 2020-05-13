@@ -15,4 +15,4 @@ make release
 
 bucket=gs://projectriff/riff-cli/releases
 
-gsutil cp -a public-read -n dist/riff-*{.tgz,.zip} ${bucket}/builds/v${slug}/
+gsutil cp -n dist/riff-*{.tgz,.zip} ${bucket}/builds/v${slug}/
