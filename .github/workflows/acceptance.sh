@@ -118,7 +118,7 @@ if [ "$machine" != "MinGw" ]; then
     echo "##[group]Run function $name"
 
     riff function create $name --image $image --namespace $NAMESPACE --tail \
-      --local-path $fats_dir/functions/uppercase/${test} &
+      --local-path $fats_dir/functions/uppercase/${test} --docker-network host &
 
     riff core deployer create $name \
       --function-ref $name \

@@ -48,7 +48,9 @@ type FunctionCreateOptions struct {
 	Handler  string
 	Invoker  string
 
-	LocalPath   string
+	LocalPath     string
+	DockerNetwork string
+
 	GitRepo     string
 	GitRevision string
 	SubPath     string
@@ -223,6 +225,9 @@ func (opts *FunctionCreateOptions) Exec(ctx context.Context, c *cli.Config) erro
 			Builder: builder,
 			Env:     env,
 			Publish: true,
+			ContainerConfig: pack.ContainerConfig{
+				Network: opts.DockerNetwork,
+			},
 		})
 		if err != nil {
 			return err
@@ -323,6 +328,8 @@ The riff.toml file takes the form:
 	cmd.Flags().StringVar(&opts.Invoker, cli.StripDash(cli.InvokerFlagName), "", "language runtime invoker `name` (detected by default)")
 	cmd.Flags().StringVar(&opts.LocalPath, cli.StripDash(cli.LocalPathFlagName), "", "path to `directory` containing source code on the local machine")
 	_ = cmd.MarkFlagDirname(cli.StripDash(cli.LocalPathFlagName))
+	cmd.Flags().StringVar(&opts.DockerNetwork, "docker-network", "", "network for local build containers")
+	cmd.Flags().MarkHidden("docker-network")
 	cmd.Flags().StringVar(&opts.GitRepo, cli.StripDash(cli.GitRepoFlagName), "", "git `url` to remote source code")
 	cmd.Flags().StringVar(&opts.GitRevision, cli.StripDash(cli.GitRevisionFlagName), "master", "`refspec` within the git repo to checkout")
 	cmd.Flags().StringVar(&opts.SubPath, cli.StripDash(cli.SubPathFlagName), "", "path to `directory` within the git repo to checkout")
