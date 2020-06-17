@@ -53,7 +53,7 @@ riff function create my-func --image registry.example.com/image --local-path ./m
       --dry-run                 print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr
       --env variable            environment variable defined as a key value pair separated by an equals sign, example "--env MY_VAR=my-value" (may be set multiple times)
       --git-repo url            git url to remote source code
-      --git-revision refspec    refspec within the git repo to checkout (default "master")
+      --git-revision refspec    refspec within the git repo to checkout (default "main")
       --handler name            name of the method or class to invoke, depends on the invoker (detected by default)
   -h, --help                    help for create
       --image repository        repository where the built images are pushed (default "_")

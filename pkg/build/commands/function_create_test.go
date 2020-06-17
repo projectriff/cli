@@ -58,7 +58,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
-				GitRevision:     "master",
+				GitRevision:     "main",
 			},
 			ShouldValidate: true,
 		},
@@ -85,7 +85,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
-				GitRevision:     "master",
+				GitRevision:     "main",
 				LocalPath:       ".",
 			},
 			ExpectFieldErrors: cli.ErrMultipleOneOf(cli.GitRepoFlagName, cli.LocalPathFlagName),
@@ -96,7 +96,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
-				GitRevision:     "master",
+				GitRevision:     "main",
 				CacheSize:       "8Gi",
 			},
 			ShouldValidate: true,
@@ -117,7 +117,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
-				GitRevision:     "master",
+				GitRevision:     "main",
 				CacheSize:       "X",
 			},
 			ExpectFieldErrors: cli.ErrInvalidValue("X", cli.CacheSizeFlagName),
@@ -128,7 +128,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
-				GitRevision:     "master",
+				GitRevision:     "main",
 				SubPath:         "some/directory",
 			},
 			ShouldValidate: true,
@@ -159,7 +159,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
-				GitRevision:     "master",
+				GitRevision:     "main",
 				Env:             []string{"VAR1=foo", "VAR2=bar"},
 			},
 			ShouldValidate: true,
@@ -170,7 +170,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
-				GitRevision:     "master",
+				GitRevision:     "main",
 				Env:             []string{"=foo"},
 			},
 			ExpectFieldErrors: cli.ErrInvalidArrayValue("=foo", cli.EnvFlagName, 0),
@@ -181,7 +181,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
-				GitRevision:     "master",
+				GitRevision:     "main",
 				LimitCPU:        "500m",
 				LimitMemory:     "512Mi",
 			},
@@ -193,7 +193,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
-				GitRevision:     "master",
+				GitRevision:     "main",
 				LimitCPU:        "50%",
 				LimitMemory:     "NaN",
 			},
@@ -208,7 +208,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
-				GitRevision:     "master",
+				GitRevision:     "main",
 				Tail:            true,
 				WaitTimeout:     "10m",
 			},
@@ -220,7 +220,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
-				GitRevision:     "master",
+				GitRevision:     "main",
 				Tail:            true,
 			},
 			ExpectFieldErrors: cli.ErrMissingField(cli.WaitTimeoutFlagName),
@@ -231,7 +231,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
-				GitRevision:     "master",
+				GitRevision:     "main",
 				Tail:            true,
 				WaitTimeout:     "d",
 			},
@@ -243,7 +243,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
-				GitRevision:     "master",
+				GitRevision:     "main",
 				DryRun:          true,
 			},
 			ShouldValidate: true,
@@ -254,7 +254,7 @@ func TestFunctionCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
-				GitRevision:     "master",
+				GitRevision:     "main",
 				Tail:            true,
 				WaitTimeout:     "10m",
 				DryRun:          true,
@@ -286,7 +286,7 @@ func TestFunctionCreateCommand(t *testing.T) {
 	imageTag := "registry.example.com/repo:tag"
 	registryHost := "registry.example.com"
 	gitRepo := "https://example.com/repo.git"
-	gitMaster := "master"
+	gitBranch := "main"
 	gitSha := "deadbeefdeadbeefdeadbeefdeadbeef"
 	subPath := "some/path"
 	cacheSize := "8Gi"
@@ -316,7 +316,7 @@ func TestFunctionCreateCommand(t *testing.T) {
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
-								Revision: gitMaster,
+								Revision: gitBranch,
 							},
 						},
 					},
@@ -343,7 +343,7 @@ spec:
   image: registry.example.com/repo:tag
   source:
     git:
-      revision: master
+      revision: main
       url: https://example.com/repo.git
 status: {}
 
@@ -388,7 +388,7 @@ Created function "my-function"
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
-								Revision: gitMaster,
+								Revision: gitBranch,
 							},
 							SubPath: subPath,
 						},
@@ -414,7 +414,7 @@ Created function "my-function"
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
-								Revision: gitMaster,
+								Revision: gitBranch,
 							},
 						},
 					},
@@ -444,7 +444,7 @@ Created function "my-function"
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
-								Revision: gitMaster,
+								Revision: gitBranch,
 							},
 						},
 					},
@@ -476,7 +476,7 @@ Created function "my-function"
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
-								Revision: gitMaster,
+								Revision: gitBranch,
 							},
 						},
 					},
@@ -870,7 +870,7 @@ Created function "my-function"
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
-								Revision: gitMaster,
+								Revision: gitBranch,
 							},
 						},
 					},
@@ -895,7 +895,7 @@ Created function "my-function"
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
-								Revision: gitMaster,
+								Revision: gitBranch,
 							},
 						},
 					},
@@ -922,7 +922,7 @@ Created function "my-function"
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
-								Revision: gitMaster,
+								Revision: gitBranch,
 							},
 						},
 					},
@@ -951,7 +951,7 @@ Created function "my-function"
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
-								Revision: gitMaster,
+								Revision: gitBranch,
 							},
 						},
 					},
@@ -983,7 +983,7 @@ Function "my-function" is ready
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
-								Revision: gitMaster,
+								Revision: gitBranch,
 							},
 						},
 					},
@@ -1015,7 +1015,7 @@ Function "my-function" is ready
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
-								Revision: gitMaster,
+								Revision: gitBranch,
 							},
 						},
 					},
@@ -1055,7 +1055,7 @@ To continue watching logs run: riff function tail my-function --namespace defaul
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
-								Revision: gitMaster,
+								Revision: gitBranch,
 							},
 						},
 					},
@@ -1082,7 +1082,7 @@ To continue watching logs run: riff function tail my-function --namespace defaul
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
-								Revision: gitMaster,
+								Revision: gitBranch,
 							},
 						},
 					},
