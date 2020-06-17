@@ -1,7 +1,7 @@
 #!/bin/bash
 
 dir=${1}
-refspec=${2:-master}
+refspec=${2:-main}
 repo=${3:-projectriff/fats}
 
 if [ ! -f $dir ]; then

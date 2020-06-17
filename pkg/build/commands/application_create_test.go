@@ -58,7 +58,7 @@ func TestApplicationCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
-				GitRevision:     "master",
+				GitRevision:     "main",
 			},
 			ShouldValidate: true,
 		},
@@ -85,7 +85,7 @@ func TestApplicationCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
-				GitRevision:     "master",
+				GitRevision:     "main",
 				LocalPath:       ".",
 			},
 			ExpectFieldErrors: cli.ErrMultipleOneOf(cli.GitRepoFlagName, cli.LocalPathFlagName),
@@ -96,7 +96,7 @@ func TestApplicationCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
-				GitRevision:     "master",
+				GitRevision:     "main",
 				CacheSize:       "8Gi",
 			},
 			ShouldValidate: true,
@@ -117,7 +117,7 @@ func TestApplicationCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
-				GitRevision:     "master",
+				GitRevision:     "main",
 				CacheSize:       "X",
 			},
 			ExpectFieldErrors: cli.ErrInvalidValue("X", cli.CacheSizeFlagName),
@@ -128,7 +128,7 @@ func TestApplicationCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
-				GitRevision:     "master",
+				GitRevision:     "main",
 				SubPath:         "some/directory",
 			},
 			ShouldValidate: true,
@@ -159,7 +159,7 @@ func TestApplicationCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
-				GitRevision:     "master",
+				GitRevision:     "main",
 				Env:             []string{"VAR1=foo", "VAR2=bar"},
 			},
 			ShouldValidate: true,
@@ -170,7 +170,7 @@ func TestApplicationCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
-				GitRevision:     "master",
+				GitRevision:     "main",
 				Env:             []string{"=foo"},
 			},
 			ExpectFieldErrors: cli.ErrInvalidArrayValue("=foo", cli.EnvFlagName, 0),
@@ -181,7 +181,7 @@ func TestApplicationCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
-				GitRevision:     "master",
+				GitRevision:     "main",
 				LimitCPU:        "500m",
 				LimitMemory:     "512Mi",
 			},
@@ -193,7 +193,7 @@ func TestApplicationCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
-				GitRevision:     "master",
+				GitRevision:     "main",
 				LimitCPU:        "50%",
 				LimitMemory:     "NaN",
 			},
@@ -208,7 +208,7 @@ func TestApplicationCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
-				GitRevision:     "master",
+				GitRevision:     "main",
 				Tail:            true,
 				WaitTimeout:     "10m",
 			},
@@ -220,7 +220,7 @@ func TestApplicationCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
-				GitRevision:     "master",
+				GitRevision:     "main",
 				Tail:            true,
 			},
 			ExpectFieldErrors: cli.ErrMissingField(cli.WaitTimeoutFlagName),
@@ -231,7 +231,7 @@ func TestApplicationCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
-				GitRevision:     "master",
+				GitRevision:     "main",
 				Tail:            true,
 				WaitTimeout:     "d",
 			},
@@ -243,7 +243,7 @@ func TestApplicationCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
-				GitRevision:     "master",
+				GitRevision:     "main",
 				DryRun:          true,
 			},
 			ShouldValidate: true,
@@ -254,7 +254,7 @@ func TestApplicationCreateOptions(t *testing.T) {
 				ResourceOptions: rifftesting.ValidResourceOptions,
 				Image:           "example.com/repo:tag",
 				GitRepo:         "https://example.com/repo.git",
-				GitRevision:     "master",
+				GitRevision:     "main",
 				Tail:            true,
 				WaitTimeout:     "10m",
 				DryRun:          true,
@@ -286,7 +286,7 @@ func TestApplicationCreateCommand(t *testing.T) {
 	imageTag := "registry.example.com/repo:tag"
 	registryHost := "registry.example.com"
 	gitRepo := "https://example.com/repo.git"
-	gitMaster := "master"
+	gitBranch := "main"
 	gitSha := "deadbeefdeadbeefdeadbeefdeadbeef"
 	subPath := "some/path"
 	cacheSize := "8Gi"
@@ -313,7 +313,7 @@ func TestApplicationCreateCommand(t *testing.T) {
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
-								Revision: gitMaster,
+								Revision: gitBranch,
 							},
 						},
 					},
@@ -340,7 +340,7 @@ spec:
   image: registry.example.com/repo:tag
   source:
     git:
-      revision: master
+      revision: main
       url: https://example.com/repo.git
 status: {}
 
@@ -385,7 +385,7 @@ Created application "my-application"
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
-								Revision: gitMaster,
+								Revision: gitBranch,
 							},
 							SubPath: subPath,
 						},
@@ -411,7 +411,7 @@ Created application "my-application"
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
-								Revision: gitMaster,
+								Revision: gitBranch,
 							},
 						},
 					},
@@ -441,7 +441,7 @@ Created application "my-application"
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
-								Revision: gitMaster,
+								Revision: gitBranch,
 							},
 						},
 					},
@@ -473,7 +473,7 @@ Created application "my-application"
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
-								Revision: gitMaster,
+								Revision: gitBranch,
 							},
 						},
 					},
@@ -831,7 +831,7 @@ Created application "my-application"
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
-								Revision: gitMaster,
+								Revision: gitBranch,
 							},
 						},
 					},
@@ -856,7 +856,7 @@ Created application "my-application"
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
-								Revision: gitMaster,
+								Revision: gitBranch,
 							},
 						},
 					},
@@ -883,7 +883,7 @@ Created application "my-application"
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
-								Revision: gitMaster,
+								Revision: gitBranch,
 							},
 						},
 					},
@@ -912,7 +912,7 @@ Created application "my-application"
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
-								Revision: gitMaster,
+								Revision: gitBranch,
 							},
 						},
 					},
@@ -944,7 +944,7 @@ Application "my-application" is ready
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
-								Revision: gitMaster,
+								Revision: gitBranch,
 							},
 						},
 					},
@@ -976,7 +976,7 @@ Application "my-application" is ready
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
-								Revision: gitMaster,
+								Revision: gitBranch,
 							},
 						},
 					},
@@ -1016,7 +1016,7 @@ To continue watching logs run: riff application tail my-application --namespace 
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
-								Revision: gitMaster,
+								Revision: gitBranch,
 							},
 						},
 					},
@@ -1043,7 +1043,7 @@ To continue watching logs run: riff application tail my-application --namespace 
 						Source: &buildv1alpha1.Source{
 							Git: &buildv1alpha1.Git{
 								URL:      gitRepo,
-								Revision: gitMaster,
+								Revision: gitBranch,
 							},
 						},
 					},

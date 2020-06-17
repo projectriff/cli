@@ -35,7 +35,7 @@ riff application create my-app --image registry.example.com/image --local-path .
       --dry-run                 print kubernetes resources to stdout rather than apply them to the cluster, messages normally on stdout will be sent to stderr
       --env variable            environment variable defined as a key value pair separated by an equals sign, example "--env MY_VAR=my-value" (may be set multiple times)
       --git-repo url            git url to remote source code
-      --git-revision refspec    refspec within the git repo to checkout (default "master")
+      --git-revision refspec    refspec within the git repo to checkout (default "main")
   -h, --help                    help for create
       --image repository        repository where the built images are pushed (default "_")
       --limit-cpu cores         the maximum amount of cpu allowed, in CPU cores (500m = .5 cores)
