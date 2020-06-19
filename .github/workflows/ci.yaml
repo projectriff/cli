@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v2.3.0
+    - uses: actions/checkout@v2.3.1
     - uses: actions/setup-go@v2-beta
       with:
         go-version: 1.14.x
@@ -48,7 +48,7 @@ jobs:
     if: success() && github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2.3.0
+    - uses: actions/checkout@v2.3.1
     - uses: actions/setup-go@v2-beta
       with:
         go-version: 1.14.x
@@ -81,7 +81,7 @@ jobs:
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       GCLOUD_CLIENT_SECRET: ${{ secrets.GCLOUD_CLIENT_SECRET }}
     steps:
-      - uses: actions/checkout@v2.3.0
+      - uses: actions/checkout@v2.3.1
       - name: Setup env
         run: |
           job=$(date +%s) # TODO use something that is assigned by CI to guarantee uniqueness
@@ -114,7 +114,7 @@ jobs:
       )
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2.3.0
+    - uses: actions/checkout@v2.3.1
     - name: Publish riff release artifacts
       run: .github/workflows/publish.sh ${{ github.ref }}
       env:
