@@ -23,8 +23,8 @@ import (
 
 	"github.com/projectriff/cli/pkg/cli"
 	"github.com/projectriff/cli/pkg/cli/options"
-	"github.com/projectriff/reconciler-runtime/apis"
 	"github.com/spf13/cobra"
+	"github.com/vmware-labs/reconciler-runtime/apis"
 	apierrs "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )

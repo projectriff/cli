@@ -17,7 +17,7 @@
 package cli
 
 import (
-	"github.com/projectriff/reconciler-runtime/validation"
+	"github.com/vmware-labs/reconciler-runtime/validation"
 )
 
 const CurrentField = validation.CurrentField

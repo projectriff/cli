@@ -18,7 +18,7 @@ package cli
 
 import (
 	"github.com/ghodss/yaml"
-	"github.com/projectriff/reconciler-runtime/apis"
+	"github.com/vmware-labs/reconciler-runtime/apis"
 )
 
 func PrintResourceStatus(c *Config, name string, condition *apis.Condition) {
