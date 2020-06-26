@@ -22,7 +22,7 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/projectriff/cli/pkg/cli"
-	"github.com/projectriff/reconciler-runtime/apis"
+	"github.com/vmware-labs/reconciler-runtime/apis"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
