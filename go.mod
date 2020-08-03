@@ -13,7 +13,7 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/projectriff/system v0.0.0-20200626145103-1fcdb7a09056
 	github.com/spf13/cobra v0.0.7
-	github.com/spf13/viper v1.7.0
+	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.6.1
 	github.com/vmware-labs/reconciler-runtime v0.0.0-20200625194853-966cffdf5cfc
 	golang.org/x/crypto v0.0.0-20200311171314-f7b00557c8c4
