@@ -9,7 +9,7 @@ require (
 	github.com/buildpacks/pack v0.13.1
 	github.com/fatih/color v1.9.0
 	github.com/ghodss/yaml v1.0.0
-	github.com/google/go-cmp v0.5.1
+	github.com/google/go-cmp v0.5.2
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/projectriff/system v0.0.0-20200626145103-1fcdb7a09056
 	github.com/spf13/cobra v0.0.7
