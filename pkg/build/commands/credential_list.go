@@ -119,7 +119,7 @@ func (opts *CredentialListOptions) print(credential *corev1.Secret, _ printers.P
 	row.Cells = append(row.Cells,
 		credential.Name,
 		credential.Labels[buildv1alpha1.CredentialLabelKey],
-		credential.Annotations["build.pivotal.io/docker"],
+		credential.Annotations["kpack.io/docker"],
 		cli.FormatTimestampSince(credential.CreationTimestamp, now),
 	)
 	return []metav1beta1.TableRow{row}, nil

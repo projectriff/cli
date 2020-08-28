@@ -191,6 +191,7 @@ func TestCredentialApplyCommand(t *testing.T) {
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": "https://index.docker.io/v1/",
 							"build.pivotal.io/docker":    "https://index.docker.io/v1/",
+							"kpack.io/docker":            "https://index.docker.io/v1/",
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -219,6 +220,7 @@ Apply credentials "test-credential"
 							"build.knative.dev/docker-2": "https://eu.gcr.io",
 							"build.knative.dev/docker-3": "https://asia.gcr.io",
 							"build.pivotal.io/docker":    "https://gcr.io",
+							"kpack.io/docker":            "https://gcr.io",
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -255,6 +257,7 @@ Apply credentials "test-credential"
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": registryURL,
 							"build.pivotal.io/docker":    registryURL,
+							"kpack.io/docker":            registryURL,
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -281,6 +284,7 @@ Apply credentials "test-credential"
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": "https://index.docker.io/v1/",
 							"build.pivotal.io/docker":    "https://index.docker.io/v1/",
+							"kpack.io/docker":            "https://index.docker.io/v1/",
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -299,6 +303,7 @@ Apply credentials "test-credential"
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": registryURL,
 							"build.pivotal.io/docker":    registryURL,
+							"kpack.io/docker":            registryURL,
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -325,6 +330,7 @@ Apply credentials "test-credential"
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": "https://index.docker.io/v1/",
 							"build.pivotal.io/docker":    "https://index.docker.io/v1/",
+							"kpack.io/docker":            "https://index.docker.io/v1/",
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -355,6 +361,7 @@ Apply credentials "test-credential"
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": registryURL,
 							"build.pivotal.io/docker":    registryURL,
+							"kpack.io/docker":            registryURL,
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -379,6 +386,7 @@ Apply credentials "test-credential"
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": "https://index.docker.io/v1/",
 							"build.pivotal.io/docker":    "https://index.docker.io/v1/",
+							"kpack.io/docker":            "https://index.docker.io/v1/",
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -400,6 +408,7 @@ Apply credentials "test-credential"
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": registryURL,
 							"build.pivotal.io/docker":    registryURL,
+							"kpack.io/docker":            registryURL,
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -439,6 +448,7 @@ Apply credentials "test-credential"
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": "https://index.docker.io/v1/",
 							"build.pivotal.io/docker":    "https://index.docker.io/v1/",
+							"kpack.io/docker":            "https://index.docker.io/v1/",
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -477,6 +487,7 @@ Set default image prefix to "docker.io/projectriff"
 							"build.knative.dev/docker-2": "https://eu.gcr.io",
 							"build.knative.dev/docker-3": "https://asia.gcr.io",
 							"build.pivotal.io/docker":    "https://gcr.io",
+							"kpack.io/docker":            "https://gcr.io",
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -513,6 +524,7 @@ Set default image prefix to "gcr.io/my-gcp-project"
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": registryURL,
 							"build.pivotal.io/docker":    registryURL,
+							"kpack.io/docker":            registryURL,
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -567,6 +579,7 @@ Set default image prefix to "example.com"
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": "https://index.docker.io/v1/",
 							"build.pivotal.io/docker":    "https://index.docker.io/v1/",
+							"kpack.io/docker":            "https://index.docker.io/v1/",
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -609,6 +622,7 @@ Set default image prefix to "docker.io/projectriff"
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": "https://index.docker.io/v1/",
 							"build.pivotal.io/docker":    "https://index.docker.io/v1/",
+							"kpack.io/docker":            "https://index.docker.io/v1/",
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -636,6 +650,7 @@ Set default image prefix to "docker.io/projectriff"
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": "https://index.docker.io/v1/",
 							"build.pivotal.io/docker":    "https://index.docker.io/v1/",
+							"kpack.io/docker":            "https://index.docker.io/v1/",
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -684,6 +699,7 @@ Set default image prefix to "docker.io/projectriff"
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": "https://index.docker.io/v1/",
 							"build.pivotal.io/docker":    "https://index.docker.io/v1/",
+							"kpack.io/docker":            "https://index.docker.io/v1/",
 						},
 					},
 					Type: corev1.SecretTypeBasicAuth,
@@ -719,6 +735,7 @@ metadata:
   annotations:
     build.knative.dev/docker-0: https://index.docker.io/v1/
     build.pivotal.io/docker: https://index.docker.io/v1/
+    kpack.io/docker: https://index.docker.io/v1/
   creationTimestamp: null
   labels:
     build.projectriff.io/credential: docker-hub
@@ -771,6 +788,7 @@ metadata:
   annotations:
     build.knative.dev/docker-0: https://index.docker.io/v1/
     build.pivotal.io/docker: https://index.docker.io/v1/
+    kpack.io/docker: https://index.docker.io/v1/
   creationTimestamp: null
   labels:
     build.projectriff.io/credential: docker-hub

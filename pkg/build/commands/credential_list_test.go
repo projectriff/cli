@@ -87,6 +87,7 @@ No credentials found.
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": "https://index.docker.io/v1/",
 							"build.pivotal.io/docker":    "https://index.docker.io/v1/",
+							"kpack.io/docker":            "https://index.docker.io/v1/",
 						},
 					},
 				},
@@ -108,6 +109,7 @@ test-credential   docker-hub   https://index.docker.io/v1/   <unknown>
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": "https://index.docker.io/v1/",
 							"build.pivotal.io/docker":    "https://index.docker.io/v1/",
+							"kpack.io/docker":            "https://index.docker.io/v1/",
 						},
 					},
 				},
@@ -128,6 +130,7 @@ No credentials found.
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": "https://registry.example.com/",
 							"build.pivotal.io/docker":    "https://registry.example.com/",
+							"kpack.io/docker":            "https://registry.example.com/",
 						},
 					},
 				},
@@ -139,6 +142,7 @@ No credentials found.
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": "https://index.docker.io/v1/",
 							"build.pivotal.io/docker":    "https://index.docker.io/v1/",
+							"kpack.io/docker":            "https://index.docker.io/v1/",
 						},
 					},
 				},
@@ -150,6 +154,7 @@ No credentials found.
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": "https://gcr.io",
 							"build.pivotal.io/docker":    "https://gcr.io",
+							"kpack.io/docker":            "https://gcr.io",
 						},
 					},
 				},
@@ -173,6 +178,7 @@ registry     basic-auth   https://registry.example.com/   <unknown>
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": "https://index.docker.io/v1/",
 							"build.pivotal.io/docker":    "https://index.docker.io/v1/",
+							"kpack.io/docker":            "https://index.docker.io/v1/",
 						},
 					},
 				},
@@ -184,6 +190,7 @@ registry     basic-auth   https://registry.example.com/   <unknown>
 						Annotations: map[string]string{
 							"build.knative.dev/docker-0": "https://index.docker.io/v1/",
 							"build.pivotal.io/docker":    "https://index.docker.io/v1/",
+							"kpack.io/docker":            "https://index.docker.io/v1/",
 						},
 					},
 				},
