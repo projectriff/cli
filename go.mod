@@ -7,7 +7,7 @@ require (
 	github.com/boz/go-logutil v0.1.0
 	github.com/boz/kail v0.15.0
 	github.com/buildpacks/pack v0.14.2
-	github.com/fatih/color v1.9.0
+	github.com/fatih/color v1.10.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/google/go-cmp v0.5.2
 	github.com/mitchellh/go-homedir v1.1.0
