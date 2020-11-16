@@ -16,9 +16,9 @@ require (
 	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.6.1
 	github.com/vmware-labs/reconciler-runtime v0.0.0-20200625194853-966cffdf5cfc
-	golang.org/x/crypto v0.0.0-20200311171314-f7b00557c8c4
-	k8s.io/api v0.17.4
+	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
+	k8s.io/api v0.19.4
 	k8s.io/apiextensions-apiserver v0.17.4
-	k8s.io/apimachinery v0.17.4
-	k8s.io/client-go v0.17.4
+	k8s.io/apimachinery v0.19.4
+	k8s.io/client-go v0.19.4
 )
